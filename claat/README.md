@@ -1,4 +1,4 @@
-# Codelabs export tool written in Go
+# Codelabs command line tool
 
 The program takes an input in form of a resource location,
 which can either be a Google Doc ID, local file path or an arbitrary URL.
