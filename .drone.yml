@@ -1,0 +1,39 @@
+# Note: if you modify this file, don't forget to update
+# checksum in .drone.sec with:
+# drone secure --repo googlecodelabs/tools --checksum
+clone:
+  depth: 1
+build:
+  test:
+    image: golang
+    commands:
+      - go get github.com/golang/lint/golint
+      - cd ./claat
+      - go get ./...
+      - make test lint
+  release:
+    when:
+      repo: googlecodelabs/tools
+      branch: master
+    image: golang
+    commands:
+      - cd ./claat
+      - make release -j2
+publish:
+  gcs:
+    when:
+      repo: googlecodelabs/tools
+      branch: master
+    auth_key: >
+      $$SERVICE_ACCOUNT_KEY
+    source: claat/bin
+    target: claat
+    ignore: claat
+    acl: ["allUsers:READER"]
+    cache_control: public,max-age=1800
+  github_release:
+    when:
+      event: tag
+    api_key: $$GH_API_KEY
+    files:
+      - bin/claat-*
