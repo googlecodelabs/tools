@@ -27,11 +27,12 @@ import (
 
 // Context is a template context during execution.
 type Context struct {
-	Env      string
-	Prefix   string
-	GlobalGA string
-	Meta     *types.Meta
-	Steps    []*types.Step
+	Env       string
+	Prefix    string
+	GlobalGA  string
+	Meta      *types.Meta
+	Steps     []*types.Step
+	ExtraVars map[string]string // Extra variables passed from the command line.
 }
 
 // Execute renders a template of the fmt format into w.

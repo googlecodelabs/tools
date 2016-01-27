@@ -57,6 +57,20 @@ func cmdExport() {
 	}
 }
 
+// parseAdditionalVars parses extra template variables from command line.
+func parseAdditionalVars() map[string]string {
+	vars := make(map[string]string)
+	if *tmpldata == "" {
+		return vars
+	}
+	b := []byte(*tmpldata)
+	err := json.Unmarshal(b, &vars)
+	if err != nil {
+		errorf("Error parsing additional template data.", err)
+	}
+	return vars
+}
+
 // exportCodelab fetches codelab src from either local disk or remote,
 // parses and stores the results on disk, in a dir ancestored by *output.
 //
@@ -115,11 +129,12 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 	// which will also verify output format is valid,
 	// and avoid creating empty files in case this goes wrong
 	data := &render.Context{
-		Env:      ctx.Env,
-		Prefix:   ctx.Prefix,
-		GlobalGA: ctx.MainGA,
-		Meta:     &clab.Meta,
-		Steps:    clab.Steps,
+		Env:       ctx.Env,
+		Prefix:    ctx.Prefix,
+		GlobalGA:  ctx.MainGA,
+		Meta:      &clab.Meta,
+		Steps:     clab.Steps,
+		ExtraVars: parseAdditionalVars(),
 	}
 	var buf bytes.Buffer
 	if err := render.Execute(&buf, ctx.Format, data); err != nil {
