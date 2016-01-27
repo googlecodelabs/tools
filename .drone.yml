@@ -4,21 +4,13 @@
 clone:
   depth: 1
 build:
-  test:
-    image: golang
-    commands:
-      - go get github.com/golang/lint/golint
-      - cd ./claat
-      - go get ./...
-      - make test lint
-  release:
-    when:
-      repo: googlecodelabs/tools
-      branch: master
-    image: golang
-    commands:
-      - cd ./claat
-      - make release -j2
+  image: golang
+  commands:
+    - go get github.com/golang/lint/golint
+    - cd ./claat
+    - go get ./...
+    - make test lint
+    - make release -j2
 publish:
   gcs:
     when:
