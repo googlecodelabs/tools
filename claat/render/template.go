@@ -32,6 +32,7 @@ type Context struct {
 	GlobalGA string
 	Meta     *types.Meta
 	Steps    []*types.Step
+	Extra    map[string]string // Extra variables passed from the command line.
 }
 
 // Execute renders a template of the fmt format into w.

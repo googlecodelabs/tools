@@ -120,6 +120,7 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 		GlobalGA: ctx.MainGA,
 		Meta:     &clab.Meta,
 		Steps:    clab.Steps,
+		Extra:    extraVars,
 	}
 	var buf bytes.Buffer
 	if err := render.Execute(&buf, ctx.Format, data); err != nil {
