@@ -15,6 +15,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -33,6 +34,7 @@ var (
 	tmplout  = flag.String("f", "html", "output format")
 	prefix   = flag.String("prefix", "../../", "URL prefix for html format")
 	globalGA = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
+	extra    = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
 
 	version string // set by linker -X
 )
@@ -65,6 +67,8 @@ var (
 
 	exitMu sync.Mutex // guards exit
 	exit   int        // program exit code
+
+	extraVars map[string]string // Extra template variables passed on the command line.
 )
 
 // isStdout reports whether filename is stdout.
@@ -96,6 +100,20 @@ func fatalf(format string, args ...interface{}) {
 	os.Exit(1)
 }
 
+// parseExtraVars parses extra template variables from command line.
+func parseExtraVars() map[string]string {
+	vars := make(map[string]string)
+	if *extra == "" {
+		return vars
+	}
+	b := []byte(*extra)
+	err := json.Unmarshal(b, &vars)
+	if err != nil {
+		errorf("Error parsing additional template data.", err)
+	}
+	return vars
+}
+
 func main() {
 	log.SetFlags(0)
 	rand.Seed(time.Now().UnixNano())
@@ -113,7 +131,7 @@ func main() {
 	}
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
-
+	extraVars = parseExtraVars()
 	cmd()
 	os.Exit(exit)
 }
