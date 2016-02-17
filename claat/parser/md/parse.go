@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//Package mg implements a parser for CLaaT. It expects, as input, the output of running a Markdown file through
-//the Devsite Markdown processor.
+// Package md implements a parser for CLaaT. It expects, as input, the output of running a Markdown file through
+// the Devsite Markdown processor.
 package md
 
 import (
@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"regexp"
 	"strconv"
 	"strings"
@@ -100,19 +101,14 @@ func claatMarkdown(b []byte) []byte {
 // Parse is a parser.ParseFunc for Markdown.
 func Parse(r io.Reader) (*types.Codelab, error) {
 	// Convert Markdown to HTML for easy parsing.
-	mBuf := bytes.Buffer{}
-	_, err := mBuf.ReadFrom(r)
+	b, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
-	hBytes := claatMarkdown(mBuf.Bytes())
-	h := bytes.NewBuffer(hBytes)
+	b = claatMarkdown(b)
+	h := bytes.NewBuffer(b)
 	// Parse the markup.
-	c, err := parseMarkup(h)
-	if err != nil {
-		return nil, err
-	}
-	return c, nil
+	return parseMarkup(h)
 }
 
 // parseMarkup accepts an io.Reader to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
@@ -130,25 +126,33 @@ func parseMarkup(markup io.Reader) (*types.Codelab, error) {
 		if ps.c.Title == "" {
 			// If we have a <p> tag, it's a metadata section.
 			if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.P {
-				parseMetadata(&ps)
+				if err := parseMetadata(&ps); err != nil {
+					return nil, err
+				}
 			}
 			// We need to handle the title in this pass, as the next advance call will move us past the <h1>.
 			if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H1 {
 				handleCodelabTitle(&ps)
+
+				// If we just finished parsing a step or the title, we are left possibly pointing to the opening
+				// <h2> of another step. Update the flag accordingly.
+				inStepTitle = (ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2)
 			}
-		} else {
-			if inStepTitle {
-				// This is the beginning of a new codelab step, and we are pointing to the contents of the title.
-				stepTitle := ps.t.Data
-				ps.advance()
-				// Emit a step object.
-				ps.currentStep = ps.c.NewStep(stepTitle)
-				parseStep(&ps)
-			}
+			continue
+		}
+		if inStepTitle {
+			// This is the beginning of a new codelab step, and we are pointing to the contents of the title.
+			stepTitle := ps.t.Data
+			ps.advance()
+			// Emit a step object.
+			ps.currentStep = ps.c.NewStep(stepTitle)
+			parseStep(&ps)
+
 			// If we just finished parsing a step or the title, we are left possibly pointing to the opening
 			// <h2> of another step. Update the flag accordingly.
 			inStepTitle = (ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2)
 		}
+
 	}
 	// If not EOF, an error occurred in tokenization.
 	if err := ps.tzr.Err(); err != io.EOF {
@@ -271,7 +275,8 @@ func processDuration(d string) (time.Duration, error) {
 			return 0, err
 		}
 		return time.Duration(h)*time.Hour + time.Duration(m)*time.Minute, nil
-	} else if d == "0" {
+	}
+	if d == "0" {
 		return 0, nil
 	}
 	return 0, errors.New("unrecognized duration string")

@@ -15,7 +15,6 @@
 package md
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -27,12 +26,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-const empty = ""
-
-var errNonNil = errors.New(empty)
-
 func buildParserWithStep(markup string) *parserState {
-
 	ps := parserState{
 		tzr: html.NewTokenizer(strings.NewReader(markup)),
 		c:   &types.Codelab{},
@@ -49,179 +43,94 @@ func TestHandleCodelabTitle(t *testing.T) {
 	handleCodelabTitle(ps)
 
 	if ps.c.Title != title {
-		t.Errorf("[%q] expected %v, got %v", title, title, ps.c.Title)
+		t.Errorf("[%q] got %v, want %v", title, ps.c.Title, title)
 	}
 }
 
 func TestProcessDuration(t *testing.T) {
-	type TestCase struct {
+	tests := []struct {
 		in  string
 		out time.Duration
-		err error
-	}
-	tests := []TestCase{
+		ok  bool
+	}{
 		// Test an easy case.
-		TestCase{
-			in:  "1:00",
-			out: time.Duration(1) * time.Hour,
-			err: nil,
-		},
+		{"1:00", time.Hour, true},
 		// Test an easy case with period delimiter.
-		TestCase{
-			in:  "1.00",
-			out: time.Duration(1) * time.Hour,
-			err: nil,
-		},
+		{"1.00", time.Hour, true},
 		// Test a weird number case.
-		TestCase{
-			in:  "13:37",
-			out: time.Duration(817) * time.Minute,
-			err: nil,
-		},
+		{"13:37", 817 * time.Minute, true},
 		// Test that minutes can be longer than an hour.
-		TestCase{
-			in:  "0:90",
-			out: time.Duration(90) * time.Minute,
-			err: nil,
-		},
+		{"0:90", 90 * time.Minute, true},
 		// Test zero.
-		TestCase{
-			in:  "0",
-			out: time.Duration(0),
-			err: nil,
-		},
+		{"0", 0, true},
 		// Test more than two digits in the hours place.
-		TestCase{
-			in:  "100:00",
-			out: time.Duration(100) * time.Hour,
-			err: nil,
-		},
+		{"100:00", 100 * time.Hour, true},
 		// Test that hours must be present.
-		TestCase{
-			in:  ":25",
-			out: 0,
-			err: errNonNil,
-		},
+		{":25", 0, false},
 		// Test that two minutes digits are required.
-		TestCase{
-			in:  "2:2",
-			out: 0,
-			err: errNonNil,
-		},
+		{"2:2", 0, false},
 		// Test that two minutes digits are required.
-		TestCase{
-			in:  "4:444",
-			out: 0,
-			err: errNonNil,
-		},
+		{"4:444", 0, false},
 		// Test that zero is the only simple scalar allowed.
-		TestCase{
-			in:  "600613",
-			out: 0,
-			err: errNonNil,
-		},
+		{"654321", 0, false},
 		// Test an empty string.
-		TestCase{
-			in:  "",
-			out: 0,
-			err: errNonNil,
-		},
+		{"", 0, false},
 		// Test complete nonsense.
-		TestCase{
-			in:  "This isn't even remotely close to resembling a correct duration string.",
-			out: 0,
-			err: errNonNil,
-		},
+		{"This isn't even remotely close to resembling a correct duration string.", 0, false},
 	}
 
-	for _, tc := range tests {
+	for i, tc := range tests {
 		out, err := processDuration(tc.in)
-		if tc.err == errNonNil {
-			// Expect an error.
-			if err == nil {
-				t.Errorf("[%q] expected non-nil error", tc.in)
-			}
-		} else {
-			if err != nil {
-				t.Errorf("[%q] expected nil error, got %v", tc.in, err)
-			} else if out != tc.out {
-				t.Errorf("[%q] expected %v, got %v", tc.in, tc.out, out)
-			}
+		switch {
+		case !tc.ok && err == nil:
+			t.Errorf("%d: processDuration(%q) = %v; want error", i, tc.in, out)
+		case tc.ok && err != nil:
+			t.Errorf("%d: processDuration(%q) = %v; want %v", i, tc.in, err, tc.out)
+		case out != tc.out:
+			t.Errorf("%d: processDuration(%q) = %v; want %v", i, tc.in, out, tc.out)
 		}
 	}
 
 }
 
 func TestHandleDurationHint(t *testing.T) {
-	type TestCase struct {
+	tests := []struct {
 		in  string
 		out time.Duration
-	}
-	tests := []TestCase{
+	}{
 		// Test various forms of the "Duration" stub.
-		TestCase{
-			in:  "<p>Duration: 2:00</p>",
-			out: 2 * time.Hour,
-		},
-		TestCase{
-			in:  "<p>Duration 2:00</p>",
-			out: 2 * time.Hour,
-		},
-		TestCase{
-			in:  "<p>duration: 2:00</p>",
-			out: 2 * time.Hour,
-		},
-		TestCase{
-			in:  "<p>duration 2:00</p>",
-			out: 2 * time.Hour,
-		},
+		{"<p>Duration: 2:00</p>", 2 * time.Hour},
+		{"<p>Duration 2:00</p>", 2 * time.Hour},
+		{"<p>duration: 2:00</p>", 2 * time.Hour},
+		{"<p>duration 2:00</p>", 2 * time.Hour},
 		// Test the zero case.
-		TestCase{
-			in:  "<p>Duration: 0</p>",
-			out: 0,
-		},
+		{"<p>Duration: 0</p>", 0},
 		// Test false positive cases.
-		TestCase{
-			in:  "<p>Redwood is my favorite kind of tree.</p>",
-			out: 0,
-		},
-		TestCase{
-			in:  "<p><h6>Subsubsubsubsub Header</h6></p>",
-			out: 0,
-		},
+		{"<p>Redwood is my favorite kind of tree.</p>", 0},
+		{"<p><h6>Subsubsubsubsub Header</h6></p>", 0},
 	}
 
-	for _, tc := range tests {
+	for i, tc := range tests {
 		ps := buildParserWithStep(tc.in)
 		ps.advance()
 		handleDurationHint(ps)
 		if ps.currentStep.Duration != tc.out {
-			t.Errorf("[%q] expected %v, got %v", tc.in, tc.out, ps.currentStep.Duration)
+			t.Errorf("%d: [%q] got %v, want %v", i, tc.in, ps.currentStep.Duration, tc.out)
 		}
 	}
 }
 
 func TestComputeTotalDuration(t *testing.T) {
-	type TestCase struct {
+	tests := []struct {
 		in  []time.Duration
 		out int
-	}
-	tests := []TestCase{
-		TestCase{
-			in:  []time.Duration{45 * time.Minute, 90 * time.Minute, 15 * time.Minute},
-			out: 150,
-		},
-		TestCase{
-			in:  []time.Duration{0, 0, 0, 0},
-			out: 0,
-		},
-		TestCase{
-			in:  nil,
-			out: 0,
-		},
+	}{
+		{[]time.Duration{45 * time.Minute, 90 * time.Minute, 15 * time.Minute}, 150},
+		{[]time.Duration{0, 0, 0, 0}, 0},
+		{nil, 0},
 	}
 
-	for _, tc := range tests {
+	for i, tc := range tests {
 		ps := parserState{
 			c: &types.Codelab{},
 		}
@@ -231,46 +140,30 @@ func TestComputeTotalDuration(t *testing.T) {
 		}
 		computeTotalDuration(ps.c)
 		if tc.out != ps.c.Duration {
-			t.Errorf("[%q] expected %v, got %v", tc.in, tc.out, ps.c.Duration)
+			t.Errorf("%d: [%q] got %v, want %v", i, tc.in, ps.c.Duration, tc.out)
 		}
 	}
 }
 
 func TestStandardSplit(t *testing.T) {
-	type TestCase struct {
+	tests := []struct {
 		in  string
 		out []string
+	}{
+		{"qwe,rty,ui,op", []string{"qwe", "rty", "ui", "op"}},
+		{"AsD,fGH,jkL;", []string{"asd", "fgh", "jkl;"}},
+		{"zxc, vb,\tnm", []string{"zxc", "vb", "nm"}},
+		{"QwE,   rt, YUIOP", []string{"qwe", "rt", "yuiop"}},
+		{"asdfghjkl;", []string{"asdfghjkl;"}},
 	}
-	tests := []TestCase{
-		TestCase{
-			in:  "qwe,rty,ui,op",
-			out: []string{"qwe", "rty", "ui", "op"},
-		},
-		TestCase{
-			in:  "AsD,fGH,jkL;",
-			out: []string{"asd", "fgh", "jkl;"},
-		},
-		TestCase{
-			in:  "zxc, vb,\tnm",
-			out: []string{"zxc", "vb", "nm"},
-		},
-		TestCase{
-			in:  "QwE,   rt, YUIOP",
-			out: []string{"qwe", "rt", "yuiop"},
-		},
-		TestCase{
-			in:  "asdfghjkl;",
-			out: []string{"asdfghjkl;"},
-		},
-	}
-	for _, tc := range tests {
+	for i, tc := range tests {
 		out := standardSplit(tc.in)
 		if len(out) != len(tc.out) {
-			t.Errorf("[%q] expected %v, got %v", tc.in, tc.out, out)
+			t.Errorf("%d: standardSplit(%v) got %v, want %v", i, tc.in, out, tc.out)
 		}
 		for k, v := range out {
 			if v != tc.out[k] {
-				t.Errorf("[%q] expected %v, got %v", tc.in, tc.out, out)
+				t.Errorf("%d: standardSplit(%v) got %v, want %v", i, tc.in, out, tc.out)
 			}
 		}
 	}
@@ -278,13 +171,12 @@ func TestStandardSplit(t *testing.T) {
 
 func TestAddMetadataToCodelab(t *testing.T) {
 	tempStatus := types.LegacyStatus([]string{"draft"})
-	type TestCase struct {
+	tests := []struct {
 		in  map[string]string
 		out types.Codelab
-	}
-	tests := []TestCase{
-		TestCase{
-			in: map[string]string{
+	}{
+		{
+			map[string]string{
 				"summary":           "abcdefghij",
 				"id":                "zyxwvut",
 				"categories":        "not, really",
@@ -293,7 +185,7 @@ func TestAddMetadataToCodelab(t *testing.T) {
 				"feedback link":     "https://www.google.com",
 				"analytics account": "12345",
 			},
-			out: types.Codelab{
+			types.Codelab{
 				Meta: types.Meta{
 					Summary:    "abcdefghij",
 					ID:         "zyxwvut",
@@ -306,34 +198,27 @@ func TestAddMetadataToCodelab(t *testing.T) {
 			},
 		},
 	}
-	for _, tc := range tests {
+	for i, tc := range tests {
 		out := types.Codelab{}
 		addMetadataToCodelab(tc.in, &out)
 		if !reflect.DeepEqual(tc.out, out) {
-			t.Errorf("[%q] expected %v, got %v", tc.in, tc.out, out)
+			t.Errorf("%d: [%q] got %v, want %v", i, tc.in, out, tc.out)
 		}
 	}
 }
 
 func TestNewBreaklessTextNode(t *testing.T) {
-	type TestCase struct {
+	tests := []struct {
 		in  string
 		out *types.TextNode
+	}{
+		{"one\ntwo\nthree", types.NewTextNode("one two three")},
+		{"four fivesix", types.NewTextNode("four fivesix")},
 	}
-	tests := []TestCase{
-		TestCase{
-			in:  "one\ntwo\nthree",
-			out: types.NewTextNode("one two three"),
-		},
-		TestCase{
-			in:  "four fivesix",
-			out: types.NewTextNode("four fivesix"),
-		},
-	}
-	for _, tc := range tests {
+	for i, tc := range tests {
 		out := newBreaklessTextNode(tc.in)
 		if !reflect.DeepEqual(out, tc.out) {
-			t.Errorf("[%q] expected %v, got %v", tc.in, tc.out, out)
+			t.Errorf("%d: newBreaklessTextNode(%v) got %v, want %v", i, tc.in, out, tc.out)
 		}
 	}
 }
