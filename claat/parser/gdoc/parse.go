@@ -68,7 +68,7 @@ var (
 	// ordered after the usage in codelab docs
 	durFactor = []time.Duration{time.Hour, time.Minute, time.Second}
 
-	// textCleander replaces "smart quotes" and other unicode runes
+	// textCleaner replaces "smart quotes" and other unicode runes
 	// with their respective ascii versions.
 	textCleaner = strings.NewReplacer(
 		"\u2019", "'", "\u201C", `"`, "\u201D", `"`, "\u2026", "...",
