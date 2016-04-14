@@ -102,6 +102,13 @@ func isSurvey(css cssStyle, hn *html.Node) bool {
 	return hasClassStyle(css, hn, "background-color", surveyColor)
 }
 
+func isComment(css cssStyle, hn *html.Node) bool {
+	if hn.DataAtom != atom.Div {
+		return false
+	}
+	return hasClassStyle(css, hn, "border", "1px solid black")
+}
+
 func isTable(hn *html.Node) bool {
 	if hn.DataAtom != atom.Table {
 		return false

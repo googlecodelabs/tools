@@ -162,9 +162,8 @@ func parseDoc(doc *html.Node) (*types.Codelab, error) {
 		css:  style,
 	}
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
-		if ds.cur.DataAtom == atom.Div {
-			// docs current export comments at the end of the body,
-			// in a <div> container.
+		if isComment(ds.css, ds.cur) {
+			// docs export comments at the end of the body
 			break
 		}
 		switch {
