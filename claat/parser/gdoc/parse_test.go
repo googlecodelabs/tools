@@ -158,6 +158,8 @@ func TestParseDoc(t *testing.T) {
 		<img src="https://host/image.png">
 		<p><img src="https://host/small.png" style="height: 10px; width: 25.5px"> icon.</p>
 
+		<p><img alt="https://www.youtube.com/watch?v=vid" src="https://yt.com/vid.jpg"></p>
+
 		<h3><a name="a3"></a><span>What you&rsquo;ll learn</span></h3>
 		<ul class="start">
 		<li><span>First </span><span>One</span><sup><a href="#cmnt1" name="cmnt_ref1" target="_blank">[a]</a></sup></li>
@@ -247,6 +249,10 @@ func TestParseDoc(t *testing.T) {
 	para = types.NewListNode(img, types.NewTextNode(" icon."))
 	para.MutateBlock(true)
 	content.Append(para)
+
+	yt := types.NewYouTubeNode("vid")
+	yt.MutateBlock(true)
+	content.Append(yt)
 
 	h := types.NewHeaderNode(3, types.NewTextNode("What you'll learn"))
 	h.MutateType(types.NodeHeaderCheck)

@@ -99,6 +99,9 @@ func (hw *htmlWriter) write(nodes ...types.Node) error {
 		case *types.HeaderNode:
 			hw.header(n)
 			hw.writeBytes(newLine)
+		case *types.YouTubeNode:
+			hw.youtube(n)
+			hw.writeBytes(newLine)
 		}
 		if hw.err != nil {
 			return hw.err
@@ -317,4 +320,8 @@ func (hw *htmlWriter) header(n *types.HeaderNode) {
 	hw.writeString("</")
 	hw.writeString(tag)
 	hw.writeBytes(greaterThan)
+}
+
+func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
+	hw.writeFmt("<google-youtube fluid video-id=%q></google-youtube>", n.VideoID)
 }

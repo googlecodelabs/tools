@@ -552,7 +552,11 @@ func list(ds *docState) types.Node {
 
 // image creates a new ImageNode out of hn, parsing its src attribute.
 // It returns nil if src is empty.
+// It may also return a YouTubeNode if alt property contains specific substring.
 func image(ds *docState) types.Node {
+	if strings.Contains(nodeAttr(ds.cur, "alt"), "youtube.com/watch") {
+		return youtube(ds)
+	}
 	s := nodeAttr(ds.cur, "src")
 	if s == "" {
 		return nil
@@ -560,6 +564,20 @@ func image(ds *docState) types.Node {
 	n := types.NewImageNode(s)
 	n.MaxWidth = styleFloatValue(ds.cur, "width")
 	n.MutateBlock(findBlockParent(ds.cur))
+	return n
+}
+
+func youtube(ds *docState) types.Node {
+	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+	if err != nil {
+		return nil
+	}
+	v := u.Query().Get("v")
+	if v == "" {
+		return nil
+	}
+	n := types.NewYouTubeNode(v)
+	n.MutateBlock(true)
 	return n
 }
 

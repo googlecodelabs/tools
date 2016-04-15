@@ -40,6 +40,7 @@ const (
 	NodeHeader               // A header text node
 	NodeHeaderCheck          // Special kind of header, checklist
 	NodeHeaderFAQ            // Special kind of header, FAQ
+	NodeYouTube              // YouTube video
 )
 
 // Node is an interface common to all node types.
@@ -417,4 +418,23 @@ type InfoboxNode struct {
 // Empty returns true if ib content is empty.
 func (ib *InfoboxNode) Empty() bool {
 	return ib.Content.Empty()
+}
+
+// NewYouTubeNode creates a new YouTube video node.
+func NewYouTubeNode(vid string) *YouTubeNode {
+	return &YouTubeNode{
+		node:    node{typ: NodeYouTube},
+		VideoID: vid,
+	}
+}
+
+// YouTubeNode is a YouTube video.
+type YouTubeNode struct {
+	node
+	VideoID string
+}
+
+// Empty returns true if yt's VideoID field is zero.
+func (yt *YouTubeNode) Empty() bool {
+	return yt.VideoID != ""
 }
