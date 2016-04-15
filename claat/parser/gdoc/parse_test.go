@@ -145,6 +145,7 @@ func TestParseDoc(t *testing.T) {
 		.ita { font-style: italic }
 		.nibox { background-color: #fce5cd }
 		.survey { background-color: #cfe2f3 }
+		.comment { border: 1px solid black }
 	</style></head>
 	<body>
 		<p class="title"><a name="a1"></a><span>Test Codelab</span></p>
@@ -207,7 +208,9 @@ func TestParseDoc(t *testing.T) {
 		<p class="c23 c44"><span class="c5"></span></p>
 		</td>
 		</tr></tbody></table>
-		<div><p><a href="#cmnt_ref1" name="cmnt1">[a]</a><span class="c16 c8">Test comment.</span></p></div>
+		<div class="comment">
+		<p><a href="#cmnt_ref1" name="cmnt1">[a]</a><span class="c16 c8">Test comment.</span></p>
+		</div>
 	</body>
 	</html>
 	`
