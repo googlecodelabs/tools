@@ -149,6 +149,9 @@ func TestParseDoc(t *testing.T) {
 	</style></head>
 	<body>
 		<p class="title"><a name="a1"></a><span>Test Codelab</span></p>
+
+		<p>this should be ignored</p>
+
 		<h1><a name="a2"></a><span>Overview</span></h1>
 		<p><span class="meta">Duration: 1:00</span></p>
 
