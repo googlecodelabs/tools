@@ -27,16 +27,16 @@ RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 SRCS = $(shell find . -name '*.go') render/tmpldata.go
 LDFLAGS=-ldflags "-X main.version=$(VERSION)"
 
-$(OUTDIR)/claat-%: GOOS=$(firstword $(subst -, ,$*))
-$(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
-$(OUTDIR)/claat-%: $(SRCS)
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $@ $(LDFLAGS)
-
 install: $(OUTDIR)/claat
 	cp $< $(GOPATH)/bin
 
-$(OUTDIR)/claat: $(SRCS)
+$(OUTDIR)/claat: $(SRCS) VERSION
 	go build -o $@ $(LDFLAGS)
+
+$(OUTDIR)/claat-%: GOOS=$(firstword $(subst -, ,$*))
+$(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
+$(OUTDIR)/claat-%: $(SRCS) VERSION
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $@ $(LDFLAGS)
 
 %/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md
 	cd $* && go generate
