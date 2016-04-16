@@ -4,7 +4,7 @@
 clone:
   depth: 1
 build:
-  image: golang
+  image: golang:1.6
   commands:
     - go get github.com/golang/lint/golint
     - cd ./claat
