@@ -28,4 +28,4 @@ publish:
       event: tag
     api_key: $$GH_API_KEY
     files:
-      - bin/claat-*
+      - claat/bin/claat-*
