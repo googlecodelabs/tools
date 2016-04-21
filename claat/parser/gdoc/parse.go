@@ -32,27 +32,40 @@ import (
 )
 
 func init() {
-	parser.Register("gdoc", Parse)
+	parser.Register("gdoc", &Parser{})
 }
 
-// Parse is a parser.ParseFunc for Google Docs, exported in HTML.
-func Parse(r io.Reader) (*types.Codelab, error) {
+// Parser is a Google Doc parser.
+type Parser struct {
+}
+
+// Parse parses a codelab exported in HTML from Google Docs.
+func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
 	// TODO: use html.Tokenizer instead
 	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, err
 	}
-	c, err := parseDoc(doc)
+	return parseDoc(doc)
+}
+
+// ParseFragment parses a codelab fragment exported in HTML from Google Docs.
+func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
+	// TODO: use html.Tokenizer instead
+	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, err
 	}
-	return c, nil
+	return parseFragment(doc)
 }
 
 const (
 	metaSep         = ":"           // step instruction format, key:value
 	metaDuration    = "duration"    // step duration instruction
 	metaEnvironment = "environment" // step environment instruction
+	metaTagOpen     = "[["          // start of tag-based meta instruction
+	metaTagClose    = "]]"          // end of tag-based meta instruction
+	metaTagImport   = "import"      // import remote resource instruction
 
 	// possible content of special header nodes in lower case.
 	headerLearn = "what you'll learn"
@@ -145,6 +158,31 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 	ds.lastNode = nn[len(nn)-1]
 }
 
+func parseFragment(doc *html.Node) ([]types.Node, error) {
+	body := findAtom(doc, atom.Body)
+	if body == nil {
+		return nil, fmt.Errorf("document without a body")
+	}
+	style, err := parseStyle(doc)
+	if err != nil {
+		return nil, err
+	}
+	ds := &docState{
+		clab: &types.Codelab{},
+		css:  style,
+	}
+	ds.step = ds.clab.NewStep("fragment")
+	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
+		if isComment(ds.css, ds.cur) {
+			// docs export comments at the end of the body
+			break
+		}
+		parseTop(ds)
+	}
+	finalizeStep(ds.step)
+	return ds.step.Content.Nodes, nil
+}
+
 // parseDoc parses codelab doc exported as text/html.
 // The doc must contain CSS styles and <body> as exported from Google Doc.
 func parseDoc(doc *html.Node) (*types.Codelab, error) {
@@ -196,6 +234,49 @@ func finalizeStep(s *types.Step) {
 	sort.Strings(s.Tags)
 	s.Content.Nodes = blockNodes(s.Content.Nodes)
 	s.Content.Nodes = compactNodes(s.Content.Nodes)
+	// TODO: find a better place for the code below
+	// find [[directive]] instructions and act accordingly
+	for i, n := range s.Content.Nodes {
+		if n.Type() != types.NodeList {
+			continue
+		}
+		l := n.(*types.ListNode)
+		// [[ directive ... ]]
+		if len(l.Nodes) < 4 {
+			continue
+		}
+		// first element is opening [[
+		if t, ok := l.Nodes[0].(*types.TextNode); !ok || t.Value != metaTagOpen {
+			continue
+		}
+		// last element is closing ]]
+		if t, ok := l.Nodes[len(l.Nodes)-1].(*types.TextNode); !ok || t.Value != metaTagClose {
+			continue
+		}
+		// second element is a text in bold
+		t, ok := l.Nodes[1].(*types.TextNode)
+		if !ok || !t.Bold || t.Italic || t.Code {
+			continue
+		}
+		// execute transform and replace t with the result
+		v := strings.ToLower(strings.TrimSpace(t.Value))
+		r := transformNodes(v, l.Nodes[2:len(l.Nodes)-1])
+		if r != nil {
+			r.MutateEnv(l.Env())
+			s.Content.Nodes[i] = r
+		}
+	}
+}
+
+func transformNodes(name string, nodes []types.Node) types.Node {
+	if name == metaTagImport && len(nodes) == 1 {
+		u, ok := nodes[0].(*types.URLNode)
+		if !ok {
+			return nil
+		}
+		return types.NewImportNode(u.URL)
+	}
+	return nil
 }
 
 // parseTop parses nodes tree starting at, and including, ds.cur.
@@ -663,6 +744,7 @@ func text(ds *docState) types.Node {
 	italic := isItalic(ds.css, ds.cur)
 	code := isCode(ds.css, ds.cur) || isConsole(ds.css, ds.cur)
 
+	// TODO: verify whether this actually does anything
 	if a := findAtom(ds.cur, atom.A); a != nil {
 		f := fSkipBlock
 		if bold {

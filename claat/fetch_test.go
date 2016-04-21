@@ -15,12 +15,15 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/googlecodelabs/tools/claat/render"
+	"github.com/googlecodelabs/tools/claat/types"
 )
 
 type testTransport struct {
@@ -44,7 +47,7 @@ func TestFetchRemote(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	res, err := fetchRemote(ts.URL + f)
+	res, err := fetchRemote(ts.URL+f, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,11 +69,10 @@ func TestFetchRemoteDrive(t *testing.T) {
 		}
 		// metadata request
 		if r.URL.Path != "/export" {
-			res := fmt.Sprintf(`{
-				"exportLinks": {"text/html": %q},
-				"mimeType": %q
-			}`, driveHost+"/export", driveMimeDocument)
-			b := ioutil.NopCloser(strings.NewReader(res))
+			b := ioutil.NopCloser(strings.NewReader(`{
+				"exportLinks": {"text/html": "http://dummy/export"},
+				"mimeType": "application/vnd.google-apps.document"
+			}`))
 			return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
 		}
 		// export request
@@ -82,7 +84,7 @@ func TestFetchRemoteDrive(t *testing.T) {
 	}}
 	clients[providerGoogle] = &http.Client{Transport: rt}
 
-	res, err := fetchRemote("doc-123")
+	res, err := fetchRemote("doc-123", false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,5 +95,80 @@ func TestFetchRemoteDrive(t *testing.T) {
 	b, _ := ioutil.ReadAll(res.body)
 	if s := string(b); s != "test" {
 		t.Errorf("res = %q; want 'test'", s)
+	}
+}
+
+func TestSlurpWithFragment(t *testing.T) {
+	dochtml, err := ioutil.ReadFile("testdata/gdoc.html")
+	if err != nil {
+		t.Fatal(err)
+	}
+	rt := &testTransport{func(r *http.Request) (*http.Response, error) {
+		// metadata request
+		if r.URL.Path == "/drive/v2/files/doc-123" {
+			b := ioutil.NopCloser(strings.NewReader(`{
+				"exportLinks": {"text/html": "http://dummy/export"},
+				"mimeType": "application/vnd.google-apps.document"
+			}`))
+			return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
+		}
+		// main doc export request
+		if r.URL.Path == "/export" {
+			b := ioutil.NopCloser(bytes.NewReader(dochtml))
+			return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
+		}
+		// import doc request, referenced in testdata/gdoc.html
+		if r.FormValue("id") == "import" {
+			b := ioutil.NopCloser(strings.NewReader(`
+				<p>I'm imported from elsewhere.</p>
+			`))
+			return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
+		}
+		return &http.Response{
+			Body:       ioutil.NopCloser(strings.NewReader(r.URL.String())),
+			StatusCode: http.StatusBadRequest,
+		}, nil
+	}}
+	clients[providerGoogle] = &http.Client{Transport: rt}
+
+	clab, err := slurpCodelab("doc-123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var node *types.ImportNode
+	for _, st := range clab.Steps {
+		for _, n := range st.Content.Nodes {
+			if n.Type() == types.NodeImport {
+				node = n.(*types.ImportNode)
+				break
+			}
+		}
+	}
+	if node == nil {
+		t.Fatal("no import node found")
+	}
+	html, err := render.HTML("", node.Content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "imported from elsewhere"
+	if !strings.Contains(string(html), want) {
+		t.Errorf("%s does not contain %q", html, want)
+	}
+}
+
+func TestGdocID(t *testing.T) {
+	tests := []struct{ in, out string }{
+		{"https://docs.google.com/document/d/foo", "foo"},
+		{"https://docs.google.com/document/d/foo/edit", "foo"},
+		{"https://docs.google.com/document/d/foo/edit#abc", "foo"},
+		{"https://docs.google.com/document/d/foo/edit?bar=baz#abc", "foo"},
+		{"foo", "foo"},
+	}
+	for i, test := range tests {
+		out := gdocID(test.in)
+		if out != test.out {
+			t.Errorf("%d: gdocID(%q) = %q; want %q", i, test.in, out, test.out)
+		}
 	}
 }

@@ -53,7 +53,29 @@ var downloadButtonRegexp = regexp.MustCompile(`^(?i)Download(.+)$`)
 
 // init registers this parser so it is available to CLaaT.
 func init() {
-	parser.Register("md", Parse)
+	parser.Register("md", &Parser{})
+}
+
+// Parser is a Markdown parser.
+type Parser struct {
+}
+
+// Parse parses a codelab writtet in Markdown.
+func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
+	// Convert Markdown to HTML for easy parsing.
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+	b = claatMarkdown(b)
+	h := bytes.NewBuffer(b)
+	// Parse the markup.
+	return parseMarkup(h)
+}
+
+// ParseFragment parses a codelab fragment writtet in Markdown.
+func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
+	return nil, errors.New("fragment parser not implemented")
 }
 
 // parserState encapsulates the state of the parser at any given step.
@@ -96,19 +118,6 @@ func claatMarkdown(b []byte) []byte {
 	}
 	r := blackfriday.HtmlRenderer(extns, "", "")
 	return blackfriday.MarkdownOptions(b, r, o)
-}
-
-// Parse is a parser.ParseFunc for Markdown.
-func Parse(r io.Reader) (*types.Codelab, error) {
-	// Convert Markdown to HTML for easy parsing.
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-	b = claatMarkdown(b)
-	h := bytes.NewBuffer(b)
-	// Parse the markup.
-	return parseMarkup(h)
 }
 
 // parseMarkup accepts an io.Reader to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.

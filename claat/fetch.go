@@ -25,6 +25,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/parser"
@@ -40,6 +41,9 @@ const (
 
 	// driveAPIBase is a base URL for Drive API v2
 	driveAPIBase = "https://www.googleapis.com/drive/v2"
+	// TODO: this v2, replace with
+	// https://www.googleapis.com/drive/v3/files/id/export?mimeType=text/html
+	driveAPIExport = "https://docs.google.com/feeds/download/documents/export/Export"
 
 	driveMimeDocument = "application/vnd.google-apps.document"
 	driveMimeFolder   = "application/vnd.google-apps.folder"
@@ -67,27 +71,68 @@ type codelab struct {
 
 // slurpCodelab retrieves and parses codelab source.
 // It returns parsed codelab and its source type.
+//
+// The function will also fetch and parse fragments included
+// with types.ImportNode.
 func slurpCodelab(src string) (*codelab, error) {
-	res, err := fetchCodelab(src)
+	res, err := fetch(src)
 	if err != nil {
 		return nil, err
 	}
 	defer res.body.Close()
 	clab, err := parser.Parse(string(res.typ), res.body)
-	return &codelab{
+	if err != nil {
+		return nil, err
+	}
+
+	// fetch imports and parse them as fragments
+	var imports []*types.ImportNode
+	for _, st := range clab.Steps {
+		imports = append(imports, importNodes(st.Content.Nodes)...)
+	}
+	ch := make(chan error, len(imports))
+	defer close(ch)
+	for _, imp := range imports {
+		go func(n *types.ImportNode) {
+			frag, err := slurpFragment(n.URL)
+			if err != nil {
+				ch <- fmt.Errorf("%s: %v", n.URL, err)
+				return
+			}
+			n.Content.Nodes = frag
+			ch <- nil
+		}(imp)
+	}
+	for _ = range imports {
+		if err := <-ch; err != nil {
+			return nil, err
+		}
+	}
+
+	v := &codelab{
 		Codelab: clab,
 		typ:     res.typ,
 		mod:     res.mod,
-	}, err
+	}
+	return v, nil
 }
 
-// fetchCodelab retrieves codelab doc either from local disk
+func slurpFragment(url string) ([]types.Node, error) {
+	res, err := fetchRemote(url, true)
+	if err != nil {
+		return nil, err
+	}
+	defer res.body.Close()
+	return parser.ParseFragment(string(res.typ), res.body)
+}
+
+// fetch retrieves codelab doc either from local disk
 // or a remote location.
 // The caller is responsible for closing returned stream.
-func fetchCodelab(name string) (*resource, error) {
+func fetch(name string) (*resource, error) {
 	fi, err := os.Stat(name)
 	if os.IsNotExist(err) {
-		return fetchRemote(name)
+		return fetchRemote(name, false)
 	}
 	r, err := os.Open(name)
 	if err != nil {
@@ -102,23 +147,21 @@ func fetchCodelab(name string) (*resource, error) {
 
 // fetchRemote retrieves resource r from the network.
 //
-// If r is not a URL, i.e. does not have a host part, it is considered to be
+// If urlStr is not a URL, i.e. does not have the host part, it is considered to be
 // a Google Doc ID and fetched accordingly. Otherwise, a simple GET request
-// is issued to retrieve the contents.
+// is used to retrieve the contents.
 //
 // The caller is responsible for closing returned stream.
-func fetchRemote(r string) (*resource, error) {
-	u, err := url.Parse(r)
+// If nometa is true, resource.mod may have zero value.
+func fetchRemote(urlStr string, nometa bool) (*resource, error) {
+	u, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
 	}
-	// Google Docs are provided as IDs
-	fetchFn := fetchDriveFile
-	if u.Host != "" {
-		// everything else is assumed to be an arbitrary URL
-		fetchFn = fetchRemoteFile
+	if u.Host == "" || u.Host == "docs.google.com" {
+		return fetchDriveFile(urlStr, nometa)
 	}
-	return fetchFn(r)
+	return fetchRemoteFile(urlStr)
 }
 
 // fetchRemoteFile retrieves codelab resource from url.
@@ -142,10 +185,23 @@ func fetchRemoteFile(url string) (*resource, error) {
 // fetchDriveFile uses Drive API to retrieve HTML representation of a Google Doc.
 // See https://developers.google.com/drive/web/manage-downloads#downloading_google_documents
 // for more details.
-func fetchDriveFile(id string) (*resource, error) {
+//
+// If nometa is true, resource.mod will have zero value.
+func fetchDriveFile(id string, nometa bool) (*resource, error) {
+	id = gdocID(id)
 	client, err := driveClient()
 	if err != nil {
 		return nil, err
+	}
+
+	if nometa {
+		q := url.Values{"id": {id}, "exportFormat": {"html"}}
+		u := fmt.Sprintf("%s?%s", driveAPIExport, q.Encode())
+		res, err := retryGet(client, u, 7)
+		if err != nil {
+			return nil, err
+		}
+		return &resource{body: res.Body, typ: srcGoogleDoc}, nil
 	}
 
 	u := fmt.Sprintf("%s/files/%s?fields=id,mimeType,exportLinks,modifiedDate", driveAPIBase, id)
@@ -268,4 +324,15 @@ func retryGet(client *http.Client, url string, n int) (*http.Response, error) {
 		}
 	}
 	return nil, fmt.Errorf("%s: failed after %d retries", url, n)
+}
+
+func gdocID(url string) string {
+	const s = "/document/d/"
+	if i := strings.Index(url, s); i >= 0 {
+		url = url[i+len(s):]
+	}
+	if i := strings.IndexRune(url, '/'); i > 0 {
+		url = url[:i]
+	}
+	return url
 }

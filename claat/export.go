@@ -199,6 +199,28 @@ func imageNodes(nodes []types.Node) []*types.ImageNode {
 	return imgs
 }
 
+// importNodes filters out everything except types.NodeImport nodes, recursively.
+func importNodes(nodes []types.Node) []*types.ImportNode {
+	var imps []*types.ImportNode
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *types.ImportNode:
+			imps = append(imps, n)
+		case *types.ListNode:
+			imps = append(imps, importNodes(n.Nodes)...)
+		case *types.InfoboxNode:
+			imps = append(imps, importNodes(n.Content.Nodes)...)
+		case *types.GridNode:
+			for _, r := range n.Rows {
+				for _, c := range r {
+					imps = append(imps, importNodes(c.Content.Nodes)...)
+				}
+			}
+		}
+	}
+	return imps
+}
+
 // writeMeta writes codelab metadata to a local disk location
 // specified by path.
 func writeMeta(path string, cm *types.ContextMeta) error {

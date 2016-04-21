@@ -156,6 +156,8 @@ func TestParseDoc(t *testing.T) {
 		<h1><a name="a2"></a><span>Overview</span></h1>
 		<p><span class="meta">Duration: 1:00</span></p>
 
+		<p><span>[[</span><span class="bold">import</span><span>&nbsp;</span><span><a href="https://example.com/import">shared</a></span><span>]]</span></p>
+
 		<img src="https://host/image.png">
 		<p><img src="https://host/small.png" style="height: 10px; width: 25.5px"> icon.</p>
 
@@ -220,7 +222,9 @@ func TestParseDoc(t *testing.T) {
 	</body>
 	</html>
 	`
-	c, err := Parse(markupReader(markup))
+
+	p := &Parser{}
+	c, err := p.Parse(markupReader(markup))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -236,6 +240,20 @@ func TestParseDoc(t *testing.T) {
 	step := c.Steps[0]
 	if step.Title != "Overview" {
 		t.Errorf("step.Title = %q; want Overview", step.Title)
+	}
+	if len(step.Content.Nodes) == 0 {
+		t.Fatal("step.Content.Nodes is empty")
+	}
+	want := "https://example.com/import"
+	in, ok := step.Content.Nodes[0].(*types.ImportNode)
+	if !ok {
+		t.Errorf("step.Content.Nodes[0] = %+v; want types.ImportNode", step.Content.Nodes[0])
+	}
+	if ok && in.URL != want {
+		t.Errorf("in.URL = %q; want %q", in.URL, want)
+	}
+	if in.Block() != nil {
+		t.Errorf("in.Block = %+v (%T); want nil", in.Block(), in.Block())
 	}
 
 	content := types.NewListNode()
@@ -341,5 +359,59 @@ func TestParseDoc(t *testing.T) {
 	html2, _ := render.HTML("", content)
 	if html1 != html2 {
 		t.Errorf("step.Content:\n\n%s\nwant:\n\n%s", html1, html2)
+	}
+}
+
+func TestParseFragment(t *testing.T) {
+	const markup = `
+	<html><head><style>
+		.meta { color: #b7b7b7 }
+		.code { font-family: "Courier New" }
+		.term { font-family: "Consolas" }
+		.btn { background-color: #6aa84f }
+		.bold { font-weight: bold }
+		.ita { font-style: italic }
+		.nibox { background-color: #fce5cd }
+		.survey { background-color: #cfe2f3 }
+		.comment { border: 1px solid black }
+	</style></head>
+	<body>
+		<p class="title"><a name="a1"></a><span>Test Codelab</span></p>
+		<p>this should not be ignored</p>
+		<img src="https://host/image.png">
+		<div class="comment">
+		<p><a href="#cmnt_ref1" name="cmnt1">[a]</a><span class="c16 c8">Test comment.</span></p>
+		</div>
+	</body>
+	</html>
+	`
+
+	p := &Parser{}
+	nodes, err := p.ParseFragment(markupReader(markup))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var want []types.Node
+
+	para := types.NewListNode()
+	para.MutateBlock(true)
+	para.Append(types.NewTextNode("Test Codelab"))
+	want = append(want, para)
+
+	para = types.NewListNode()
+	para.MutateBlock(true)
+	para.Append(types.NewTextNode("this should not be ignored"))
+	want = append(want, para)
+
+	img := types.NewImageNode("https://host/image.png")
+	para = types.NewListNode(img)
+	para.MutateBlock(true)
+	want = append(want, para)
+
+	html1, _ := render.HTML("", nodes...)
+	html2, _ := render.HTML("", want...)
+	if html1 != html2 {
+		t.Errorf("nodes:\n\n%s\nwant:\n\n%s", html1, html2)
 	}
 }

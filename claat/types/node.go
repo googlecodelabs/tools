@@ -41,6 +41,7 @@ const (
 	NodeHeaderCheck          // Special kind of header, checklist
 	NodeHeaderFAQ            // Special kind of header, FAQ
 	NodeYouTube              // YouTube video
+	NodeImport               // A node which holds content imported from another resource
 )
 
 // Node is an interface common to all node types.
@@ -149,6 +150,34 @@ func (l *ListNode) Append(n ...Node) {
 // Prepend prepends nodes n at the beginning of l.Nodes slice.
 func (l *ListNode) Prepend(n ...Node) {
 	l.Nodes = append(n, l.Nodes...)
+}
+
+// NewImportNode creates a new Node of type NodeImport,
+// with initialized ImportNode.Content.
+func NewImportNode(url string) *ImportNode {
+	return &ImportNode{
+		node:    node{typ: NodeImport},
+		Content: NewListNode(),
+		URL:     url,
+	}
+}
+
+// ImportNode indicates a remote resource available at ImportNode.URL.
+type ImportNode struct {
+	node
+	URL     string
+	Content *ListNode
+}
+
+// Empty returns the result of in.Content.Empty method.
+func (in *ImportNode) Empty() bool {
+	return in.Content.Empty()
+}
+
+// MutateBlock mutates both in's block marker and that of in.Content.
+func (in *ImportNode) MutateBlock(v interface{}) {
+	in.node.MutateBlock(v)
+	in.Content.MutateBlock(v)
 }
 
 // NewGridNode creates a new grid with optional content.

@@ -84,6 +84,12 @@ func (hw *htmlWriter) write(nodes ...types.Node) error {
 		case *types.ListNode:
 			hw.list(n)
 			hw.writeBytes(newLine)
+		case *types.ImportNode:
+			if len(n.Content.Nodes) == 0 {
+				break
+			}
+			hw.list(n.Content)
+			hw.writeBytes(newLine)
 		case *types.ItemsListNode:
 			hw.itemsList(n)
 			hw.writeBytes(newLine)
