@@ -319,8 +319,15 @@ func metaTable(ds *docState) {
 
 // metaStep parses a codelab step meta instructions.
 func metaStep(ds *docState) {
-	text := stringifyNode(ds.cur, true)
-	meta := strings.SplitN(text, metaSep, 2)
+	var text string
+	for {
+		text += stringifyNode(ds.cur, false)
+		if ds.cur.NextSibling == nil || !isMeta(ds.css, ds.cur.NextSibling) {
+			break
+		}
+		ds.cur = ds.cur.NextSibling
+	}
+	meta := strings.SplitN(strings.TrimSpace(text), metaSep, 2)
 	if len(meta) != 2 {
 		return
 	}

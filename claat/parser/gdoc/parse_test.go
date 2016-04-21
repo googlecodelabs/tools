@@ -69,6 +69,7 @@ func TestParseStepDuration(t *testing.T) {
 		{`<p><span class="c9">Duration: 1:30</span> </p>`, 2 * time.Minute},
 		{`<p><span class="c9">Duration : 5</span></p>`, 5 * time.Minute},
 		{`<p><span class="c9">duration: 1</span></p>`, time.Minute},
+		{`<p><span class="c9">Duration:</span><span class="c9">&nbsp;66:</span><span class="c9">1</span><span class="c9">0</span></p>`, 67 * time.Minute},
 	}
 	for i, test := range tests {
 		doc, err := html.Parse(strings.NewReader(test.markup))
