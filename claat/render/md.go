@@ -225,7 +225,7 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 
 func (mw *mdWriter) header(n *types.HeaderNode) {
 	mw.newBlock()
-	mw.writeString(strings.Repeat("#", n.Level))
+	mw.writeString(strings.Repeat("#", n.Level+1))
 	mw.writeString(" ")
 	mw.write(n.Content.Nodes...)
 	if !mw.lineStart {
