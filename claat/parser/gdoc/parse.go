@@ -394,7 +394,7 @@ func metaTable(ds *docState) {
 		}
 	}
 	if len(ds.clab.Categories) > 0 {
-		ds.clab.Theme = strings.ToLower(ds.clab.Categories[0])
+		ds.clab.Theme = slug(ds.clab.Categories[0])
 	}
 }
 
