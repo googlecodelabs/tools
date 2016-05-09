@@ -205,7 +205,7 @@ func parseDoc(doc *html.Node) (*types.Codelab, error) {
 			break
 		}
 		switch {
-		case hasClass(ds.cur, "title"):
+		case hasClass(ds.cur, "title") && ds.clab.Title == "":
 			ds.clab.Title = stringifyNode(ds.cur, true)
 		case ds.cur.DataAtom == atom.Table:
 			metaTable(ds)
