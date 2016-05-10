@@ -206,12 +206,16 @@ func parseDoc(doc *html.Node) (*types.Codelab, error) {
 		}
 		switch {
 		case hasClass(ds.cur, "title") && ds.step == nil:
-			ds.clab.Title = stringifyNode(ds.cur, true)
+			if v := stringifyNode(ds.cur, true); v != "" {
+				ds.clab.Title = v
+			}
 			if ds.clab.ID == "" {
 				ds.clab.ID = slug(ds.clab.Title)
 			}
+			continue
 		case ds.cur.DataAtom == atom.Table && ds.step == nil:
 			metaTable(ds)
+			continue
 		case ds.cur.DataAtom == atom.H1:
 			newStep(ds)
 			continue
