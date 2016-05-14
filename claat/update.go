@@ -93,15 +93,11 @@ func updateCodelab(dir string) (*types.Meta, error) {
 	updated := types.ContextTime(clab.mod)
 	meta.Context.Updated = &updated
 
-	// update image references before writing codelab
-	imgmap := rewriteImages(clab.Steps)
 	basedir := filepath.Join(dir, "..")
 	newdir := codelabDir(basedir, &clab.Meta)
-	if err := writeCodelab(newdir, clab.Codelab, &meta.Context); err != nil {
-		return nil, err
-	}
+	imgdir := filepath.Join(newdir, imgDirname)
 
-	// slurp codelab assets to disk
+	// slurp codelab assets to disk and rewrite image URLs
 	var client *http.Client
 	if clab.typ == srcGoogleDoc {
 		client, err = driveClient()
@@ -109,8 +105,13 @@ func updateCodelab(dir string) (*types.Meta, error) {
 			return nil, err
 		}
 	}
-	imgdir := filepath.Join(newdir, imgDirname)
-	if err := downloadImages(client, imgdir, imgmap); err != nil {
+	imgmap, err := slurpImages(client, imgdir, clab.Steps)
+	if err != nil {
+		return nil, err
+	}
+
+	// write codelab and its metadata
+	if err := writeCodelab(newdir, clab.Codelab, &meta.Context); err != nil {
 		return nil, err
 	}
 

@@ -16,7 +16,6 @@ package main
 
 import (
 	"bytes"
-	"crypto/md5"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -91,21 +90,17 @@ func exportCodelab(src string) (*types.Meta, error) {
 		Updated: &lastmod,
 	}
 
-	// rewritten image urls
-	var imap map[string]string
-
 	dir := *output // output dir or stdout
 	if !isStdout(dir) {
 		dir = codelabDir(dir, meta)
-		imap = rewriteImages(clab.Steps)
+		// download codelab assets to disk, and rewrite image URLs
+		mdir := filepath.Join(dir, imgDirname)
+		if _, err := slurpImages(client, mdir, clab.Steps); err != nil {
+			return nil, err
+		}
 	}
 	// write codelab and its metadata to disk
-	if err := writeCodelab(dir, clab.Codelab, ctx); err != nil {
-		return nil, err
-	}
-	// slurp codelab assets to disk, if any
-	mdir := filepath.Join(dir, imgDirname)
-	return meta, downloadImages(client, mdir, imap)
+	return meta, writeCodelab(dir, clab.Codelab, ctx)
 }
 
 // writeCodelab stores codelab main content in ctx.Format and its metadata
@@ -151,20 +146,47 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 	return err
 }
 
-// rewriteImages returns a mapping of local codelab asset file
-// to its original URL.
-// The local filename is MD5 hash of the original URL.
-func rewriteImages(steps []*types.Step) map[string]string {
-	var imap = make(map[string]string)
+func slurpImages(client *http.Client, dir string, steps []*types.Step) (map[string]string, error) {
+	// make sure img dir exists
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return nil, err
+	}
+
+	type res struct {
+		url, file string
+		err       error
+	}
+
+	ch := make(chan *res, 100)
+	defer close(ch)
+	var count int
 	for _, st := range steps {
 		nodes := imageNodes(st.Content.Nodes)
+		count += len(nodes)
 		for _, n := range nodes {
-			file := fmt.Sprintf("%x.png", md5.Sum([]byte(n.Src)))
-			imap[file] = n.Src
-			n.Src = filepath.Join(imgDirname, file)
+			go func(n *types.ImageNode) {
+				url := n.Src
+				file, err := slurpBytes(client, dir, url, 5)
+				if err == nil {
+					n.Src = filepath.Join(imgDirname, file)
+				}
+				ch <- &res{url, file, err}
+			}(n)
 		}
 	}
-	return imap
+
+	var err error
+	imap := make(map[string]string, count)
+	for i := 0; i < count; i++ {
+		r := <-ch
+		imap[r.file] = r.url
+		if r.err != nil && err == nil {
+			// record first error
+			err = fmt.Errorf("%s => %s: %v", r.url, r.file, r.err)
+		}
+	}
+
+	return imap, err
 }
 
 // imageNodes filters out everything except types.NodeImage nodes, recursively.

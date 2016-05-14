@@ -17,6 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"hash/crc64"
 	"io"
 	"io/ioutil"
 	"math"
@@ -237,44 +238,22 @@ func fetchDriveFile(id string, nometa bool) (*resource, error) {
 	}, nil
 }
 
-// downloadImages fetches imap images and stores them in dir/img directory, concurrently.
-// The imap argument is expected to be a mapping of local file name to original image URL.
-func downloadImages(client *http.Client, dir string, imap map[string]string) error {
-	if len(imap) == 0 {
-		return nil
-	}
-	// make sure img dir exists
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return err
-	}
+var crcTable = crc64.MakeTable(crc64.ECMA)
 
-	ch := make(chan error, len(imap))
-	for name, url := range imap {
-		go func(name, url string) {
-			ch <- slurpBytes(client, filepath.Join(dir, name), url, 5)
-		}(name, url)
-	}
-	for _ = range imap {
-		if err := <-ch; err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// slurpBytes fetches a resource from url using retryGet and writes it to dst.
-// It retries the fetch at most n times.
-func slurpBytes(client *http.Client, dst, url string, n int) error {
+func slurpBytes(client *http.Client, dir, url string, n int) (string, error) {
 	res, err := retryGet(client, url, n)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer res.Body.Close()
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return ioutil.WriteFile(dst, b, 0644)
+	crc := crc64.Checksum(b, crcTable)
+	file := fmt.Sprintf("%x.png", crc)
+	dst := filepath.Join(dir, file)
+	return file, ioutil.WriteFile(dst, b, 0644)
 }
 
 // retryGet tries to GET specified url up to n times.
