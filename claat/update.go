@@ -99,7 +99,7 @@ func updateCodelab(dir string) (*types.Meta, error) {
 
 	// slurp codelab assets to disk and rewrite image URLs
 	var client *http.Client
-	if clab.typ == srcGoogleDoc {
+	if clab.typ == types.FmtGoogleDoc {
 		client, err = driveClient()
 		if err != nil {
 			return nil, err

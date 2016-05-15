@@ -22,6 +22,17 @@ import (
 	"time"
 )
 
+// MarkupFormat defines input and output codelab formats.
+type MarkupFormat string
+
+// Predefined MarkupFormat values.
+const (
+	_            MarkupFormat = ""
+	FmtGoogleDoc              = "gdoc" // Google Docs
+	FmtMarkdown               = "md"   // Markdown
+	FmtHTML                   = "html" // HTML
+)
+
 // Meta contains a single codelab metadata.
 // Format, Env   should not be set by a parser, as they may be overwritten
 // by the parser callers.
@@ -40,15 +51,26 @@ type Meta struct {
 	URL string `json:"url"` // Legacy ID; TODO: remove
 }
 
+type ViewMeta struct {
+	ID          string `json:"-"`
+	Title       string
+	Description string
+	Tags        []string
+	Logo        string `json:"logoUrl"`
+	Toolbar     string `json:"toolbarBgColor"`
+	CatLevel    int    `json:"catLevel"`
+}
+
 // Context is an export context.
 // It is defined in this package so that it can be used by both cli and a server.
 type Context struct {
-	Env     string       `json:"environment"`       // Current export environment
-	Source  string       `json:"source"`            // Codelab source doc
-	Format  string       `json:"format"`            // Output format, e.g. "html"
-	Prefix  string       `json:"prefix,omitempty"`  // Assets URL prefix for HTML-based formats
-	MainGA  string       `json:"mainga,omitempty"`  // Global Google Analytics ID
-	Updated *ContextTime `json:"updated,omitempty"` // Last update timestamp
+	Env      string       `json:"environment"`        // Current export environment
+	Source   string       `json:"source"`             // Codelab source doc
+	Format   MarkupFormat `json:"format,omitempty"`   // Output format, e.g. "html"
+	Template string       `json:"template,omitempty"` // Output template, alternative to Format
+	Prefix   string       `json:"prefix,omitempty"`   // Assets URL prefix for HTML-based formats
+	MainGA   string       `json:"mainga,omitempty"`   // Global Google Analytics ID
+	Updated  *ContextTime `json:"updated,omitempty"`  // Last update timestamp
 }
 
 // ContextMeta is a composition of export context and meta data.

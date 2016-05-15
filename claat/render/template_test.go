@@ -30,7 +30,7 @@ func TestExecuteBuiltin(t *testing.T) {
 		Meta:  &types.Meta{},
 		Steps: []*types.Step{step},
 	}
-	for _, f := range []string{"html", "md"} {
+	for _, f := range []types.MarkupFormat{types.FmtHTML, types.FmtMarkdown} {
 		var buf bytes.Buffer
 		if err := Execute(&buf, f, ctx); err != nil {
 			t.Errorf("%s: %v", f, err)

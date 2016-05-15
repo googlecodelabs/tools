@@ -21,18 +21,21 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
 	// allow parsers to register themselves
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
 	_ "github.com/googlecodelabs/tools/claat/parser/md"
+	"github.com/googlecodelabs/tools/claat/types"
 )
 
 var (
 	output   = flag.String("o", ".", "output directory or '-' for stdout")
 	expenv   = flag.String("e", "web", "codelab environment")
-	tmplout  = flag.String("f", "html", "output format")
+	fmtout   = flag.String("f", "html", "built-in output format")
+	tmplout  = flag.String("t", "", "use a file template; takes precedence over -f")
 	prefix   = flag.String("prefix", "../../", "URL prefix for html format")
 	globalGA = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
 	extra    = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
@@ -78,8 +81,11 @@ func isStdout(filename string) bool {
 }
 
 // contentFile returns codelab main output file given the specified format.
-func contentFile(format string) string {
-	return contentFilename + "." + format
+func contentFile(ctx *types.Context) string {
+	if ctx.Template == "" {
+		return fmt.Sprintf("%s.%s", contentFilename, ctx.Format)
+	}
+	return contentFilename + filepath.Ext(ctx.Template)
 }
 
 // printf prints formatted string fmt with args to stderr.
@@ -155,7 +161,9 @@ to the format specified with -f option.
 The following formats are built-in:
 - html (Polymer-based app)
 - md (Markdown)
-To use a custom format, specify a local file path to a Go template file.
+
+To use a custom format, specify a local file path to a Go template file
+using -t option.
 More info on Go templates: https://golang.org/pkg/text/template/.
 
 Each 'src' can be either a remote HTTP resource or a local file.

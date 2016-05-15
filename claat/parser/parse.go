@@ -34,25 +34,25 @@ type Parser interface {
 
 var (
 	parsersMu sync.Mutex // guards parsers
-	parsers   = make(map[string]Parser)
+	parsers   = make(map[types.MarkupFormat]Parser)
 )
 
 // Register registers a new parser f under specified name.
 // It panics if another parser is already registered under the same name.
-func Register(name string, p Parser) {
+func Register(f types.MarkupFormat, p Parser) {
 	parsersMu.Lock()
 	defer parsersMu.Unlock()
-	if _, exists := parsers[name]; exists {
-		panic(fmt.Sprintf("parser %q already registered", name))
+	if _, exists := parsers[f]; exists {
+		panic(fmt.Sprintf("parser for %q format already registered", f))
 	}
-	parsers[name] = p
+	parsers[f] = p
 }
 
-// Parsers returns a slice of all registered parser names.
-func Parsers() []string {
+// Parsers returns a slice of all registered parser formats.
+func Parsers() []types.MarkupFormat {
 	parsersMu.Lock()
 	defer parsersMu.Unlock()
-	p := make([]string, 0, len(parsers))
+	p := make([]types.MarkupFormat, 0, len(parsers))
 	for k := range parsers {
 		p = append(p, k)
 	}
@@ -61,12 +61,12 @@ func Parsers() []string {
 
 // Parse parses source r into a Codelab using a parser registered with
 // the specified name.
-func Parse(name string, r io.Reader) (*types.Codelab, error) {
+func Parse(f types.MarkupFormat, r io.Reader) (*types.Codelab, error) {
 	parsersMu.Lock()
-	p, ok := parsers[name]
+	p, ok := parsers[f]
 	parsersMu.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("no parser named %q", name)
+		return nil, fmt.Errorf("no parser for format %q", f)
 	}
 	c, err := p.Parse(r)
 	if err != nil {
@@ -78,12 +78,12 @@ func Parse(name string, r io.Reader) (*types.Codelab, error) {
 
 // ParseFragment parses a codelab fragment provided in r, using a parser
 // registered with the specified name.
-func ParseFragment(name string, r io.Reader) ([]types.Node, error) {
+func ParseFragment(f types.MarkupFormat, r io.Reader) ([]types.Node, error) {
 	parsersMu.Lock()
-	p, ok := parsers[name]
+	p, ok := parsers[f]
 	parsersMu.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("no parser named %q", name)
+		return nil, fmt.Errorf("no parser for format %q", f)
 	}
 	return p.ParseFragment(r)
 }

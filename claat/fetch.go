@@ -34,12 +34,6 @@ import (
 )
 
 const (
-	// supported codelab source types must be registered parsers
-	// TODO: define these in claat/parser/..., e.g. in parser/gdoc
-	srcInvalid   srcType = ""
-	srcGoogleDoc srcType = "gdoc" // Google Docs doc
-	srcMarkdown  srcType = "md"   // Markdown text
-
 	// driveAPIBase is a base URL for Drive API v2
 	driveAPIBase = "https://www.googleapis.com/drive/v2"
 	// TODO: this v2, replace with
@@ -51,23 +45,20 @@ const (
 	driveExportMime   = "text/html"
 )
 
-// srcType is codelab source type
-type srcType string
-
 // resource is a codelab resource, loaded from local file
 // or fetched from remote location.
 type resource struct {
-	typ  srcType       // source type
-	body io.ReadCloser // resource body
-	mod  time.Time     // last update of content
+	typ  types.MarkupFormat // source type
+	body io.ReadCloser      // resource body
+	mod  time.Time          // last update of content
 }
 
 // codelab wraps types.Codelab, while adding source type
 // and modified timestamp fields.
 type codelab struct {
 	*types.Codelab
-	typ srcType   //  source type
-	mod time.Time // last modified timestamp
+	typ types.MarkupFormat //  source type
+	mod time.Time          // last modified timestamp
 }
 
 // slurpCodelab retrieves and parses codelab source.
@@ -81,7 +72,7 @@ func slurpCodelab(src string) (*codelab, error) {
 		return nil, err
 	}
 	defer res.body.Close()
-	clab, err := parser.Parse(string(res.typ), res.body)
+	clab, err := parser.Parse(res.typ, res.body)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +115,7 @@ func slurpFragment(url string) ([]types.Node, error) {
 		return nil, err
 	}
 	defer res.body.Close()
-	return parser.ParseFragment(string(res.typ), res.body)
+	return parser.ParseFragment(res.typ, res.body)
 }
 
 // fetch retrieves codelab doc either from local disk
@@ -141,7 +132,7 @@ func fetch(name string) (*resource, error) {
 	}
 	return &resource{
 		body: r,
-		typ:  srcMarkdown,
+		typ:  types.FmtMarkdown,
 		mod:  fi.ModTime(),
 	}, nil
 }
@@ -179,7 +170,7 @@ func fetchRemoteFile(url string) (*resource, error) {
 	return &resource{
 		body: res.Body,
 		mod:  t,
-		typ:  srcMarkdown,
+		typ:  types.FmtMarkdown,
 	}, nil
 }
 
@@ -202,7 +193,7 @@ func fetchDriveFile(id string, nometa bool) (*resource, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &resource{body: res.Body, typ: srcGoogleDoc}, nil
+		return &resource{body: res.Body, typ: types.FmtGoogleDoc}, nil
 	}
 
 	u := fmt.Sprintf("%s/files/%s?fields=id,mimeType,exportLinks,modifiedDate", driveAPIBase, id)
@@ -234,7 +225,7 @@ func fetchDriveFile(id string, nometa bool) (*resource, error) {
 	return &resource{
 		body: res.Body,
 		mod:  meta.Modified,
-		typ:  srcGoogleDoc,
+		typ:  types.FmtGoogleDoc,
 	}, nil
 }
 

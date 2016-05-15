@@ -59,8 +59,8 @@ func cmdExport() {
 // exportCodelab fetches codelab src from either local disk or remote,
 // parses and stores the results on disk, in a dir ancestored by *output.
 //
-// Stored results include codelab content formatted in *tmplout, its assets
-// and metadata in JSON format.
+// Stored results include codelab content formatted in *tmplout or *fmtout,
+// its assets and metadata in JSON format.
 //
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
@@ -71,7 +71,7 @@ func exportCodelab(src string) (*types.Meta, error) {
 		return nil, err
 	}
 	var client *http.Client // need for downloadImages
-	if clab.typ == srcGoogleDoc {
+	if clab.typ == types.FmtGoogleDoc {
 		client, err = driveClient()
 		if err != nil {
 			return nil, err
@@ -82,12 +82,13 @@ func exportCodelab(src string) (*types.Meta, error) {
 	lastmod := types.ContextTime(clab.mod)
 	meta := &clab.Meta
 	ctx := &types.Context{
-		Source:  src,
-		Env:     *expenv,
-		Format:  *tmplout,
-		Prefix:  *prefix,
-		MainGA:  *globalGA,
-		Updated: &lastmod,
+		Source:   src,
+		Env:      *expenv,
+		Format:   types.MarkupFormat(*fmtout),
+		Template: *tmplout,
+		Prefix:   *prefix,
+		MainGA:   *globalGA,
+		Updated:  &lastmod,
 	}
 
 	dir := *output // output dir or stdout
@@ -118,7 +119,13 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 		Extra:    extraVars,
 	}
 	var buf bytes.Buffer
-	if err := render.Execute(&buf, ctx.Format, data); err != nil {
+	var err error
+	if ctx.Template != "" {
+		err = render.ExecuteTemplate(&buf, ctx.Template, data)
+	} else {
+		err = render.Execute(&buf, ctx.Format, data)
+	}
+	if err != nil {
 		return err
 	}
 	// output to stdout does not include metadata
@@ -135,14 +142,14 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 			return err
 		}
 		// main content file
-		f = filepath.Join(dir, contentFile(ctx.Format))
+		f = filepath.Join(dir, contentFile(ctx))
 		var err error
 		if w, err = os.Create(f); err != nil {
 			return err
 		}
 		defer w.Close()
 	}
-	_, err := w.Write(buf.Bytes())
+	_, err = w.Write(buf.Bytes())
 	return err
 }
 

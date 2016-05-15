@@ -35,10 +35,14 @@ type Context struct {
 	Extra    map[string]string // Extra variables passed from the command line.
 }
 
-// Execute renders a template of the fmt format into w.
+// Execute renders a template for format f into w.
 // The fmt argument can also be a path to a local file.
-func Execute(w io.Writer, fmt string, ctx *Context) error {
-	t, err := parseTemplate(fmt)
+func Execute(w io.Writer, f types.MarkupFormat, ctx *Context) error {
+	return ExecuteTemplate(w, string(f), ctx)
+}
+
+func ExecuteTemplate(w io.Writer, name string, ctx *Context) error {
+	t, err := parseTemplate(name)
 	if err != nil {
 		return err
 	}
