@@ -7,4 +7,4 @@ This repo provides the tools necessary to author, generate, and serve your own c
 
 If you're interested in authoring codelabs, join [this group](https://groups.google.com/forum/#!forum/codelab-authors),
 which connects you with other authors and provides access to the 
-[doc formatting rules](https://docs.google.com/document/d/18dnMdUJQaGKY1Tit_-fO1YOpOpAbA4hh0YDXQlCEjvA/edit?ts=574ec5d9).
+[Codelab Formatting Guide](https://docs.google.com/document/d/18dnMdUJQaGKY1Tit_-fO1YOpOpAbA4hh0YDXQlCEjvA/edit?ts=574ec5d9).
