@@ -128,7 +128,7 @@ func (mw *mdWriter) text(n *types.TextNode) {
 		mw.writeString("__")
 	}
 	if n.Italic {
-		mw.writeString("*")
+		mw.writeString(" *")
 	}
 	if n.Code {
 		mw.writeString("`")
@@ -138,7 +138,7 @@ func (mw *mdWriter) text(n *types.TextNode) {
 		mw.writeString("`")
 	}
 	if n.Italic {
-		mw.writeString("*")
+		mw.writeString("* ")
 	}
 	if n.Bold {
 		mw.writeString("__")
