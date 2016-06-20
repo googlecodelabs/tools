@@ -122,10 +122,12 @@ func hasClassStyle(css cssStyle, hn *html.Node, key, val string) bool {
 			return v == val
 		}
 	}
-	return false
+	// no class style, try inline style
+	return styleValue(hn, key) == val
 }
 
 func styleValue(hn *html.Node, name string) string {
+	name = strings.ToLower(name)
 	var s string
 	for _, a := range hn.Attr {
 		if a.Key == "style" {
@@ -138,7 +140,7 @@ func styleValue(hn *html.Node, name string) string {
 		if len(v) != 2 {
 			continue
 		}
-		if strings.TrimSpace(v[0]) == name {
+		if strings.TrimSpace(strings.ToLower(v[0])) == name {
 			return strings.TrimSpace(v[1])
 		}
 	}
