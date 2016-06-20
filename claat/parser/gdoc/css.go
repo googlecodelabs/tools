@@ -118,8 +118,8 @@ func hasClassStyle(css cssStyle, hn *html.Node, key, val string) bool {
 		if !ok {
 			continue
 		}
-		if v, ok := s[key]; ok {
-			return v == val
+		if s[key] == val {
+			return true
 		}
 	}
 	// no class style, try inline style
@@ -135,13 +135,13 @@ func styleValue(hn *html.Node, name string) string {
 			break
 		}
 	}
-	for _, s = range strings.Split(s, ";") {
+	for _, s = range strings.Split(html.UnescapeString(s), ";") {
 		v := strings.SplitN(s, ":", 2)
 		if len(v) != 2 {
 			continue
 		}
 		if strings.TrimSpace(strings.ToLower(v[0])) == name {
-			return strings.TrimSpace(v[1])
+			return strings.ToLower(strings.Trim(v[1], " \""))
 		}
 	}
 	return ""

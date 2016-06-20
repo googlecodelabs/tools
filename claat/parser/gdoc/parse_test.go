@@ -190,7 +190,7 @@ func TestParseDoc(t *testing.T) {
 		<table cellpadding="0" cellspacing="0"><tbody><tr>
 		<td colspan="1" rowspan="1">
 			<p><span class="term">adb shell am start -a VIEW \</span></p>
-			<p><span class="term">-d &quot;http://host&quot; app</span></p>
+			<p><span style="font-family:&quot;Consolas&quot;;">-d &quot;http://host&quot; app</span></p>
 		</td>
 		</tr></tbody></table>
 
