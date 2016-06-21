@@ -40,15 +40,8 @@ const (
 	srcGoogleDoc srcType = "gdoc" // Google Docs doc
 	srcMarkdown  srcType = "md"   // Markdown text
 
-	// driveAPIBase is a base URL for Drive API v2
-	driveAPIBase = "https://www.googleapis.com/drive/v2"
-	// TODO: this v2, replace with
-	// https://www.googleapis.com/drive/v3/files/id/export?mimeType=text/html
-	driveAPIExport = "https://docs.google.com/feeds/download/documents/export/Export"
-
-	driveMimeDocument = "application/vnd.google-apps.document"
-	driveMimeFolder   = "application/vnd.google-apps.folder"
-	driveExportMime   = "text/html"
+	// driveAPI is a base URL for Drive API
+	driveAPI = "https://www.googleapis.com/drive/v3"
 )
 
 // srcType is codelab source type
@@ -190,45 +183,39 @@ func fetchRemoteFile(url string) (*resource, error) {
 // If nometa is true, resource.mod will have zero value.
 func fetchDriveFile(id string, nometa bool) (*resource, error) {
 	id = gdocID(id)
+	exportURL := gdocExportURL(id)
 	client, err := driveClient()
 	if err != nil {
 		return nil, err
 	}
 
 	if nometa {
-		q := url.Values{"id": {id}, "exportFormat": {"html"}}
-		u := fmt.Sprintf("%s?%s", driveAPIExport, q.Encode())
-		res, err := retryGet(client, u, 7)
+		res, err := retryGet(client, exportURL, 7)
 		if err != nil {
 			return nil, err
 		}
 		return &resource{body: res.Body, typ: srcGoogleDoc}, nil
 	}
 
-	u := fmt.Sprintf("%s/files/%s?fields=id,mimeType,exportLinks,modifiedDate", driveAPIBase, id)
+	u := fmt.Sprintf("%s/files/%s?fields=id,mimeType,modifiedTime", driveAPI, id)
 	res, err := retryGet(client, u, 7)
 	if err != nil {
 		return nil, err
 	}
 	defer res.Body.Close()
 	meta := &struct {
-		ID          string            `json:"id"`
-		MimeType    string            `json:"mimeType"`
-		ExportLinks map[string]string `json:"exportLinks"`
-		Modified    time.Time         `json:"modifiedDate"`
+		ID       string    `json:"id"`
+		MimeType string    `json:"mimeType"`
+		Modified time.Time `json:"modifiedTime"`
 	}{}
 	if err := json.NewDecoder(res.Body).Decode(meta); err != nil {
 		return nil, err
 	}
-	if meta.MimeType != driveMimeDocument {
+	if meta.MimeType != "application/vnd.google-apps.document" {
 		return nil, fmt.Errorf("%s: invalid mime type: %s", id, meta.MimeType)
 	}
-	link := meta.ExportLinks[driveExportMime]
-	if link == "" {
-		return nil, fmt.Errorf("%s: no %q export link", id, driveExportMime)
-	}
 
-	if res, err = retryGet(client, link, 7); err != nil {
+	if res, err = retryGet(client, exportURL, 7); err != nil {
 		return nil, err
 	}
 	return &resource{
@@ -314,4 +301,8 @@ func gdocID(url string) string {
 		url = url[:i]
 	}
 	return url
+}
+
+func gdocExportURL(id string) string {
+	return fmt.Sprintf("%s/files/%s/export?mimeType=text/html", driveAPI, id)
 }

@@ -68,16 +68,15 @@ func TestFetchRemoteDrive(t *testing.T) {
 			t.Errorf("r.Method = %q; want GET", r.Method)
 		}
 		// metadata request
-		if r.URL.Path != "/export" {
+		if strings.HasSuffix(r.URL.Path, "/files/doc-123") {
 			b := ioutil.NopCloser(strings.NewReader(`{
-				"exportLinks": {"text/html": "http://dummy/export"},
 				"mimeType": "application/vnd.google-apps.document"
 			}`))
 			return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
 		}
 		// export request
-		if strings.HasSuffix(r.URL.Path, "/doc-123") {
-			t.Errorf("r.URL.Path = %q; want '/doc-123' suffix", r.URL.Path)
+		if !strings.HasSuffix(r.URL.Path, "/doc-123/export") {
+			t.Errorf("r.URL.Path = %q; want /doc-123/export suffix", r.URL.Path)
 		}
 		b := ioutil.NopCloser(strings.NewReader("test"))
 		return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
@@ -105,20 +104,19 @@ func TestSlurpWithFragment(t *testing.T) {
 	}
 	rt := &testTransport{func(r *http.Request) (*http.Response, error) {
 		// metadata request
-		if r.URL.Path == "/drive/v2/files/doc-123" {
+		if r.URL.Path == "/drive/v3/files/doc-123" {
 			b := ioutil.NopCloser(strings.NewReader(`{
-				"exportLinks": {"text/html": "http://dummy/export"},
 				"mimeType": "application/vnd.google-apps.document"
 			}`))
 			return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
 		}
 		// main doc export request
-		if r.URL.Path == "/export" {
+		if r.URL.Path == "/drive/v3/files/doc-123/export" {
 			b := ioutil.NopCloser(bytes.NewReader(dochtml))
 			return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
 		}
 		// import doc request, referenced in testdata/gdoc.html
-		if r.FormValue("id") == "import" {
+		if r.URL.Path == "/drive/v3/files/import/export" {
 			b := ioutil.NopCloser(strings.NewReader(`
 				<p>I'm imported from elsewhere.</p>
 			`))
