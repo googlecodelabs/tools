@@ -67,6 +67,7 @@ type executer interface {
 
 // funcMap are exposted to the templates.
 var funcMap = map[string]interface{}{
+	"renderLite": Lite,
 	"renderHTML": HTML,
 	"renderMD":   MD,
 	"matchEnv": func(tags []string, t string) bool {
