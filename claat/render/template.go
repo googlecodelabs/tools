@@ -42,8 +42,15 @@ type Context struct {
 // Template execution context data is expected to be of type *Context
 // but can be an arbitrary struct, as long as it contains at least Context's fields
 // for the built-in templates to be successfully executed.
-func Execute(w io.Writer, fmt string, data interface{}) error {
-	t, err := parseTemplate(fmt)
+func Execute(w io.Writer, fmt string, data interface{}, opt ...Option) error {
+	var funcs map[string]interface{}
+	for _, o := range opt {
+		switch o := o.(type) {
+		case optFuncMap:
+			funcs = o
+		}
+	}
+	t, err := parseTemplate(fmt, funcs)
 	if err != nil {
 		return err
 	}
@@ -83,7 +90,7 @@ type template struct {
 //
 // A local file template is parsed as HTML if file extension is ".html",
 // text otherwise.
-func parseTemplate(name string) (executer, error) {
+func parseTemplate(name string, fmap map[string]interface{}) (executer, error) {
 	tmpl := tmpldata[name] // defined in pre-generated tmpldata.go
 	if tmpl == nil {
 		// TODO: add templates in-mem caching
@@ -92,13 +99,22 @@ func parseTemplate(name string) (executer, error) {
 			return nil, err
 		}
 	}
+
+	funcs := make(map[string]interface{}, len(funcMap))
+	for k, v := range funcMap {
+		funcs[k] = v
+	}
+	for k, v := range fmap {
+		funcs[k] = v
+	}
+
 	if tmpl.html {
 		return htmlTemplate.New(name).
-			Funcs(funcMap).
+			Funcs(funcs).
 			Parse(string(tmpl.bytes))
 	}
 	return textTemplate.New(name).
-		Funcs(funcMap).
+		Funcs(funcs).
 		Parse(string(tmpl.bytes))
 }
 
@@ -112,3 +128,17 @@ func readTemplate(name string) (*template, error) {
 		html:  filepath.Ext(name) == ".html",
 	}, nil
 }
+
+// Option is the type of optional arguments for Execute.
+type Option interface {
+	option()
+}
+
+// WithFuncMap creates a user-supplied template functions option.
+func WithFuncMap(fm map[string]interface{}) Option {
+	return optFuncMap(fm)
+}
+
+type optFuncMap map[string]interface{}
+
+func (o optFuncMap) option() {}
