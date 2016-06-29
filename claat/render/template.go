@@ -36,14 +36,21 @@ type Context struct {
 }
 
 // Execute renders a template of the fmt format into w.
+//
 // The fmt argument can also be a path to a local file.
-func Execute(w io.Writer, fmt string, ctx *Context) error {
+//
+// Template execution context data is expected to be of type *Context
+// but can be an arbitrary struct, as long as it contains at least Context's fields
+// for the built-in templates to be successfully executed.
+func Execute(w io.Writer, fmt string, data interface{}) error {
 	t, err := parseTemplate(fmt)
 	if err != nil {
 		return err
 	}
-	sort.Strings(ctx.Meta.Tags)
-	return t.Execute(w, ctx)
+	if ctx, ok := data.(*Context); ok {
+		sort.Strings(ctx.Meta.Tags)
+	}
+	return t.Execute(w, data)
 }
 
 // executer satisfies both html/template and text/template.
