@@ -382,13 +382,26 @@ func (lw *liteWriter) header(n *types.HeaderNode) *html.Node {
 func (lw *liteWriter) youtube(n *types.YouTubeNode) *html.Node {
 	top := &html.Node{
 		Type: html.ElementNode,
+		Data: atom.Div.String(),
+		Attr: []html.Attribute{{Key: "class", Val: "keep-ar"}},
+	}
+	pad := &html.Node{
+		Type: html.ElementNode,
+		Data: atom.Div.String(),
+		Attr: []html.Attribute{{Key: "class", Val: "keep-ar__pad"}},
+	}
+	box := &html.Node{
+		Type: html.ElementNode,
 		Data: atom.Iframe.String(),
 		Attr: []html.Attribute{
 			{Key: "src", Val: fmt.Sprintf("https://www.youtube.com/embed/%s", n.VideoID)},
 			{Key: "type", Val: "text/html"},
 			{Key: "frameborder", Val: "0"},
-			{Key: "class", Val: "step__video video--yt"},
+			{Key: "allowfullscreen", Val: "1"},
+			{Key: "class", Val: "keep-ar__box"},
 		},
 	}
+	top.AppendChild(pad)
+	pad.AppendChild(box)
 	return top
 }
