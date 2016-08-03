@@ -50,7 +50,8 @@ func isBold(css cssStyle, hn *html.Node) bool {
 	}
 	return hn.DataAtom == atom.Strong ||
 		hn.DataAtom == atom.B ||
-		hasClassStyle(css, hn, "font-weight", "bold")
+		hasClassStyle(css, hn, "font-weight", "bold") ||
+		hasClassStyle(css, hn, "font-weight", "700")
 }
 
 func isItalic(css cssStyle, hn *html.Node) bool {
