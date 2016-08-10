@@ -2,6 +2,7 @@ package bundle
 
 import (
 	"errors"
+	"io"
 
 	"github.com/googlecodelabs/tools/claat/types"
 
@@ -11,7 +12,7 @@ import (
 const assetsDirName = "img"
 
 type ContentWriter interface {
-	WriteAsset(ctx context.Context, clab, name string, body []byte) error
+	WriteAsset(ctx context.Context, clab, name string, body io.Reader) error
 	WriteMarkup(ctx context.Context, clab string, body []byte) error
 	WriteMeta(ctx context.Context, cmeta *types.ContextMeta) error
 	// TODO: move these to a ContentLister

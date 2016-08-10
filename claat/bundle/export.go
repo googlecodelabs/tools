@@ -202,12 +202,7 @@ func (e *Exporter) exportAssets(ctx context.Context, dst ContentWriter, clab *Co
 				return
 			}
 			defer res.Body.Close()
-			b, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				ch <- err
-				return
-			}
-			ch <- dst.WriteAsset(ctx, clab.ID, name, b)
+			ch <- dst.WriteAsset(ctx, clab.ID, name, res.Body)
 		}(name, url)
 	}
 

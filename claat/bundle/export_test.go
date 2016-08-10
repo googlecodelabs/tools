@@ -30,7 +30,7 @@ type testContentWriter struct {
 	meta   map[string]*types.ContextMeta
 }
 
-func (cw *testContentWriter) WriteAsset(ctx context.Context, clab, name string, body []byte) error {
+func (cw *testContentWriter) WriteAsset(ctx context.Context, clab, name string, body io.Reader) error {
 	cw.Lock()
 	defer cw.Unlock()
 	if cw.assets == nil {
@@ -39,8 +39,9 @@ func (cw *testContentWriter) WriteAsset(ctx context.Context, clab, name string, 
 	if cw.assets[clab] == nil {
 		cw.assets[clab] = make(map[string][]byte)
 	}
-	cw.assets[clab][name] = body
-	return nil
+	var err error
+	cw.assets[clab][name], err = ioutil.ReadAll(body)
+	return err
 }
 
 func (cw *testContentWriter) WriteMarkup(ctx context.Context, clab string, body []byte) error {
