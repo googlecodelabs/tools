@@ -58,40 +58,22 @@ func (e *Exporter) Export(ctx context.Context, dst ContentWriter, src string, of
 		return err
 	}
 
-	// TODO: close ch?
-	ch := make(chan error, 1) // goroutines error reporting
-	count := 1                // content markup is always exported
-	go func() {
-		ch <- e.exportMarkup(ctx, dst, clab, of)
-	}()
-
 	// process codelab's assets, if requested
+	// need to do this before exportMarkup, because exportAssets rewrites image URLs
+	// in the markup
 	if !e.NoAssets {
-		count++
-		go func() {
-			ch <- e.exportAssets(ctx, dst, clab)
-		}()
+		if err := e.exportAssets(ctx, dst, clab); err != nil {
+			return err
+		}
 	}
 	// create metadata, if requested
 	if !e.NoMeta {
-		count++
-		go func() {
-			ch <- e.exportMeta(ctx, dst, clab, of)
-		}()
-	}
-
-	// wait for all goroutines to finish
-	for ; count > 0; count-- {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case err := <-ch:
-			if err != nil {
-				return err
-			}
+		if err := e.exportMeta(ctx, dst, clab, of); err != nil {
+			return err
 		}
 	}
-	return nil
+	// finally, instructions markup
+	return e.exportMarkup(ctx, dst, clab, of)
 }
 
 type Codelab struct {
