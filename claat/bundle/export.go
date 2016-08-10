@@ -104,7 +104,6 @@ func (e *Exporter) Fetch(ctx context.Context, url string) (*Codelab, error) {
 	for _, st := range clab.Steps {
 		imports = append(imports, importNodes(st.Content.Nodes)...)
 	}
-	// TODO: close ch?
 	ch := make(chan error, len(imports)) // goroutines error reporting
 	for _, imp := range imports {
 		go func(n *types.ImportNode) {
@@ -118,15 +117,27 @@ func (e *Exporter) Fetch(ctx context.Context, url string) (*Codelab, error) {
 	}
 
 	// wait for all goroutines
-	for _ = range imports {
-		select {
-		case <-ctx.Done():
-			return nil, ctx.Err()
-		case err := <-ch:
-			if err != nil {
-				return nil, err
+	done := make(chan struct{})
+	var me multiError
+	go func() {
+		for range imports {
+			if err := <-ch; err != nil {
+				me = append(me, err)
 			}
 		}
+		close(ch)
+		close(done)
+	}()
+	select {
+	case <-ctx.Done():
+		// don't worry about other errors and channels
+		// the waiting goroutine will eventually close them
+		return nil, ctx.Err()
+	case <-done:
+		// finished all imports
+	}
+	if len(me) > 0 {
+		return nil, me
 	}
 	return &Codelab{
 		Codelab: clab,
@@ -182,7 +193,6 @@ func (e *Exporter) exportAssets(ctx context.Context, dst ContentWriter, clab *Co
 	}
 
 	// fetch all images in parallel
-	// TODO: close ch?
 	ch := make(chan error, len(imap)) // goroutines error reporting
 	for name, url := range imap {
 		go func(name, url string) {
@@ -202,15 +212,27 @@ func (e *Exporter) exportAssets(ctx context.Context, dst ContentWriter, clab *Co
 	}
 
 	// wait for all goroutines to finish
-	for range imap {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case err := <-ch:
-			if err != nil {
-				return err
+	done := make(chan struct{})
+	var me multiError
+	go func() {
+		for range imap {
+			if err := <-ch; err != nil {
+				me = append(me, err)
 			}
 		}
+		close(ch)
+		close(done)
+	}()
+	select {
+	case <-ctx.Done():
+		// don't worry about other errors and channels
+		// the waiting goroutine will eventually close them
+		return ctx.Err()
+	case <-done:
+		// finished all fetches
+	}
+	if len(me) > 0 {
+		return me
 	}
 	return nil
 }

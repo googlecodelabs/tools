@@ -43,3 +43,35 @@ type ViewBundler struct {
 func (vb *ViewBundler) Sync(ctx context.Context, ids ...string) error {
 	return errors.New("not implemented")
 }
+
+type MultiError interface {
+	Errors() []error
+}
+
+type multiError []error
+
+func (me multiError) Errors() []error {
+	return []error(me)
+}
+
+func (me multiError) Error() string {
+	if len(me) == 0 {
+		return "no errors"
+	}
+	if len(me) == 1 {
+		return me[0].Error()
+	}
+	const sep = "\n"
+	n := len(sep) * (len(me) - 1)
+	for i := 0; i < len(me); i++ {
+		n += len(me[i].Error())
+	}
+
+	b := make([]byte, n)
+	bp := copy(b, me[0].Error())
+	for _, s := range me[1:] {
+		bp += copy(b[bp:], sep)
+		bp += copy(b[bp:], s.Error())
+	}
+	return string(b)
+}
