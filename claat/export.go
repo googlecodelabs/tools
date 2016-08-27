@@ -15,7 +15,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -106,23 +105,7 @@ func exportCodelab(src string) (*types.Meta, error) {
 // writeCodelab stores codelab main content in ctx.Format and its metadata
 // in JSON format on disk.
 func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
-	// render main codelab content to a tmp buffer,
-	// which will also verify output format is valid,
-	// and avoid creating empty files in case this goes wrong
-	data := &render.Context{
-		Env:      ctx.Env,
-		Prefix:   ctx.Prefix,
-		GlobalGA: ctx.MainGA,
-		Meta:     &clab.Meta,
-		Steps:    clab.Steps,
-		Extra:    extraVars,
-	}
-	var buf bytes.Buffer
-	if err := render.Execute(&buf, ctx.Format, data); err != nil {
-		return err
-	}
 	// output to stdout does not include metadata
-	w := os.Stdout
 	if !isStdout(dir) {
 		// make sure codelab dir exists
 		if err := os.MkdirAll(dir, 0755); err != nil {
@@ -134,16 +117,58 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 		if err := writeMeta(f, cm); err != nil {
 			return err
 		}
-		// main content file
-		f = filepath.Join(dir, contentFile(ctx.Format))
-		var err error
-		if w, err = os.Create(f); err != nil {
+	}
+
+	// main content file(s)
+	data := &struct {
+		render.Context
+		Current *types.Step
+		StepNum int
+		Prev    bool
+		Next    bool
+	}{Context: render.Context{
+		Env:      ctx.Env,
+		Prefix:   ctx.Prefix,
+		GlobalGA: ctx.MainGA,
+		Meta:     &clab.Meta,
+		Steps:    clab.Steps,
+		Extra:    extraVars,
+	}}
+	if ctx.Format != "offline" {
+		w := os.Stdout
+		if !isStdout(dir) {
+			f, err := os.Create(filepath.Join(dir, "index."+ctx.Format))
+			if err != nil {
+				return err
+			}
+			w = f
+			defer f.Close()
+		}
+		return render.Execute(w, ctx.Format, data)
+	}
+	for i, step := range clab.Steps {
+		data.Current = step
+		data.StepNum = i + 1
+		data.Prev = i > 0
+		data.Next = i < len(clab.Steps)-1
+		w := os.Stdout
+		if !isStdout(dir) {
+			name := "index.html"
+			if i > 0 {
+				name = fmt.Sprintf("step-%d.html", i+1)
+			}
+			f, err := os.Create(filepath.Join(dir, name))
+			if err != nil {
+				return err
+			}
+			w = f
+			defer f.Close()
+		}
+		if err := render.Execute(w, ctx.Format, data); err != nil {
 			return err
 		}
-		defer w.Close()
 	}
-	_, err := w.Write(buf.Bytes())
-	return err
+	return nil
 }
 
 func slurpImages(client *http.Client, dir string, steps []*types.Step) (map[string]string, error) {

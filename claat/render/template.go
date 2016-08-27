@@ -15,6 +15,7 @@
 package render
 
 import (
+	"fmt"
 	htmlTemplate "html/template"
 	"io"
 	"io/ioutil"
@@ -76,6 +77,28 @@ var funcMap = map[string]interface{}{
 		}
 		i := sort.SearchStrings(tags, t)
 		return i < len(tags) && tags[i] == t
+	},
+	// lite/offline versions; multiple step files
+	"inc": func(n int) int {
+		return n + 1
+	},
+	"dec": func(n int) int {
+		return n - 1
+	},
+	"tocItemClass": func(curr, n int) string {
+		a := "toc-item"
+		if n < curr {
+			a += " toc-item--complete"
+		} else if curr == n {
+			a += " toc-item--current"
+		}
+		return a
+	},
+	"stepLink": func(n int) string {
+		if n <= 1 {
+			return "index.html"
+		}
+		return fmt.Sprintf("step-%d.html", n)
 	},
 }
 

@@ -38,7 +38,7 @@ $(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
 $(OUTDIR)/claat-%: $(SRCS) VERSION
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $@ $(LDFLAGS)
 
-%/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md
+%/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md %/template-offline.html
 	cd $* && go generate
 
 release: $(RELEASES)

@@ -44,9 +44,6 @@ const (
 	// imgDirname is where a codelab images are stored,
 	// relative to the codelab dir.
 	imgDirname = "img"
-	// contentFilename is the name of file for codelab content output,
-	// without the format extension.
-	contentFilename = "index"
 	// metaFilename is codelab metadata file.
 	metaFilename = "codelab.json"
 	// stdout is a special value for -o cli arg to identify stdout writer.
@@ -75,11 +72,6 @@ var (
 // isStdout reports whether filename is stdout.
 func isStdout(filename string) bool {
 	return filename == stdout
-}
-
-// contentFile returns codelab main output file given the specified format.
-func contentFile(format string) string {
-	return contentFilename + "." + format
 }
 
 // printf prints formatted string fmt with args to stderr.
@@ -153,13 +145,17 @@ Export takes one or more 'src' documents and converts them
 to the format specified with -f option.
 
 The following formats are built-in:
+
 - html (Polymer-based app)
 - md (Markdown)
+- offline (plain HTML markup for offline consumption)
+
 To use a custom format, specify a local file path to a Go template file.
 More info on Go templates: https://golang.org/pkg/text/template/.
 
 Each 'src' can be either a remote HTTP resource or a local file.
 Source formats currently supported are:
+
 - Google Doc (Codelab Format, go/codelab-guide)
 - Markdown
 
