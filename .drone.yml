@@ -27,5 +27,5 @@ publish:
     when:
       event: tag
     api_key: $$GH_API_KEY
-    files:
-      - claat/bin/claat-*
+    files: claat/bin/claat-*
+    checksum: sha1
