@@ -25,21 +25,9 @@ RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 	 $(OUTDIR)/claat-windows-386.exe
 
 SRCS = $(shell find . -name '*.go') render/tmpldata.go
-LDFLAGS=-ldflags "-X main.version=$(VERSION)"
 
 install: $(OUTDIR)/claat
 	cp $< $(GOPATH)/bin
-
-$(OUTDIR)/claat: $(SRCS) VERSION
-	go build -o $@ $(LDFLAGS)
-
-$(OUTDIR)/claat-%: GOOS=$(firstword $(subst -, ,$*))
-$(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
-$(OUTDIR)/claat-%: $(SRCS) VERSION
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $@ $(LDFLAGS)
-
-%/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md %/template-offline.html
-	cd $* && go generate
 
 release: $(RELEASES)
 	echo $(VERSION) > $(OUTDIR)/VERSION
@@ -54,3 +42,17 @@ lint: .lint
 
 clean:
 	rm -rf $(OUTDIR) render/tmpldata.go .test .lint
+
+$(OUTDIR)/claat: $(SRCS) VERSION
+	go build -o $@ -ldflags "-X main.version=$(VERSION)"
+
+$(OUTDIR)/claat-%: GOOS=$(firstword $(subst -, ,$*))
+$(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
+$(OUTDIR)/claat-%: $(SRCS) VERSION
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build \
+		-buildmode exe \
+		-ldflags "-X main.version=$(VERSION) -s -w" \
+		-o $@
+
+%/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md %/template-offline.html
+	cd $* && go generate
