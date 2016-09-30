@@ -18,9 +18,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
-	"os/user"
 	"path"
 	"sync"
 
@@ -171,13 +171,24 @@ func writeToken(provider string, tok *oauth2.Token) error {
 
 // tokenLocation returns a local file path, suitable for storing user credentials.
 func tokenLocation(provider string) (string, error) {
-	u, err := user.Current()
-	if err != nil {
-		return "", err
+	d := homedir()
+	if d == "" {
+		log.Printf("WARNING: unable to identify user home dir")
 	}
-	d := path.Join(u.HomeDir, ".config", "claat")
+	d = path.Join(d, ".config", "claat")
 	if err := os.MkdirAll(d, 0700); err != nil {
 		return "", err
 	}
 	return path.Join(d, provider+"-cred.json"), nil
+}
+
+func homedir() string {
+	if v := os.Getenv("HOME"); v != "" {
+		return v
+	}
+	d, p := os.Getenv("HOMEDRIVE"), os.Getenv("HOMEPATH")
+	if d != "" && p != "" {
+		return d + p
+	}
+	return os.Getenv("USERPROFILE")
 }
