@@ -36,6 +36,7 @@ import (
 )
 
 const (
+	metaAuthor           = "author"
 	metaSummary          = "summary"
 	metaID               = "id"
 	metaCategories       = "categories"
@@ -172,8 +173,10 @@ func parseMarkup(markup io.Reader) (*types.Codelab, error) {
 	return ps.c, nil
 }
 
-// parseMetadata handles the metadata section preceding a codelab. It assumes the tokenizer is pointing to the first <p>/
-// It returns any errors it encounters, and leaves the tokenizer pointing at the <h1> starting the codelab title, or at io.EOF.
+// parseMetadata handles the metadata section preceding a codelab.
+// It assumes the tokenizer is pointing to the first <p>/.
+// It returns any errors it encounters, and leaves the tokenizer pointing at the <h1>
+// starting the codelab title, or at io.EOF.
 func parseMetadata(ps *parserState) error {
 	m := map[string]string{}
 	// Iterate over the metadata elements, constructing a map of the metadata.
@@ -477,6 +480,9 @@ func standardSplit(s string) []string {
 func addMetadataToCodelab(m map[string]string, c *types.Codelab) {
 	for k, v := range m {
 		switch k {
+		case metaAuthor:
+			// Directly assign the summary to the codelab field.
+			c.Author = v
 		case metaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v
