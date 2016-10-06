@@ -135,6 +135,70 @@ func TestParseTopCodeBlock(t *testing.T) {
 	}
 }
 
+func TestMetaTable(t *testing.T) {
+	const markup = `
+	<html>
+	<body>
+		<table>
+			<tr>
+				<td>Summary</td>
+				<td>Test summary</td>
+			</tr>
+			<tr>
+				<td>Author</td>
+				<td>John Smith &lt;user@example.com&gt;</td>
+			</tr>
+			<tr>
+				<td>Category</td>
+				<td>Foo, Bar</td>
+			</tr>
+			<tr>
+				<td>Environment</td>
+				<td>Web, Kiosk</td>
+			</tr>
+			<tr>
+				<td>Status</td>
+				<td>Final</td>
+			</tr>
+			<tr>
+				<td>Feedback</td>
+				<td>https://example.com/issues</td>
+			</tr>
+			<tr>
+				<td>Analytics</td>
+				<td>GA-12345</td>
+			</tr>
+		</table>
+	</body>
+	</html>
+	`
+
+	p := &Parser{}
+	clab, err := p.Parse(markupReader(markup))
+	if err != nil {
+		t.Fatal(err)
+	}
+	meta := types.Meta{
+		Summary:    "Test summary",
+		Author:     "John Smith <user@example.com>",
+		Categories: []string{"Foo", "Bar"},
+		Theme:      "foo",
+		Status:     clab.Meta.Status, // verified separately
+		Feedback:   "https://example.com/issues",
+		GA:         "GA-12345",
+		// Tags are always sorted.
+		// TODO: move sorting to Parse of the parser package
+		Tags: []string{"kiosk", "web"},
+	}
+	if !reflect.DeepEqual(clab.Meta, meta) {
+		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
+	}
+	status := types.LegacyStatus([]string{"final"})
+	if !reflect.DeepEqual(clab.Meta.Status, &status) {
+		t.Errorf("Meta.Status: %q; want %q", clab.Meta.Status, &status)
+	}
+}
+
 func TestParseDoc(t *testing.T) {
 	const markup = `
 	<html><head><style>

@@ -177,6 +177,7 @@ func TestAddMetadataToCodelab(t *testing.T) {
 	}{
 		{
 			map[string]string{
+				"author":            "john smith",
 				"summary":           "abcdefghij",
 				"id":                "zyxwvut",
 				"categories":        "not, really",
@@ -187,6 +188,7 @@ func TestAddMetadataToCodelab(t *testing.T) {
 			},
 			types.Codelab{
 				Meta: types.Meta{
+					Author:     "john smith",
 					Summary:    "abcdefghij",
 					ID:         "zyxwvut",
 					Categories: []string{"not", "really"},
@@ -201,8 +203,8 @@ func TestAddMetadataToCodelab(t *testing.T) {
 	for i, tc := range tests {
 		out := types.Codelab{}
 		addMetadataToCodelab(tc.in, &out)
-		if !reflect.DeepEqual(tc.out, out) {
-			t.Errorf("%d: [%q] got %v, want %v", i, tc.in, out, tc.out)
+		if !reflect.DeepEqual(out, tc.out) {
+			t.Errorf("%d:\n%+v\nwant:\n%+v", i, out, tc.out)
 		}
 	}
 }

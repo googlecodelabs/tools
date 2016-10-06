@@ -23,12 +23,11 @@ import (
 )
 
 // Meta contains a single codelab metadata.
-// Format, Env   should not be set by a parser, as they may be overwritten
-// by the parser callers.
 type Meta struct {
 	ID         string        `json:"id"`                 // ID is also part of codelab URL
 	Duration   int           `json:"duration"`           // Codelab duration in minutes
 	Title      string        `json:"title"`              // Codelab title
+	Author     string        `json:"author,omitempty"`   // Arbitrary authorship text
 	Summary    string        `json:"summary"`            // Short summary
 	Theme      string        `json:"theme"`              // Usually first item of Categories
 	Status     *LegacyStatus `json:"status"`             // Draft, Published, Hidden, etc.
