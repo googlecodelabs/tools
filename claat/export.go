@@ -112,7 +112,7 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 			return err
 		}
 		// codelab metadata
-		cm := &types.ContextMeta{*ctx, clab.Meta}
+		cm := &types.ContextMeta{Context: *ctx, Meta: clab.Meta}
 		f := filepath.Join(dir, metaFilename)
 		if err := writeMeta(f, cm); err != nil {
 			return err
