@@ -38,6 +38,7 @@ test: .test
 
 lint: .lint
 .lint: $(SRCS)
+	go vet ./...
 	golint ./... && touch .lint
 
 clean:

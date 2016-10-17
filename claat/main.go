@@ -102,7 +102,7 @@ func parseExtraVars() map[string]string {
 	b := []byte(*extra)
 	err := json.Unmarshal(b, &vars)
 	if err != nil {
-		errorf("Error parsing additional template data.", err)
+		errorf("Error parsing additional template data: %v", err)
 	}
 	return vars
 }
