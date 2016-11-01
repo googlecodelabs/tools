@@ -86,6 +86,12 @@ func driveClient() (*http.Client, error) {
 // tokenSource creates a new oauth2.TokenSource backed by tokenRefresher,
 // using previously stored user credentials if available.
 func tokenSource(provider string) (oauth2.TokenSource, error) {
+	// Ignore provider if *authToken is given.
+	if *authToken != "" {
+		tok := &oauth2.Token{AccessToken: *authToken}
+		return oauth2.StaticTokenSource(tok), nil
+	}
+
 	conf := authConfig[provider]
 	if conf == nil {
 		return nil, fmt.Errorf("no auth config for %q", provider)
