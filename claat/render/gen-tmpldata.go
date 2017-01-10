@@ -35,6 +35,7 @@ var files = map[string]struct {
 	"html":    {"template.html", true},
 	"md":      {"template.md", false},
 	"offline": {"template-offline.html", true},
+	"qwiklabs": {"template-qwiklabs.md", false},
 }
 
 func main() {
