@@ -44,6 +44,7 @@ const (
 	metaStatus           = "status"
 	metaFeedbackLink     = "feedback link"
 	metaAnalyticsAccount = "analytics account"
+	metaTags             = "tags"
 )
 
 var metadataRegexp = regexp.MustCompile(`(.+?):(.+)`)
@@ -516,6 +517,10 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab) {
 		case metaAnalyticsAccount:
 			// Directly assign the GA id to the codelab field.
 			c.GA = v
+			break
+		case metaTags:
+			// Standardize the tags and append to the codelab field.
+			c.Tags = append(c.Tags, standardSplit(v)...)
 			break
 		default:
 			break
