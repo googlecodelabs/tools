@@ -161,6 +161,10 @@ func parseMarkup(markup io.Reader) (*types.Codelab, error) {
 			// If we just finished parsing a step or the title, we are left possibly pointing to the opening
 			// <h2> of another step. Update the flag accordingly.
 			inStepTitle = (ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2)
+		} else {
+			// If we had some intermediate blank lines between step, and are out of one, check if we don't reenter
+			// into a new step.
+			inStepTitle = (ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2)
 		}
 
 	}
