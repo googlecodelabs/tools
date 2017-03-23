@@ -17,6 +17,7 @@ package render
 import (
 	"bytes"
 	"fmt"
+  htmlTemplate "html/template"
 	"io"
 	"path"
 	"sort"
@@ -61,7 +62,11 @@ func (mw *mdWriter) writeString(s string) {
 }
 
 func (mw *mdWriter) writeFmt(f string, a ...interface{}) {
-	mw.writeString(fmt.Sprintf(f, a...))
+  mw.writeString(fmt.Sprintf(f, a...))
+}
+
+func (mw *mdWriter) writeEscape(s string) {
+  mw.writeString(htmlTemplate.HTMLEscapeString(s))
 }
 
 func (mw *mdWriter) space() {
@@ -115,7 +120,7 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 		case *types.InfoboxNode:
 			mw.infobox(n)
 		//case *types.SurveyNode:
-		//  mw.survey(n)
+		//	mw.survey(n)
 		case *types.HeaderNode:
 			mw.header(n)
 		case *types.YouTubeNode:
@@ -210,7 +215,7 @@ func (mw *mdWriter) list(n *types.ListNode) {
 }
 
 func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
-	mw.newBlock()
+  mw.newBlock()
 	for i, item := range n.Items {
 		s := "* "
 		if n.Type() == types.NodeItemsList && n.Start > 0 {
@@ -235,35 +240,31 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 }
 
 func (mw *mdWriter) grid(n *types.GridNode) {
-	mw.newBlock()
-	mw.writeString(`<table markdown="1">`)
-	for _, r := range n.Rows {
-		mw.writeString("\n<tr>")
-		for _, c := range r {
-			mw.writeFmt(`<td colspan="%d" rowspan="%d">`, c.Colspan, c.Rowspan)
-			mw.write(c.Content.Nodes...)
-			mw.writeString("</td>")
-		}
-		mw.writeString("\n</tr>")
-	}
-	mw.writeString("</table>")
+  mw.newBlock()
+  mw.writeString(`<table markdown="1">`)
+  for _, r := range n.Rows {
+    mw.writeString("\n<tr>")
+    for _, c := range r {
+      mw.writeFmt(`<td colspan="%d" rowspan="%d">`, c.Colspan, c.Rowspan)
+      mw.write(c.Content.Nodes...)
+      mw.writeString("</td>")
+    }
+    mw.writeString("\n</tr>")
+  }
+  mw.writeString("</table>")
 }
 
 func (mw *mdWriter) infobox(n *types.InfoboxNode) {
-	mw.newBlock()
-	mw.writeString(`<aside markdown="1" class="`)
-	mw.writeString(string(n.Kind))
-	mw.writeString(`">`)
-	mw.write(n.Content.Nodes...)
-	mw.writeString("</aside>")
+  mw.newBlock()
+  mw.writeString(`<aside markdown="1" class="`)
+  mw.writeEscape(string(n.Kind))
+  mw.writeString(`">`)
+  mw.write(n.Content.Nodes...)
+  mw.writeString("</aside>")
 }
 
 func (mw *mdWriter) youtube(n *types.YouTubeNode) {
-	mw.newBlock()
-	mw.writeString(`<div class="video-wrapper">\n`)
-	mw.writeString(`  <iframe class="devsite-embedded-youtube-video" `)
-	mw.writeString(`data-autohide="1" data-showinfo="0" frameborder="0" `)
-	mw.writeString(`allowfullscreen data-video-id="`)
-	mw.writeString(string(n.VideoID))
-	mw.writeString(`">\n  </iframe></div>`)
+  mw.newBlock()
+  mw.writeFmt("<iframe src=\"https://www.youtube.com/embed/%q\" ", n.VideoID)
+  mw.writeString(`frameborder="0" allowfullscreen>\n</iframe>`)
 }
