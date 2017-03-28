@@ -105,7 +105,7 @@ func updateCodelab(dir string) (*types.Meta, error) {
 			return nil, err
 		}
 	}
-	imgmap, err := slurpImages(client, imgdir, clab.Steps)
+	imgmap, err := slurpImages(client, meta.Source, imgdir, clab.Steps)
 	if err != nil {
 		return nil, err
 	}

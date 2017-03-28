@@ -92,9 +92,9 @@ func exportCodelab(src string) (*types.Meta, error) {
 	dir := *output // output dir or stdout
 	if !isStdout(dir) {
 		dir = codelabDir(dir, meta)
-		// download codelab assets to disk, and rewrite image URLs
+		// download or copy codelab assets to disk, and rewrite image URLs
 		mdir := filepath.Join(dir, imgDirname)
-		if _, err := slurpImages(client, mdir, clab.Steps); err != nil {
+		if _, err := slurpImages(client, src, mdir, clab.Steps); err != nil {
 			return nil, err
 		}
 	}
@@ -171,7 +171,7 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 	return nil
 }
 
-func slurpImages(client *http.Client, dir string, steps []*types.Step) (map[string]string, error) {
+func slurpImages(client *http.Client, src, dir string, steps []*types.Step) (map[string]string, error) {
 	// make sure img dir exists
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return nil, err
@@ -191,7 +191,7 @@ func slurpImages(client *http.Client, dir string, steps []*types.Step) (map[stri
 		for _, n := range nodes {
 			go func(n *types.ImageNode) {
 				url := n.Src
-				file, err := slurpBytes(client, dir, url, 5)
+				file, err := slurpBytes(client, src, dir, url, 5)
 				if err == nil {
 					n.Src = filepath.Join(imgDirname, file)
 				}
