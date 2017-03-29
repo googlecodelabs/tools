@@ -110,6 +110,11 @@ func (ps *parserState) multiAdvance(n int) {
 // claatMarkdown calls the Blackfriday Markdown parser with some special addons selected. It takes a byte slice as a parameter,
 // and returns its result as a byte slice.
 func claatMarkdown(b []byte) []byte {
+	htmlFlags := blackfriday.HTML_USE_XHTML |
+		blackfriday.HTML_USE_SMARTYPANTS |
+		blackfriday.HTML_SMARTYPANTS_FRACTIONS |
+		blackfriday.HTML_SMARTYPANTS_DASHES |
+		blackfriday.HTML_SMARTYPANTS_LATEX_DASHES
 	extns := blackfriday.EXTENSION_FENCED_CODE |
 		blackfriday.EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK |
 		blackfriday.EXTENSION_NO_INTRA_EMPHASIS |
@@ -118,7 +123,7 @@ func claatMarkdown(b []byte) []byte {
 	o := blackfriday.Options{
 		Extensions: extns,
 	}
-	r := blackfriday.HtmlRenderer(extns, "", "")
+	r := blackfriday.HtmlRenderer(htmlFlags, "", "")
 	return blackfriday.MarkdownOptions(b, r, o)
 }
 
