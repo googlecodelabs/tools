@@ -71,6 +71,7 @@ var funcMap = map[string]interface{}{
 	"renderLite": Lite,
 	"renderHTML": HTML,
 	"renderMD":   MD,
+	"renderQwiklabs": Qwiklabs,
 	"matchEnv": func(tags []string, t string) bool {
 		if len(tags) == 0 || t == "" {
 			return true

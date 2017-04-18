@@ -134,10 +134,20 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 		Steps:    clab.Steps,
 		Extra:    extraVars,
 	}}
+
 	if ctx.Format != "offline" {
+		// Some output formats have output file extensions that differ from the
+		// format name. For instance, there are multiple flavors of Markdown
+		// export that all output .md files.
+		outputFormat := ctx.Format
+		switch ctx.Format {
+		case "qwiklabs":
+			outputFormat = "md"
+		}
+
 		w := os.Stdout
 		if !isStdout(dir) {
-			f, err := os.Create(filepath.Join(dir, "index."+ctx.Format))
+			f, err := os.Create(filepath.Join(dir, "index."+outputFormat))
 			if err != nil {
 				return err
 			}
