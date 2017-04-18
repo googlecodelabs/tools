@@ -16,11 +16,14 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"strings"
 	"testing"
+	"testing/quick"
 
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
@@ -169,4 +172,70 @@ func TestGdocID(t *testing.T) {
 			t.Errorf("%d: gdocID(%q) = %q; want %q", i, test.in, out, test.out)
 		}
 	}
+}
+
+func TestRestrictPathToParent(t *testing.T) {
+	tests := []struct {
+		asset  string
+		parent string
+
+		wantPath string
+		wantErr  bool
+	}{
+		{"imgroot.png", ".", "imgroot.png", false},
+		{"imgroot.png", "foo/", "foo/imgroot.png", false},
+		{"img/sub.png", "foo/", "foo/img/sub.png", false},
+		{"imgroot.png", "/tmp/foo", "/tmp/foo/imgroot.png", false},
+		{"/tmp/imgabs.png", "foo/", "", true},
+		{"../imgup.png", "foo/", "", true},
+		{"../imgup.png", "..", "", true},
+		{"imgroot.png", "", "imgroot.png", false},
+		{"", ".", ".", false},
+		{"", "", ".", false},
+	}
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("asset: %s, parent: %s", tc.asset, tc.parent), func(t *testing.T) {
+			tc.wantPath = safeAbs(t, tc.wantPath)
+
+			p, err := restrictPathToParent(tc.asset, tc.parent)
+
+			if err != nil != tc.wantErr {
+				t.Errorf("restrictPathToParent() error = %v, wantErr %v", err, tc.wantErr)
+				return
+			}
+			if p != tc.wantPath {
+				t.Errorf("restrictPathToParent() return: got %s, wanted %s", p, tc.wantPath)
+			}
+		})
+	}
+}
+
+func TestFuzzRestrictPathToParent(t *testing.T) {
+	checkInParent := func(elem, parent string) bool {
+		_, err := restrictPathToParent(elem, parent)
+
+		parent = safeAbs(t, parent)
+		if !strings.HasPrefix(elem, "/") {
+			elem = filepath.Join(parent, elem)
+		}
+		shouldOk := strings.HasPrefix(elem, parent)
+		return shouldOk == (err == nil)
+	}
+
+	if err := quick.Check(checkInParent, nil); err != nil {
+		t.Error(err)
+	}
+}
+
+// safeAbs compute Abs of p and fail the test if not valid.
+// Empty string return empty path.
+func safeAbs(t *testing.T, p string) string {
+	if p == "" {
+		return p
+	}
+	p, err := filepath.Abs(p)
+	if err != nil {
+		t.Fatalf("Error in converting %s to abs path: %v", p, err)
+	}
+	return p
 }
