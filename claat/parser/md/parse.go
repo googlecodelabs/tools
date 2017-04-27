@@ -17,12 +17,15 @@
 package md
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/url"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -47,11 +50,36 @@ const (
 	metaTags             = "tags"
 )
 
+const (
+	metaSep         = ":"           // step instruction format, key:value
+	metaDuration    = "duration"    // step duration instruction
+	metaEnvironment = "environment" // step environment instruction
+	metaTagImport   = "import"      // import remote resource instruction
+
+	// possible content of special header nodes in lower case.
+	headerLearn = "what you'll learn"
+	headerCover = "what we've covered"
+	headerFAQ   = "frequently asked questions"
+)
+
 var metadataRegexp = regexp.MustCompile(`(.+?):(.+)`)
 var languageRegexp = regexp.MustCompile(`language-(.+)`)
 var durationHintRegexp = regexp.MustCompile(`(?i)Duration:? (.+)`)
 var durationRegexp = regexp.MustCompile(`(\d+)[:.](\d{2})$`)
 var downloadButtonRegexp = regexp.MustCompile(`^(?i)Download(.+)$`)
+
+var (
+	// durFactor is a slice of duration parser multipliers,
+	// ordered after the usage in codelab docs
+	durFactor = []time.Duration{time.Hour, time.Minute, time.Second}
+
+	// textCleaner replaces "smart quotes" and other unicode runes
+	// with their respective ascii versions.
+	textCleaner = strings.NewReplacer(
+		"\u2019", "'", "\u201C", `"`, "\u201D", `"`, "\u2026", "...",
+		"\u00A0", " ", "\u0085", " ",
+	)
+)
 
 // init registers this parser so it is available to CLaaT.
 func init() {
@@ -71,8 +99,12 @@ func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
 	}
 	b = claatMarkdown(b)
 	h := bytes.NewBuffer(b)
+	doc, err := html.Parse(h)
+	if err != nil {
+		return nil, err
+	}
 	// Parse the markup.
-	return parseMarkup(h)
+	return parseMarkup(doc)
 }
 
 // ParseFragment parses a codelab fragment writtet in Markdown.
@@ -80,6 +112,53 @@ func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
 	return nil, errors.New("fragment parser not implemented")
 }
 
+type docState struct {
+	clab     *types.Codelab // codelab and its metadata
+	totdur   time.Duration  // total codelab duration
+	survey   int            // last used survey ID
+	step     *types.Step    // current codelab step
+	lastNode types.Node     // last appended node
+	env      []string       // current enviornment
+	cur      *html.Node     // current HTML node
+	stack    []*stackItem   // cur and flags stack
+}
+
+type stackItem struct {
+	cur *html.Node
+}
+
+func (ds *docState) push(cur *html.Node) {
+	if cur == nil {
+		cur = ds.cur
+	}
+	ds.stack = append(ds.stack, &stackItem{ds.cur})
+	ds.cur = cur
+}
+
+func (ds *docState) pop() {
+	n := len(ds.stack)
+	if n == 0 {
+		return
+	}
+	item := ds.stack[n-1]
+	ds.stack = ds.stack[:n-1]
+	ds.cur = item.cur
+}
+
+func (ds *docState) appendNodes(nn ...types.Node) {
+	if ds.step == nil || len(nn) == 0 {
+		return
+	}
+	if len(ds.env) != 0 {
+		for _, n := range nn {
+			n.MutateEnv(append(n.Env(), ds.env...))
+		}
+	}
+	ds.step.Content.Append(nn...)
+	ds.lastNode = nn[len(nn)-1]
+}
+
+/////////////////////// REMOVE
 // parserState encapsulates the state of the parser at any given step.
 type parserState struct {
 	tzr *html.Tokenizer
@@ -107,6 +186,8 @@ func (ps *parserState) multiAdvance(n int) {
 	}
 }
 
+/////////////////////// /REMOVE
+
 // claatMarkdown calls the Blackfriday Markdown parser with some special addons selected. It takes a byte slice as a parameter,
 // and returns its result as a byte slice.
 func claatMarkdown(b []byte) []byte {
@@ -127,85 +208,44 @@ func claatMarkdown(b []byte) []byte {
 	return blackfriday.MarkdownOptions(b, r, o)
 }
 
-// parseMarkup accepts an io.Reader to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
-func parseMarkup(markup io.Reader) (*types.Codelab, error) {
-	// Avoid global vars by encapsulating state.
-	ps := parserState{
-		tzr: html.NewTokenizer(markup),
-		c:   &types.Codelab{},
+// parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
+func parseMarkup(markup *html.Node) (*types.Codelab, error) {
+	body := findAtom(markup, atom.Body)
+	if body == nil {
+		return nil, fmt.Errorf("document without a body")
+	}
+	ds := &docState{
+		clab: &types.Codelab{},
 	}
 
-	var inStepTitle bool
-
-	// Advance through the tokenized input, one token at a time.
-	for ps.advance(); ps.t.Type != html.ErrorToken; ps.advance() {
-		if ps.c.Title == "" {
-			// If we have a <p> tag, it's a metadata section.
-			if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.P {
-				if err := parseMetadata(&ps); err != nil {
-					return nil, err
-				}
-			}
-			// We need to handle the title in this pass, as the next advance call will move us past the <h1>.
-			if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H1 {
-				handleCodelabTitle(&ps)
-
-				// If we just finished parsing a step or the title, we are left possibly pointing to the opening
-				// <h2> of another step. Update the flag accordingly.
-				inStepTitle = (ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2)
+	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
+		switch {
+		// metadata first
+		case ds.cur.DataAtom == atom.H1 && ds.clab.Title == "":
+			if v := stringifyNode(ds.cur, true); v != "" {
+				ds.clab.Title = v
 			}
 			continue
-		}
-		if inStepTitle {
-			// This is the beginning of a new codelab step, and we are pointing to the contents of the title.
-			stepTitle := ps.t.Data
-			ps.advance()
-			// Emit a step object.
-			ps.currentStep = ps.c.NewStep(stepTitle)
-			parseStep(&ps)
-
-			// If we just finished parsing a step or the title, we are left possibly pointing to the opening
-			// <h2> of another step. Update the flag accordingly.
-			inStepTitle = (ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2)
-		} else {
-			// If we had some intermediate blank lines between step, and are out of one, check if we don't reenter
-			// into a new step.
-			inStepTitle = (ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2)
-		}
-
-	}
-	// If not EOF, an error occurred in tokenization.
-	if err := ps.tzr.Err(); err != io.EOF {
-		return nil, err
-	}
-
-	finalizeCodelab(&ps)
-	return ps.c, nil
-}
-
-// parseMetadata handles the metadata section preceding a codelab.
-// It assumes the tokenizer is pointing to the first <p>/.
-// It returns any errors it encounters, and leaves the tokenizer pointing at the <h1>
-// starting the codelab title, or at io.EOF.
-func parseMetadata(ps *parserState) error {
-	m := map[string]string{}
-	// Iterate over the metadata elements, constructing a map of the metadata.
-	for ; ps.t.Type != html.ErrorToken && ps.t.DataAtom != atom.H1; ps.advance() {
-		if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.P {
-			// Advance to text.
-			ps.advance()
-			// Split the keys from values.
-			s := metadataRegexp.FindStringSubmatch(ps.t.Data)
-			if len(s) != 3 {
-				return fmt.Errorf("invalid metadata format: %v", s)
+		case ds.cur.DataAtom == atom.P && ds.clab.ID == "":
+			if err := parseMetadata(ds); err != nil {
+				return nil, err
 			}
-			k := strings.ToLower(strings.TrimSpace(s[1]))
-			v := strings.TrimSpace(s[2])
-			m[k] = v
+			continue
+		case ds.cur.DataAtom == atom.H2:
+			newStep(ds)
+			continue
+		}
+		// ignore everything else before the first step
+		if ds.step != nil {
+			parseTop(ds)
 		}
 	}
-	addMetadataToCodelab(m, ps.c)
-	return nil
+
+	finalizeStep(ds.step) // TODO: last ds.step is never finalized in newStep
+	ds.clab.Tags = unique(ds.clab.Tags)
+	sort.Strings(ds.clab.Tags)
+	ds.clab.Duration = int(ds.totdur.Minutes())
+	return ds.clab, nil
 }
 
 // parseStep handles an entire step in a codelab. It assumes the tokenizer is pointing to the </h2> that ends the step's title.
@@ -217,30 +257,10 @@ func parseStep(ps *parserState) error {
 	if ps.t.Type == html.TextToken {
 		ps.advance()
 	}
-	if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.P {
-		if err := handleDurationHint(ps); err != nil {
-			return err
-		}
-	}
-
-	// Track text styling settings.
-	var bold, italic bool
 
 	// Continue reading tokens in order, stopping on an error or the beginning of another step.
 	for ; ps.t.Type != html.ErrorToken && !(ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2); ps.advance() {
 
-		// Handle <h3> through <h6>.
-		if ps.t.Type == html.StartTagToken && (ps.t.DataAtom == atom.H3 || ps.t.DataAtom == atom.H4 || ps.t.DataAtom == atom.H5 || ps.t.DataAtom == atom.H6) {
-			handleHeader(ps)
-		}
-		// Handle <pre>.
-		if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.Pre {
-			handleFencedCodeBlock(ps)
-		}
-		// Handle <code>.
-		if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.Code {
-			handleInlineCodeBlock(ps)
-		}
 		// Handle <ul> and <ol>.
 		if ps.t.Type == html.StartTagToken && (ps.t.DataAtom == atom.Ul || ps.t.DataAtom == atom.Ol) {
 			handleList(ps)
@@ -249,119 +269,8 @@ func parseStep(ps *parserState) error {
 		if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.Dt {
 			handleInfobox(ps)
 		}
-		// Handle <em>.
-		if ps.t.DataAtom == atom.Em {
-			italic = ps.t.Type == html.StartTagToken
-		}
-		// Hande <strong>.
-		if ps.t.DataAtom == atom.Strong {
-			bold = ps.t.Type == html.StartTagToken
-		}
-		// Handle <img>.
-		if ps.t.DataAtom == atom.Img {
-			handleImage(ps)
-		}
-		// Handle <a>.
-		if ps.t.DataAtom == atom.A && ps.t.Type == html.StartTagToken {
-			handleLink(ps)
-		}
-		// Handle text.
-		if ps.t.Type == html.TextToken {
-			n := newBreaklessTextNode(ps.t.Data)
-			n.Bold = bold
-			n.Italic = italic
-			ps.emit(n)
-		}
 	}
 	return nil
-}
-
-// handleCodelabTitle takes care of setting the title for the codelab. It assumes the tokenizer is pointing to <h1>.
-func handleCodelabTitle(ps *parserState) {
-	ps.advance()
-	ps.c.Title = ps.t.Data
-	ps.advance()
-}
-
-// processDuration expects a string expressing a duration in hours and minutes, delimited by a colon or a period, such as 1:30, 2.45, or 0:90.
-// It returns an equivalent time.Duration, or an error if one occurs.
-func processDuration(d string) (time.Duration, error) {
-	s := durationRegexp.FindStringSubmatch(d)
-	if len(s) == 3 {
-		h, err := strconv.ParseInt(s[1], 10, 64)
-		if err != nil {
-			return 0, err
-		}
-		m, err := strconv.ParseInt(s[2], 10, 64)
-		if err != nil {
-			return 0, err
-		}
-		return time.Duration(h)*time.Hour + time.Duration(m)*time.Minute, nil
-	}
-	if d == "0" {
-		return 0, nil
-	}
-	return 0, errors.New("unrecognized duration string")
-}
-
-// handleDurationHint parses the optional duration string at the beginning of a codelab step. It assumes the tokenizer is
-// pointing at the inital <p> of the step. It returns any errors it encounters in the process.
-func handleDurationHint(ps *parserState) error {
-	ps.advance()
-	// If this isn't text, this also isnt a duration string.
-	if ps.t.Type != html.TextToken {
-		return nil
-	}
-	s := durationHintRegexp.FindStringSubmatch(ps.t.Data)
-	// This is possibly not a duration string, so bail out if we don't have strong indications that it is.
-	var err error
-	if len(s) >= 2 {
-		ps.currentStep.Duration, err = processDuration(s[1])
-		if err != nil {
-			return err
-		}
-	}
-	ps.advance()
-	// Now we're on the closing p tag of the duration string.
-	return nil
-}
-
-// finalizeCodelab takes care of all work that should be performed after the entire input is parsed.
-// It takes a pointer to a parserState object, and acts on the codelab referenced in it.
-func finalizeCodelab(ps *parserState) {
-	computeTotalDuration(ps.c)
-}
-
-// computeTotalDuration computes the total duration for a codelab by summing the duration of each step.
-// It takes a pointer to a codelab, and acts on that codelab.
-func computeTotalDuration(c *types.Codelab) {
-	for _, v := range c.Steps {
-		c.Duration += int(v.Duration.Minutes())
-	}
-}
-
-// handleHeader handles header tags, h3-h6. It assumes the tokenizer is pointing to <h_>.
-// It takes a pointer to a parserState object.
-func handleHeader(ps *parserState) {
-	var l int
-	switch ps.t.DataAtom {
-	case atom.H3:
-		l = 3
-		break
-	case atom.H4:
-		l = 4
-		break
-	case atom.H5:
-		l = 5
-		break
-	case atom.H6:
-		l = 6
-		break
-	}
-	ps.advance()
-	n := types.NewHeaderNode(l, newBreaklessTextNode(ps.t.Data))
-	ps.emit(n)
-	ps.advance() // Now we are on the closing tag.
 }
 
 // handleList handles both ordered and unordered lists. It assumes the tokenizer is pointing to <ul> or <ol>.
@@ -404,86 +313,134 @@ func handleInfobox(ps *parserState) {
 	ps.advance()
 }
 
-// handleImage handles <img> tags. It assumes the tokenizer is pointing to the <img> tag itself.
-func handleImage(ps *parserState) {
-	var n *types.ImageNode
-	var alt, title string
-	for _, v := range ps.t.Attr {
-		switch strings.ToLower(v.Key) {
-		case "src":
-			n = types.NewImageNode(v.Val)
-		case "alt":
-			alt = v.Val
-		case "title":
-			title = v.Val
-		}
-	}
-	if n != nil {
-		n.Alt = alt
-		n.Title = title
-		ps.emit(n)
-	}
+// newBreaklessTextNode accepts a string, and constructs a new TextNode containing the string,
+// but replaces all line breaks in the string with spaces first. It returns a pointer to the created node.
+func newBreaklessTextNode(s string) *types.TextNode {
+	s = strings.Replace(s, "\n", " ", -1)
+	return types.NewTextNode(s)
 }
 
-// handleLink handles links and download buttons, both of which appear as <a> elements.
-// It assumes the tokenizer is pointing to the <a> tag itself.
-func handleLink(ps *parserState) {
-	var href string
-	for _, v := range ps.t.Attr {
-		if v.Key == "href" {
-			href = v.Val
-		}
+/////////////////////////// From new
+
+func finalizeStep(s *types.Step) {
+	if s == nil {
+		return
 	}
-	// Advance to text.
-	ps.advance()
-	// Check for the download button case.
-	s := downloadButtonRegexp.FindStringSubmatch(ps.t.Data)
-	if len(s) >= 2 {
-		// It's a button, emit a button element with all the pretty styling enabled.
-		ps.emit(types.NewButtonNode(true, true, true, newBreaklessTextNode(s[1])))
-	} else {
-		// It's not a button, emit an ordinary link.
-		ps.emit(types.NewURLNode(href, newBreaklessTextNode(ps.t.Data)))
-	}
-	// Advance to </a>.
-	ps.advance()
+	s.Tags = unique(s.Tags)
+	sort.Strings(s.Tags)
+	s.Content.Nodes = blockNodes(s.Content.Nodes)
+	s.Content.Nodes = compactNodes(s.Content.Nodes)
 }
 
-// handleFencedCodeBlock handles all code elements wrapped in ```s.
-// It assumes the tokenizer is pointing to the <pre> tag establishing the block.
-func handleFencedCodeBlock(ps *parserState) {
-	// Advance to <code>.
-	ps.advance()
-	// Check for the presence of a language hint.
-	var lang string
-	for _, v := range ps.t.Attr {
-		if v.Key == "class" {
-			// Try to extract a valid language string from the class.
-			s := languageRegexp.FindStringSubmatch(v.Val)
-			if len(s) == 2 {
-				lang = s[1]
+// parseTop parses nodes tree starting at, and including, ds.cur.
+// Parsed nodes are squashed and added to ds.step content.
+func parseTop(ds *docState) {
+	if n, ok := parseNode(ds); ok {
+		if n != nil {
+			ds.appendNodes(n)
+		}
+		return
+	}
+	ds.push(nil)
+	nn := parseSubtree(ds)
+	ds.pop()
+	ds.appendNodes(compactNodes(nn)...)
+}
+
+// parseSubtree parses children of root recursively.
+// It may modify ds.cur, so the caller is responsible for wrapping
+// this function in ds.push and ds.pop.
+func parseSubtree(ds *docState) []types.Node {
+	var nodes []types.Node
+	for ds.cur = ds.cur.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
+		if n, ok := parseNode(ds); ok {
+			if n != nil {
+				nodes = append(nodes, n)
 			}
+			continue
 		}
+		ds.push(nil)
+		nodes = append(nodes, parseSubtree(ds)...)
+		ds.pop()
 	}
-	// Advance to text content.
-	ps.advance()
-	n := types.NewCodeNode(ps.t.Data, false)
-	n.Lang = lang
-	ps.emit(n)
-	// Advance to </pre>.
-	ps.multiAdvance(2)
+	return nodes
 }
 
-// It assumes the tokenizer is pointing to the <code> tag establishing the block.
-func handleInlineCodeBlock(ps *parserState) {
-	// Advance to text content.
-	ps.advance()
-	// Inlined code is actually a text node with special formatting.
-	n := types.NewTextNode(ps.t.Data)
-	n.Code = true
-	ps.emit(n)
-	// Advance to </code>.
-	ps.advance()
+// parseNode parses html node hn if it is a recognized node construction.
+// It returns a bool indicating that hn has been accepted and parsed.
+// Some nodes result in metadata parsing, in which case the returned bool is still true,
+// but resuling types.Node is nil.
+//
+// The flag argument modifies default behavour of the func.
+func parseNode(ds *docState) (types.Node, bool) {
+	// we have \n end of line nodes after each tag from the blackfriday parser.
+	// We just want to ignore them as it makes previous node detection fuzzy.
+	if ds.cur.Type == html.TextNode && strings.TrimSpace(ds.cur.Data) == "" {
+		return nil, true
+	}
+	switch {
+	case isMeta(ds.cur):
+		metaStep(ds)
+		return nil, true
+	case ds.cur.Type == html.TextNode || ds.cur.DataAtom == atom.Br:
+		return text(ds), true
+	case ds.cur.DataAtom == atom.A:
+		return link(ds), true
+	case ds.cur.DataAtom == atom.Img:
+		return image(ds), true
+	case isButton(ds.cur):
+		return button(ds), true
+	case isHeader(ds.cur):
+		return header(ds), true
+	case isList(ds.cur):
+		return list(ds), true
+	case isConsole(ds.cur):
+		return code(ds, true), true
+	case isCode(ds.cur):
+		return code(ds, false), true
+	case isInfobox(ds.cur):
+		return infobox(ds), true
+	case isSurvey(ds.cur):
+		return survey(ds), true
+	case isTable(ds.cur):
+		return table(ds), true
+	}
+	return nil, false
+}
+
+// newStep creates a new codelab step from ds.cur
+// and finalizes nodes of the previous step.
+func newStep(ds *docState) {
+	t := stringifyNode(ds.cur, true)
+	if t == "" {
+		return
+	}
+	finalizeStep(ds.step)
+	ds.step = ds.clab.NewStep(t)
+	ds.env = nil
+}
+
+// parseMetadata parses the first <p> of a codelab doc to populate metadata
+func parseMetadata(ds *docState) error {
+	m := map[string]string{}
+	// Split the keys from values.
+	d := ds.cur.FirstChild.Data
+	scanner := bufio.NewScanner(strings.NewReader(d))
+	for scanner.Scan() {
+		s := metadataRegexp.FindStringSubmatch(scanner.Text())
+		if len(s) != 3 {
+			continue
+		}
+
+		k := strings.ToLower(strings.TrimSpace(s[1]))
+		v := strings.TrimSpace(s[2])
+		m[k] = v
+
+	}
+	if _, ok := m["id"]; !ok || m["id"] == "" {
+		return fmt.Errorf("invalid metadata format, missing at least id: %v", m)
+	}
+	return addMetadataToCodelab(m, ds.clab)
 }
 
 // standardSplit takes a string, splits it along a comma delimiter, then on each fragment, trims Unicode spaces
@@ -498,7 +455,7 @@ func standardSplit(s string) []string {
 
 // addMetadataToCodelab takes a map of strings to strings, and a pointer to a Codelab. It reads the keys of the map,
 // and assigns the values to any keys that match a codelab metadata field as defined by the meta* constants.
-func addMetadataToCodelab(m map[string]string, c *types.Codelab) {
+func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 	for k, v := range m {
 		switch k {
 		case metaAuthor:
@@ -542,11 +499,436 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab) {
 			break
 		}
 	}
+	return nil
 }
 
-// newBreaklessTextNode accepts a string, and constructs a new TextNode containing the string,
-// but replaces all line breaks in the string with spaces first. It returns a pointer to the created node.
-func newBreaklessTextNode(s string) *types.TextNode {
-	s = strings.Replace(s, "\n", " ", -1)
-	return types.NewTextNode(s)
+// metaStep parses a codelab step meta instructions.
+func metaStep(ds *docState) {
+	var text string
+	for {
+		text += stringifyNode(ds.cur, false)
+		if ds.cur.NextSibling == nil || !isMeta(ds.cur.NextSibling) {
+			break
+		}
+		ds.cur = ds.cur.NextSibling
+	}
+	meta := strings.SplitN(strings.TrimSpace(text), metaSep, 2)
+	if len(meta) != 2 {
+		return
+	}
+	value := strings.TrimSpace(meta[1])
+	switch strings.ToLower(strings.TrimSpace(meta[0])) {
+	case metaDuration:
+		parts := strings.SplitN(value, ":", len(durFactor))
+		if len(parts) == 1 {
+			parts = append(parts, "0") // default number is minutes
+		}
+		var d time.Duration
+		for i, v := range parts {
+			vi, err := strconv.Atoi(v)
+			if err != nil {
+				continue
+			}
+			d += time.Duration(vi) * durFactor[len(durFactor)-len(parts)+i]
+		}
+		ds.step.Duration = roundDuration(d)
+		ds.totdur += ds.step.Duration
+	case metaEnvironment:
+		ds.env = unique(stringSlice(value))
+		toLowerSlice(ds.env)
+		ds.step.Tags = append(ds.step.Tags, ds.env...)
+		ds.clab.Tags = append(ds.clab.Tags, ds.env...)
+		if ds.lastNode != nil && types.IsHeader(ds.lastNode.Type()) {
+			ds.lastNode.MutateEnv(ds.env)
+		}
+	}
+}
+
+// header creates a HeaderNode out of hn.
+// It returns nil if header content is empty.
+// A non-empty header will always reset ds.env to nil.
+//
+// Given that headers do not belong to any block, the returned node's B
+// field is always nil.
+func header(ds *docState) types.Node {
+	ds.push(nil)
+	nodes := parseSubtree(ds)
+	ds.pop()
+	if len(nodes) == 0 {
+		return nil
+	}
+	n := types.NewHeaderNode(headerLevel[ds.cur.DataAtom], nodes...)
+	switch strings.ToLower(stringifyNode(ds.cur, true)) {
+	case headerLearn, headerCover:
+		n.MutateType(types.NodeHeaderCheck)
+	case headerFAQ:
+		n.MutateType(types.NodeHeaderFAQ)
+	}
+	ds.env = nil
+	return n
+}
+
+// infobox doesn't have a block parent.
+func infobox(ds *docState) types.Node {
+	ds.push(nil)
+	nn := parseSubtree(ds)
+	nn = blockNodes(nn)
+	nn = compactNodes(nn)
+	ds.pop()
+	if len(nn) == 0 {
+		return nil
+	}
+	kind := types.InfoboxPositive
+	if isInfoboxNegative(ds.cur) {
+		kind = types.InfoboxNegative
+	}
+	return types.NewInfoboxNode(kind, nn...)
+}
+
+// table parses an arbitrary <table> element and its children.
+// It may return other elements if the table is just a wrap.
+func table(ds *docState) types.Node {
+	var rows [][]*types.GridCell
+	for _, tr := range findChildAtoms(ds.cur, atom.Tr) {
+		ds.push(tr)
+		r := tableRow(ds)
+		ds.pop()
+		rows = append(rows, r)
+	}
+	if len(rows) == 0 {
+		return nil
+	}
+	return types.NewGridNode(rows...)
+}
+
+func tableRow(ds *docState) []*types.GridCell {
+	var row []*types.GridCell
+	for td := findAtom(ds.cur, atom.Td); td != nil; td = td.NextSibling {
+		if td.DataAtom != atom.Td {
+			continue
+		}
+		ds.push(td)
+		nn := parseSubtree(ds)
+		nn = blockNodes(nn)
+		nn = compactNodes(nn)
+		ds.pop()
+		if len(nn) == 0 {
+			continue
+		}
+		cs, err := strconv.Atoi(nodeAttr(td, "colspan"))
+		if err != nil {
+			cs = 1
+		}
+		rs, err := strconv.Atoi(nodeAttr(td, "rowspan"))
+		if err != nil {
+			rs = 1
+		}
+		cell := &types.GridCell{
+			Colspan: cs,
+			Rowspan: rs,
+			Content: types.NewListNode(nn...),
+		}
+		row = append(row, cell)
+	}
+	return row
+}
+
+// survey expects a header followed by 1 or more lists.
+func survey(ds *docState) types.Node {
+	// find direct parent of the survey elements
+	hn := findAtom(ds.cur, atom.Ul)
+	if hn == nil {
+		return nil
+	}
+	hn = hn.Parent
+	// parse survey elements
+	var gg []*types.SurveyGroup
+	for c := hn.FirstChild; c != nil; {
+		if !isHeader(c) {
+			c = c.NextSibling
+			continue
+		}
+		opt, next := surveyOpt(c.NextSibling)
+		if len(opt) > 0 {
+			gg = append(gg, &types.SurveyGroup{
+				Name:    stringifyNode(c, true),
+				Options: opt,
+			})
+		}
+		c = next
+	}
+	if len(gg) == 0 {
+		return nil
+	}
+	ds.survey++
+	id := fmt.Sprintf("%s-%d", ds.clab.ID, ds.survey)
+	return types.NewSurveyNode(id, gg...)
+}
+
+func surveyOpt(hn *html.Node) ([]string, *html.Node) {
+	var opt []string
+	for ; hn != nil; hn = hn.NextSibling {
+		if isHeader(hn) {
+			return opt, hn
+		}
+		if hn.DataAtom != atom.Ul {
+			continue
+		}
+		for li := findAtom(hn, atom.Li); li != nil; li = li.NextSibling {
+			if li.DataAtom != atom.Li {
+				continue
+			}
+			opt = append(opt, stringifyNode(li, true))
+		}
+	}
+	return opt, nil
+}
+
+// code parses hn as inline or block codes.
+// Inline code node will be of type NodeText.
+func code(ds *docState, term bool) types.Node {
+	elem := findParent(ds.cur, atom.Pre)
+	// inline <code> text
+	if elem == nil {
+		return text(ds)
+	}
+	// block code or terminal
+	v := stringifyNode(ds.cur, false)
+	if v == "" {
+		if countDirect(ds.cur.Parent) > 1 {
+			return nil
+		}
+		v = "\n"
+	} else if ds.cur.Parent.FirstChild == ds.cur && ds.cur.Parent.DataAtom != atom.Span {
+		v = "\n" + v
+	}
+	n := types.NewCodeNode(v, term)
+	n.MutateBlock(elem)
+	return n
+}
+
+// list parses <ul> and <ol> lists.
+// It returns nil if the list has no items.
+func list(ds *docState) types.Node {
+	typ := nodeAttr(ds.cur, "type")
+	if ds.cur.DataAtom == atom.Ol && typ == "" {
+		typ = "1"
+	}
+	start, _ := strconv.Atoi(nodeAttr(ds.cur, "start"))
+	list := types.NewItemsListNode(typ, start)
+	for hn := findAtom(ds.cur, atom.Li); hn != nil; hn = hn.NextSibling {
+		if hn.DataAtom != atom.Li {
+			continue
+		}
+		ds.push(hn)
+		nn := parseSubtree(ds)
+		nn = compactNodes(nn)
+		ds.pop()
+		if len(nn) > 0 {
+			list.NewItem(nn...)
+		}
+	}
+	if len(list.Items) == 0 {
+		return nil
+	}
+	if ds.lastNode != nil {
+		switch ds.lastNode.Type() {
+		case types.NodeHeaderCheck:
+			list.MutateType(types.NodeItemsCheck)
+		case types.NodeHeaderFAQ:
+			list.MutateType(types.NodeItemsFAQ)
+		}
+	}
+	return list
+}
+
+// image creates a new ImageNode out of hn, parsing its src attribute.
+// It returns nil if src is empty.
+// It may also return a YouTubeNode if alt property contains specific substring.
+func image(ds *docState) types.Node {
+	if strings.Contains(nodeAttr(ds.cur, "alt"), "youtube.com/watch") {
+		return youtube(ds)
+	}
+	s := nodeAttr(ds.cur, "src")
+	if s == "" {
+		return nil
+	}
+
+	n := types.NewImageNode(s)
+
+	if alt := nodeAttr(ds.cur, "alt"); alt != "" {
+		n.Alt = alt
+	}
+
+	if title := nodeAttr(ds.cur, "title"); title != "" {
+		n.Title = title
+	}
+
+	n.MutateBlock(findBlockParent(ds.cur))
+	return n
+}
+
+func youtube(ds *docState) types.Node {
+	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+	if err != nil {
+		return nil
+	}
+	v := u.Query().Get("v")
+	if v == "" {
+		return nil
+	}
+	n := types.NewYouTubeNode(v)
+	n.MutateBlock(true)
+	return n
+}
+
+// button returns either a text node, if no <a> child element is present,
+// or link node, containing the button.
+// It returns nil if no content nodes are present.
+func button(ds *docState) types.Node {
+	a := findAtom(ds.cur, atom.A)
+	if a == nil {
+		return text(ds)
+	}
+	href := nodeAttr(a, "href")
+	if href == "" {
+		return nil
+	}
+
+	ds.push(a)
+	nodes := parseSubtree(ds)
+	ds.pop()
+	if len(nodes) == 0 {
+		return nil
+	}
+
+	s := strings.ToLower(stringifyNode(a, true))
+	dl := strings.HasPrefix(s, "download ")
+	btn := types.NewButtonNode(true, true, dl, nodes...)
+
+	ln := types.NewURLNode(href, btn)
+	ln.MutateBlock(findBlockParent(ds.cur))
+	return ln
+}
+
+// Link creates a URLNode out of hn, parsing href and name attributes.
+// It returns nil if hn contents is empty.
+// The resuling link's content is always a single text node.
+func link(ds *docState) types.Node {
+	href := nodeAttr(ds.cur, "href")
+
+	text := stringifyNode(ds.cur, false)
+	if strings.TrimSpace(text) == "" {
+		return nil
+	}
+
+	t := types.NewTextNode(text)
+	if isBold(ds.cur.Parent) {
+		t.Bold = true
+	}
+	if isItalic(ds.cur.Parent) {
+		t.Italic = true
+	}
+	if isCode(ds.cur.Parent) {
+		t.Code = true
+	}
+	if href == "" || href[0] == '#' {
+		t.MutateBlock(findBlockParent(ds.cur))
+		return t
+	}
+
+	n := types.NewURLNode(href, t)
+	n.Name = nodeAttr(ds.cur, "name")
+	if v := nodeAttr(ds.cur, "target"); v != "" {
+		n.Target = v
+	}
+	n.MutateBlock(findBlockParent(ds.cur))
+	return n
+}
+
+// text creates a TextNode using hn.Data as contents.
+// It returns nil if hn.Data is empty or contains only space runes.
+func text(ds *docState) types.Node {
+	bold := isBold(ds.cur)
+	italic := isItalic(ds.cur)
+	code := isCode(ds.cur) || isConsole(ds.cur)
+
+	// TODO: verify whether this actually does anything
+	if a := findAtom(ds.cur, atom.A); a != nil {
+		ds.push(a)
+		l := link(ds)
+		ds.pop()
+		if l != nil {
+			l.MutateBlock(findBlockParent(ds.cur))
+			return l
+		}
+	}
+
+	v := stringifyNode(ds.cur, false)
+	n := types.NewTextNode(v)
+	n.Bold = bold
+	n.Italic = italic
+	n.Code = code
+	n.MutateBlock(findBlockParent(ds.cur))
+	return n
+}
+
+// slug converts any string s to a slug.
+// It replaces [^a-z0-9\-] with non-repeating '-'.
+func slug(s string) string {
+	var buf bytes.Buffer
+	dash := true
+	for _, r := range strings.ToLower(s) {
+		if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' || r == '-' && !dash {
+			buf.WriteRune(r)
+			dash = r == '-'
+			continue
+		}
+		if !dash {
+			buf.WriteRune('-')
+			dash = true
+		}
+	}
+	return buf.String()
+}
+
+// stringSlice splits v by comma "," while ignoring empty elements.
+func stringSlice(v string) []string {
+	f := strings.Split(v, ",")
+	a := f[0:0]
+	for _, s := range f {
+		s = strings.TrimSpace(s)
+		if s != "" {
+			a = append(a, s)
+		}
+	}
+	return a
+}
+
+// unique removes duplicates from slice.
+// Original arg is not modified. Elements order is preserved.
+func unique(a []string) []string {
+	seen := make(map[string]bool, len(a))
+	res := make([]string, 0, len(a))
+	for _, s := range a {
+		if !seen[s] {
+			res = append(res, s)
+			seen[s] = true
+		}
+	}
+	return res
+}
+
+func toLowerSlice(a []string) {
+	for i, s := range a {
+		a[i] = strings.ToLower(s)
+	}
+}
+
+func roundDuration(d time.Duration) time.Duration {
+	rd := time.Duration(d.Minutes()) * time.Minute
+	if rd < d {
+		rd += time.Minute
+	}
+	return rd
 }
