@@ -64,9 +64,6 @@ const (
 
 var metadataRegexp = regexp.MustCompile(`(.+?):(.+)`)
 var languageRegexp = regexp.MustCompile(`language-(.+)`)
-var durationHintRegexp = regexp.MustCompile(`(?i)Duration:? (.+)`)
-var durationRegexp = regexp.MustCompile(`(\d+)[:.](\d{2})$`)
-var downloadButtonRegexp = regexp.MustCompile(`^(?i)Download(.+)$`)
 
 var (
 	// durFactor is a slice of duration parser multipliers,
@@ -158,36 +155,6 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 	ds.lastNode = nn[len(nn)-1]
 }
 
-/////////////////////// REMOVE
-// parserState encapsulates the state of the parser at any given step.
-type parserState struct {
-	tzr *html.Tokenizer
-	c   *types.Codelab
-	t   html.Token
-
-	currentStep *types.Step
-}
-
-// emit accepts a node, and either writes the node directly to the current step, or writes the node to the node buffer.
-func (ps *parserState) emit(n types.Node) {
-	ps.currentStep.Content.Append(n)
-}
-
-// advance moves the tokenizer to the next token and updates the token convenience variable.
-func (ps *parserState) advance() {
-	ps.tzr.Next()
-	ps.t = ps.tzr.Token()
-}
-
-// multiAdvance is a convenience method for repeatedly advancing.
-func (ps *parserState) multiAdvance(n int) {
-	for i := 0; i < n; i++ {
-		ps.advance()
-	}
-}
-
-/////////////////////// /REMOVE
-
 // claatMarkdown calls the Blackfriday Markdown parser with some special addons selected. It takes a byte slice as a parameter,
 // and returns its result as a byte slice.
 func claatMarkdown(b []byte) []byte {
@@ -247,80 +214,6 @@ func parseMarkup(markup *html.Node) (*types.Codelab, error) {
 	ds.clab.Duration = int(ds.totdur.Minutes())
 	return ds.clab, nil
 }
-
-// parseStep handles an entire step in a codelab. It assumes the tokenizer is pointing to the </h2> that ends the step's title.
-// It returns any errors it encounters, and leaves the tokenizer pointing at the <h2> starting the next step, or at io.EOF.
-func parseStep(ps *parserState) error {
-	// Initially check for a duration tag.
-	ps.advance()
-	//Sometimes raw newlines are injected into the output before the <p> - we need to bypass them if present.
-	if ps.t.Type == html.TextToken {
-		ps.advance()
-	}
-
-	// Continue reading tokens in order, stopping on an error or the beginning of another step.
-	for ; ps.t.Type != html.ErrorToken && !(ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.H2); ps.advance() {
-
-		// Handle <ul> and <ol>.
-		if ps.t.Type == html.StartTagToken && (ps.t.DataAtom == atom.Ul || ps.t.DataAtom == atom.Ol) {
-			handleList(ps)
-		}
-		// Handle <dt>.
-		if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.Dt {
-			handleInfobox(ps)
-		}
-	}
-	return nil
-}
-
-// handleList handles both ordered and unordered lists. It assumes the tokenizer is pointing to <ul> or <ol>.
-// It takes a pointer to a parserState object.
-func handleList(ps *parserState) {
-	start := 0
-	if ps.t.DataAtom == atom.Ol {
-		start = 1
-	}
-	iln := types.NewItemsListNode("", start)
-
-	for ps.advance(); ps.t.Type != html.ErrorToken && !(ps.t.Type == html.EndTagToken && (ps.t.DataAtom == atom.Ul || ps.t.DataAtom == atom.Ol)); ps.advance() {
-		if ps.t.Type == html.StartTagToken && ps.t.DataAtom == atom.Li {
-			ps.advance()
-			iln.NewItem(newBreaklessTextNode(ps.t.Data))
-		}
-	}
-	ps.emit(iln)
-}
-
-// handleInfobox handles the colored call-out boxes in codelabs. It assumes the tokenizer is pointing to <dt>.
-func handleInfobox(ps *parserState) {
-	// Advance to <dt>'s text content.
-	ps.advance()
-	// Deduce the kind of infobox.
-	var kind types.InfoboxKind
-	sentiment := strings.ToLower(ps.t.Data)
-	if sentiment == "positive" {
-		kind = types.InfoboxPositive
-	} else if sentiment == "negative" {
-		kind = types.InfoboxNegative
-	}
-
-	// Advance to <dd>'s text content.
-	ps.multiAdvance(4)
-	n := types.NewInfoboxNode(kind, newBreaklessTextNode(ps.t.Data))
-	ps.emit(n)
-
-	// Advance to </dd>.
-	ps.advance()
-}
-
-// newBreaklessTextNode accepts a string, and constructs a new TextNode containing the string,
-// but replaces all line breaks in the string with spaces first. It returns a pointer to the created node.
-func newBreaklessTextNode(s string) *types.TextNode {
-	s = strings.Replace(s, "\n", " ", -1)
-	return types.NewTextNode(s)
-}
-
-/////////////////////////// From new
 
 func finalizeStep(s *types.Step) {
 	if s == nil {
