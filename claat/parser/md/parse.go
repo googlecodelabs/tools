@@ -570,6 +570,9 @@ func header(ds *docState) types.Node {
 
 // infobox doesn't have a block parent.
 func infobox(ds *docState) types.Node {
+	negativeInfoBox := isInfoboxNegative(ds.cur)
+	// iterate twice on next sibling as there is a \n node in between
+	ds.cur = ds.cur.NextSibling.NextSibling
 	ds.push(nil)
 	nn := parseSubtree(ds)
 	nn = blockNodes(nn)
@@ -579,7 +582,7 @@ func infobox(ds *docState) types.Node {
 		return nil
 	}
 	kind := types.InfoboxPositive
-	if isInfoboxNegative(ds.cur) {
+	if negativeInfoBox {
 		kind = types.InfoboxNegative
 	}
 	return types.NewInfoboxNode(kind, nn...)

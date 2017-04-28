@@ -76,37 +76,29 @@ func isCode(hn *html.Node) bool {
 }
 
 func isButton(hn *html.Node) bool {
-	// TODO
+	// TODO: implements
 	return false
-	//return hasClassStyle(css, hn, "background-color", buttonColor)
 }
 
 func isInfobox(hn *html.Node) bool {
-	if hn.DataAtom != atom.Td {
+	if hn.DataAtom != atom.Dt {
 		return false
 	}
-	// TODO
-	return false
-	//return hasClassStyle(css, hn, "background-color", ibPositiveColor) ||
-	//	isInfoboxNegative(css, hn)
+	return strings.ToLower(hn.FirstChild.Data) == "positive" || isInfoboxNegative(hn)
 }
 
 func isInfoboxNegative(hn *html.Node) bool {
-	if hn.DataAtom != atom.Td {
+	if hn.DataAtom != atom.Dt {
 		return false
 	}
-	// TODO
-	return false
-	//return hasClassStyle(css, hn, "background-color", ibNegativeColor)
+	return strings.ToLower(hn.FirstChild.Data) == "negative"
 }
 
 func isSurvey(hn *html.Node) bool {
-	if hn.DataAtom != atom.Td {
+	if hn.DataAtom != atom.Dt {
 		return false
 	}
-	// TODO
-	return false
-	//return hasClassStyle(css, hn, "background-color", surveyColor)
+	return strings.ToLower(hn.FirstChild.Data) == "survey"
 }
 
 func isTable(hn *html.Node) bool {
