@@ -242,7 +242,7 @@ func (hw *htmlWriter) list(n *types.ListNode) {
 
 func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 	tag := "ul"
-	if n.Type() == types.NodeItemsList && n.Start > 0 {
+	if n.Type() == types.NodeItemsList && (n.Start > 0 || n.ListType != "") {
 		tag = "ol"
 	}
 	hw.writeBytes(lessThan)
