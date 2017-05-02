@@ -529,29 +529,27 @@ func tableRow(ds *docState) []*types.GridCell {
 	return row
 }
 
-// survey expects a header followed by 1 or more lists.
+// survey expects a title followed by 1 or more lists. They all are in the same dd element.
 func survey(ds *docState) types.Node {
-	// find direct parent of the survey elements
-	hn := findAtom(ds.cur, atom.Ul)
-	if hn == nil {
-		return nil
-	}
-	hn = hn.Parent
-	// parse survey elements
 	var gg []*types.SurveyGroup
-	for c := hn.FirstChild; c != nil; {
-		if !isHeader(c) {
-			c = c.NextSibling
+	hn := ds.cur
+	for hn = hn.NextSibling; hn != nil; hn = hn.NextSibling {
+		ds.cur = ds.cur.NextSibling
+		if hn.DataAtom != atom.Dd {
 			continue
 		}
-		opt, next := surveyOpt(c.NextSibling)
+		optionsNode := findAtom(hn, atom.Li)
+		if optionsNode == nil {
+			fmt.Println("No survey results list")
+			continue
+		}
+		opt := surveyOpt(optionsNode)
 		if len(opt) > 0 {
 			gg = append(gg, &types.SurveyGroup{
-				Name:    stringifyNode(c, true),
+				Name:    strings.TrimSpace(hn.FirstChild.Data),
 				Options: opt,
 			})
 		}
-		c = next
 	}
 	if len(gg) == 0 {
 		return nil
@@ -561,23 +559,15 @@ func survey(ds *docState) types.Node {
 	return types.NewSurveyNode(id, gg...)
 }
 
-func surveyOpt(hn *html.Node) ([]string, *html.Node) {
+func surveyOpt(hn *html.Node) []string {
 	var opt []string
 	for ; hn != nil; hn = hn.NextSibling {
-		if isHeader(hn) {
-			return opt, hn
-		}
-		if hn.DataAtom != atom.Ul {
+		if hn.DataAtom != atom.Li {
 			continue
 		}
-		for li := findAtom(hn, atom.Li); li != nil; li = li.NextSibling {
-			if li.DataAtom != atom.Li {
-				continue
-			}
-			opt = append(opt, stringifyNode(li, true))
-		}
+		opt = append(opt, stringifyNode(hn, true))
 	}
-	return opt, nil
+	return opt
 }
 
 // code parses hn as inline or block codes.
