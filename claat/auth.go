@@ -26,7 +26,6 @@ import (
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 )
 
 const (
@@ -47,9 +46,12 @@ var (
 		providerGoogle: {
 			ClientID:     googClient,
 			ClientSecret: googSecret,
-			Endpoint:     google.Endpoint,
 			Scopes:       []string{scopeDriveReadOnly},
 			RedirectURL:  "urn:ietf:wg:oauth:2.0:oob",
+			Endpoint: oauth2.Endpoint{
+				AuthURL:  "https://accounts.google.com/o/oauth2/auth",
+				TokenURL: "https://accounts.google.com/o/oauth2/token",
+			},
 		},
 	}
 
