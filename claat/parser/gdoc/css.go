@@ -20,8 +20,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/crhym3/csslex"
-
+	"github.com/x1ddos/csslex"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
