@@ -1,0 +1,26 @@
+sudo: false
+language: go
+go:
+- 1.8.x
+- 1.9.x
+- master
+install:
+- go get github.com/golang/lint/golint
+- go get -t -d ./claat/...
+script:
+- make -C claat test lint
+
+#before_deploy:
+#- make -C claat release -j2
+#deploy:
+#  provider: releases
+#  api_key:
+#    secure: "TODO"
+#  on:
+#    tags: true
+#  file:
+#  - bin/claat-darwin-amd64
+#  - bin/claat-linux-amd64
+#  - bin/claat-linux-386
+#  - bin/claat-windows-amd64.exe
+#  - bin/claat-windows-386.exe
