@@ -72,6 +72,9 @@ func TestFetchRemoteDrive(t *testing.T) {
 		}
 		// metadata request
 		if strings.HasSuffix(r.URL.Path, "/files/doc-123") {
+			if v := r.FormValue("supportsTeamDrives"); v != "true" {
+				t.Errorf("supportsTeamDrives = %q; want 'true'", v)
+			}
 			b := ioutil.NopCloser(strings.NewReader(`{
 				"mimeType": "application/vnd.google-apps.document"
 			}`))
