@@ -9,15 +9,10 @@ For more info run `claat help`.
 ## Install
 
 The easiest way is to download pre-compiled binary.
-The binaries are available at
+The binaries, as well as their checksums are available at the
+[Releases page](https://github.com/googlecodelabs/tools/releases/latest).
 
-    https://claat.storage.googleapis.com/claat-darwin-amd64
-    https://claat.storage.googleapis.com/claat-linux-386
-    https://claat.storage.googleapis.com/claat-linux-amd64
-    https://claat.storage.googleapis.com/claat-windows-386.exe
-    https://claat.storage.googleapis.com/claat-windows-amd64.exe
-
-Alternatively, if you have Go installed and `GOPATH` set properly:
+Alternatively, if you have [Go installed](https://golang.org/doc/install):
 
     go get github.com/googlecodelabs/tools/claat
 

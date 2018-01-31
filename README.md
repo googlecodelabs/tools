@@ -1,5 +1,8 @@
 # tools
-Codelabs management &amp; hosting tools
+
+Codelabs management & hosting tools.
+See [claat](claat) directory for detailed description of the `claat` command
+line tool.
 
 Codelabs can be authored in Google Docs, using some simple formatting conventions. 
 In the near future, we're also planning to add codelab authoring via markdown syntax.
