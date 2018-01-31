@@ -1,8 +1,7 @@
 sudo: false
 language: go
 go:
-- 1.8.x
-- 1.9.x
+- 1.8.x # need for App Engine
 - master
 install:
 - go get github.com/golang/lint/golint
@@ -20,7 +19,7 @@ deploy:
   on:
     repo: googlecodelabs/tools
     tags: true
-    go: 1.9.x
+    go: master
   file:
   - claat/bin/claat-darwin-amd64
   - claat/bin/claat-linux-amd64
