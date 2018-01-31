@@ -10,17 +10,19 @@ install:
 script:
 - make -C claat test lint
 
-#before_deploy:
-#- make -C claat release -j2
-#deploy:
-#  provider: releases
-#  api_key:
-#    secure: "TODO"
-#  on:
-#    tags: true
-#  file:
-#  - bin/claat-darwin-amd64
-#  - bin/claat-linux-amd64
-#  - bin/claat-linux-386
-#  - bin/claat-windows-amd64.exe
-#  - bin/claat-windows-386.exe
+before_deploy:
+- make -C claat release -j2
+- cd claat/bin && sha1sum claat-* > sha1sum.txt
+deploy:
+  provider: releases
+  api_key:
+    secure: qvNA0W7KEKGF4s+FtjB0UeYSc8El8Y7Y3I8J+PzKAbR2HHXTq06OtH1pd2cS6k3ovh5tXAyos0FrFqr7XHohuDmM/CI0/f7PXhP1u7cJjnnvWnOJyYgvOSWjJg0sFlwdnxJ+6yaNlwfIkVfTG9COm7jovBikUn5YPfD8k0cxyoTAWSSY9bEwvAfH4FO08QVvdpIyLpFdvVqei4YXFEB74EaaAK7uqMOGOtB0NDsI9FzfZZjHvL2JWk6BwtQOMxXliHiM+FxaPN3Uq1QiKnd0nNY/47naijTx74neSbz3+R4XsOYwxzKvfEV8bbBmMlBfjRPpy0U/r7ywILykt5fHKqodDgmVUbItTyTD9CUUYbCCRvaXfaldmIC9jMBzxWRakDladJemmIYGC4CQNXFvKz8NW2NMc0waSgqv/d+j+3u0zGQ1iJ199lRyXEz5E2VoUXPSvaxub8Sya83uXTxD6dSdWbePKLpXq9WTg6P0Qj0kccYNcxNJ6s2UeKOD2J7HCtaIOQeLn0IGgj5sjjFuhbjg1eayXUcJP4bAhEFc5Q4rajgbrBtVefX4FdBKacI+YaF/rhjCfQA+653OiyLzVRpri481vT8rmNm9ID8PxDP0NokgFUpZKUx/AItxKVvcDaJmCtTLLt8/K3mA0AjOHhWLxchO/bGeiL7mbuWn3Xg=
+  on:
+    tags: true
+  file:
+  - claat/bin/claat-darwin-amd64
+  - claat/bin/claat-linux-amd64
+  - claat/bin/claat-linux-386
+  - claat/bin/claat-windows-amd64.exe
+  - claat/bin/claat-windows-386.exe
+  - claat/bin/sha1sum.txt
