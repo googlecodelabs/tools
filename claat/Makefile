@@ -31,6 +31,7 @@ install: $(OUTDIR)/claat
 
 release: $(RELEASES)
 	echo $(VERSION) > $(OUTDIR)/VERSION
+	cd $(OUTDIR) && sha1sum claat-* > sha1sum.txt
 
 test: .test
 .test: $(SRCS)

@@ -10,8 +10,7 @@ script:
 - make -C claat test lint
 
 before_deploy:
-- make -C claat release -j2
-- cd claat/bin && sha1sum claat-* > sha1sum.txt
+- make -C claat release -j
 deploy:
   provider: releases
   api_key:
