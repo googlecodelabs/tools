@@ -20,6 +20,7 @@ deploy:
     repo: googlecodelabs/tools
     tags: true
     go: master
+  skip_cleanup: true
   file:
   - claat/bin/claat-darwin-amd64
   - claat/bin/claat-linux-amd64
