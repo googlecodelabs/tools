@@ -59,6 +59,7 @@ var (
 	// commands contains all valid subcommands, e.g. "claat export".
 	commands = map[string]func(){
 		"export":  cmdExport,
+		"serve":   cmdServe,
 		"update":  cmdUpdate,
 		"help":    usage,
 		"version": func() { fmt.Println(version) },
@@ -138,12 +139,16 @@ func usage() {
 
 const usageText = `Usage: claat <cmd> [export flags] src [src ...]
 
-Available commands are: export, update, version.
+Available commands are: export, serve, update, version.
 
 ## Export command
 
 Export takes one or more 'src' documents and converts them
-to the format specified with -f option.
+to the format specified with -f option. It takes no arguments
+and, with no path specified, it presents the current directory 
+contents. Clicking on a directory representing an exported
+codelab will load all the required dependencies and render
+the generated codelab as it would appear in production.
 
 The following formats are built-in:
 
@@ -168,6 +173,10 @@ stdout. In this case images and metadata are not exported.
 When writing to a directory, existing files will be overwritten.
 
 The program exits with non-zero code if at least one src could not be exported.
+
+## Serve command
+
+Serve provides a simple web server for viewing exported codelabs.
 
 ## Update command
 
