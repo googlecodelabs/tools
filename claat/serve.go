@@ -43,13 +43,13 @@ func cmdServe() {
 		return
 	}
 	// Go get the dependencies.
-	err = fetchRepo(depsDir, "googlecodelabs/codelab-components#^1.0.0")
+	err = fetchRepo(depsDir, "googlecodelabs/codelab-components#2.0.2")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	//os.Rename(depsDir+"/codelab-components", depsDir+"/google-codelab-elements")
-	//os.Rename(depsDir+"/code-prettify", depsDir+"/google-prettify")
+	os.Rename(depsDir+"/codelab-components", depsDir+"/google-codelab-elements")
+	os.Rename(depsDir+"/code-prettify", depsDir+"/google-prettify")
 	err = os.MkdirAll(elemDir, 0755)
 	if err != nil {
 		fmt.Println(err)
@@ -61,15 +61,13 @@ func cmdServe() {
 			log.Fatal("Cannot create file", err)
 		}
 		defer f.Close()
-		fmt.Fprintf(f, codelabElem)
+		f.WriteString(codelabElem)
 	}
-	fmt.Println("Dependencies installed.")
 
-	port := "9090"
 	http.Handle("/", http.FileServer(http.Dir(".")))
-	fmt.Println("Serving on localhost:" + port + ", opening browser tab now...")
-	openBrowser("http://127.0.0.1:" + port)
-	err = http.ListenAndServe(":"+port, nil) // set listen port
+	fmt.Println("Serving on localhost:" + *addr + ", opening browser tab now...")
+	openBrowser(*addr)
+	err = http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -78,6 +76,7 @@ func cmdServe() {
 // downloadFile will download a url to a local file. It's efficient because it will
 // write as it downloads and not load the whole file into memory.
 func downloadFile(filepath string, url string) error {
+	fmt.Println("Downloading " + url)
 	out, err := os.Create(filepath)
 	if err != nil {
 		return err
@@ -95,27 +94,50 @@ func downloadFile(filepath string, url string) error {
 	return nil
 }
 
-func fetchRepo(depsDir string, repoVers string) error {
-	// parse url into repoName and version
-	s := strings.Split(repoVers, "#^")
-	vers := ""
+func fetchRepo(depsDir string, spec string) error {
+	if spec == "^0.7.2" {
+		spec = "webcomponents/webcomponentsjs#^0.7.2"
+	}
+	var user, repo, path, vers string
+	s := strings.Split(spec, "#")
+	path = s[0]
 	if len(s) > 1 {
 		vers = s[1]
+		if s[1][0] == '^' {
+			vers = s[1][1:]
+		}
+	} else {
+		vers = "master"
 	}
-	s = strings.Split(s[0], "/")
-	user := s[0]
-	repo := s[1]
+	s = strings.Split(path, "/")
+	user = s[0]
+	if len(s) > 1 {
+		repo = s[1]
+	}
 
 	// if repo already exists locally, return immediately, we're done.
-	if _, err := os.Stat(depsDir + "/" + repo); os.IsExist(err) {
+	if _, err := os.Stat(depsDir + "/" + repo); err == nil {
 		return nil
 	}
-	url := "https://github.com/" + user + "/" + repo + "/archive/" + vers + ".zip"
 	zipFile := depsDir + "/" + repo + ".zip"
-	fmt.Println("Downloading " + url)
+	url := "https://github.com/" + user + "/" + repo + "/archive/v" + vers + ".zip"
 	err := downloadFile(zipFile, url)
 	if err != nil {
 		return err
+	}
+	// If get fails, it will download a file containing only "404: Not Found".
+	// We check for that case by looking for an unusally small file.
+	var st os.FileInfo
+	if st, err = os.Stat(zipFile); err != nil {
+		return err
+	}
+	if st.Size() < 20 {
+		os.Remove(zipFile)
+		url = "https://github.com/" + user + "/" + repo + "/archive/" + vers + ".zip"
+		err = downloadFile(zipFile, url)
+		if err != nil {
+			return err
+		}
 	}
 	err = unzip(zipFile, depsDir)
 	if err != nil {
@@ -134,21 +156,14 @@ func fetchRepo(depsDir string, repoVers string) error {
 	if err != nil {
 		return err
 	}
-	type Dep struct {
-		Name     string
-		RepoVers string
+	var b struct {
+		Dependencies map[string]string
 	}
-	var objmap map[string]*json.RawMessage
-	err = json.Unmarshal(raw, &objmap)
+	err = json.Unmarshal(raw, &b)
 	if err != nil {
 		return err
 	}
-	var deps map[string]string
-	err = json.Unmarshal(*objmap["dependencies"], &deps)
-	if err != nil {
-		return err
-	}
-	for _, v := range deps {
+	for _, v := range b.Dependencies {
 		err = fetchRepo(depsDir, v)
 		if err != nil {
 			return err
@@ -172,9 +187,7 @@ func unzip(src, dest string) error {
 			return err
 		}
 		defer rc.Close()
-
 		path := filepath.Join(dest, f.Name)
-
 		if f.FileInfo().IsDir() {
 			return os.MkdirAll(path, f.Mode())
 		}
@@ -183,7 +196,6 @@ func unzip(src, dest string) error {
 		if err != nil {
 			return err
 		}
-
 		_, err = io.Copy(f2, rc)
 		// Catch both io.Copy and file.Close errors but prefer returning the former.
 		if err1 := f2.Close(); err1 != nil && err == nil {

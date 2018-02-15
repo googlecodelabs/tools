@@ -37,6 +37,7 @@ var (
 	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
 	globalGA  = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
 	extra     = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
+	addr      = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
 
 	version string // set by linker -X
 )
@@ -137,7 +138,7 @@ func usage() {
 	flag.PrintDefaults()
 }
 
-const usageText = `Usage: claat <cmd> [export flags] src [src ...]
+const usageText = `Usage: claat <cmd> [options] src [src ...]
 
 Available commands are: export, serve, update, version.
 
@@ -173,10 +174,13 @@ The program exits with non-zero code if at least one src could not be exported.
 ## Serve command
 
 Serve provides a simple web server for viewing exported codelabs.
-It takes no arguments and, with no path specified, it presents the
-current directory contents. Clicking on a directory representing
-an exported codelab will load all the required dependencies and render
-the generated codelab as it would appear in production.
+It takes no arguments and presents the current directory contents.
+Clicking on a directory representing an exported codelab will load
+all the required dependencies and render the generated codelab as
+it would appear in production.
+
+The serve command takes a -addr host:port option, to specify the
+desired hostname or IP address and port number to bind to.
 
 ## Update command
 
