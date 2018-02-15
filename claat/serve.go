@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -39,26 +38,23 @@ func cmdServe() {
 `
 	err := os.MkdirAll(depsDir, 0755)
 	if err != nil {
-		fmt.Println(err)
-		return
+		fatalf(err.Error())
 	}
 	// Go get the dependencies.
 	err = fetchRepo(depsDir, "googlecodelabs/codelab-components#2.0.2")
 	if err != nil {
-		fmt.Println(err)
-		return
+		fatalf(err.Error())
 	}
 	os.Rename(depsDir+"/codelab-components", depsDir+"/google-codelab-elements")
 	os.Rename(depsDir+"/code-prettify", depsDir+"/google-prettify")
 	err = os.MkdirAll(elemDir, 0755)
 	if err != nil {
-		fmt.Println(err)
-		return
+		fatalf(err.Error())
 	}
 	if _, err := os.Stat(elemFile); os.IsNotExist(err) {
 		f, err := os.Create(elemFile)
 		if err != nil {
-			log.Fatal("Cannot create file", err)
+			fatalf(err.Error())
 		}
 		defer f.Close()
 		f.WriteString(codelabElem)
@@ -67,10 +63,7 @@ func cmdServe() {
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	fmt.Println("Serving on localhost:" + *addr + ", opening browser tab now...")
 	openBrowser(*addr)
-	err = http.ListenAndServe(*addr, nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	fatalf("claat serve: %+v", http.ListenAndServe(*addr, nil))
 }
 
 // downloadFile will download a url to a local file. It's efficient because it will
