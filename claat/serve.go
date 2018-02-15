@@ -61,7 +61,7 @@ func cmdServe() {
 	}
 
 	http.Handle("/", http.FileServer(http.Dir(".")))
-	fmt.Println("Serving on localhost:" + *addr + ", opening browser tab now...")
+	fmt.Println("Serving on " + *addr + ", opening browser tab now...")
 	openBrowser(*addr)
 	fatalf("claat serve: %+v", http.ListenAndServe(*addr, nil))
 }
@@ -205,8 +205,7 @@ func unzip(src, dest string) error {
 	return nil
 }
 
-// openBrowser tries to open the URL in a browser,
-// and returns whether it succeed in doing so.
+// openBrowser tries to open the URL in a browser.
 func openBrowser(url string) bool {
 	var args []string
 	switch runtime.GOOS {
