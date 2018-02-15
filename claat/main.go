@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2018 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -144,11 +144,7 @@ Available commands are: export, serve, update, version.
 ## Export command
 
 Export takes one or more 'src' documents and converts them
-to the format specified with -f option. It takes no arguments
-and, with no path specified, it presents the current directory 
-contents. Clicking on a directory representing an exported
-codelab will load all the required dependencies and render
-the generated codelab as it would appear in production.
+to the format specified with -f option.
 
 The following formats are built-in:
 
@@ -177,6 +173,10 @@ The program exits with non-zero code if at least one src could not be exported.
 ## Serve command
 
 Serve provides a simple web server for viewing exported codelabs.
+It takes no arguments and, with no path specified, it presents the
+current directory contents. Clicking on a directory representing
+an exported codelab will load all the required dependencies and render
+the generated codelab as it would appear in production.
 
 ## Update command
 
