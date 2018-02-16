@@ -62,7 +62,7 @@ func cmdServe() {
 
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	fmt.Println("Serving on " + *addr + ", opening browser tab now...")
-	openBrowser(*addr)
+	openBrowser("http://" + *addr)
 	fatalf("claat serve: %+v", http.ListenAndServe(*addr, nil))
 }
 
