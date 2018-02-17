@@ -92,13 +92,18 @@ func downloadFile(filepath string, url string) error {
 	return err
 }
 
-// bowerComp maps non-conforming spec as described in fetchRepo doc comments.
-// It is keyed by the name found in a bower.json dependency list,
-// with values corresponding to a valid github user/repo spec.
-var bowerComp = map[string]string{
-	"google-codelab-elements": "googlecodelabs/codelab-components",
-	"webcomponentsjs":         "webcomponents/webcomponentsjs",
-	"code-prettify":           "google/google-prettify",
+// overrideSpec maps a given component name to desired spec, as described in fetchRepo
+// doc comments.
+var overrideSpec = map[string]string{
+	"webcomponentsjs": "webcomponents/webcomponentsjs",
+	"paper-behaviors": "PolymerElements/paper-behaviors#1.0.12",
+}
+
+// overrideComp maps a given spec, as described in fetchRepo doc comments to a
+// desired component name.
+var overrideComp = map[string]string{
+	"googlecodelabs/codelab-components": "google-codelab-elements",
+	"google/google-prettify":            "code-prettify",
 }
 
 // fetchRepo downloads a repo from github and unpacks it into basedir/dest,
@@ -127,11 +132,8 @@ func fetchRepo(basedir, spec string) error {
 	}
 	// Check exception map to see if we should override the component name.
 	comp = repo
-	for c, s := range bowerComp {
-		if path == s {
-			comp = c
-			break
-		}
+	if c, ok := overrideComp[path]; ok {
+		comp = c
 	}
 	// if repo already exists locally, return immediately, we're done.
 	if _, err := os.Stat(basedir + "/" + comp); err == nil {
@@ -182,7 +184,7 @@ func fetchRepo(basedir, spec string) error {
 	}
 	// Check exception map to see if we should overide spec.
 	for c, s := range b.Dependencies {
-		if spec, ok := bowerComp[c]; ok {
+		if spec, ok := overrideSpec[c]; ok {
 			s = spec
 		}
 		err = fetchRepo(basedir, s)
