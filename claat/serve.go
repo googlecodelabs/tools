@@ -94,11 +94,11 @@ func downloadFile(filepath string, url string) error {
 
 // bowerComp maps non-conforming spec as described in fetchRepo doc comments.
 // It is keyed by the name found in a bower.json dependency list,
-// with values corresponding to a valid githubuser/repo spec.
+// with values corresponding to a valid github user/repo spec.
 var bowerComp = map[string]string{
-	"googlecodelabs/codelab-components": "google-codelab-elements",
-	"webcomponents/webcomponentsjs":     "webcomponentsjs",
-	"google/google-prettify":            "code-prettify",
+	"google-codelab-elements": "googlecodelabs/codelab-components",
+	"webcomponentsjs":         "webcomponents/webcomponentsjs",
+	"code-prettify":           "google/google-prettify",
 }
 
 // fetchRepo downloads a repo from github and unpacks it into basedir/dest,
@@ -125,10 +125,13 @@ func fetchRepo(basedir, spec string) error {
 	if len(s) > 1 {
 		repo = s[1]
 	}
-	// Check exception map to see if we should use a special component name.
+	// Check exception map to see if we should override the component name.
 	comp = repo
-	if v, ok := bowerComp[path]; ok {
-		comp = v
+	for c, s := range bowerComp {
+		if path == s {
+			comp = c
+			break
+		}
 	}
 	// if repo already exists locally, return immediately, we're done.
 	if _, err := os.Stat(basedir + "/" + comp); err == nil {
@@ -160,7 +163,6 @@ func fetchRepo(basedir, spec string) error {
 	}
 	os.Remove(zipFile)
 	os.Rename(basedir+"/"+repo+"-"+ver, basedir+"/"+comp)
-
 	// if unzipped archive contains a bower.json, parse it, and for each dependency therein,
 	// recursively fetch the corresponding repo.
 	bowerFile := basedir + "/" + comp + "/bower.json"
@@ -178,8 +180,12 @@ func fetchRepo(basedir, spec string) error {
 	if err != nil {
 		return err
 	}
-	for _, v := range b.Dependencies {
-		err = fetchRepo(basedir, v)
+	// Check exception map to see if we should overide spec.
+	for c, s := range b.Dependencies {
+		if spec, ok := bowerComp[c]; ok {
+			s = spec
+		}
+		err = fetchRepo(basedir, s)
 		if err != nil {
 			return err
 		}
