@@ -44,11 +44,10 @@ func cmdServe() {
 		fatalf(err.Error())
 	}
 	// Go get the dependencies.
-	err = fetchRepo(depsDir, "googlecodelabs/codelab-components#1.0.5")
+	err = fetchRepo(depsDir, "googlecodelabs/codelab-components")
 	if err != nil {
 		fatalf(err.Error())
 	}
-	os.Rename(depsDir+"/code-prettify", depsDir+"/google-prettify")
 	err = os.MkdirAll(elemDir, 0755)
 	if err != nil {
 		fatalf(err.Error())
@@ -95,15 +94,71 @@ func downloadFile(filepath string, url string) error {
 // overrideSpec maps a given component name to desired spec, as described in fetchRepo
 // doc comments.
 var overrideSpec = map[string]string{
-	"webcomponentsjs": "webcomponents/webcomponentsjs",
-	"paper-behaviors": "PolymerElements/paper-behaviors#1.0.12",
+	"accessibility-developer-tools": "PolymerElements/accessibility-developer-tools#2.11.0",
+	"async":                         "PolymerElements/async#1.5.2",
+	"font-roboto":                   "PolymerElements/font-roboto#1.0.1",
+	"google-apis":                   "PolymerElements/google-apis#1.1.7",
+	"google-codelab-elements":       "GoogleCodelabs/google-codelab-elements#1.0.5",
+	"iron-a11y-announcer":           "PolymerElements/iron-a11y-announcer#1.0.5",
+	"iron-a11y-keys-behavior":       "PolymerElements/iron-a11y-keys-behavior#1.1.9",
+	"iron-autogrow-textarea":        "PolymerElements/iron-autogrow-textarea#1.0.15",
+	"iron-behaviors":                "PolymerElements/iron-behaviors#1.0.17",
+	"iron-checked-element-behavior": "PolymerElements/iron-checked-element-behavior#1.0.5",
+	"iron-collapse":                 "PolymerElements/iron-collapse#1.3.0",
+	"iron-dropdown":                 "PolymerElements/iron-dropdown#1.5.5",
+	"iron-fit-behavior":             "PolymerElements/iron-fit-behavior#1.2.6",
+	"iron-flex-layout":              "PolymerElements/iron-flex-layout#1.3.2",
+	"iron-form-element-behavior":    "PolymerElements/iron-form-element-behavior#1.0.6",
+	"iron-icon":                     "PolymerElements/iron-icon#1.0.12",
+	"iron-icons":                    "PolymerElements/iron-icons#1.2.0",
+	"iron-iconset-svg":              "PolymerElements/iron-iconset-svg#1.1.0",
+	"iron-input":                    "PolymerElements/iron-input#1.0.10",
+	"iron-jsonp-library":            "PolymerElements/iron-jsonp-library#1.0.4",
+	"iron-localstorage":             "PolymerElements/iron-localstorage#1.0.6",
+	"iron-media-query":              "PolymerElements/iron-media-query#1.0.8",
+	"iron-menu-behavior":            "PolymerElements/iron-menu-behavior#1.2.0",
+	"iron-meta":                     "PolymerElements/iron-meta#1.1.2",
+	"iron-overlay-behavior":         "PolymerElements/iron-overlay-behavior#1.10.3",
+	"iron-pages":                    "PolymerElements/iron-pages#1.0.8",
+	"iron-resizable-behavior":       "PolymerElements/iron-resizable-behavior#1.0.5",
+	"iron-selector":                 "PolymerElements/iron-selector#1.5.2",
+	"iron-validatable-behavior":     "PolymerElements/iron-validatable-behavior#1.1.1",
+	"neon-animation":                "PolymerElements/neon-animation#1.2.4",
+	"paper-behaviors":               "PolymerElements/paper-behaviors#1.0.12",
+	"paper-button":                  "PolymerElements/paper-button#1.0.14",
+	"paper-dialog-behavior":         "PolymerElements/paper-dialog-behavior#1.2.7",
+	"paper-dialog":                  "PolymerElements/paper-dialog#1.1.0",
+	"paper-drawer-panel":            "PolymerElements/paper-drawer-panel#1.0.11",
+	"paper-dropdown-menu":           "PolymerElements/paper-dropdown-menu#1.5.0",
+	"paper-fab":                     "PolymerElements/paper-fab#1.2.0",
+	"paper-header-panel":            "PolymerElements/paper-header-panel#1.1.7",
+	"paper-icon-button":             "PolymerElements/paper-icon-button#1.1.4",
+	"paper-input":                   "PolymerElements/paper-input#1.1.23",
+	"paper-item":                    "PolymerElements/paper-item#1.2.1",
+	"paper-listbox":                 "PolymerElements/paper-listbox#1.1.2",
+	"paper-material":                "PolymerElements/paper-material#1.0.6",
+	"paper-menu-button":             "PolymerElements/paper-menu-button#1.5.2",
+	"paper-menu":                    "PolymerElements/paper-menu#1.2.2",
+	"paper-radio-button":            "PolymerElements/paper-radio-button#1.3.1",
+	"paper-radio-group":             "PolymerElements/paper-radio-group#1.2.1",
+	"paper-ripple":                  "PolymerElements/paper-ripple#1.0.9",
+	"paper-scroll-header-panel":     "PolymerElements/paper-scroll-header-panel#1.0.16",
+	"paper-styles":                  "PolymerElements/paper-styles#1.2.0",
+	"paper-tabs":                    "PolymerElements/paper-tabs#1.8.0",
+	"paper-toast":                   "PolymerElements/paper-toast#1.3.0",
+	"paper-toolbar":                 "PolymerElements/paper-toolbar#1.1.7",
+	"platinum-sw":                   "PolymerElements/platinum-sw#1.2.4",
+	"polymer":                       "Polymer/polymer#1.4.0",
+	"sinonjs":                       "PolymerElements/sinonjs#1.17.1",
+	"stacky":                        "PolymerElements/stacky#1.3.2",
+	"webcomponentsjs":               "WebComponents/webcomponentsjs#0.7.24",
 }
 
 // overrideComp maps a given spec, as described in fetchRepo doc comments to a
 // desired component name.
 var overrideComp = map[string]string{
 	"googlecodelabs/codelab-components": "google-codelab-elements",
-	"google/google-prettify":            "code-prettify",
+	"google/code-prettify":              "google-prettify",
 }
 
 // fetchRepo downloads a repo from github and unpacks it into basedir/dest,
