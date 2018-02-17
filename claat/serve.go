@@ -44,7 +44,7 @@ func cmdServe() {
 		fatalf(err.Error())
 	}
 	// Go get the dependencies.
-	err = fetchRepo(depsDir, "googlecodelabs/codelab-components#2.0.2")
+	err = fetchRepo(depsDir, "googlecodelabs/codelab-components#1.0.5")
 	if err != nil {
 		fatalf(err.Error())
 	}
@@ -96,9 +96,9 @@ func downloadFile(filepath string, url string) error {
 // It is keyed by the name found in a bower.json dependency list,
 // with values corresponding to a valid githubuser/repo spec.
 var bowerComp = map[string]string{
-	"googlecodelabs/codelab-components#2.0.2": "google-codelab-elements",
-	"webcomponents/webcomponentsjs":           "webcomponentsjs",
-	"google/google-prettify":                  "code-prettify",
+	"googlecodelabs/codelab-components": "google-codelab-elements",
+	"webcomponents/webcomponentsjs":     "webcomponentsjs",
+	"google/google-prettify":            "code-prettify",
 }
 
 // fetchRepo downloads a repo from github and unpacks it into basedir/dest,
@@ -127,7 +127,7 @@ func fetchRepo(basedir, spec string) error {
 	}
 	// Check exception map to see if we should use a special component name.
 	comp = repo
-	if v, ok := bowerComp[spec]; ok {
+	if v, ok := bowerComp[path]; ok {
 		comp = v
 	}
 	// if repo already exists locally, return immediately, we're done.
