@@ -28,6 +28,9 @@ import (
 	"strings"
 )
 
+// Global for tracking whether we've warned user about delay.
+var warned = false
+
 // cmdServe is the "claat serve ..." subcommand.
 func cmdServe() {
 	var depsDir = "bower_components"
@@ -45,7 +48,6 @@ func cmdServe() {
 	if err != nil {
 		fatalf(err.Error())
 	}
-	os.Rename(depsDir+"/codelab-components", depsDir+"/google-codelab-elements")
 	os.Rename(depsDir+"/code-prettify", depsDir+"/google-prettify")
 	err = os.MkdirAll(elemDir, 0755)
 	if err != nil {
@@ -59,17 +61,23 @@ func cmdServe() {
 		defer f.Close()
 		f.WriteString(codelabElem)
 	}
-
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	fmt.Println("Serving on " + *addr + ", opening browser tab now...")
+	ch := make(chan error, 1)
+	go func() {
+		ch <- http.ListenAndServe(*addr, nil)
+	}()
 	openBrowser("http://" + *addr)
-	fatalf("claat serve: %+v", http.ListenAndServe(*addr, nil))
+	fatalf("claat serve: %v", <-ch)
 }
 
 // downloadFile will download a url to a local file. It's efficient because it will
 // write as it downloads and not load the whole file into memory.
 func downloadFile(filepath string, url string) error {
-	fmt.Println("Downloading " + url)
+	if !warned {
+		fmt.Println("Fetching dependencies...")
+		warned = true
+	}
 	out, err := os.Create(filepath)
 	if err != nil {
 		return err
@@ -81,67 +89,81 @@ func downloadFile(filepath string, url string) error {
 	}
 	defer resp.Body.Close()
 	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
-func fetchRepo(depsDir string, spec string) error {
-	if spec == "^0.7.2" {
-		spec = "webcomponents/webcomponentsjs#^0.7.2"
-	}
-	var user, repo, path, vers string
+// bowerComp maps non-conforming spec as described in fetchRepo doc comments.
+// It is keyed by the name found in a bower.json dependency list,
+// with values corresponding to a valid githubuser/repo spec.
+var bowerComp = map[string]string{
+	"googlecodelabs/codelab-components#2.0.2": "google-codelab-elements",
+	"webcomponents/webcomponentsjs":           "webcomponentsjs",
+	"google/google-prettify":                  "code-prettify",
+}
+
+// fetchRepo downloads a repo from github and unpacks it into basedir/dest,
+// calling itself recursively for every dependency found in the unpacked bower.json.
+// If the basedir/dest directory already exists, fetchRepo does nothing.
+//
+// The spec has the following format: "githubuser/repo#version".
+// Any non-alphanumeric characters are stripped from the version.
+// If version is missing, "master" is used instead.
+// The bower registry is not used for naming resolution.
+func fetchRepo(basedir, spec string) error {
+	var user, repo, path, comp, ver string
 	s := strings.Split(spec, "#")
 	path = s[0]
 	if len(s) > 1 {
-		vers = s[1]
-		if s[1][0] == '^' {
-			vers = s[1][1:]
-		}
-	} else {
-		vers = "master"
+		ver = s[1]
+	}
+	ver = strings.Trim(ver, "^~ ")
+	if ver == "" {
+		ver = "master"
 	}
 	s = strings.Split(path, "/")
 	user = s[0]
 	if len(s) > 1 {
 		repo = s[1]
 	}
-
+	// Check exception map to see if we should use a special component name.
+	comp = repo
+	if v, ok := bowerComp[spec]; ok {
+		comp = v
+	}
 	// if repo already exists locally, return immediately, we're done.
-	if _, err := os.Stat(depsDir + "/" + repo); err == nil {
+	if _, err := os.Stat(basedir + "/" + comp); err == nil {
 		return nil
 	}
-	zipFile := depsDir + "/" + repo + ".zip"
-	url := "https://github.com/" + user + "/" + repo + "/archive/v" + vers + ".zip"
+	zipFile := basedir + "/" + comp + ".zip"
+	url := "https://github.com/" + user + "/" + repo + "/archive/v" + ver + ".zip"
 	err := downloadFile(zipFile, url)
 	if err != nil {
 		return err
 	}
 	// If get fails, it will download a file containing only "404: Not Found".
-	// We check for that case by looking for an unusally small file.
+	// We check for that case by looking for an unusually small file.
 	var st os.FileInfo
 	if st, err = os.Stat(zipFile); err != nil {
 		return err
 	}
 	if st.Size() < 20 {
 		os.Remove(zipFile)
-		url = "https://github.com/" + user + "/" + repo + "/archive/" + vers + ".zip"
+		url = "https://github.com/" + user + "/" + repo + "/archive/" + ver + ".zip"
 		err = downloadFile(zipFile, url)
 		if err != nil {
 			return err
 		}
 	}
-	err = unzip(zipFile, depsDir)
+	err = unzip(zipFile, basedir)
 	if err != nil {
 		return err
 	}
 	os.Remove(zipFile)
-	os.Rename(depsDir+"/"+repo+"-"+vers, depsDir+"/"+repo)
+	os.Rename(basedir+"/"+repo+"-"+ver, basedir+"/"+comp)
 
 	// if unzipped archive contains a bower.json, parse it, and for each dependency therein,
 	// recursively fetch the corresponding repo.
-	bowerFile := depsDir + "/" + repo + "/bower.json"
+	bowerFile := basedir + "/" + comp + "/bower.json"
 	if _, err := os.Stat(bowerFile); os.IsNotExist(err) {
 		return nil
 	}
@@ -157,7 +179,7 @@ func fetchRepo(depsDir string, spec string) error {
 		return err
 	}
 	for _, v := range b.Dependencies {
-		err = fetchRepo(depsDir, v)
+		err = fetchRepo(basedir, v)
 		if err != nil {
 			return err
 		}
@@ -206,7 +228,7 @@ func unzip(src, dest string) error {
 }
 
 // openBrowser tries to open the URL in a browser.
-func openBrowser(url string) bool {
+func openBrowser(url string) error {
 	var args []string
 	switch runtime.GOOS {
 	case "darwin":
@@ -217,5 +239,5 @@ func openBrowser(url string) bool {
 		args = []string{"xdg-open"}
 	}
 	cmd := exec.Command(args[0], append(args[1:], url)...)
-	return cmd.Start() == nil
+	return cmd.Start()
 }
