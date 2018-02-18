@@ -1,6 +1,7 @@
 # Tools for authoring and serving codelabs
+Marc Cohen, [mcohen.io](https://mcohen.io), [@marcacohen](https://twitter.com/user/marcacohen)
 
-![](/gif-url)
+![](https://raw.githubusercontent.com/googlecodelabs/tools/master/claat/demo.gif)
 
 Codelabs are interactive instructional tutorials, which can be authored in Google Docs
 using some simple formatting conventions. You can also author codelabs using markdown syntax.
@@ -55,13 +56,12 @@ which connects you with other authors and provides access to the
 
 1. Run the claat command to transform the doc contents into one of the supported output formats. The default supported formats are html and markdown but the claat tool supports adding additional formats by specifying a path to a Go template. For example, using the example document above:
 
-$ claat export -f html 1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY
-ok      your-first-pwapp
+    `$ claat export -f html 1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY`
+    <br>`ok      your-first-pwapp`
 
-1. Change to the newly generated directory corresponding to your codelab and run the claat serve command.
+1. Run the claat serve command.
 
-$ cd your-first-pwapp
-$ claat serve
+    `$ claat serve`
 
 This will start a local web server and open a browser tab to the local server. Click on the
 hyperlink represent your codelab of interest to experience a fully rendered version.
