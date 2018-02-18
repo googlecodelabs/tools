@@ -17,6 +17,7 @@ package main
 import (
 	"archive/zip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -25,6 +26,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -85,6 +87,9 @@ func downloadFile(filepath string, url string) error {
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
+	}
+	if resp.StatusCode != 200 {
+		return errors.New("Status code " + strconv.Itoa(resp.StatusCode) + " returned on http get")
 	}
 	defer resp.Body.Close()
 	_, err = io.Copy(out, resp.Body)
@@ -198,15 +203,6 @@ func fetchRepo(basedir, spec string) error {
 	url := "https://github.com/" + user + "/" + repo + "/archive/v" + ver + ".zip"
 	err := downloadFile(zipFile, url)
 	if err != nil {
-		return err
-	}
-	// If get fails, it will download a file containing only "404: Not Found".
-	// We check for that case by looking for an unusually small file.
-	var st os.FileInfo
-	if st, err = os.Stat(zipFile); err != nil {
-		return err
-	}
-	if st.Size() < 20 {
 		os.Remove(zipFile)
 		url = "https://github.com/" + user + "/" + repo + "/archive/" + ver + ".zip"
 		err = downloadFile(zipFile, url)
