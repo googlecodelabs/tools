@@ -17,53 +17,41 @@ package main
 import (
 	"archive/zip"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
+	"sync"
 )
-
-// Global for tracking whether we've warned user about delay.
-var warned = false
 
 // cmdServe is the "claat serve ..." subcommand.
 func cmdServe() {
-	var depsDir = "bower_components"
-	var elemDir = "elements"
-	var elemFile = elemDir + "/codelab.html"
-	const codelabElem = `
+	const depsDir = "bower_components"
+	var codelabElem = []byte(`
 <link rel="import" href="../bower_components/google-codelab-elements/google-codelab-elements.html">
-`
+`)
+
 	err := os.MkdirAll(depsDir, 0755)
 	if err != nil {
-		fatalf(err.Error())
+		fatalf("%s: %v", depsDir, err)
 	}
 	// Go get the dependencies.
-	err = fetchRepo(depsDir, "googlecodelabs/codelab-components")
-	if err != nil {
+	if err := fetchRepo(depsDir, "google-codelab-elements", "googlecodelabs/codelab-components#2.0.2"); err != nil {
 		fatalf(err.Error())
 	}
-	err = os.MkdirAll(elemDir, 0755)
-	if err != nil {
+	if err := writeFile(filepath.Join(depsDir, "elements", "codelab.html"), codelabElem); err != nil {
 		fatalf(err.Error())
 	}
-	if _, err := os.Stat(elemFile); os.IsNotExist(err) {
-		f, err := os.Create(elemFile)
-		if err != nil {
-			fatalf(err.Error())
-		}
-		defer f.Close()
-		f.WriteString(codelabElem)
-	}
+
 	http.Handle("/", http.FileServer(http.Dir(".")))
-	fmt.Println("Serving on " + *addr + ", opening browser tab now...")
+	log.Printf("Serving codelabs on %s, opening browser tab now...", *addr)
 	ch := make(chan error, 1)
 	go func() {
 		ch <- http.ListenAndServe(*addr, nil)
@@ -72,13 +60,80 @@ func cmdServe() {
 	fatalf("claat serve: %v", <-ch)
 }
 
+func writeFile(name string, content []byte) error {
+	if err := os.MkdirAll(filepath.Dir(name), 0755); err != nil {
+		return err
+	}
+	return ioutil.WriteFile(name, content, 0644)
+}
+
+// warnOnce makes sure we notify users about fetching dependencies only once.
+var warnOnce sync.Once
+
+// fetchRepo downloads a repo from github and unpacks it into basedir/name,
+// calling itself recursively for every dependency found in the unpacked bower.json.
+// If the basedir/name directory already exists, fetchRepo does nothing.
+//
+// The spec has the following format: "githubuser/repo#version".
+// Any non-alphanumeric characters are stripped from the version.
+// If version is missing, "master" is used instead, unless overridden in bowerVersionOverride.
+// Instead of bower registry a local bowerSpecResolve map is used for naming resolution.
+func fetchRepo(basedir, name, spec string) error {
+	outdir := filepath.Join(basedir, name)
+	if _, err := os.Stat(outdir); err == nil {
+		return nil
+	}
+
+	warnOnce.Do(func() {
+		log.Println("Fetching dependencies...")
+	})
+	tryURL, err := fromBowerSpec(name, spec)
+	if err != nil {
+		return err
+	}
+	zipFile := filepath.Join(basedir, name+".zip")
+	var ok bool
+	for _, u := range tryURL {
+		if err := downloadFile(zipFile, u); err == nil {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("fetchRepo(%q, %q): could not find in any of %q", name, spec, tryURL)
+	}
+	if err := stripUnzip(outdir, zipFile); err != nil {
+		return err
+	}
+	os.Remove(zipFile)
+
+	// If unzipped archive contains a bower.json, parse it, and for each dependency therein,
+	// recursively fetch the corresponding repo.
+	bowerFile := filepath.Join(outdir, "bower.json")
+	raw, err := ioutil.ReadFile(bowerFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+	var bower struct {
+		Dependencies map[string]string
+	}
+	if err := json.Unmarshal(raw, &bower); err != nil {
+		return fmt.Errorf("%s: %v", bowerFile, err)
+	}
+
+	for name, spec := range bower.Dependencies {
+		if err := fetchRepo(basedir, name, spec); err != nil {
+		}
+	}
+	return nil
+}
+
 // downloadFile will download a url to a local file. It's efficient because it will
 // write as it downloads and not load the whole file into memory.
 func downloadFile(filepath string, url string) error {
-	if !warned {
-		fmt.Println("Fetching dependencies...")
-		warned = true
-	}
 	out, err := os.Create(filepath)
 	if err != nil {
 		return err
@@ -89,197 +144,148 @@ func downloadFile(filepath string, url string) error {
 		return err
 	}
 	if resp.StatusCode != 200 {
-		return errors.New("Status code " + strconv.Itoa(resp.StatusCode) + " returned on http get")
+		return fmt.Errorf("%s: %s", url, resp.Status)
 	}
 	defer resp.Body.Close()
 	_, err = io.Copy(out, resp.Body)
 	return err
 }
 
-// overrideSpec maps a given component name to desired spec, as described in fetchRepo
-// doc comments.
-var overrideSpec = map[string]string{
-	"accessibility-developer-tools": "PolymerElements/accessibility-developer-tools#2.11.0",
-	"async":                         "PolymerElements/async#1.5.2",
-	"font-roboto":                   "PolymerElements/font-roboto#1.0.1",
-	"google-apis":                   "PolymerElements/google-apis#1.1.7",
-	"google-codelab-elements":       "GoogleCodelabs/google-codelab-elements#1.0.5",
-	"iron-a11y-announcer":           "PolymerElements/iron-a11y-announcer#1.0.5",
-	"iron-a11y-keys-behavior":       "PolymerElements/iron-a11y-keys-behavior#1.1.9",
-	"iron-autogrow-textarea":        "PolymerElements/iron-autogrow-textarea#1.0.15",
-	"iron-behaviors":                "PolymerElements/iron-behaviors#1.0.17",
-	"iron-checked-element-behavior": "PolymerElements/iron-checked-element-behavior#1.0.5",
-	"iron-collapse":                 "PolymerElements/iron-collapse#1.3.0",
-	"iron-dropdown":                 "PolymerElements/iron-dropdown#1.5.5",
-	"iron-fit-behavior":             "PolymerElements/iron-fit-behavior#1.2.6",
-	"iron-flex-layout":              "PolymerElements/iron-flex-layout#1.3.2",
-	"iron-form-element-behavior":    "PolymerElements/iron-form-element-behavior#1.0.6",
-	"iron-icon":                     "PolymerElements/iron-icon#1.0.12",
-	"iron-icons":                    "PolymerElements/iron-icons#1.2.0",
-	"iron-iconset-svg":              "PolymerElements/iron-iconset-svg#1.1.0",
-	"iron-input":                    "PolymerElements/iron-input#1.0.10",
-	"iron-jsonp-library":            "PolymerElements/iron-jsonp-library#1.0.4",
-	"iron-localstorage":             "PolymerElements/iron-localstorage#1.0.6",
-	"iron-media-query":              "PolymerElements/iron-media-query#1.0.8",
-	"iron-menu-behavior":            "PolymerElements/iron-menu-behavior#1.2.0",
-	"iron-meta":                     "PolymerElements/iron-meta#1.1.2",
-	"iron-overlay-behavior":         "PolymerElements/iron-overlay-behavior#1.10.3",
-	"iron-pages":                    "PolymerElements/iron-pages#1.0.8",
-	"iron-resizable-behavior":       "PolymerElements/iron-resizable-behavior#1.0.5",
-	"iron-selector":                 "PolymerElements/iron-selector#1.5.2",
-	"iron-validatable-behavior":     "PolymerElements/iron-validatable-behavior#1.1.1",
-	"neon-animation":                "PolymerElements/neon-animation#1.2.4",
-	"paper-behaviors":               "PolymerElements/paper-behaviors#1.0.12",
-	"paper-button":                  "PolymerElements/paper-button#1.0.14",
-	"paper-dialog-behavior":         "PolymerElements/paper-dialog-behavior#1.2.7",
-	"paper-dialog":                  "PolymerElements/paper-dialog#1.1.0",
-	"paper-drawer-panel":            "PolymerElements/paper-drawer-panel#1.0.11",
-	"paper-dropdown-menu":           "PolymerElements/paper-dropdown-menu#1.5.0",
-	"paper-fab":                     "PolymerElements/paper-fab#1.2.0",
-	"paper-header-panel":            "PolymerElements/paper-header-panel#1.1.7",
-	"paper-icon-button":             "PolymerElements/paper-icon-button#1.1.4",
-	"paper-input":                   "PolymerElements/paper-input#1.1.23",
-	"paper-item":                    "PolymerElements/paper-item#1.2.1",
-	"paper-listbox":                 "PolymerElements/paper-listbox#1.1.2",
-	"paper-material":                "PolymerElements/paper-material#1.0.6",
-	"paper-menu-button":             "PolymerElements/paper-menu-button#1.5.2",
-	"paper-menu":                    "PolymerElements/paper-menu#1.2.2",
-	"paper-radio-button":            "PolymerElements/paper-radio-button#1.3.1",
-	"paper-radio-group":             "PolymerElements/paper-radio-group#1.2.1",
-	"paper-ripple":                  "PolymerElements/paper-ripple#1.0.9",
-	"paper-scroll-header-panel":     "PolymerElements/paper-scroll-header-panel#1.0.16",
-	"paper-styles":                  "PolymerElements/paper-styles#1.2.0",
-	"paper-tabs":                    "PolymerElements/paper-tabs#1.8.0",
-	"paper-toast":                   "PolymerElements/paper-toast#1.3.0",
-	"paper-toolbar":                 "PolymerElements/paper-toolbar#1.1.7",
-	"platinum-sw":                   "PolymerElements/platinum-sw#1.2.4",
-	"polymer":                       "Polymer/polymer#1.4.0",
-	"sinonjs":                       "PolymerElements/sinonjs#1.17.1",
-	"stacky":                        "PolymerElements/stacky#1.3.2",
-	"webcomponentsjs":               "WebComponents/webcomponentsjs#0.7.24",
+// bowerSpecResolve resolves a bower component name to its github user/repo.
+var bowerSpecResolve = map[string]string{
+	"webcomponentsjs": "webcomponents/webcomponentsjs",
 }
 
-// overrideComp maps a given spec, as described in fetchRepo doc comments to a
-// desired component name.
-var overrideComp = map[string]string{
-	"googlecodelabs/codelab-components": "google-codelab-elements",
-	"google/code-prettify":              "google-prettify",
+// bowerVersionOverride maps a githb user/repo to a particular fixed version to fetch
+// when resolving and fetching dependencies.
+var bowerVersionOverride = map[string]string{
+	"polymer/polymer":                               "standard-layer",
+	"polymerelements/accessibility-developer-tools": "2.11.0",
+	"polymerelements/async":                         "1.5.2",
+	"polymerelements/font-roboto":                   "1.0.1",
+	"polymerelements/google-apis":                   "1.1.7",
+	"polymerelements/iron-a11y-announcer":           "1.0.5",
+	"polymerelements/iron-a11y-keys-behavior":       "1.1.9",
+	"polymerelements/iron-autogrow-textarea":        "1.0.15",
+	"polymerelements/iron-behaviors":                "1.0.17",
+	"polymerelements/iron-checked-element-behavior": "1.0.5",
+	"polymerelements/iron-collapse":                 "1.3.0",
+	"polymerelements/iron-dropdown":                 "1.5.5",
+	"polymerelements/iron-fit-behavior":             "1.2.6",
+	"polymerelements/iron-flex-layout":              "1.3.2",
+	"polymerelements/iron-form-element-behavior":    "1.0.6",
+	"polymerelements/iron-icon":                     "1.0.12",
+	"polymerelements/iron-icons":                    "1.2.0",
+	"polymerelements/iron-iconset-svg":              "1.1.0",
+	"polymerelements/iron-input":                    "1.0.10",
+	"polymerelements/iron-jsonp-library":            "1.0.4",
+	"polymerelements/iron-localstorage":             "1.0.6",
+	"polymerelements/iron-media-query":              "1.0.8",
+	"polymerelements/iron-menu-behavior":            "1.2.0",
+	"polymerelements/iron-meta":                     "1.1.2",
+	"polymerelements/iron-overlay-behavior":         "1.10.3",
+	"polymerelements/iron-pages":                    "1.0.8",
+	"polymerelements/iron-resizable-behavior":       "1.0.5",
+	"polymerelements/iron-selector":                 "1.5.2",
+	"polymerelements/iron-validatable-behavior":     "1.1.1",
+	"polymerelements/neon-animation":                "1.2.4",
+	"polymerelements/paper-behaviors":               "1.0.12",
+	"polymerelements/paper-button":                  "1.0.14",
+	"polymerelements/paper-dialog":                  "1.1.0",
+	"polymerelements/paper-dialog-behavior":         "1.2.7",
+	"polymerelements/paper-drawer-panel":            "1.0.11",
+	"polymerelements/paper-dropdown-menu":           "1.5.0",
+	"polymerelements/paper-fab":                     "1.2.0",
+	"polymerelements/paper-header-panel":            "1.1.7",
+	"polymerelements/paper-icon-button":             "1.1.4",
+	"polymerelements/paper-input":                   "1.1.23",
+	"polymerelements/paper-item":                    "1.2.1",
+	"polymerelements/paper-listbox":                 "1.1.2",
+	"polymerelements/paper-material":                "1.0.6",
+	"polymerelements/paper-menu":                    "1.2.2",
+	"polymerelements/paper-menu-button":             "1.5.2",
+	"polymerelements/paper-radio-button":            "1.3.1",
+	"polymerelements/paper-radio-group":             "1.2.1",
+	"polymerelements/paper-ripple":                  "1.0.9",
+	"polymerelements/paper-scroll-header-panel":     "1.0.16",
+	"polymerelements/paper-styles":                  "1.2.0",
+	"polymerelements/paper-tabs":                    "1.8.0",
+	"polymerelements/paper-toast":                   "1.3.0",
+	"polymerelements/paper-toolbar":                 "1.1.7",
+	"polymerelements/platinum-sw":                   "1.2.4",
+	"polymerelements/sinonjs":                       "1.17.1",
+	"polymerelements/stacky":                        "1.3.2",
 }
 
-// fetchRepo downloads a repo from github and unpacks it into basedir/dest,
-// calling itself recursively for every dependency found in the unpacked bower.json.
-// If the basedir/dest directory already exists, fetchRepo does nothing.
-//
-// The spec has the following format: "githubuser/repo#version".
-// Any non-alphanumeric characters are stripped from the version.
-// If version is missing, "master" is used instead.
-// The bower registry is not used for naming resolution.
-func fetchRepo(basedir, spec string) error {
-	var user, repo, path, comp, ver string
-	s := strings.Split(spec, "#")
-	path = s[0]
-	if len(s) > 1 {
-		ver = s[1]
+func fromBowerSpec(name, spec string) (urls []string, err error) {
+	if strings.IndexByte(spec, '/') == -1 {
+		s, ok := bowerSpecResolve[strings.ToLower(name)]
+		if !ok {
+			return nil, fmt.Errorf("unable to resolve %q", name)
+		}
+		spec = s + "#" + spec
+	}
+	parts := strings.Split(spec, "#") // {repo, version}
+	if len(parts) > 2 {
+		return nil, fmt.Errorf("invalid spec for %s: %q", name, spec)
+	}
+	repo := path.Clean(parts[0])
+	ver := bowerVersionOverride[strings.ToLower(repo)]
+	if ver == "" && len(parts) > 1 {
+		ver = parts[1]
 	}
 	ver = strings.Trim(ver, "^~ ")
 	if ver == "" {
 		ver = "master"
 	}
-	s = strings.Split(path, "/")
-	user = s[0]
-	if len(s) > 1 {
-		repo = s[1]
+	u := []string{"https://github.com" + path.Join("/", repo, "archive", ver) + ".zip"}
+	if ver != "master" && !strings.HasPrefix(ver, "v") {
+		u = append(u, "https://github.com"+path.Join("/", repo, "archive", "v"+ver)+".zip")
 	}
-	// Check exception map to see if we should override the component name.
-	comp = repo
-	if c, ok := overrideComp[path]; ok {
-		comp = c
-	}
-	// if repo already exists locally, return immediately, we're done.
-	if _, err := os.Stat(basedir + "/" + comp); err == nil {
-		return nil
-	}
-	zipFile := basedir + "/" + comp + ".zip"
-	url := "https://github.com/" + user + "/" + repo + "/archive/v" + ver + ".zip"
-	err := downloadFile(zipFile, url)
-	if err != nil {
-		os.Remove(zipFile)
-		url = "https://github.com/" + user + "/" + repo + "/archive/" + ver + ".zip"
-		err = downloadFile(zipFile, url)
-		if err != nil {
-			return err
-		}
-	}
-	err = unzip(zipFile, basedir)
-	if err != nil {
-		return err
-	}
-	os.Remove(zipFile)
-	os.Rename(basedir+"/"+repo+"-"+ver, basedir+"/"+comp)
-	// if unzipped archive contains a bower.json, parse it, and for each dependency therein,
-	// recursively fetch the corresponding repo.
-	bowerFile := basedir + "/" + comp + "/bower.json"
-	if _, err := os.Stat(bowerFile); os.IsNotExist(err) {
-		return nil
-	}
-	raw, err := ioutil.ReadFile(bowerFile)
-	if err != nil {
-		return err
-	}
-	var b struct {
-		Dependencies map[string]string
-	}
-	err = json.Unmarshal(raw, &b)
-	if err != nil {
-		return err
-	}
-	// Check exception map to see if we should overide spec.
-	for c, s := range b.Dependencies {
-		if spec, ok := overrideSpec[c]; ok {
-			s = spec
-		}
-		err = fetchRepo(basedir, s)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return u, nil
 }
 
-// unzip a file to a dest directory.
-func unzip(src, dest string) error {
+// stripUnzip unpacks src file to the dest directory, stripping parent dir from the zip file paths.
+func stripUnzip(dest, src string) error {
 	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
 	}
 	defer r.Close()
-	os.MkdirAll(dest, 0755)
-	// Closure to address file descriptors issue with all the deferred .Close() methods
+	if err := os.MkdirAll(dest, 0755); err != nil {
+		return err
+	}
 	extractAndWriteFile := func(f *zip.File) error {
-		rc, err := f.Open()
-		if err != nil {
-			return err
+		zpath := filepath.FromSlash(f.Name)
+		if i := strings.IndexByte(zpath, filepath.Separator); i > 0 {
+			zpath = zpath[i+1:]
 		}
-		defer rc.Close()
-		path := filepath.Join(dest, f.Name)
+		zpath = filepath.Join(dest, zpath)
 		if f.FileInfo().IsDir() {
-			return os.MkdirAll(path, f.Mode())
+			return os.MkdirAll(zpath, f.Mode())
 		}
-		os.MkdirAll(filepath.Dir(path), f.Mode())
-		f2, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+
+		zf, err := f.Open()
 		if err != nil {
 			return err
 		}
-		_, err = io.Copy(f2, rc)
-		// Catch both io.Copy and file.Close errors but prefer returning the former.
-		if err1 := f2.Close(); err1 != nil && err == nil {
+		defer zf.Close()
+		if err := os.MkdirAll(filepath.Dir(zpath), f.Mode()); err != nil {
+			return err
+		}
+		w, err := os.OpenFile(zpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return err
+		}
+		// Catch both io.Copy and w.Close errors but prefer returning the former.
+		_, err = io.Copy(w, zf)
+		if err1 := w.Close(); err1 != nil && err == nil {
 			err = err1
 		}
 		return err
 	}
 	for _, f := range r.File {
-		err := extractAndWriteFile(f)
-		if err != nil {
+		if err := extractAndWriteFile(f); err != nil {
 			return err
 		}
 	}
