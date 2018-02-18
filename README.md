@@ -1,6 +1,6 @@
 # Tools for authoring and serving codelabs
 Alex Vaghin, [@x1ddos](https://twitter.com/user/x1ddos)
-Marc Cohen, [mcohen.io](https://mcohen.io), [@marcacohen](https://twitter.com/user/marcacohen)
+Marc Cohen, [@marcacohen](https://twitter.com/user/marcacohen)
 
 ![](https://raw.githubusercontent.com/googlecodelabs/tools/master/claat/demo.gif)
 
@@ -10,7 +10,7 @@ This repo contains all the tools and documentation you’ll need for building an
 your own codelabs.
 
 If you're interested in authoring codelabs, join [this group](https://groups.google.com/forum/#!forum/codelab-authors),
-which connects you with other authors and provides access to the [Codelab Formatting Guide](https://docs.google.com/document/d/18dnMdUJQaGKY1Tit_-fO1YOpOpAbA4hh0YDXQlCEjvA/edit?ts=574ec5d9).
+which connects you with other authors and provides access to the [Codelab Formatting Guide](https://g.co/codelabs/guide).
 
 See the [claat](claat) directory for detailed description of the `claat` command
 line tool.
@@ -57,12 +57,12 @@ which connects you with other authors and provides access to the
 
 1. Run the claat command to transform the doc contents into one of the supported output formats. The default supported formats are html and markdown but the claat tool supports adding additional formats by specifying a path to a Go template. For example, using the example document above:
 
-    `$ claat export -f html 1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY`
-    <br>`ok      your-first-pwapp`
+    $ claat export 1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY
+    ok      your-first-pwapp
 
 1. Run the claat serve command.
 
-    `$ claat serve`
+    $ claat serve
 
 This will start a local web server and open a browser tab to the local server. Click on the
 hyperlink represent your codelab of interest to experience a fully rendered version.
