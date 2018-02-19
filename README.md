@@ -1,8 +1,5 @@
 # Tools for authoring and serving codelabs
 
-Alex Vaghin, [@x1ddos](https://twitter.com/user/x1ddos)  
-Marc Cohen, [@marcacohen](https://twitter.com/user/marcacohen)
-
 ![](https://raw.githubusercontent.com/googlecodelabs/tools/master/claat/demo.gif)
 
 Codelabs are interactive instructional tutorials, which can be authored in Google Docs
