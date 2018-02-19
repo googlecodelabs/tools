@@ -46,7 +46,7 @@ func cmdServe() {
 	if err := fetchRepo(depsDir, "google-codelab-elements", "googlecodelabs/codelab-components#2.0.2"); err != nil {
 		fatalf(err.Error())
 	}
-	if err := writeFile(filepath.Join(depsDir, "elements", "codelab.html"), codelabElem); err != nil {
+	if err := writeFile(filepath.Join("elements", "codelab.html"), codelabElem); err != nil {
 		fatalf(err.Error())
 	}
 
@@ -126,6 +126,7 @@ func fetchRepo(basedir, name, spec string) error {
 
 	for name, spec := range bower.Dependencies {
 		if err := fetchRepo(basedir, name, spec); err != nil {
+			return err
 		}
 	}
 	return nil
