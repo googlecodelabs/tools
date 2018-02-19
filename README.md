@@ -56,7 +56,7 @@ which connects you with other authors and provides access to the
 1. Run the claat command to transform the doc contents into one of the supported output formats. The default supported formats are html and markdown but the claat tool supports adding additional formats by specifying a path to a Go template. For example, using the example document above:
 
         $ claat export 1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY  
-        ok      your-first-pwapp`
+        ok      your-first-pwapp
 
 1. Run the claat serve command.
 
