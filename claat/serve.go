@@ -217,6 +217,7 @@ var bowerVersionOverride = map[string]string{
 	"polymerelements/stacky":                        "1.3.2",
 }
 
+// fromBowerSpec returns possible locations of the bower package identified by the name/spec pair.
 func fromBowerSpec(name, spec string) (urls []string, err error) {
 	if strings.IndexByte(spec, '/') == -1 {
 		s, ok := bowerSpecResolve[strings.ToLower(name)]
