@@ -158,4 +158,4 @@ Lots of other contributions have been made over the years and Iâ€™m sure that Iâ
 ## Acknowledgements
 
 Google Codelabs exists thanks to the talents and efforts of many fine volunteers, including:
-Alex Vaghin, Marc Cohen, Shawn Simister, Ewa Gasperowicz, Eric Bidelman, Robert Kubis, Clare Bayley, Cassie Recher, Chris Broadfoot, Sam Thorogood, Ryan Seys, and the many codelab authors, inside and outside of Google, who have generated a veritable [g.co/codelabs](treasure trove of content).
+Alex Vaghin, Marc Cohen, Shawn Simister, Ewa Gasperowicz, Eric Bidelman, Robert Kubis, Clare Bayley, Cassie Recher, Chris Broadfoot, Sam Thorogood, Ryan Seys, and the many codelab authors, inside and outside of Google, who have generated a veritable [treasure trove of content](g.co/codelabs).
