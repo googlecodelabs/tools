@@ -15,7 +15,7 @@ line tool.
 
 ## What is this?
 
-For the past 4+ years, the CLaaT (Codelabs as a Thing) project has given developers around the
+For the past 3+ years, the CLaaT (Codelabs as a Thing) project has given developers around the
 world a hands-on experience with Google products and tools.  We’ve accumulated over 500 high quality
 codelabs, served millions of web visitors, and supported over 100 events, from local meetups
 all the way up to Google I/O.
