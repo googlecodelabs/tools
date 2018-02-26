@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// The claat command generates one or more codelabs from "source" documents,
+// specified as either Google Doc IDs or local markdown files.
+// The command also allows one to preview generated codelabs from local drive
+// using "claat serve".
+// See more details at https://github.com/googlecodelabs/tools.
 package main
 
 import (
