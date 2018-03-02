@@ -729,10 +729,14 @@ func link(ds *docState) types.Node {
 	if ds.flags&fMakeCode != 0 || isCode(ds.css, ds.cur.Parent) {
 		t.Code = true
 	}
-	if href == "" || href[0] == '#' {
+	if href == "" {
 		t.MutateBlock(findBlockParent(ds.cur))
 		return t
 	}
+  if href[0] == '#' && href[1] == 'h' && href[2] == '.' {
+    t.MutateBlock(findBlockParent(ds.cur))
+    return t  
+  }
 
 	n := types.NewURLNode(href, t)
 	n.Name = nodeAttr(ds.cur, "name")
