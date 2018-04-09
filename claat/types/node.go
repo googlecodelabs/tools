@@ -354,6 +354,8 @@ type ImageNode struct {
 	node
 	Src      string
 	MaxWidth float32
+        Alt      string
+        Title    string
 }
 
 // Empty returns true if its Src is zero, excluding space runes.
