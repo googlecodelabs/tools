@@ -148,9 +148,18 @@ func (mw *mdWriter) text(n *types.TextNode) {
 func (mw *mdWriter) image(n *types.ImageNode) {
 	mw.space()
 	mw.writeString("![")
-	mw.writeString(path.Base(n.Src))
+	if n.Alt != "" {
+		mw.writeString(n.Alt)
+	} else {
+		mw.writeString(path.Base(n.Src))
+	}
 	mw.writeString("](")
 	mw.writeString(n.Src)
+	if n.Title != "" {
+		mw.writeString("\"")
+		mw.writeString(n.Title)
+		mw.writeString("\"")
+	}
 	mw.writeString(")")
 }
 
