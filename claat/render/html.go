@@ -160,6 +160,12 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 
 func (hw *htmlWriter) image(n *types.ImageNode) {
 	hw.writeString("<img")
+	if n.Alt != "" {
+		hw.writeFmt(" alt=%q", n.Alt)
+	}
+	if n.Title != "" {
+		hw.writeFmt(" title=%q", n.Title)
+	}
 	if n.MaxWidth > 0 {
 		hw.writeFmt(` style="max-width: %.2fpx"`, n.MaxWidth)
 	}

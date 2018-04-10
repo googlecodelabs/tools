@@ -222,7 +222,7 @@ func TestParseDoc(t *testing.T) {
 
 		<p><span>[[</span><span class="bold">import</span><span>&nbsp;</span><span><a href="https://example.com/import">shared</a></span><span>]]</span></p>
 
-		<img src="https://host/image.png">
+		<img src="https://host/image.png" alt="alt text" title="title text">
 		<p><img src="https://host/small.png" style="height: 10px; width: 25.5px"> icon.</p>
 
 		<p><img alt="https://www.youtube.com/watch?v=vid" src="https://yt.com/vid.jpg"></p>
@@ -323,6 +323,8 @@ func TestParseDoc(t *testing.T) {
 	content := types.NewListNode()
 
 	img := types.NewImageNode("https://host/image.png")
+	img.Alt = "alt text"
+	img.Title = "title text"
 	para := types.NewListNode(img)
 	para.MutateBlock(true)
 	content.Append(para)

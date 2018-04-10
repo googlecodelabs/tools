@@ -658,6 +658,8 @@ func image(ds *docState) types.Node {
 	n := types.NewImageNode(s)
 	n.MaxWidth = styleFloatValue(ds.cur, "width")
 	n.MutateBlock(findBlockParent(ds.cur))
+	n.Alt = nodeAttr(ds.cur, "alt")
+	n.Title = nodeAttr(ds.cur, "title")
 	return n
 }
 

@@ -406,11 +406,22 @@ func handleInfobox(ps *parserState) {
 
 // handleImage handles <img> tags. It assumes the tokenizer is pointing to the <img> tag itself.
 func handleImage(ps *parserState) {
+	var n *types.ImageNode
+	var alt, title string
 	for _, v := range ps.t.Attr {
-		if v.Key == "src" {
-			ps.emit(types.NewImageNode(v.Val))
-			break
+		switch strings.ToLower(v.Key) {
+		case "src":
+			n = types.NewImageNode(v.Val)
+		case "alt":
+			alt = v.Val
+		case "title":
+			title = v.Val
 		}
+	}
+	if n != nil {
+		n.Alt = alt
+		n.Title = title
+		ps.emit(n)
 	}
 }
 

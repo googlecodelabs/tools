@@ -16,6 +16,7 @@ package render
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"path"
 	"sort"
@@ -148,9 +149,16 @@ func (mw *mdWriter) text(n *types.TextNode) {
 func (mw *mdWriter) image(n *types.ImageNode) {
 	mw.space()
 	mw.writeString("![")
-	mw.writeString(path.Base(n.Src))
+	if n.Alt != "" {
+		mw.writeString(n.Alt)
+	} else {
+		mw.writeString(path.Base(n.Src))
+	}
 	mw.writeString("](")
 	mw.writeString(n.Src)
+	if n.Title != "" {
+		mw.writeString(fmt.Sprintf(" %q", n.Title))
+	}
 	mw.writeString(")")
 }
 
