@@ -409,13 +409,12 @@ func handleImage(ps *parserState) {
 	var n *types.ImageNode
 	var alt, title string
 	for _, v := range ps.t.Attr {
-		if v.Key == "src" {
+		switch strings.ToLower(v.Key) {
+		case "src":
 			n = types.NewImageNode(v.Val)
-		}
-		if v.Key == "alt" {
+		case "alt":
 			alt = v.Val
-		}
-		if v.Key == "title" {
+		case "title":
 			title = v.Val
 		}
 	}
