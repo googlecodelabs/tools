@@ -1,6 +1,6 @@
 # Tools for authoring and serving codelabs
 
-![](https://raw.githubusercontent.com/googlecodelabs/tools/master/claat/demo.gif)
+[![Demo](https://storage.googleapis.com/claat/demo.png)](https://storage.googleapis.com/claat/demo.mp4)
 
 Codelabs are interactive instructional tutorials, which can be authored in Google Docs
 using some simple formatting conventions. You can also author codelabs using markdown syntax.
