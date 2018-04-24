@@ -158,6 +158,10 @@ The following formats are built-in:
 - md (Markdown)
 - offline (plain HTML markup for offline consumption)
 
+Note that the built-in templates of the formats are not guaranteed to be stable.
+They can be found in https://github.com/googlecodelabs/tools/tree/master/claat/render.
+Please avoid using default templates in production. Use your own copies.
+
 To use a custom format, specify a local file path to a Go template file.
 More info on Go templates: https://golang.org/pkg/text/template/.
 
