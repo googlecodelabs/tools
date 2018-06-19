@@ -194,8 +194,11 @@ func TestMetaTable(t *testing.T) {
 		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
 	}
 	status := types.LegacyStatus([]string{"final"})
+	if clab.Meta.Status == nil {
+		t.Fatalf("Meta.Status is nil; want %q", status)
+	}
 	if !reflect.DeepEqual(clab.Meta.Status, &status) {
-		t.Errorf("Meta.Status: %q; want %q", clab.Meta.Status, &status)
+		t.Errorf("Meta.Status: %q; want %q", *clab.Meta.Status, status)
 	}
 }
 

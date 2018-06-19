@@ -97,7 +97,7 @@ func slurpCodelab(src string) (*codelab, error) {
 			ch <- nil
 		}(imp)
 	}
-	for _ = range imports {
+	for range imports {
 		if err := <-ch; err != nil {
 			return nil, err
 		}

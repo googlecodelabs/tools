@@ -1,8 +1,10 @@
 sudo: false
+git:
+  depth: 3
 language: go
 go:
-- 1.8.x # need for App Engine
-- master
+- 1.8.x  # need for App Engine
+- 1.10.x # latest release because "master" is dev version
 install:
 - go get github.com/golang/lint/golint
 - go get -t -d ./claat/...
@@ -18,7 +20,7 @@ deploy:
   on:
     repo: googlecodelabs/tools
     tags: true
-    go: master
+    go: 1.10.x # match the above; latest release
   skip_cleanup: true
   file:
   - claat/bin/claat-darwin-amd64

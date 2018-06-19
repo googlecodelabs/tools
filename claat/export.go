@@ -45,7 +45,7 @@ func cmdExport() {
 			ch <- &result{src, meta, err}
 		}(src)
 	}
-	for _ = range args {
+	for range args {
 		res := <-ch
 		if res.err != nil {
 			errorf(reportErr, res.src, res.err)

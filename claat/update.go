@@ -58,7 +58,7 @@ func cmdUpdate() {
 			ch <- &result{d, meta, err}
 		}(d)
 	}
-	for _ = range dirs {
+	for range dirs {
 		res := <-ch
 		if res.err != nil {
 			errorf(reportErr, res.dir, res.err)
@@ -154,7 +154,7 @@ func scanPaths(roots []string) ([]string, error) {
 		}(r)
 	}
 	var dirs []string
-	for _ = range roots {
+	for range roots {
 		res := <-ch
 		if res.err != nil {
 			return nil, fmt.Errorf("%s: %v", res.root, res.err)
