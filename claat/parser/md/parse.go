@@ -365,10 +365,12 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 		case metaCategories:
 			// Standardize the categories and append to codelab field.
 			c.Categories = append(c.Categories, standardSplit(v)...)
+			sort.Strings(c.Categories)
 			break
 		case metaEnvironments:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
+			sort.Strings(c.Tags)
 			break
 		case metaStatus:
 			// Standardize the statuses and append to the codelab field.
@@ -387,6 +389,7 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 		case metaTags:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
+			sort.Strings(c.Tags)
 			break
 		default:
 			break
@@ -811,6 +814,12 @@ func toLowerSlice(a []string) {
 	}
 }
 
+// roundDuration rounds time to the nearest minute, always rounding
+// up when there is any fractional portion of a minute.
+// Ex:
+//  59s --> 1m
+//  60s --> 1m
+//  61s --> 2m
 func roundDuration(d time.Duration) time.Duration {
 	rd := time.Duration(d.Minutes()) * time.Minute
 	if rd < d {
