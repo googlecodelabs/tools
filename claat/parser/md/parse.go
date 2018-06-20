@@ -33,9 +33,9 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 
-	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/russross/blackfriday"
+	"github.com/googlecodelabs/tools/claat/parser"
 )
 
 const (
@@ -87,7 +87,7 @@ func init() {
 type Parser struct {
 }
 
-// Parse parses a codelab writtet in Markdown.
+// Parse parses a codelab written in Markdown.
 func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
 	// Convert Markdown to HTML for easy parsing.
 	b, err := ioutil.ReadAll(r)
