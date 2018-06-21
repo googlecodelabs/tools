@@ -33,9 +33,9 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 
+	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/russross/blackfriday"
-	"github.com/googlecodelabs/tools/claat/parser"
 )
 
 const (
@@ -365,12 +365,10 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 		case metaCategories:
 			// Standardize the categories and append to codelab field.
 			c.Categories = append(c.Categories, standardSplit(v)...)
-			sort.Strings(c.Categories)
 			break
 		case metaEnvironments:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
-			sort.Strings(c.Tags)
 			break
 		case metaStatus:
 			// Standardize the statuses and append to the codelab field.
@@ -389,7 +387,6 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 		case metaTags:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
-			sort.Strings(c.Tags)
 			break
 		default:
 			break

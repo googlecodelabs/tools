@@ -62,13 +62,9 @@ func TestHandleCodelabTitle(t *testing.T) {
 
 // The parser assumes
 //   * Any single number is minutes
-//   * xx::yy is mm::ss
+//   * xx:yy is mm:ss
 //   * Hours only appear if you have three parts
 func TestProcessDuration(t *testing.T) {
-	tmp := stdHeader + `
-## Step Title
-Duration: %v`
-
 	tests := []struct {
 		in  string
 		out time.Duration
@@ -92,7 +88,7 @@ Duration: %v`
 	}
 
 	for i, tc := range tests {
-		content := fmt.Sprintf(tmp, tc.in)
+		content := fmt.Sprintf(stdHeader+"\n## Step Title\nDuration: %v\n", tc.in)
 		c := mustParseCodelab(content)
 		out := time.Duration(c.Duration) * time.Minute
 
@@ -125,14 +121,14 @@ Duration: %v
 
 		c := mustParseCodelab(content)
 		if c.Duration != tc.out {
-			t.Errorf("%d: Wanted duration %d but got %d", i, tc.out, c.Duration)
+			t.Errorf("%d: wanted duration %d but got %d", i, c.Duration, tc.out)
 		}
 	}
 }
 
 func TestParseMetadata(t *testing.T) {
 	title := "Codelab Title"
-	out := types.Meta{
+	wantMeta := types.Meta{
 		Title:      title,
 		ID:         "zyxwvut",
 		Author:     "john smith",
@@ -157,7 +153,7 @@ feedback link: https://www.google.com
 	content += ("# " + title)
 
 	c := mustParseCodelab(content)
-	if !reflect.DeepEqual(out, c.Meta) {
-		t.Errorf("\ngot:\n%+v\nwant:\n%+v", c.Meta, out)
+	if !reflect.DeepEqual(c.Meta, wantMeta) {
+		t.Errorf("\ngot:\n%+v\nwant:\n%+v", c.Meta, wantMeta)
 	}
 }
