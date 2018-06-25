@@ -87,7 +87,7 @@ func init() {
 type Parser struct {
 }
 
-// Parse parses a codelab writtet in Markdown.
+// Parse parses a codelab written in Markdown.
 func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
 	// Convert Markdown to HTML for easy parsing.
 	b, err := ioutil.ReadAll(r)
@@ -811,6 +811,12 @@ func toLowerSlice(a []string) {
 	}
 }
 
+// roundDuration rounds time to the nearest minute, always rounding
+// up when there is any fractional portion of a minute.
+// Ex:
+//  59s --> 1m
+//  60s --> 1m
+//  61s --> 2m
 func roundDuration(d time.Duration) time.Duration {
 	rd := time.Duration(d.Minutes()) * time.Minute
 	if rd < d {
