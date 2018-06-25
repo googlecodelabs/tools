@@ -108,8 +108,8 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 			mw.itemsList(n)
 		//case *types.GridNode:
 		//	mw.grid(n)
-		//case *types.InfoboxNode:
-		//	mw.infobox(n)
+		case *types.InfoboxNode:
+			mw.infobox(n)
 		//case *types.SurveyNode:
 		//	mw.survey(n)
 		case *types.HeaderNode:
@@ -229,6 +229,18 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 			mw.writeBytes(newLine)
 		}
 	}
+}
+
+func (mw *mdWriter) infobox(n *types.InfoboxNode) {
+	// TODO: This should use the "detail item" syntax so that it can be pure MD and not HTML
+	// kind
+	// : <content>
+	mw.newBlock()
+	mw.writeString(`<aside class="`)
+	mw.writeString(string(n.Kind))
+	mw.writeString(`">`)
+	mw.write(n.Content.Nodes...)
+	mw.writeString("</aside>")
 }
 
 func (mw *mdWriter) header(n *types.HeaderNode) {

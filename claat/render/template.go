@@ -24,6 +24,7 @@ import (
 	textTemplate "text/template"
 
 	"github.com/googlecodelabs/tools/claat/types"
+	"strings"
 )
 
 // Context is a template context during execution.
@@ -71,6 +72,9 @@ var funcMap = map[string]interface{}{
 	"renderLite": Lite,
 	"renderHTML": HTML,
 	"renderMD":   MD,
+	"commaSep": func(arr []string) string {
+		return strings.Join(arr, ",")
+	},
 	"matchEnv": func(tags []string, t string) bool {
 		if len(tags) == 0 || t == "" {
 			return true
