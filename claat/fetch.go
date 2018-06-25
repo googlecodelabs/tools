@@ -231,7 +231,7 @@ func fetchDriveFile(id string, nometa bool) (*resource, error) {
 
 var crcTable = crc64.MakeTable(crc64.ECMA)
 
-func slurpBytes(client *http.Client, codelabSrc, dir, imgURL string, n int) (string, error) {
+func slurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, error) {
 	// images can be local in Markdown cases or remote.
 	// Only proceed a simple copy on local reference.
 	var b []byte
@@ -240,6 +240,14 @@ func slurpBytes(client *http.Client, codelabSrc, dir, imgURL string, n int) (str
 	if err != nil {
 		return "", err
 	}
+
+	// If the codelab source is being downloaded from the network, then we should interpret
+	// the image URL in the same way.
+	srcUrl, err := url.Parse(codelabSrc)
+	if err == nil && srcUrl.Host != "" {
+		u = srcUrl.ResolveReference(u)
+	}
+
 	if u.Host == "" {
 		if imgURL, err = restrictPathToParent(imgURL, filepath.Dir(codelabSrc)); err != nil {
 			return "", err
@@ -247,7 +255,7 @@ func slurpBytes(client *http.Client, codelabSrc, dir, imgURL string, n int) (str
 		b, err = ioutil.ReadFile(imgURL)
 		ext = filepath.Ext(imgURL)
 	} else {
-		b, err = slurpRemoteBytes(client, dir, imgURL, 5)
+		b, err = slurpRemoteBytes(client, u.String(), 5)
 		ext = ".png"
 	}
 	if err != nil {
@@ -260,7 +268,7 @@ func slurpBytes(client *http.Client, codelabSrc, dir, imgURL string, n int) (str
 	return file, ioutil.WriteFile(dst, b, 0644)
 }
 
-func slurpRemoteBytes(client *http.Client, dir, url string, n int) ([]byte, error) {
+func slurpRemoteBytes(client *http.Client, url string, n int) ([]byte, error) {
 	res, err := retryGet(client, url, n)
 	if err != nil {
 		return nil, err

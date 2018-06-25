@@ -191,7 +191,7 @@ func slurpImages(client *http.Client, src, dir string, steps []*types.Step) (map
 		for _, n := range nodes {
 			go func(n *types.ImageNode) {
 				url := n.Src
-				file, err := slurpBytes(client, src, dir, url, 5)
+				file, err := slurpBytes(client, src, dir, url)
 				if err == nil {
 					n.Src = filepath.Join(imgDirname, file)
 				}
