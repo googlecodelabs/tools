@@ -87,8 +87,7 @@ Sure, just follow this process:
 
 * Email us at codelab-submissions@google.com with a brief proposal for your content.
 * Assuming your proposal is approved, sign the
-[Google Individual Contributor License Agreement]
-(https://cla.developers.google.com/about/google-individual) (CLA),
+[Google Individual Contributor License Agreement](https://cla.developers.google.com/about/google-individual) (CLA),
 which you can do online. The CLA is necessary mainly because we need your
 permission to use and distribute your codelab.
 * Draft your content using the tools and techniques documented in this repo. 
