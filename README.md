@@ -151,7 +151,7 @@ tree (to facilitate translation to different output formats), an app engine base
 
 Clare Bayley has been the guru of onsite codelab experiences, running events large and small, while Sam Thorogood and Chris Broadfoot made major contributions to the onsite kiosks you may have seen at Google I/O.
 
-Eric Bidelman redesigned the coelab user interface using Polymer components and built the g.co/codelabs landing page, to provide a beautiful user experience that looks great and works equally well on desktop and mobile devices.
+Eric Bidelman redesigned the codelab user interface using Polymer components and built the g.co/codelabs landing page, to provide a beautiful user experience that looks great and works equally well on desktop and mobile devices.
 
 Lots of other contributions have been made over the years and I’m sure that I’m neglecting some important advances but for the sake of brevity, I’ll leave it at that.
 
