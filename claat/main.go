@@ -95,7 +95,7 @@ func errorf(format string, args ...interface{}) {
 	exitMu.Unlock()
 }
 
-// fatalf calls printf and exits immediatly with non-zero code.
+// fatalf calls printf and exits immediately with non-zero code.
 func fatalf(format string, args ...interface{}) {
 	printf(format, args...)
 	os.Exit(1)
