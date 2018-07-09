@@ -183,18 +183,7 @@ func (mw *mdWriter) code(n *types.CodeNode) {
 	mw.newBlock()
 	defer mw.writeBytes(newLine)
 	if n.Term {
-		var buf bytes.Buffer
-		const prefix = "    "
-		lineStart := true
-		for _, r := range n.Value {
-			if lineStart {
-				buf.WriteString(prefix)
-			}
-			buf.WriteRune(r)
-			lineStart = r == '\n'
-		}
-		mw.writeBytes(buf.Bytes())
-		return
+		n.Lang = "bash"
 	}
 	mw.writeString("```")
 	mw.writeString(n.Lang)
