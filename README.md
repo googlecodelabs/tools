@@ -49,7 +49,7 @@ which connects you with other authors and provides access to the
 
 1. Create a doc following the syntax conventions described in the [Codelab Formatting Guide](https://g.co/codelabs/guide). Here’s an [example doc](https://docs.google.com/document/d/1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY/edit). Feel free to copy that doc as a starter template. Once you have your own source doc, note its DocId, which is the long string near the end of the URL (right after docs.google.com/document/d/).
 
-1. Make one or more changes and preview your codelab, using the preview app provided by Google. To preview a codelab, install the Preview Codelab Chrome extension in your browser. Now you can preview a codelab directly from the Google Doc view by clicking the Chrome extension’s button, which will open a new tab to display the preview. Alternatively, navigate manually to https://codelabs-preview.appspot.com/?file_id=<google-doc-id>
+1. Make one or more changes and preview your codelab, using the preview app provided by Google. To preview a codelab, install the [Preview Codelab Chrome extension](https://chrome.google.com/webstore/detail/preview-codelab/lhojjnijnkiglhkggagbapfonpdlinji) in your browser. Now you can preview a codelab directly from the Google Doc view by clicking the Chrome extension’s button, which will open a new tab to display the preview. Alternatively, navigate manually to https://codelabs-preview.appspot.com/?file_id=<google-doc-id>
 
 1. Install the claat command -- see the [README in the claat directory](https://github.com/googlecodelabs/tools/blob/master/claat/README.md) of this repo for instructions..
 
