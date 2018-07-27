@@ -63,6 +63,10 @@ type Node interface {
 	Env() []string
 	// MutateEnv replaces current node environment tags with env.
 	MutateEnv(env []string)
+	// AsImageNodes filters and returns all NodeImage nodes recursively
+	AsImageNodes() []*ImageNode
+	// AsImportNodes filters and returns all ImportNode nodes recursively
+	AsImportNodes() []*ImportNode
 }
 
 // IsItemsList returns true if t is one of ItemsListNode types.
@@ -124,6 +128,14 @@ func (b *node) MutateEnv(e []string) {
 	sort.Strings(b.env)
 }
 
+func (b *node) AsImageNodes() []*ImageNode {
+	return []*ImageNode{}
+}
+
+func (b *node) AsImportNodes() []*ImportNode {
+	return []*ImportNode{}
+}
+
 // NewListNode creates a new Node of type NodeList.
 func NewListNode(nodes ...Node) *ListNode {
 	n := &ListNode{node: node{typ: NodeList}}
@@ -152,6 +164,16 @@ func (l *ListNode) Prepend(n ...Node) {
 	l.Nodes = append(n, l.Nodes...)
 }
 
+// AsImageNodes for ListNode recurses over children
+func (l *ListNode) AsImageNodes() []*ImageNode {
+	return ImageNodesToList(l.Nodes)
+}
+
+// AsImportNodes for ListNode imports the list of Nodes contained
+func (l *ListNode) AsImportNodes() []*ImportNode {
+	return ImportNodesToList(l.Nodes)
+}
+
 // NewImportNode creates a new Node of type NodeImport,
 // with initialized ImportNode.Content.
 func NewImportNode(url string) *ImportNode {
@@ -178,6 +200,11 @@ func (in *ImportNode) Empty() bool {
 func (in *ImportNode) MutateBlock(v interface{}) {
 	in.node.MutateBlock(v)
 	in.Content.MutateBlock(v)
+}
+
+// AsImportNodes for ImportNode simply returns a list of itself
+func (in *ImportNode) AsImportNodes() []*ImportNode {
+	return []*ImportNode{in}
 }
 
 // NewGridNode creates a new grid with optional content.
@@ -211,6 +238,28 @@ func (gn *GridNode) Empty() bool {
 		}
 	}
 	return true
+}
+
+// AsImageNodes for GridNode recurses within grid
+func (gn *GridNode) AsImageNodes() []*ImageNode {
+	var imps []*ImageNode
+	for _, r := range gn.Rows {
+		for _, c := range r {
+			imps = append(imps, ImageNodesToList(c.Content.Nodes)...)
+		}
+	}
+	return imps
+}
+
+// AsImportNodes imports all imports in the grid
+func (gn *GridNode) AsImportNodes() []*ImportNode {
+	var imps []*ImportNode
+	for _, r := range gn.Rows {
+		for _, c := range r {
+			imps = append(imps, ImportNodesToList(c.Content.Nodes)...)
+		}
+	}
+	return imps
 }
 
 // NewItemsListNode creates a new ItemsListNode of type NodeItemsList,
@@ -249,6 +298,15 @@ func (il *ItemsListNode) NewItem(nodes ...Node) *ListNode {
 	n := NewListNode(nodes...)
 	il.Items = append(il.Items, n)
 	return n
+}
+
+// AsImageNodes for ItemsListNode recurses in list
+func (il *ItemsListNode) AsImageNodes() []*ImageNode {
+	var imgs []*ImageNode
+	for _, i := range il.Items {
+		imgs = append(imgs, ImageNodesToList(i.Nodes)...)
+	}
+	return imgs
 }
 
 // NewTextNode creates a new Node of type NodeText.
@@ -317,6 +375,11 @@ func (hn *HeaderNode) Empty() bool {
 	return hn.Content.Empty()
 }
 
+// AsImageNodes for HeaderNode recurses within Nodes
+func (hn *HeaderNode) AsImageNodes() []*ImageNode {
+	return ImageNodesToList(hn.Content.Nodes)
+}
+
 // NewURLNode creates a new Node of type NodeURL with optinal content n.
 func NewURLNode(url string, n ...Node) *URLNode {
 	return &URLNode{
@@ -341,6 +404,11 @@ func (un *URLNode) Empty() bool {
 	return un.Content.Empty()
 }
 
+// AsImageNodes for URLNode recurses within Nodes
+func (un *URLNode) AsImageNodes() []*ImageNode {
+	return ImageNodesToList(un.Content.Nodes)
+}
+
 // NewImageNode creates a new ImageNode  with the give src.
 func NewImageNode(src string) *ImageNode {
 	return &ImageNode{
@@ -354,13 +422,18 @@ type ImageNode struct {
 	node
 	Src      string
 	MaxWidth float32
-        Alt      string
-        Title    string
+	Alt      string
+	Title    string
 }
 
 // Empty returns true if its Src is zero, excluding space runes.
 func (in *ImageNode) Empty() bool {
 	return strings.TrimSpace(in.Src) == ""
+}
+
+// AsImageNodes for ImageNode simply returns a list of itself
+func (in *ImageNode) AsImageNodes() []*ImageNode {
+	return []*ImageNode{in}
 }
 
 // NewButtonNode creates a new button with optional content nodes n.
@@ -386,6 +459,11 @@ type ButtonNode struct {
 // Empty returns true if its content is empty.
 func (bn *ButtonNode) Empty() bool {
 	return bn.Content.Empty()
+}
+
+// AsImageNodes for ButtonNode recurses within Nodes
+func (bn *ButtonNode) AsImageNodes() []*ImageNode {
+	return ImageNodesToList(bn.Content.Nodes)
 }
 
 // NewSurveyNode creates a new survey node with optional questions.
@@ -451,6 +529,16 @@ func (ib *InfoboxNode) Empty() bool {
 	return ib.Content.Empty()
 }
 
+// AsImageNodes for InfoboxNode recurses within Nodes
+func (ib *InfoboxNode) AsImageNodes() []*ImageNode {
+	return ImageNodesToList(ib.Content.Nodes)
+}
+
+// AsImportNodes imports nodes within the infobox
+func (ib *InfoboxNode) AsImportNodes() []*ImportNode {
+	return ImportNodesToList(ib.Content.Nodes)
+}
+
 // NewYouTubeNode creates a new YouTube video node.
 func NewYouTubeNode(vid string) *YouTubeNode {
 	return &YouTubeNode{
@@ -468,4 +556,26 @@ type YouTubeNode struct {
 // Empty returns true if yt's VideoID field is zero.
 func (yt *YouTubeNode) Empty() bool {
 	return yt.VideoID != ""
+}
+
+// ImageNodesToList filters out everything except types.NodeImport nodes, recursively.
+func ImageNodesToList(nodes []Node) []*ImageNode {
+	var imps []*ImageNode
+	for _, n := range nodes {
+		if list := n.AsImageNodes(); len(list) > 0 {
+			imps = append(imps, list...)
+		}
+	}
+	return imps
+}
+
+// ImportNodesToList filters out everything except types.NodeImport nodes, recursively.
+func ImportNodesToList(nodes []Node) []*ImportNode {
+	var imps []*ImportNode
+	for _, n := range nodes {
+		if list := n.AsImportNodes(); len(list) > 0 {
+			imps = append(imps, list...)
+		}
+	}
+	return imps
 }
