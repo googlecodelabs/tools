@@ -82,7 +82,7 @@ func slurpCodelab(src string) (*codelab, error) {
 	// fetch imports and parse them as fragments
 	var imports []*types.ImportNode
 	for _, st := range clab.Steps {
-		imports = append(imports, importNodes(st.Content.Nodes)...)
+		imports = append(imports, types.ImportNodesToList(st.Content.Nodes)...)
 	}
 	ch := make(chan error, len(imports))
 	defer close(ch)
