@@ -126,7 +126,7 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 
 func (mw *mdWriter) text(n *types.TextNode) {
 	if n.Bold {
-		mw.writeString("__")
+		mw.writeString("**")
 	}
 	if n.Italic {
 		mw.writeString(" *")
@@ -142,7 +142,7 @@ func (mw *mdWriter) text(n *types.TextNode) {
 		mw.writeString("* ")
 	}
 	if n.Bold {
-		mw.writeString("__")
+		mw.writeString("**")
 	}
 }
 
@@ -242,6 +242,9 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 	// TODO: This should use the "detail item" syntax so that it can be pure MD and not HTML
 	// kind
 	// : <content>
+	//
+	// The main issue is that when you do write(n.Content.Nodes...) it always adds two newlines
+	// at the beginning.
 	mw.newBlock()
 	mw.writeString(`<aside class="`)
 	mw.writeString(string(n.Kind))

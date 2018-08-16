@@ -19,6 +19,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -137,4 +138,14 @@ func (s *LegacyStatus) UnmarshalJSON(b []byte) error {
 	}
 	*s = LegacyStatus(v)
 	return nil
+}
+
+// String turns a status into a string
+func (s LegacyStatus) String() string {
+	ss := []string(s)
+	if len(ss) == 0 {
+		return ""
+	}
+
+	return "[" + strings.Join(ss, ",") + "]"
 }
