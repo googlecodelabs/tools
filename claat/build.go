@@ -29,7 +29,7 @@ import (
 	"sync"
 )
 
-func cmdInstall() {
+func cmdBuild() {
 	const depsDir = "bower_components"
 	var codelabElem = []byte(`
 <link rel="import" href="../bower_components/google-codelab-elements/google-codelab-elements.html">
