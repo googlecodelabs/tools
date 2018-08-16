@@ -66,7 +66,7 @@ var (
 	commands = map[string]func(){
 		"export":  cmdExport,
 		"serve":   cmdServe,
-		"install": cmdInstall,
+		"build":   cmdBuild,
 		"update":  cmdUpdate,
 		"help":    usage,
 		"version": func() { fmt.Println(version) },
@@ -181,6 +181,10 @@ When writing to a directory, existing files will be overwritten.
 
 The program exits with non-zero code if at least one src could not be exported.
 
+## Build command
+
+Install all the dependencies needed by the codelab.
+
 ## Serve command
 
 Serve provides a simple web server for viewing exported codelabs.
@@ -188,6 +192,8 @@ It takes no arguments and presents the current directory contents.
 Clicking on a directory representing an exported codelab will load
 all the required dependencies and render the generated codelab as
 it would appear in production.
+
+The serve command run first the build command.
 
 The serve command takes a -addr host:port option, to specify the
 desired hostname or IP address and port number to bind to.
