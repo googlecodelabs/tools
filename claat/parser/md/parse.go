@@ -650,6 +650,14 @@ func image(ds *docState) types.Node {
 		n.Title = title
 	}
 
+	if ws := nodeAttr(ds.cur, "width"); ws != "" {
+		w,err := strconv.ParseFloat(ws, 64)
+		if err != nil {
+			return nil
+		}
+		n.MaxWidth = float32(w)
+	}
+
 	n.MutateBlock(findBlockParent(ds.cur))
 	return n
 }
