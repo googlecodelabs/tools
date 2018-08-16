@@ -66,6 +66,7 @@ var (
 	commands = map[string]func(){
 		"export":  cmdExport,
 		"serve":   cmdServe,
+		"install": cmdInstall,
 		"update":  cmdUpdate,
 		"help":    usage,
 		"version": func() { fmt.Println(version) },
