@@ -38,16 +38,17 @@ import (
 	"github.com/russross/blackfriday"
 )
 
+// Metadata constants for the YAML header
 const (
-	metaAuthor           = "author"
-	metaSummary          = "summary"
-	metaID               = "id"
-	metaCategories       = "categories"
-	metaEnvironments     = "environments"
-	metaStatus           = "status"
-	metaFeedbackLink     = "feedback link"
-	metaAnalyticsAccount = "analytics account"
-	metaTags             = "tags"
+	MetaAuthor           = "author"
+	MetaSummary          = "summary"
+	MetaID               = "id"
+	MetaCategories       = "categories"
+	MetaEnvironments     = "environments"
+	MetaStatus           = "status"
+	MetaFeedbackLink     = "feedback link"
+	MetaAnalyticsAccount = "analytics account"
+	MetaTags             = "tags"
 )
 
 const (
@@ -351,40 +352,40 @@ func standardSplit(s string) []string {
 func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 	for k, v := range m {
 		switch k {
-		case metaAuthor:
+		case MetaAuthor:
 			// Directly assign the summary to the codelab field.
 			c.Author = v
-		case metaSummary:
+		case MetaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v
 			break
-		case metaID:
+		case MetaID:
 			// Directly assign the ID to the codelab field.
 			c.ID = v
 			break
-		case metaCategories:
+		case MetaCategories:
 			// Standardize the categories and append to codelab field.
 			c.Categories = append(c.Categories, standardSplit(v)...)
 			break
-		case metaEnvironments:
+		case MetaEnvironments:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
 			break
-		case metaStatus:
+		case MetaStatus:
 			// Standardize the statuses and append to the codelab field.
 			statuses := standardSplit(v)
 			statusesAsLegacy := types.LegacyStatus(statuses)
 			c.Status = &statusesAsLegacy
 			break
-		case metaFeedbackLink:
+		case MetaFeedbackLink:
 			// Directly assign the feedback link to the codelab field.
 			c.Feedback = v
 			break
-		case metaAnalyticsAccount:
+		case MetaAnalyticsAccount:
 			// Directly assign the GA id to the codelab field.
 			c.GA = v
 			break
-		case metaTags:
+		case MetaTags:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
 			break
@@ -651,7 +652,7 @@ func image(ds *docState) types.Node {
 	}
 
 	if ws := nodeAttr(ds.cur, "width"); ws != "" {
-		w,err := strconv.ParseFloat(ws, 64)
+		w, err := strconv.ParseFloat(ws, 64)
 		if err != nil {
 			return nil
 		}

@@ -22,9 +22,13 @@ import (
 	"path/filepath"
 	"sort"
 	textTemplate "text/template"
+	"time"
+
+	mdParse "github.com/googlecodelabs/tools/claat/parser/md"
+
+	"strings"
 
 	"github.com/googlecodelabs/tools/claat/types"
-	"strings"
 )
 
 // Context is a template context during execution.
@@ -72,8 +76,32 @@ var funcMap = map[string]interface{}{
 	"renderLite": Lite,
 	"renderHTML": HTML,
 	"renderMD":   MD,
-	"commaSep": func(arr []string) string {
-		return strings.Join(arr, ",")
+	"durationStr": func(d time.Duration) string {
+		m := d / time.Minute
+		return fmt.Sprintf("%02d:00", m)
+	},
+	"metaHeaderYaml": func(meta *types.Meta) string {
+		kvLine := func(k string, v string) string {
+			if tv := strings.TrimSpace(v); tv != "" {
+				return fmt.Sprintf("%s: %s\n", k, tv)
+			}
+
+			return ""
+		}
+
+		res := ""
+		res += kvLine(mdParse.MetaID, meta.ID)
+		res += kvLine(mdParse.MetaSummary, meta.Summary)
+		if meta.Status != nil {
+			res += kvLine(mdParse.MetaStatus, meta.Status.String())
+		}
+		res += kvLine(mdParse.MetaAuthor, meta.Author)
+		res += kvLine(mdParse.MetaCategories, strings.Join(meta.Categories, ","))
+		res += kvLine(mdParse.MetaTags, strings.Join(meta.Tags, ","))
+		res += kvLine(mdParse.MetaFeedbackLink, meta.Feedback)
+		res += kvLine(mdParse.MetaAnalyticsAccount, meta.GA)
+
+		return res
 	},
 	"matchEnv": func(tags []string, t string) bool {
 		if len(tags) == 0 || t == "" {
