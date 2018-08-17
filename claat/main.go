@@ -183,7 +183,10 @@ The program exits with non-zero code if at least one src could not be exported.
 
 ## Build command
 
-Install all the dependencies needed by the codelab.
+Install all the dependencies needed by the codelab unless already installed.
+This is done automatically by the serve command.
+To clean up and rebuild all the dependencies, remove bower_components
+directory and run the build command again
 
 ## Serve command
 
@@ -193,7 +196,7 @@ Clicking on a directory representing an exported codelab will load
 all the required dependencies and render the generated codelab as
 it would appear in production.
 
-The serve command run first the build command.
+The serve command always runs the build command first.
 
 The serve command takes a -addr host:port option, to specify the
 desired hostname or IP address and port number to bind to.
