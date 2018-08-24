@@ -26,8 +26,8 @@ RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 
 SRCS = $(shell find . -name '*.go') render/tmpldata.go
 
-install: $(OUTDIR)/claat
-	cp $< $(GOPATH)/bin
+$(OUTDIR)/claat: $(SRCS) VERSION
+	go build -o $@ -ldflags "-X main.version=$(VERSION)"
 
 release: $(RELEASES)
 	echo $(VERSION) > $(OUTDIR)/VERSION
@@ -44,9 +44,6 @@ lint: .lint
 
 clean:
 	rm -rf $(OUTDIR) render/tmpldata.go .test .lint
-
-$(OUTDIR)/claat: $(SRCS) VERSION
-	go build -o $@ -ldflags "-X main.version=$(VERSION)"
 
 $(OUTDIR)/claat-%: GOOS=$(firstword $(subst -, ,$*))
 $(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
