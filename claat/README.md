@@ -28,8 +28,7 @@ instructions below.
    `$GOPATH/src/github.com/googlecodelabs/tools`.
 3. Install package dependencies with `go get ./...` from this directory.
 
-To build the binary run `make` or `make bin/claat`. The latter creates the target binary,
-while the former will also copy it to `$GOPATH/bin`.
+To build the binary, run `make`.
 
 Testing is done with `make test` or `go test ./...` if preferred.
 
