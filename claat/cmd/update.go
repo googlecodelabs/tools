@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package cmd
 
 import (
 	"encoding/json"
@@ -29,18 +29,18 @@ import (
 	"github.com/googlecodelabs/tools/claat/types"
 )
 
-// cmdUpdate is the "claat update ..." subcommand.
-func cmdUpdate() {
+// CmdUpdate is the "claat update ..." subcommand.
+func CmdUpdate() {
 	roots := flag.Args()
 	if len(roots) == 0 {
 		roots = []string{"."}
 	}
 	dirs, err := scanPaths(roots)
 	if err != nil {
-		fatalf("%v", err)
+		Fatalf("%v", err)
 	}
 	if len(dirs) == 0 {
-		fatalf("no codelabs found in %s", strings.Join(roots, ", "))
+		Fatalf("no codelabs found in %s", strings.Join(roots, ", "))
 	}
 
 	type result struct {

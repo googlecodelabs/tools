@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package cmd
 
 import (
 	"log"
@@ -21,9 +21,9 @@ import (
 	"runtime"
 )
 
-// cmdServe is the "claat serve ..." subcommand.
-func cmdServe() {
-	cmdBuild()
+// CmdServe is the "claat serve ..." subcommand.
+func CmdServe() {
+	CmdBuild()
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	log.Printf("Serving codelabs on %s, opening browser tab now...", *addr)
 	ch := make(chan error, 1)
@@ -31,7 +31,7 @@ func cmdServe() {
 		ch <- http.ListenAndServe(*addr, nil)
 	}()
 	openBrowser("http://" + *addr)
-	fatalf("claat serve: %v", <-ch)
+	Fatalf("claat serve: %v", <-ch)
 }
 
 // openBrowser tries to open the URL in a browser.

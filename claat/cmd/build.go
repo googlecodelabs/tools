@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package cmd
 
 import (
 	"archive/zip"
@@ -29,7 +29,7 @@ import (
 	"sync"
 )
 
-func cmdBuild() {
+func CmdBuild() {
 	const depsDir = "bower_components"
 	var codelabElem = []byte(`
 <link rel="import" href="../bower_components/google-codelab-elements/google-codelab-elements.html">
@@ -37,14 +37,14 @@ func cmdBuild() {
 
 	err := os.MkdirAll(depsDir, 0755)
 	if err != nil {
-		fatalf("%s: %v", depsDir, err)
+		Fatalf("%s: %v", depsDir, err)
 	}
 	// Go get the dependencies.
 	if err := fetchRepo(depsDir, "google-codelab-elements", "googlecodelabs/codelab-components#2.0.2"); err != nil {
-		fatalf(err.Error())
+		Fatalf(err.Error())
 	}
 	if err := writeFile(filepath.Join("elements", "codelab.html"), codelabElem); err != nil {
-		fatalf(err.Error())
+		Fatalf(err.Error())
 	}
 }
 
@@ -148,7 +148,7 @@ var bowerSpecResolve = map[string]string{
 // bowerVersionOverride maps a githb user/repo to a particular fixed version to fetch
 // when resolving and fetching dependencies.
 var bowerVersionOverride = map[string]string{
-	"polymer/polymer":                               "standard-layer",
+	"polymer/polymer": "standard-layer",
 	"polymerelements/accessibility-developer-tools": "2.11.0",
 	"polymerelements/async":                         "1.5.2",
 	"polymerelements/font-roboto":                   "1.0.1",

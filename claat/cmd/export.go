@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package cmd
 
 import (
 	"encoding/json"
@@ -27,10 +27,10 @@ import (
 	"github.com/googlecodelabs/tools/claat/types"
 )
 
-// cmdExport is the "claat export ..." subcommand.
-func cmdExport() {
+// CmdExport is the "claat export ..." subcommand.
+func CmdExport() {
 	if flag.NArg() == 0 {
-		fatalf("Need at least one source. Try '-h' for options.")
+		Fatalf("Need at least one source. Try '-h' for options.")
 	}
 	type result struct {
 		src  string
@@ -132,7 +132,7 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 		GlobalGA: ctx.MainGA,
 		Meta:     &clab.Meta,
 		Steps:    clab.Steps,
-		Extra:    extraVars,
+		Extra:    ExtraVars,
 	}}
 	if ctx.Format != "offline" {
 		w := os.Stdout

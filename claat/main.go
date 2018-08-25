@@ -20,14 +20,14 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"math/rand"
 	"os"
-	"sync"
 	"time"
+
+	"github.com/googlecodelabs/tools/claat/cmd"
 
 	// allow parsers to register themselves
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
@@ -35,107 +35,38 @@ import (
 )
 
 var (
-	authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
-	output    = flag.String("o", ".", "output directory or '-' for stdout")
-	expenv    = flag.String("e", "web", "codelab environment")
-	tmplout   = flag.String("f", "html", "output format")
-	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
-	globalGA  = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
-	extra     = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
-	addr      = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
-
 	version string // set by linker -X
-)
-
-const (
-	// imgDirname is where a codelab images are stored,
-	// relative to the codelab dir.
-	imgDirname = "img"
-	// metaFilename is codelab metadata file.
-	metaFilename = "codelab.json"
-	// stdout is a special value for -o cli arg to identify stdout writer.
-	stdout = "-"
-
-	// log report formats
-	reportErr = "err\t%s %v"
-	reportOk  = "ok\t%s"
-)
-
-var (
 	// commands contains all valid subcommands, e.g. "claat export".
 	commands = map[string]func(){
-		"export":  cmdExport,
-		"serve":   cmdServe,
-		"build":   cmdBuild,
-		"update":  cmdUpdate,
+		"export":  cmd.CmdExport,
+		"serve":   cmd.CmdServe,
+		"build":   cmd.CmdBuild,
+		"update":  cmd.CmdUpdate,
 		"help":    usage,
 		"version": func() { fmt.Println(version) },
 	}
-
-	exitMu sync.Mutex // guards exit
-	exit   int        // program exit code
-
-	extraVars map[string]string // Extra template variables passed on the command line.
 )
-
-// isStdout reports whether filename is stdout.
-func isStdout(filename string) bool {
-	return filename == stdout
-}
-
-// printf prints formatted string fmt with args to stderr.
-func printf(format string, args ...interface{}) {
-	log.Printf(format, args...)
-}
-
-// errorf calls printf with fmt and args, and sets non-zero exit code.
-func errorf(format string, args ...interface{}) {
-	printf(format, args...)
-	exitMu.Lock()
-	exit = 1
-	exitMu.Unlock()
-}
-
-// fatalf calls printf and exits immediately with non-zero code.
-func fatalf(format string, args ...interface{}) {
-	printf(format, args...)
-	os.Exit(1)
-}
-
-// parseExtraVars parses extra template variables from command line.
-func parseExtraVars() map[string]string {
-	vars := make(map[string]string)
-	if *extra == "" {
-		return vars
-	}
-	b := []byte(*extra)
-	err := json.Unmarshal(b, &vars)
-	if err != nil {
-		errorf("Error parsing additional template data: %v", err)
-	}
-	return vars
-}
 
 func main() {
 	log.SetFlags(0)
 	rand.Seed(time.Now().UnixNano())
 	if len(os.Args) == 1 {
-		fatalf("Need subcommand. Try '-h' for options.")
+		cmd.Fatalf("Need subcommand. Try '-h' for options.")
 	}
 	if os.Args[1] == "-h" || os.Args[1] == "--help" {
 		usage()
 		return
 	}
 
-	cmd := commands[os.Args[1]]
-	if cmd == nil {
-		fatalf("Unknown subcommand. Try '-h' for options.")
+	command := commands[os.Args[1]]
+	if command == nil {
+		cmd.Fatalf("Unknown subcommand. Try '-h' for options.")
 	}
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
-	extraVars = parseExtraVars()
-	cmd()
-	os.Exit(exit)
+	cmd.ExtraVars = cmd.ParseExtraVars()
+	command()
+	os.Exit(cmd.Exit)
 }
 
 // usage prints usageText and program arguments to stderr.
