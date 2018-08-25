@@ -36,9 +36,6 @@ import (
 
 var (
 	version string // set by linker -X
-)
-
-var (
 	// commands contains all valid subcommands, e.g. "claat export".
 	commands = map[string]func(){
 		"export":  cmd.CmdExport,
