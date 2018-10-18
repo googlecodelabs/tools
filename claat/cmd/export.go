@@ -31,7 +31,7 @@ import (
 // CmdExport is the "claat export ..." subcommand.
 func CmdExport() {
 	if flag.NArg() == 0 {
-		Fatalf("Need at least one source. Try '-h' for options.")
+		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
 	type result struct {
 		src  string

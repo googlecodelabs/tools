@@ -38,10 +38,10 @@ func CmdUpdate() {
 	}
 	dirs, err := scanPaths(roots)
 	if err != nil {
-		Fatalf("%v", err)
+		log.Fatalf("%v", err)
 	}
 	if len(dirs) == 0 {
-		Fatalf("no codelabs found in %s", strings.Join(roots, ", "))
+		log.Fatalf("no codelabs found in %s", strings.Join(roots, ", "))
 	}
 
 	type result struct {

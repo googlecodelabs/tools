@@ -51,7 +51,7 @@ func main() {
 	log.SetFlags(0)
 	rand.Seed(time.Now().UnixNano())
 	if len(os.Args) == 1 {
-		cmd.Fatalf("Need subcommand. Try '-h' for options.")
+		log.Fatalf("Need subcommand. Try '-h' for options.")
 	}
 	if os.Args[1] == "-h" || os.Args[1] == "--help" {
 		usage()
@@ -60,7 +60,7 @@ func main() {
 
 	command := commands[os.Args[1]]
 	if command == nil {
-		cmd.Fatalf("Unknown subcommand. Try '-h' for options.")
+		log.Fatalf("Unknown subcommand. Try '-h' for options.")
 	}
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])

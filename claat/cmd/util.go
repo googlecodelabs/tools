@@ -23,7 +23,6 @@ import (
 	"encoding/json"
 	"flag"
 	"log"
-	"os"
 	"sync"
 
 	// allow parsers to register themselves
@@ -73,12 +72,6 @@ func errorf(format string, args ...interface{}) {
 	exitMu.Lock()
 	Exit = 1
 	exitMu.Unlock()
-}
-
-// Fatalf calls log.Printf and exits immediately with non-zero code.
-func Fatalf(format string, args ...interface{}) {
-	log.Printf(format, args...)
-	os.Exit(1)
 }
 
 // ParseExtraVars parses extra template variables from command line.
