@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -63,7 +64,7 @@ func CmdUpdate() {
 		if res.err != nil {
 			errorf(reportErr, res.dir, res.err)
 		} else {
-			printf(reportOk, res.meta.ID)
+			log.Printf(reportOk, res.meta.ID)
 		}
 	}
 }

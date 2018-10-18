@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -50,7 +51,7 @@ func CmdExport() {
 		if res.err != nil {
 			errorf(reportErr, res.src, res.err)
 		} else if !isStdout(*output) {
-			printf(reportOk, res.meta.ID)
+			log.Printf(reportOk, res.meta.ID)
 		}
 	}
 }
