@@ -38,7 +38,6 @@ var (
 	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
 	globalGA  = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
 	extra     = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
-	addr      = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
 )
 
 const (
