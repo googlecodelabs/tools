@@ -23,7 +23,6 @@ import (
 	"encoding/json"
 	"flag"
 	"log"
-	"os"
 	"sync"
 
 	// allow parsers to register themselves
@@ -67,23 +66,12 @@ func isStdout(filename string) bool {
 	return filename == stdout
 }
 
-// printf prints formatted string fmt with args to stderr.
-func printf(format string, args ...interface{}) {
-	log.Printf(format, args...)
-}
-
-// errorf calls printf with fmt and args, and sets non-zero exit code.
+// errorf calls log.Printf with fmt and args, and sets non-zero exit code.
 func errorf(format string, args ...interface{}) {
-	printf(format, args...)
+	log.Printf(format, args...)
 	exitMu.Lock()
 	Exit = 1
 	exitMu.Unlock()
-}
-
-// Fatalf calls printf and exits immediately with non-zero code.
-func Fatalf(format string, args ...interface{}) {
-	printf(format, args...)
-	os.Exit(1)
 }
 
 // ParseExtraVars parses extra template variables from command line.

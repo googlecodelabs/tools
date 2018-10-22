@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -30,7 +31,7 @@ import (
 // CmdExport is the "claat export ..." subcommand.
 func CmdExport() {
 	if flag.NArg() == 0 {
-		Fatalf("Need at least one source. Try '-h' for options.")
+		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
 	type result struct {
 		src  string
@@ -50,7 +51,7 @@ func CmdExport() {
 		if res.err != nil {
 			errorf(reportErr, res.src, res.err)
 		} else if !isStdout(*output) {
-			printf(reportOk, res.meta.ID)
+			log.Printf(reportOk, res.meta.ID)
 		}
 	}
 }

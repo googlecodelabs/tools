@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -37,10 +38,10 @@ func CmdUpdate() {
 	}
 	dirs, err := scanPaths(roots)
 	if err != nil {
-		Fatalf("%v", err)
+		log.Fatalf("%v", err)
 	}
 	if len(dirs) == 0 {
-		Fatalf("no codelabs found in %s", strings.Join(roots, ", "))
+		log.Fatalf("no codelabs found in %s", strings.Join(roots, ", "))
 	}
 
 	type result struct {
@@ -63,7 +64,7 @@ func CmdUpdate() {
 		if res.err != nil {
 			errorf(reportErr, res.dir, res.err)
 		} else {
-			printf(reportOk, res.meta.ID)
+			log.Printf(reportOk, res.meta.ID)
 		}
 	}
 }

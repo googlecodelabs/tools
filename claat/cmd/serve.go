@@ -31,7 +31,7 @@ func CmdServe() {
 		ch <- http.ListenAndServe(*addr, nil)
 	}()
 	openBrowser("http://" + *addr)
-	Fatalf("claat serve: %v", <-ch)
+	log.Fatalf("claat serve: %v", <-ch)
 }
 
 // openBrowser tries to open the URL in a browser.

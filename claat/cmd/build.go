@@ -37,14 +37,14 @@ func CmdBuild() {
 
 	err := os.MkdirAll(depsDir, 0755)
 	if err != nil {
-		Fatalf("%s: %v", depsDir, err)
+		log.Fatalf("%s: %v", depsDir, err)
 	}
 	// Go get the dependencies.
 	if err := fetchRepo(depsDir, "google-codelab-elements", "googlecodelabs/codelab-components#2.0.2"); err != nil {
-		Fatalf(err.Error())
+		log.Fatalf(err.Error())
 	}
 	if err := writeFile(filepath.Join("elements", "codelab.html"), codelabElem); err != nil {
-		Fatalf(err.Error())
+		log.Fatalf(err.Error())
 	}
 }
 
