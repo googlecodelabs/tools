@@ -31,7 +31,8 @@ import (
 )
 
 // CmdUpdate is the "claat update ..." subcommand.
-func CmdUpdate() {
+// globalGA is the global Google Analytics account to use.
+func CmdUpdate(globalGA string) {
 	roots := flag.Args()
 	if len(roots) == 0 {
 		roots = []string{"."}
@@ -55,7 +56,7 @@ func CmdUpdate() {
 			// random sleep up to 1 sec
 			// to reduce number of rate limit errors
 			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
-			meta, err := updateCodelab(d)
+			meta, err := updateCodelab(d, globalGA)
 			ch <- &result{d, meta, err}
 		}(d)
 	}
@@ -72,7 +73,7 @@ func CmdUpdate() {
 // updateCodelab reads metadata from a dir/codelab.json file,
 // re-exports the codelab just like it normally would in exportCodelab,
 // and removes assets (images) which are not longer in use.
-func updateCodelab(dir string) (*types.Meta, error) {
+func updateCodelab(dir, globalGA string) (*types.Meta, error) {
 	// get stored codelab metadata and fail early if we can't
 	meta, err := readMeta(filepath.Join(dir, metaFilename))
 	if err != nil {
@@ -82,8 +83,8 @@ func updateCodelab(dir string) (*types.Meta, error) {
 	if *prefix != "" {
 		meta.Prefix = *prefix
 	}
-	if *globalGA != "" {
-		meta.MainGA = *globalGA
+	if globalGA != "" {
+		meta.MainGA = globalGA
 	}
 
 	// fetch and parse codelab source

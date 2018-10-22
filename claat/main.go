@@ -38,9 +38,10 @@ var (
 	version string // set by linker -X
 
 	// Flags.
-	addr    = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
-	expenv  = flag.String("e", "web", "codelab environment")
-	tmplout = flag.String("f", "html", "output format")
+	addr     = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
+	globalGA = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
+	expenv   = flag.String("e", "web", "codelab environment")
+	tmplout  = flag.String("f", "html", "output format")
 )
 
 func main() {
@@ -60,13 +61,13 @@ func main() {
 
 	switch os.Args[1] {
 	case "export":
-		cmd.CmdExport(*expenv, *tmplout)
+		cmd.CmdExport(*expenv, *tmplout, *globalGA)
 	case "serve":
 		cmd.CmdServe(*addr)
 	case "build":
 		cmd.CmdBuild()
 	case "update":
-		cmd.CmdUpdate()
+		cmd.CmdUpdate(*globalGA)
 	case "help":
 		usage()
 	case "version":
