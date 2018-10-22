@@ -30,7 +30,8 @@ import (
 
 // CmdExport is the "claat export ..." subcommand.
 // expenv is the codelab environment.
-func CmdExport(expenv string) {
+// tmplout is the output format.
+func CmdExport(expenv, tmplout string) {
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
@@ -43,7 +44,7 @@ func CmdExport(expenv string) {
 	ch := make(chan *result, len(args))
 	for _, src := range args {
 		go func(src string) {
-			meta, err := exportCodelab(src, expenv)
+			meta, err := exportCodelab(src, expenv, tmplout)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -60,13 +61,13 @@ func CmdExport(expenv string) {
 // exportCodelab fetches codelab src from either local disk or remote,
 // parses and stores the results on disk, in a dir ancestored by *output.
 //
-// Stored results include codelab content formatted in *tmplout, its assets
+// Stored results include codelab content formatted in tmplout, its assets
 // and metadata in JSON format.
 //
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src, expenv string) (*types.Meta, error) {
+func exportCodelab(src, expenv, tmplout string) (*types.Meta, error) {
 	clab, err := slurpCodelab(src)
 	if err != nil {
 		return nil, err
@@ -85,7 +86,7 @@ func exportCodelab(src, expenv string) (*types.Meta, error) {
 	ctx := &types.Context{
 		Source:  src,
 		Env:     expenv,
-		Format:  *tmplout,
+		Format:  tmplout,
 		Prefix:  *prefix,
 		MainGA:  *globalGA,
 		Updated: &lastmod,

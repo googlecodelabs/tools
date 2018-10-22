@@ -38,8 +38,9 @@ var (
 	version string // set by linker -X
 
 	// Flags.
-	addr   = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
-	expenv = flag.String("e", "web", "codelab environment")
+	addr    = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
+	expenv  = flag.String("e", "web", "codelab environment")
+	tmplout = flag.String("f", "html", "output format")
 )
 
 func main() {
@@ -59,7 +60,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "export":
-		cmd.CmdExport(*expenv)
+		cmd.CmdExport(*expenv, *tmplout)
 	case "serve":
 		cmd.CmdServe(*addr)
 	case "build":
