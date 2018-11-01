@@ -32,7 +32,6 @@ import (
 
 var (
 	authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
-	output    = flag.String("o", ".", "output directory or '-' for stdout")
 	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
 	extra     = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
 )

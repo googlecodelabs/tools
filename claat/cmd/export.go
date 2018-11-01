@@ -32,7 +32,8 @@ import (
 // expenv is the codelab environment.
 // tmplout is the output format.
 // globalGA is the global Google Analytics ID to use.
-func CmdExport(expenv, tmplout, globalGA string) {
+// output is the root directory to export to, or "-" for stdout.
+func CmdExport(expenv, tmplout, globalGA, output string) {
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
@@ -53,14 +54,14 @@ func CmdExport(expenv, tmplout, globalGA string) {
 		res := <-ch
 		if res.err != nil {
 			errorf(reportErr, res.src, res.err)
-		} else if !isStdout(*output) {
+		} else if !isStdout(output) {
 			log.Printf(reportOk, res.meta.ID)
 		}
 	}
 }
 
 // exportCodelab fetches codelab src from either local disk or remote,
-// parses and stores the results on disk, in a dir ancestored by *output.
+// parses and stores the results on disk, in a dir ancestored by output.
 //
 // Stored results include codelab content formatted in tmplout, its assets
 // and metadata in JSON format.
@@ -68,7 +69,7 @@ func CmdExport(expenv, tmplout, globalGA string) {
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src, expenv, tmplout, globalGA string) (*types.Meta, error) {
+func exportCodelab(src, expenv, tmplout, globalGA, output string) (*types.Meta, error) {
 	clab, err := slurpCodelab(src)
 	if err != nil {
 		return nil, err
@@ -93,7 +94,7 @@ func exportCodelab(src, expenv, tmplout, globalGA string) (*types.Meta, error) {
 		Updated: &lastmod,
 	}
 
-	dir := *output // output dir or stdout
+	dir := output // output dir or stdout
 	if !isStdout(dir) {
 		dir = codelabDir(dir, meta)
 		// download or copy codelab assets to disk, and rewrite image URLs
