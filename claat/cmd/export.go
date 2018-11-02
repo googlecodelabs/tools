@@ -34,7 +34,8 @@ import (
 // globalGA is the global Google Analytics account to use.
 // tmplout is the output format.
 // output is the output directory, or "-" for stdout.
-func CmdExport(expenv, prefix, globalGA, tmplout, output string) {
+// authToken is the token to use for the Drive API.
+func CmdExport(expenv, prefix, globalGA, tmplout, output, authToken string) {
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
@@ -47,7 +48,7 @@ func CmdExport(expenv, prefix, globalGA, tmplout, output string) {
 	ch := make(chan *result, len(args))
 	for _, src := range args {
 		go func(src string) {
-			meta, err := exportCodelab(src, expenv, prefix, globalGA, tmplout, output)
+			meta, err := exportCodelab(src, expenv, prefix, globalGA, tmplout, output, authToken)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -70,14 +71,14 @@ func CmdExport(expenv, prefix, globalGA, tmplout, output string) {
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src, expenv, prefix, globalGA, tmplout, output string) (*types.Meta, error) {
-	clab, err := slurpCodelab(src)
+func exportCodelab(src, expenv, prefix, globalGA, tmplout, output, authToken string) (*types.Meta, error) {
+	clab, err := slurpCodelab(src, authToken)
 	if err != nil {
 		return nil, err
 	}
 	var client *http.Client // need for downloadImages
 	if clab.typ == srcGoogleDoc {
-		client, err = driveClient()
+		client, err = driveClient(authToken)
 		if err != nil {
 			return nil, err
 		}

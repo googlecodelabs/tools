@@ -33,7 +33,8 @@ import (
 // CmdUpdate is the "claat update ..." subcommand.
 // prefix is a URL prefix to prepend when using HTML format.
 // globalGA is the global Google Analytics account to use.
-func CmdUpdate(prefix, globalGA string) {
+// authToken is the token to use for the Drive API.
+func CmdUpdate(prefix, globalGA, authToken string) {
 	roots := flag.Args()
 	if len(roots) == 0 {
 		roots = []string{"."}
@@ -57,7 +58,7 @@ func CmdUpdate(prefix, globalGA string) {
 			// random sleep up to 1 sec
 			// to reduce number of rate limit errors
 			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
-			meta, err := updateCodelab(d, prefix, globalGA)
+			meta, err := updateCodelab(d, prefix, globalGA, authToken)
 			ch <- &result{d, meta, err}
 		}(d)
 	}
@@ -74,7 +75,7 @@ func CmdUpdate(prefix, globalGA string) {
 // updateCodelab reads metadata from a dir/codelab.json file,
 // re-exports the codelab just like it normally would in exportCodelab,
 // and removes assets (images) which are not longer in use.
-func updateCodelab(dir, prefix, globalGA string) (*types.Meta, error) {
+func updateCodelab(dir, prefix, globalGA, authToken string) (*types.Meta, error) {
 	// get stored codelab metadata and fail early if we can't
 	meta, err := readMeta(filepath.Join(dir, metaFilename))
 	if err != nil {
@@ -89,7 +90,7 @@ func updateCodelab(dir, prefix, globalGA string) (*types.Meta, error) {
 	}
 
 	// fetch and parse codelab source
-	clab, err := slurpCodelab(meta.Source)
+	clab, err := slurpCodelab(meta.Source, authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +104,7 @@ func updateCodelab(dir, prefix, globalGA string) (*types.Meta, error) {
 	// slurp codelab assets to disk and rewrite image URLs
 	var client *http.Client
 	if clab.typ == srcGoogleDoc {
-		client, err = driveClient()
+		client, err = driveClient(authToken)
 		if err != nil {
 			return nil, err
 		}

@@ -21,7 +21,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"flag"
 	"log"
 	"sync"
 
@@ -29,8 +28,6 @@ import (
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
 	_ "github.com/googlecodelabs/tools/claat/parser/md"
 )
-
-var authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
 
 const (
 	// imgDirname is where a codelab images are stored,

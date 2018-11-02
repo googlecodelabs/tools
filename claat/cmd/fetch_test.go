@@ -50,7 +50,7 @@ func TestFetchRemote(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	res, err := fetchRemote(ts.URL+f, false)
+	res, err := fetchRemote(ts.URL+f, "", false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -89,7 +89,7 @@ func TestFetchRemoteDrive(t *testing.T) {
 	}}
 	clients[providerGoogle] = &http.Client{Transport: rt}
 
-	res, err := fetchRemote("doc-123", false)
+	res, err := fetchRemote("doc-123", "", false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -135,7 +135,7 @@ func TestSlurpWithFragment(t *testing.T) {
 	}}
 	clients[providerGoogle] = &http.Client{Transport: rt}
 
-	clab, err := slurpCodelab("doc-123")
+	clab, err := slurpCodelab("doc-123", "")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -38,13 +38,14 @@ var (
 	version string // set by linker -X
 
 	// Flags.
-	addr     = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
-	expenv   = flag.String("e", "web", "codelab environment")
-	extra    = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
-	globalGA = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
-	output   = flag.String("o", ".", "output directory or '-' for stdout")
-	prefix   = flag.String("prefix", "../../", "URL prefix for html format")
-	tmplout  = flag.String("f", "html", "output format")
+	addr      = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
+	authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
+	expenv    = flag.String("e", "web", "codelab environment")
+	extra     = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
+	globalGA  = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
+	output    = flag.String("o", ".", "output directory or '-' for stdout")
+	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
+	tmplout   = flag.String("f", "html", "output format")
 )
 
 func main() {
@@ -64,13 +65,13 @@ func main() {
 
 	switch os.Args[1] {
 	case "export":
-		cmd.CmdExport(*expenv, *prefix, *globalGA, *tmplout, *output)
+		cmd.CmdExport(*expenv, *prefix, *globalGA, *tmplout, *output, *authToken)
 	case "serve":
 		cmd.CmdServe(*addr)
 	case "build":
 		cmd.CmdBuild()
 	case "update":
-		cmd.CmdUpdate(*prefix, *globalGA)
+		cmd.CmdUpdate(*prefix, *globalGA, *authToken)
 	case "help":
 		usage()
 	case "version":
