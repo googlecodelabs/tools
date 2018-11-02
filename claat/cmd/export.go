@@ -30,7 +30,8 @@ import (
 
 // CmdExport is the "claat export ..." subcommand.
 // expenv is the codelab environment to export to.
-func CmdExport(expenv string) {
+// prefix is a URL prefix to prepend when using HTML format.
+func CmdExport(expenv, prefix string) {
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
@@ -43,7 +44,7 @@ func CmdExport(expenv string) {
 	ch := make(chan *result, len(args))
 	for _, src := range args {
 		go func(src string) {
-			meta, err := exportCodelab(src, expenv)
+			meta, err := exportCodelab(src, expenv, prefix)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -66,7 +67,7 @@ func CmdExport(expenv string) {
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src, expenv string) (*types.Meta, error) {
+func exportCodelab(src, expenv, prefix string) (*types.Meta, error) {
 	clab, err := slurpCodelab(src)
 	if err != nil {
 		return nil, err
@@ -86,7 +87,7 @@ func exportCodelab(src, expenv string) (*types.Meta, error) {
 		Source:  src,
 		Env:     expenv,
 		Format:  *tmplout,
-		Prefix:  *prefix,
+		Prefix:  prefix,
 		MainGA:  *globalGA,
 		Updated: &lastmod,
 	}
