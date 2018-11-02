@@ -34,7 +34,12 @@ import (
 	_ "github.com/googlecodelabs/tools/claat/parser/md"
 )
 
-var version string // set by linker -X
+var (
+	version string // set by linker -X
+
+	// Flags.
+	addr = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
+)
 
 func main() {
 	log.SetFlags(0)
@@ -55,7 +60,7 @@ func main() {
 	case "export":
 		cmd.CmdExport()
 	case "serve":
-		cmd.CmdServe()
+		cmd.CmdServe(*addr)
 	case "build":
 		cmd.CmdBuild()
 	case "update":

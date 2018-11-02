@@ -22,15 +22,16 @@ import (
 )
 
 // CmdServe is the "claat serve ..." subcommand.
-func CmdServe() {
+// addr is the hostname and port to bind the web server to.
+func CmdServe(addr string) {
 	CmdBuild()
 	http.Handle("/", http.FileServer(http.Dir(".")))
-	log.Printf("Serving codelabs on %s, opening browser tab now...", *addr)
+	log.Printf("Serving codelabs on %s, opening browser tab now...", addr)
 	ch := make(chan error, 1)
 	go func() {
-		ch <- http.ListenAndServe(*addr, nil)
+		ch <- http.ListenAndServe(addr, nil)
 	}()
-	openBrowser("http://" + *addr)
+	openBrowser("http://" + addr)
 	log.Fatalf("claat serve: %v", <-ch)
 }
 
