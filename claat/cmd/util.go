@@ -33,7 +33,6 @@ import (
 var (
 	authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
 	output    = flag.String("o", ".", "output directory or '-' for stdout")
-	expenv    = flag.String("e", "web", "codelab environment")
 	tmplout   = flag.String("f", "html", "output format")
 	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
 	globalGA  = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
