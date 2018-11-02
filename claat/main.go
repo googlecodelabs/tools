@@ -40,6 +40,7 @@ var (
 	// Flags.
 	addr     = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
 	expenv   = flag.String("e", "web", "codelab environment")
+	extra    = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
 	globalGA = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
 	prefix   = flag.String("prefix", "../../", "URL prefix for html format")
 	tmplout  = flag.String("f", "html", "output format")
@@ -58,7 +59,7 @@ func main() {
 
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
-	cmd.ExtraVars = cmd.ParseExtraVars()
+	cmd.ExtraVars = cmd.ParseExtraVars(*extra)
 
 	switch os.Args[1] {
 	case "export":
