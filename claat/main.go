@@ -34,18 +34,7 @@ import (
 	_ "github.com/googlecodelabs/tools/claat/parser/md"
 )
 
-var (
-	version string // set by linker -X
-	// commands contains all valid subcommands, e.g. "claat export".
-	commands = map[string]func(){
-		"export":  cmd.CmdExport,
-		"serve":   cmd.CmdServe,
-		"build":   cmd.CmdBuild,
-		"update":  cmd.CmdUpdate,
-		"help":    usage,
-		"version": func() { fmt.Println(version) },
-	}
-)
+var version string // set by linker -X
 
 func main() {
 	log.SetFlags(0)
@@ -58,14 +47,26 @@ func main() {
 		return
 	}
 
-	command := commands[os.Args[1]]
-	if command == nil {
-		log.Fatalf("Unknown subcommand. Try '-h' for options.")
-	}
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
 	cmd.ExtraVars = cmd.ParseExtraVars()
-	command()
+
+	switch os.Args[1] {
+	case "export":
+		cmd.CmdExport()
+	case "serve":
+		cmd.CmdServe()
+	case "build":
+		cmd.CmdBuild()
+	case "update":
+		cmd.CmdUpdate()
+	case "help":
+		usage()
+	case "version":
+		fmt.Println(version)
+	default:
+		log.Fatalf("Unknown subcommand. Try '-h' for options.")
+	}
 	os.Exit(cmd.Exit)
 }
 
