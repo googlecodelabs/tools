@@ -30,10 +30,7 @@ import (
 	_ "github.com/googlecodelabs/tools/claat/parser/md"
 )
 
-var (
-	authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
-	output    = flag.String("o", ".", "output directory or '-' for stdout")
-)
+var authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
 
 const (
 	// imgDirname is where a codelab images are stored,

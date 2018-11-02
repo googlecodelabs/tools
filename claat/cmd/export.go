@@ -33,7 +33,8 @@ import (
 // prefix is a URL prefix to prepend when using HTML format.
 // globalGA is the global Google Analytics account to use.
 // tmplout is the output format.
-func CmdExport(expenv, prefix, globalGA, tmplout string) {
+// output is the output directory, or "-" for stdout.
+func CmdExport(expenv, prefix, globalGA, tmplout, output string) {
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
@@ -46,7 +47,7 @@ func CmdExport(expenv, prefix, globalGA, tmplout string) {
 	ch := make(chan *result, len(args))
 	for _, src := range args {
 		go func(src string) {
-			meta, err := exportCodelab(src, expenv, prefix, globalGA, tmplout)
+			meta, err := exportCodelab(src, expenv, prefix, globalGA, tmplout, output)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -54,14 +55,14 @@ func CmdExport(expenv, prefix, globalGA, tmplout string) {
 		res := <-ch
 		if res.err != nil {
 			errorf(reportErr, res.src, res.err)
-		} else if !isStdout(*output) {
+		} else if !isStdout(output) {
 			log.Printf(reportOk, res.meta.ID)
 		}
 	}
 }
 
 // exportCodelab fetches codelab src from either local disk or remote,
-// parses and stores the results on disk, in a dir ancestored by *output.
+// parses and stores the results on disk, in a dir ancestored by output.
 //
 // Stored results include codelab content formatted in tmplout, its assets
 // and metadata in JSON format.
@@ -69,7 +70,7 @@ func CmdExport(expenv, prefix, globalGA, tmplout string) {
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src, expenv, prefix, globalGA, tmplout string) (*types.Meta, error) {
+func exportCodelab(src, expenv, prefix, globalGA, tmplout, output string) (*types.Meta, error) {
 	clab, err := slurpCodelab(src)
 	if err != nil {
 		return nil, err
@@ -94,7 +95,7 @@ func exportCodelab(src, expenv, prefix, globalGA, tmplout string) (*types.Meta, 
 		Updated: &lastmod,
 	}
 
-	dir := *output // output dir or stdout
+	dir := output // output dir or stdout
 	if !isStdout(dir) {
 		dir = codelabDir(dir, meta)
 		// download or copy codelab assets to disk, and rewrite image URLs
