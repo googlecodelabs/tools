@@ -32,7 +32,8 @@ import (
 // expenv is the codelab environment to export to.
 // prefix is a URL prefix to prepend when using HTML format.
 // globalGA is the global Google Analytics account to use.
-func CmdExport(expenv, prefix, globalGA string) {
+// tmplout is the output format.
+func CmdExport(expenv, prefix, globalGA, tmplout string) {
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
@@ -45,7 +46,7 @@ func CmdExport(expenv, prefix, globalGA string) {
 	ch := make(chan *result, len(args))
 	for _, src := range args {
 		go func(src string) {
-			meta, err := exportCodelab(src, expenv, prefix, globalGA)
+			meta, err := exportCodelab(src, expenv, prefix, globalGA, tmplout)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -62,13 +63,13 @@ func CmdExport(expenv, prefix, globalGA string) {
 // exportCodelab fetches codelab src from either local disk or remote,
 // parses and stores the results on disk, in a dir ancestored by *output.
 //
-// Stored results include codelab content formatted in *tmplout, its assets
+// Stored results include codelab content formatted in tmplout, its assets
 // and metadata in JSON format.
 //
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src, expenv, prefix, globalGA string) (*types.Meta, error) {
+func exportCodelab(src, expenv, prefix, globalGA, tmplout string) (*types.Meta, error) {
 	clab, err := slurpCodelab(src)
 	if err != nil {
 		return nil, err
@@ -87,7 +88,7 @@ func exportCodelab(src, expenv, prefix, globalGA string) (*types.Meta, error) {
 	ctx := &types.Context{
 		Source:  src,
 		Env:     expenv,
-		Format:  *tmplout,
+		Format:  tmplout,
 		Prefix:  prefix,
 		MainGA:  globalGA,
 		Updated: &lastmod,

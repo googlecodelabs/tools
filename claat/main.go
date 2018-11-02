@@ -42,6 +42,7 @@ var (
 	expenv   = flag.String("e", "web", "codelab environment")
 	globalGA = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
 	prefix   = flag.String("prefix", "../../", "URL prefix for html format")
+	tmplout  = flag.String("f", "html", "output format")
 )
 
 func main() {
@@ -61,7 +62,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "export":
-		cmd.CmdExport(*expenv, *prefix, *globalGA)
+		cmd.CmdExport(*expenv, *prefix, *globalGA, *tmplout)
 	case "serve":
 		cmd.CmdServe(*addr)
 	case "build":
