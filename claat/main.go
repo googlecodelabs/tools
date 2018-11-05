@@ -71,7 +71,11 @@ func main() {
 	case "build":
 		cmd.CmdBuild()
 	case "update":
-		cmd.CmdUpdate(*prefix, *globalGA, *authToken)
+		cmd.CmdUpdate(cmd.CmdUpdateOptions{
+			AuthToken: *authToken,
+			GlobalGA:  *globalGA,
+			Prefix:    *prefix,
+		})
 	case "help":
 		usage()
 	case "version":
