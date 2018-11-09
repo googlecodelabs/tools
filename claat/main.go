@@ -61,7 +61,12 @@ func main() {
 
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
-	cmd.ExtraVars = cmd.ParseExtraVars(*extra)
+
+	var err error
+	cmd.ExtraVars, err = cmd.ParseExtraVars(*extra)
+	if err != nil {
+		os.Exit(1)
+	}
 
 	switch os.Args[1] {
 	case "export":

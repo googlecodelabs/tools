@@ -21,6 +21,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"log"
 
 	// allow parsers to register themselves
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
@@ -50,15 +51,16 @@ func isStdout(filename string) bool {
 
 // ParseExtraVars parses extra template variables from command line.
 // extra is any additional arguments to pass to format templates. Should be formatted as JSON objects of string:string KV pairs.
-func ParseExtraVars(extra string) map[string]string {
+func ParseExtraVars(extra string) (map[string]string, error) {
 	vars := make(map[string]string)
 	if extra == "" {
-		return vars
+		return vars, nil
 	}
 	b := []byte(extra)
 	err := json.Unmarshal(b, &vars)
 	if err != nil {
-		errorf("Error parsing additional template data: %v", err)
+		log.Printf("Error parsing additional template data: %v", err)
+		return nil, err
 	}
-	return vars
+	return vars, nil
 }
