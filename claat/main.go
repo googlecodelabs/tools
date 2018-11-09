@@ -65,14 +65,16 @@ func main() {
 
 	switch os.Args[1] {
 	case "export":
-		cmd.CmdExport(cmd.CmdExportOptions{
+		if ok := cmd.CmdExport(cmd.CmdExportOptions{
 			AuthToken: *authToken,
 			Expenv:    *expenv,
 			GlobalGA:  *globalGA,
 			Output:    *output,
 			Prefix:    *prefix,
 			Tmplout:   *tmplout,
-		})
+		}); !ok {
+			os.Exit(1)
+		}
 	case "serve":
 		cmd.CmdServe(*addr)
 	case "build":
