@@ -21,7 +21,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"log"
 	"sync"
 
 	// allow parsers to register themselves
@@ -52,14 +51,6 @@ var (
 // isStdout reports whether filename is stdout.
 func isStdout(filename string) bool {
 	return filename == stdout
-}
-
-// errorf calls log.Printf with fmt and args, and sets non-zero exit code.
-func errorf(format string, args ...interface{}) {
-	log.Printf(format, args...)
-	exitMu.Lock()
-	Exit = 1
-	exitMu.Unlock()
 }
 
 // ParseExtraVars parses extra template variables from command line.
