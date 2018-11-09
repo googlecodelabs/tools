@@ -87,6 +87,8 @@ func driveClient(authToken string) (*http.Client, error) {
 
 // tokenSource creates a new oauth2.TokenSource backed by tokenRefresher,
 // using previously stored user credentials if available.
+// If authToken is given, we disregard the value of provider.
+// Otherwise, we use the auth config for the given provider.
 func tokenSource(provider, authToken string) (oauth2.TokenSource, error) {
 	// Ignore provider if authToken is given.
 	if authToken != "" {
