@@ -30,8 +30,18 @@ import (
 	"github.com/googlecodelabs/tools/claat/types"
 )
 
+// Options type to make the CmdUpdate signature succinct.
+type CmdUpdateOptions struct {
+	// AuthToken is the token to use for the Drive API.
+	AuthToken string
+	// GlobalGA is the global Google Analytics account to use.
+	GlobalGA string
+	// Prefix is a URL prefix to prepend when using HTML format.
+	Prefix string
+}
+
 // CmdUpdate is the "claat update ..." subcommand.
-func CmdUpdate() {
+func CmdUpdate(opts CmdUpdateOptions) {
 	roots := flag.Args()
 	if len(roots) == 0 {
 		roots = []string{"."}
@@ -55,7 +65,7 @@ func CmdUpdate() {
 			// random sleep up to 1 sec
 			// to reduce number of rate limit errors
 			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
-			meta, err := updateCodelab(d)
+			meta, err := updateCodelab(d, opts)
 			ch <- &result{d, meta, err}
 		}(d)
 	}
@@ -72,22 +82,22 @@ func CmdUpdate() {
 // updateCodelab reads metadata from a dir/codelab.json file,
 // re-exports the codelab just like it normally would in exportCodelab,
 // and removes assets (images) which are not longer in use.
-func updateCodelab(dir string) (*types.Meta, error) {
+func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	// get stored codelab metadata and fail early if we can't
 	meta, err := readMeta(filepath.Join(dir, metaFilename))
 	if err != nil {
 		return nil, err
 	}
 	// override allowed options from cli
-	if *prefix != "" {
-		meta.Prefix = *prefix
+	if opts.Prefix != "" {
+		meta.Prefix = opts.Prefix
 	}
-	if *globalGA != "" {
-		meta.MainGA = *globalGA
+	if opts.GlobalGA != "" {
+		meta.MainGA = opts.GlobalGA
 	}
 
 	// fetch and parse codelab source
-	clab, err := slurpCodelab(meta.Source)
+	clab, err := slurpCodelab(meta.Source, opts.AuthToken)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +111,7 @@ func updateCodelab(dir string) (*types.Meta, error) {
 	// slurp codelab assets to disk and rewrite image URLs
 	var client *http.Client
 	if clab.typ == srcGoogleDoc {
-		client, err = driveClient()
+		client, err = driveClient(opts.AuthToken)
 		if err != nil {
 			return nil, err
 		}

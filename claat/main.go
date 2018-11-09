@@ -36,15 +36,16 @@ import (
 
 var (
 	version string // set by linker -X
-	// commands contains all valid subcommands, e.g. "claat export".
-	commands = map[string]func(){
-		"export":  cmd.CmdExport,
-		"serve":   cmd.CmdServe,
-		"build":   cmd.CmdBuild,
-		"update":  cmd.CmdUpdate,
-		"help":    usage,
-		"version": func() { fmt.Println(version) },
-	}
+
+	// Flags.
+	addr      = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
+	authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
+	expenv    = flag.String("e", "web", "codelab environment")
+	extra     = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
+	globalGA  = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
+	output    = flag.String("o", ".", "output directory or '-' for stdout")
+	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
+	tmplout   = flag.String("f", "html", "output format")
 )
 
 func main() {
@@ -58,14 +59,37 @@ func main() {
 		return
 	}
 
-	command := commands[os.Args[1]]
-	if command == nil {
-		log.Fatalf("Unknown subcommand. Try '-h' for options.")
-	}
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
-	cmd.ExtraVars = cmd.ParseExtraVars()
-	command()
+	cmd.ExtraVars = cmd.ParseExtraVars(*extra)
+
+	switch os.Args[1] {
+	case "export":
+		cmd.CmdExport(cmd.CmdExportOptions{
+			AuthToken: *authToken,
+			Expenv:    *expenv,
+			GlobalGA:  *globalGA,
+			Output:    *output,
+			Prefix:    *prefix,
+			Tmplout:   *tmplout,
+		})
+	case "serve":
+		cmd.CmdServe(*addr)
+	case "build":
+		cmd.CmdBuild()
+	case "update":
+		cmd.CmdUpdate(cmd.CmdUpdateOptions{
+			AuthToken: *authToken,
+			GlobalGA:  *globalGA,
+			Prefix:    *prefix,
+		})
+	case "help":
+		usage()
+	case "version":
+		fmt.Println(version)
+	default:
+		log.Fatalf("Unknown subcommand. Try '-h' for options.")
+	}
 	os.Exit(cmd.Exit)
 }
 

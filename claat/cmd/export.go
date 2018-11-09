@@ -28,8 +28,24 @@ import (
 	"github.com/googlecodelabs/tools/claat/types"
 )
 
+// Options type to make the CmdExport signature succinct.
+type CmdExportOptions struct {
+	// AuthToken is the token to use for the Drive API.
+	AuthToken string
+	// Expenv is the codelab environment to export to.
+	Expenv string
+	// GlobalGA is the global Google Analytics account to use.
+	GlobalGA string
+	// Output is the output directory, or "-" for stdout.
+	Output string
+	// Prefix is a URL prefix to prepend when using HTML format.
+	Prefix string
+	// Tmplout is the output format.
+	Tmplout string
+}
+
 // CmdExport is the "claat export ..." subcommand.
-func CmdExport() {
+func CmdExport(opts CmdExportOptions) {
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
@@ -42,7 +58,7 @@ func CmdExport() {
 	ch := make(chan *result, len(args))
 	for _, src := range args {
 		go func(src string) {
-			meta, err := exportCodelab(src)
+			meta, err := exportCodelab(src, opts)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -50,29 +66,29 @@ func CmdExport() {
 		res := <-ch
 		if res.err != nil {
 			errorf(reportErr, res.src, res.err)
-		} else if !isStdout(*output) {
+		} else if !isStdout(opts.Output) {
 			log.Printf(reportOk, res.meta.ID)
 		}
 	}
 }
 
 // exportCodelab fetches codelab src from either local disk or remote,
-// parses and stores the results on disk, in a dir ancestored by *output.
+// parses and stores the results on disk, in a dir ancestored by output.
 //
-// Stored results include codelab content formatted in *tmplout, its assets
+// Stored results include codelab content formatted in tmplout, its assets
 // and metadata in JSON format.
 //
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src string) (*types.Meta, error) {
-	clab, err := slurpCodelab(src)
+func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
+	clab, err := slurpCodelab(src, opts.AuthToken)
 	if err != nil {
 		return nil, err
 	}
 	var client *http.Client // need for downloadImages
 	if clab.typ == srcGoogleDoc {
-		client, err = driveClient()
+		client, err = driveClient(opts.AuthToken)
 		if err != nil {
 			return nil, err
 		}
@@ -83,14 +99,14 @@ func exportCodelab(src string) (*types.Meta, error) {
 	meta := &clab.Meta
 	ctx := &types.Context{
 		Source:  src,
-		Env:     *expenv,
-		Format:  *tmplout,
-		Prefix:  *prefix,
-		MainGA:  *globalGA,
+		Env:     opts.Expenv,
+		Format:  opts.Tmplout,
+		Prefix:  opts.Prefix,
+		MainGA:  opts.GlobalGA,
 		Updated: &lastmod,
 	}
 
-	dir := *output // output dir or stdout
+	dir := opts.Output // output dir or stdout
 	if !isStdout(dir) {
 		dir = codelabDir(dir, meta)
 		// download or copy codelab assets to disk, and rewrite image URLs

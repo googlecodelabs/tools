@@ -3,8 +3,8 @@ git:
   depth: 3
 language: go
 go:
-- 1.8.x  # need for App Engine
-- 1.10.x # latest release because "master" is dev version
+- 1.9.x  # need for App Engine
+- 1.11.x # latest release because "master" is dev version
 install:
 - go get github.com/golang/lint/golint
 - go get -t -d ./claat/...

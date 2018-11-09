@@ -68,8 +68,8 @@ type codelab struct {
 //
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
-func slurpCodelab(src string) (*codelab, error) {
-	res, err := fetch(src)
+func slurpCodelab(src, authToken string) (*codelab, error) {
+	res, err := fetch(src, authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func slurpCodelab(src string) (*codelab, error) {
 	defer close(ch)
 	for _, imp := range imports {
 		go func(n *types.ImportNode) {
-			frag, err := slurpFragment(n.URL)
+			frag, err := slurpFragment(n.URL, authToken)
 			if err != nil {
 				ch <- fmt.Errorf("%s: %v", n.URL, err)
 				return
@@ -111,8 +111,8 @@ func slurpCodelab(src string) (*codelab, error) {
 	return v, nil
 }
 
-func slurpFragment(url string) ([]types.Node, error) {
-	res, err := fetchRemote(url, true)
+func slurpFragment(url, authToken string) ([]types.Node, error) {
+	res, err := fetchRemote(url, authToken, true)
 	if err != nil {
 		return nil, err
 	}
@@ -123,10 +123,10 @@ func slurpFragment(url string) ([]types.Node, error) {
 // fetch retrieves codelab doc either from local disk
 // or a remote location.
 // The caller is responsible for closing returned stream.
-func fetch(name string) (*resource, error) {
+func fetch(name, authToken string) (*resource, error) {
 	fi, err := os.Stat(name)
 	if os.IsNotExist(err) {
-		return fetchRemote(name, false)
+		return fetchRemote(name, authToken, false)
 	}
 	r, err := os.Open(name)
 	if err != nil {
@@ -147,13 +147,13 @@ func fetch(name string) (*resource, error) {
 //
 // The caller is responsible for closing returned stream.
 // If nometa is true, resource.mod may have zero value.
-func fetchRemote(urlStr string, nometa bool) (*resource, error) {
+func fetchRemote(urlStr, authToken string, nometa bool) (*resource, error) {
 	u, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
 	}
 	if u.Host == "" || u.Host == "docs.google.com" {
-		return fetchDriveFile(urlStr, nometa)
+		return fetchDriveFile(urlStr, authToken, nometa)
 	}
 	return fetchRemoteFile(urlStr)
 }
@@ -181,10 +181,10 @@ func fetchRemoteFile(url string) (*resource, error) {
 // for more details.
 //
 // If nometa is true, resource.mod will have zero value.
-func fetchDriveFile(id string, nometa bool) (*resource, error) {
+func fetchDriveFile(id, authToken string, nometa bool) (*resource, error) {
 	id = gdocID(id)
 	exportURL := gdocExportURL(id)
-	client, err := driveClient()
+	client, err := driveClient(authToken)
 	if err != nil {
 		return nil, err
 	}

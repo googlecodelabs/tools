@@ -66,13 +66,13 @@ func init() {
 
 // driveClient returns an HTTP client which knows how to perform authenticated
 // requests to Google Drive API.
-func driveClient() (*http.Client, error) {
+func driveClient(authToken string) (*http.Client, error) {
 	clientsMu.Lock()
 	defer clientsMu.Unlock()
 	if hc, ok := clients[providerGoogle]; ok {
 		return hc, nil
 	}
-	ts, err := tokenSource(providerGoogle)
+	ts, err := tokenSource(providerGoogle, authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -87,10 +87,12 @@ func driveClient() (*http.Client, error) {
 
 // tokenSource creates a new oauth2.TokenSource backed by tokenRefresher,
 // using previously stored user credentials if available.
-func tokenSource(provider string) (oauth2.TokenSource, error) {
-	// Ignore provider if *authToken is given.
-	if *authToken != "" {
-		tok := &oauth2.Token{AccessToken: *authToken}
+// If authToken is given, we disregard the value of provider.
+// Otherwise, we use the auth config for the given provider.
+func tokenSource(provider, authToken string) (oauth2.TokenSource, error) {
+	// Ignore provider if authToken is given.
+	if authToken != "" {
+		tok := &oauth2.Token{AccessToken: authToken}
 		return oauth2.StaticTokenSource(tok), nil
 	}
 

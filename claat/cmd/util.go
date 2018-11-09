@@ -21,24 +21,12 @@ package cmd
 
 import (
 	"encoding/json"
-	"flag"
 	"log"
 	"sync"
 
 	// allow parsers to register themselves
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
 	_ "github.com/googlecodelabs/tools/claat/parser/md"
-)
-
-var (
-	authToken = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
-	output    = flag.String("o", ".", "output directory or '-' for stdout")
-	expenv    = flag.String("e", "web", "codelab environment")
-	tmplout   = flag.String("f", "html", "output format")
-	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
-	globalGA  = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
-	extra     = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
-	addr      = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
 )
 
 const (
@@ -75,12 +63,13 @@ func errorf(format string, args ...interface{}) {
 }
 
 // ParseExtraVars parses extra template variables from command line.
-func ParseExtraVars() map[string]string {
+// extra is any additional arguments to pass to format templates. Should be formatted as JSON objects of string:string KV pairs.
+func ParseExtraVars(extra string) map[string]string {
 	vars := make(map[string]string)
-	if *extra == "" {
+	if extra == "" {
 		return vars
 	}
-	b := []byte(*extra)
+	b := []byte(extra)
 	err := json.Unmarshal(b, &vars)
 	if err != nil {
 		errorf("Error parsing additional template data: %v", err)

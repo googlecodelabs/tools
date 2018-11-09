@@ -18,8 +18,7 @@ import "testing"
 
 func TestAuthTokenArg(t *testing.T) {
 	const token = "test-token"
-	*authToken = token
-	src, err := tokenSource("ignored")
+	src, err := tokenSource("ignored", token)
 	if err != nil {
 		t.Fatal(err)
 	}
