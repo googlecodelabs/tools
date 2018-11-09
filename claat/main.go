@@ -94,7 +94,6 @@ func main() {
 	default:
 		log.Fatalf("Unknown subcommand. Try '-h' for options.")
 	}
-	os.Exit(cmd.Exit)
 }
 
 // usage prints usageText and program arguments to stderr.

@@ -21,7 +21,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"sync"
 
 	// allow parsers to register themselves
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
@@ -42,11 +41,7 @@ const (
 	reportOk  = "ok\t%s"
 )
 
-var (
-	Exit      int               // program exit code
-	exitMu    sync.Mutex        // guards exit
-	ExtraVars map[string]string // Extra template variables passed on the command line.
-)
+var ExtraVars map[string]string // Extra template variables passed on the command line.
 
 // isStdout reports whether filename is stdout.
 func isStdout(filename string) bool {
