@@ -78,11 +78,13 @@ func main() {
 	case "build":
 		cmd.CmdBuild()
 	case "update":
-		cmd.CmdUpdate(cmd.CmdUpdateOptions{
+		if ok := cmd.CmdUpdate(cmd.CmdUpdateOptions{
 			AuthToken: *authToken,
 			GlobalGA:  *globalGA,
 			Prefix:    *prefix,
-		})
+		}); !ok {
+			os.Exit(1)
+		}
 	case "help":
 		usage()
 	case "version":
