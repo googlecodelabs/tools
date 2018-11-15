@@ -68,30 +68,27 @@ func main() {
 		os.Exit(1)
 	}
 
+	exitCode := 0
 	switch os.Args[1] {
 	case "export":
-		if ok := cmd.CmdExport(cmd.CmdExportOptions{
+		exitCode = cmd.CmdExport(cmd.CmdExportOptions{
 			AuthToken: *authToken,
 			Expenv:    *expenv,
 			GlobalGA:  *globalGA,
 			Output:    *output,
 			Prefix:    *prefix,
 			Tmplout:   *tmplout,
-		}); !ok {
-			os.Exit(1)
-		}
+		})
 	case "serve":
-		cmd.CmdServe(*addr)
+		exitCode = cmd.CmdServe(*addr)
 	case "build":
-		cmd.CmdBuild()
+		exitCode = cmd.CmdBuild()
 	case "update":
-		if ok := cmd.CmdUpdate(cmd.CmdUpdateOptions{
+		exitCode = cmd.CmdUpdate(cmd.CmdUpdateOptions{
 			AuthToken: *authToken,
 			GlobalGA:  *globalGA,
 			Prefix:    *prefix,
-		}); !ok {
-			os.Exit(1)
-		}
+		})
 	case "help":
 		usage()
 	case "version":
@@ -99,6 +96,8 @@ func main() {
 	default:
 		log.Fatalf("Unknown subcommand. Try '-h' for options.")
 	}
+
+	os.Exit(exitCode)
 }
 
 // usage prints usageText and program arguments to stderr.

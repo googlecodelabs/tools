@@ -29,7 +29,9 @@ import (
 	"sync"
 )
 
-func CmdBuild() {
+// CmdBuild is the "claat build ..." subcommand.
+// It returns a process exit code.
+func CmdBuild() int {
 	const depsDir = "bower_components"
 	var codelabElem = []byte(`
 <link rel="import" href="../bower_components/google-codelab-elements/google-codelab-elements.html">
@@ -46,6 +48,7 @@ func CmdBuild() {
 	if err := writeFile(filepath.Join("elements", "codelab.html"), codelabElem); err != nil {
 		log.Fatalf(err.Error())
 	}
+	return 0
 }
 
 func writeFile(name string, content []byte) error {

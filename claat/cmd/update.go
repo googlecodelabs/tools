@@ -41,8 +41,8 @@ type CmdUpdateOptions struct {
 }
 
 // CmdUpdate is the "claat update ..." subcommand.
-// It returns true if the command succeeded, false otherwise.
-func CmdUpdate(opts CmdUpdateOptions) bool {
+// It returns a process exit code.
+func CmdUpdate(opts CmdUpdateOptions) int {
 	roots := flag.Args()
 	if len(roots) == 0 {
 		roots = []string{"."}
@@ -71,17 +71,17 @@ func CmdUpdate(opts CmdUpdateOptions) bool {
 		}(d)
 	}
 
-	errs := []error{}
+	exitCode := 0
 	for range dirs {
 		res := <-ch
 		if res.err != nil {
-			errs = append(errs, res.err)
+			exitCode = 1
 			log.Printf(reportErr, res.dir, res.err)
 		} else {
 			log.Printf(reportOk, res.meta.ID)
 		}
 	}
-	return len(errs) == 0
+	return exitCode
 }
 
 // updateCodelab reads metadata from a dir/codelab.json file,

@@ -45,8 +45,9 @@ type CmdExportOptions struct {
 }
 
 // CmdExport is the "claat export ..." subcommand.
-// It returns true if the command succeeded, false otherwise.
-func CmdExport(opts CmdExportOptions) bool {
+// It returns a process exit code.
+func CmdExport(opts CmdExportOptions) int {
+	exitCode := 0
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
@@ -63,17 +64,16 @@ func CmdExport(opts CmdExportOptions) bool {
 			ch <- &result{src, meta, err}
 		}(src)
 	}
-	errs := []error{}
 	for range args {
 		res := <-ch
 		if res.err != nil {
-			errs = append(errs, res.err)
+			exitCode = 1
 			log.Printf(reportErr, res.src, res.err)
 		} else if !isStdout(opts.Output) {
 			log.Printf(reportOk, res.meta.ID)
 		}
 	}
-	return len(errs) == 0
+	return exitCode
 }
 
 // exportCodelab fetches codelab src from either local disk or remote,
