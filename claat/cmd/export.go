@@ -47,7 +47,7 @@ type CmdExportOptions struct {
 // CmdExport is the "claat export ..." subcommand.
 // It returns a process exit code.
 func CmdExport(opts CmdExportOptions) int {
-	exitCode := 0
+	var exitCode int
 	if flag.NArg() == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}

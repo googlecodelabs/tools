@@ -71,7 +71,7 @@ func CmdUpdate(opts CmdUpdateOptions) int {
 		}(d)
 	}
 
-	exitCode := 0
+	var exitCode int
 	for range dirs {
 		res := <-ch
 		if res.err != nil {
