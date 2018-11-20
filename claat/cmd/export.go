@@ -34,6 +34,8 @@ type CmdExportOptions struct {
 	AuthToken string
 	// Expenv is the codelab environment to export to.
 	Expenv string
+	// ExtraVars is extra template variables.
+	ExtraVars map[string]string
 	// GlobalGA is the global Google Analytics account to use.
 	GlobalGA string
 	// Output is the output directory, or "-" for stdout.
@@ -120,12 +122,13 @@ func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
 		}
 	}
 	// write codelab and its metadata to disk
-	return meta, writeCodelab(dir, clab.Codelab, ctx)
+	return meta, writeCodelab(dir, clab.Codelab, opts.ExtraVars, ctx)
 }
 
 // writeCodelab stores codelab main content in ctx.Format and its metadata
 // in JSON format on disk.
-func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
+// extraVars is extra variables to pass into the template context.
+func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, ctx *types.Context) error {
 	// output to stdout does not include metadata
 	if !isStdout(dir) {
 		// make sure codelab dir exists
@@ -153,7 +156,7 @@ func writeCodelab(dir string, clab *types.Codelab, ctx *types.Context) error {
 		GlobalGA: ctx.MainGA,
 		Meta:     &clab.Meta,
 		Steps:    clab.Steps,
-		Extra:    ExtraVars,
+		Extra:    extraVars,
 	}}
 	if ctx.Format != "offline" {
 		w := os.Stdout

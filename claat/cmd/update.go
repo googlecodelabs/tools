@@ -34,6 +34,8 @@ import (
 type CmdUpdateOptions struct {
 	// AuthToken is the token to use for the Drive API.
 	AuthToken string
+	// ExtraVars is extra template variables.
+	ExtraVars map[string]string
 	// GlobalGA is the global Google Analytics account to use.
 	GlobalGA string
 	// Prefix is a URL prefix to prepend when using HTML format.
@@ -127,7 +129,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	}
 
 	// write codelab and its metadata
-	if err := writeCodelab(newdir, clab.Codelab, &meta.Context); err != nil {
+	if err := writeCodelab(newdir, clab.Codelab, opts.ExtraVars, &meta.Context); err != nil {
 		return nil, err
 	}
 

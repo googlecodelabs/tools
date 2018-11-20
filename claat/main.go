@@ -20,6 +20,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -62,8 +63,7 @@ func main() {
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
 
-	var err error
-	cmd.ExtraVars, err = cmd.ParseExtraVars(*extra)
+	extraVars, err := ParseExtraVars(*extra)
 	if err != nil {
 		os.Exit(1)
 	}
@@ -74,6 +74,7 @@ func main() {
 		exitCode = cmd.CmdExport(cmd.CmdExportOptions{
 			AuthToken: *authToken,
 			Expenv:    *expenv,
+			ExtraVars: extraVars,
 			GlobalGA:  *globalGA,
 			Output:    *output,
 			Prefix:    *prefix,
@@ -86,6 +87,7 @@ func main() {
 	case "update":
 		exitCode = cmd.CmdUpdate(cmd.CmdUpdateOptions{
 			AuthToken: *authToken,
+			ExtraVars: extraVars,
 			GlobalGA:  *globalGA,
 			Prefix:    *prefix,
 		})
@@ -98,6 +100,22 @@ func main() {
 	}
 
 	os.Exit(exitCode)
+}
+
+// ParseExtraVars parses extra template variables from command line.
+// extra is any additional arguments to pass to format templates. Should be formatted as JSON objects of string:string KV pairs.
+func ParseExtraVars(extra string) (map[string]string, error) {
+	vars := make(map[string]string)
+	if extra == "" {
+		return vars, nil
+	}
+	b := []byte(extra)
+	err := json.Unmarshal(b, &vars)
+	if err != nil {
+		log.Printf("Error parsing additional template data: %v", err)
+		return nil, err
+	}
+	return vars, nil
 }
 
 // usage prints usageText and program arguments to stderr.
