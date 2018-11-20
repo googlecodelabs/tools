@@ -20,9 +20,6 @@
 package cmd
 
 import (
-	"encoding/json"
-	"log"
-	"sync"
 
 	// allow parsers to register themselves
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
@@ -43,36 +40,7 @@ const (
 	reportOk  = "ok\t%s"
 )
 
-var (
-	Exit      int               // program exit code
-	exitMu    sync.Mutex        // guards exit
-	ExtraVars map[string]string // Extra template variables passed on the command line.
-)
-
 // isStdout reports whether filename is stdout.
 func isStdout(filename string) bool {
 	return filename == stdout
-}
-
-// errorf calls log.Printf with fmt and args, and sets non-zero exit code.
-func errorf(format string, args ...interface{}) {
-	log.Printf(format, args...)
-	exitMu.Lock()
-	Exit = 1
-	exitMu.Unlock()
-}
-
-// ParseExtraVars parses extra template variables from command line.
-// extra is any additional arguments to pass to format templates. Should be formatted as JSON objects of string:string KV pairs.
-func ParseExtraVars(extra string) map[string]string {
-	vars := make(map[string]string)
-	if extra == "" {
-		return vars
-	}
-	b := []byte(extra)
-	err := json.Unmarshal(b, &vars)
-	if err != nil {
-		errorf("Error parsing additional template data: %v", err)
-	}
-	return vars
 }

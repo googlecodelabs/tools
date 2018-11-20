@@ -34,6 +34,8 @@ import (
 type CmdUpdateOptions struct {
 	// AuthToken is the token to use for the Drive API.
 	AuthToken string
+	// ExtraVars is extra template variables.
+	ExtraVars map[string]string
 	// GlobalGA is the global Google Analytics account to use.
 	GlobalGA string
 	// Prefix is a URL prefix to prepend when using HTML format.
@@ -41,7 +43,8 @@ type CmdUpdateOptions struct {
 }
 
 // CmdUpdate is the "claat update ..." subcommand.
-func CmdUpdate(opts CmdUpdateOptions) {
+// It returns a process exit code.
+func CmdUpdate(opts CmdUpdateOptions) int {
 	roots := flag.Args()
 	if len(roots) == 0 {
 		roots = []string{"."}
@@ -69,14 +72,18 @@ func CmdUpdate(opts CmdUpdateOptions) {
 			ch <- &result{d, meta, err}
 		}(d)
 	}
+
+	var exitCode int
 	for range dirs {
 		res := <-ch
 		if res.err != nil {
-			errorf(reportErr, res.dir, res.err)
+			exitCode = 1
+			log.Printf(reportErr, res.dir, res.err)
 		} else {
 			log.Printf(reportOk, res.meta.ID)
 		}
 	}
+	return exitCode
 }
 
 // updateCodelab reads metadata from a dir/codelab.json file,
@@ -122,7 +129,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	}
 
 	// write codelab and its metadata
-	if err := writeCodelab(newdir, clab.Codelab, &meta.Context); err != nil {
+	if err := writeCodelab(newdir, clab.Codelab, opts.ExtraVars, &meta.Context); err != nil {
 		return nil, err
 	}
 
