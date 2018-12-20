@@ -161,7 +161,11 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 	if ctx.Format != "offline" {
 		w := os.Stdout
 		if !isStdout(dir) {
-			f, err := os.Create(filepath.Join(dir, "index."+ctx.Format))
+			ext := ctx.Format
+			if ext == "htmlElements" {
+				ext = "html"
+			}
+			f, err := os.Create(filepath.Join(dir, "index."+ext))
 			if err != nil {
 				return err
 			}

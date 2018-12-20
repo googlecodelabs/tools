@@ -1,0 +1,265 @@
+/**
+ * @license
+ * Copyright 2018 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  transition: opacity ease-in 0.2s;
+  padding-top: 64px;
+  background: #ECEFF1;
+  font-family: 'Roboto', 'Noto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #5c5c5c;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  background-color: #455a64;
+  color: #fff;
+  padding: 16px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 10000;
+}
+
+#toolbar .site-width {
+  display: flex;
+  align-items: center;
+}
+
+#toolbar .logo {
+  display: flex;
+  align-items: center;
+}
+
+#toolbar .logo-icon {
+  margin-right: 16px;
+  width: 30px;
+  height: 24px;
+}
+
+#toolbar .logo-devs {
+  width: 216px;
+  height: 36px;
+  margin-top: 5px;
+}
+
+#searchbar {
+  background-color: #546E7A;
+  transition: background-color 400ms cubic-bezier(0, 0, 0.2, 1);
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+#searchbar:hover {
+  background-color: #78909C;
+}
+
+#searchbar input {
+  border: 0;
+  background: none;
+  outline: 0;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 400;
+  color: #fff;
+  line-height: 40px;
+  height: 40px;
+  flex-grow: 1;
+  z-index: 1;
+}
+
+#searchbar input::-webkit-input-placeholder {
+  color: rgba(255,255,255,.5);
+}
+#searchbar input:-ms-input-placeholder {
+  color: rgba(255,255,255,.5);
+}
+
+#search-icon,
+#clear-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+#clear-icon[hide] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.site-width {
+  margin: 0 auto;
+  width: 90vw;
+  max-width: 1024px;
+}
+
+#banner {
+  background-color: #fff;
+  padding: 0 40px 0 40px;
+  padding: 40px 0 48px 0;
+  box-shadow: 0px 3px 6px -3px #BDBDBD;
+}
+
+#banner p {
+  line-height: 32px;
+}
+
+h2 {
+  margin: 0;
+  font-family: 'Roboto', 'Noto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 45px;
+  font-weight: 400;
+  letter-spacing: -.018em;
+  line-height: 48px;
+}
+
+#banner h2, #banner h3 {
+  font-weight: 300;
+}
+
+#sort-by {
+  padding: 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#sort-by .sort-by-inner {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+#sort-by-tabs a {
+  color: #98999a;
+  text-transform: uppercase;
+  line-height: 48px;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 0 12px;
+  display: flex;
+  border-bottom: 2px solid transparent;
+}
+
+#sort-by-tabs a:hover {
+  background-color: #e0e0e0;
+}
+
+#sort-by-tabs a[selected] {
+  color: #616161;
+  border-bottom: 2px solid #616161;
+}
+
+#codelab-categories {
+  border: none;
+  background: #fff;
+  padding: 8px;
+  appearance: none;
+  -webkit-appearance:none;
+  font-size: 16px;
+  line-height: 24px;
+  color: #212121;
+  border-radius: 0;
+  position: relative;
+}
+
+#codelab-categories:focus {
+  outline: 0;
+}
+
+footer {
+  background-color: #424242;
+  font-size: 13px;
+}
+
+footer .footer-wrapper {
+  display: flex;
+  padding: 40px 0;
+}
+
+footer .link-list {
+  border-top: 1px solid #616161;
+  flex: 1;
+  margin-right: 32px;
+}
+
+footer .link-list label {
+  display: block;
+  color: #fff;
+  margin: 8px 0 16px;
+}
+
+footer ul, footer li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+footer a {
+  color: #9e9e9e;
+}
+
+footer .footerbar {
+  background-color: #616161;
+  color: #fff;
+  font-size: 13px;
+  padding: 10px 0;
+}
+
+footer .footerbar a {
+  color: currentcolor;
+}
+
+@import "cards";
+
+@media (min-width: 768px) {
+  #toolbar .logo-devs {
+    margin: 5px 32px 0 0;
+  }
+}

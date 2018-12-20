@@ -16,7 +16,8 @@ SHA     := $(shell git rev-parse --short HEAD)
 DATE    := $(shell TZ=UTC date +%FT%T)Z
 VERSION := $(shell cat VERSION)-$(DATE)-$(SHA)
 
-OUTDIR := ./bin
+OUTDIRNAME := bin
+OUTDIR := ./$(OUTDIRNAME)
 OUTRELEASE := gs://claat
 RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 	 $(OUTDIR)/claat-linux-amd64 \
@@ -26,8 +27,21 @@ RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 
 SRCS = $(shell find . -name '*.go') render/tmpldata.go
 
+all: $(OUTDIR)/claat $(OUTDIR)/claat2
+
 $(OUTDIR)/claat: $(SRCS) VERSION
-	go build -o $@ -ldflags "-X main.version=$(VERSION)"
+	go build -o $@ -ldflags "-X main.version=$(VERSION) -X main.useElements=false"
+
+$(OUTDIR)/claat2: $(SRCS) VERSION
+	go build -o $@ -ldflags "-X main.version=$(VERSION) -X main.useElements=true"
+
+serve: $(OUTDIR)/claat2
+	mkdir -p $(OUTDIR)/deps
+	cd ../codelab-elements; \
+	    bazel build :bundle; \
+	    mv -f bazel-genfiles/bundle.zip ../claat/$(OUTDIRNAME)/deps
+	unzip -o $(OUTDIR)/deps/bundle.zip -d $(OUTDIR)/deps/codelab-elements
+	cd bin; ./claat2 serve
 
 release: $(RELEASES)
 	echo $(VERSION) > $(OUTDIR)/VERSION
@@ -53,5 +67,5 @@ $(OUTDIR)/claat-%: $(SRCS) VERSION
 		-ldflags "-X main.version=$(VERSION) -s -w" \
 		-o $@
 
-%/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md %/template-offline.html
+%/tmpldata.go: %/gen-tmpldata.go %/template-elements.html %/template.html %/template.md %/template-offline.html
 	cd $* && go generate

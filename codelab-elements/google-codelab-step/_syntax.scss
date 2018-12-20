@@ -1,0 +1,77 @@
+/**
+ * @license
+ * Copyright 2018 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pre, code {
+  font-family: 'Source Code Pro', Helvetica, Arial;
+  font-size: inherit;
+  border-radius: 4px;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+code {
+  background-color: #E8EAEd;
+  padding: 0.1em 0.3em;
+}
+pre {
+  display: block;
+  color: white;
+  background-color: #28323f;
+  padding: 14px;
+  -webkit-text-size-adjust: none;
+  line-height: 1.4;
+}
+pre > code {
+  padding: 0;
+  background-color: transparent;
+}
+code em {
+  color: #97C8F2;
+}
+pre .str, code .str { color: #34A853; } /* string  - green */
+pre .kwd, code .kwd { color: #F538A0; } /* keyword - dark pink */
+pre .com, code .com { color: #BDC1C6; font-style: italic; } /* comment - gray */
+pre .typ, code .typ { color: #24C1E0; } /* type - light blue */
+pre .lit, code .lit { color: #4285F4; } /* literal - blue */
+pre .pun, code .pun { color: #F8F9FA; } /* punctuation - white */
+pre .pln, code .pln { color: #F8F9FA; } /* plaintext - white */
+pre .tag, code .tag { color: #24C1E0; } /* html/xml tag    - light blue */
+pre .atn, code .atn { color: #EDA912; } /* html/xml attribute name  - khaki */
+pre .atv, code .atv { color: #34A853; } /* html/xml attribute value - green */
+pre .dec, code .dec { color: #5195EA; } /* decimal - blue */
+
+paper-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  min-width: 5.14em;
+  margin: 0 0.29em;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+  font: inherit;
+  text-transform: uppercase;
+  outline-width: 0;
+  border-radius: 3px;
+  user-select: none;
+  cursor: pointer;
+  z-index: 0;
+  padding: 0.7em 0.57em;
+  font-family: 'Roboto', 'Noto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}

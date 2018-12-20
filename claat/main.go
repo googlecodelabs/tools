@@ -26,6 +26,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/cmd"
@@ -36,6 +37,7 @@ import (
 )
 
 var (
+	useElements string // set by linker -X
 	version string // set by linker -X
 
 	// Flags.
@@ -60,6 +62,14 @@ func main() {
 		return
 	}
 
+	useElems, err := strconv.ParseBool(useElements)
+	if err != nil {
+		os.Exit(1)
+	}
+	if useElems && *tmplout == "html"{
+		*tmplout = "htmlElements"
+	}
+
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
 
@@ -81,7 +91,7 @@ func main() {
 			Tmplout:   *tmplout,
 		})
 	case "serve":
-		exitCode = cmd.CmdServe(*addr)
+		exitCode = cmd.CmdServe(*addr, useElems)
 	case "build":
 		exitCode = cmd.CmdBuild()
 	case "update":

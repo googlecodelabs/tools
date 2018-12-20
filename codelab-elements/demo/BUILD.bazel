@@ -1,0 +1,61 @@
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+load("//tools:defs.bzl",
+     "closure_js_library", "closure_js_binary", "closure_js_test")
+
+# All static artifacts needed for various demo files.
+# Used by //tools:server target.
+filegroup(
+    name = "demo_files",
+    srcs = glob([
+        "*.html",
+        "img/*.png",
+    ]),
+)
+
+# A playground HelloElement.
+closure_js_library(
+    name = "hello_lib",
+    srcs = ["hello.js"],
+    convention = "GOOGLE",
+)
+
+# Compiled version of HelloElement, suitable for distribution.
+closure_js_binary(
+    name = "hello_bin",
+    entry_points = ["googlecodelabs.HelloElement"],
+    deps = [":hello_lib"],
+)
+
+# A few tests for HelloElement.
+# The following closure_js_test expands into something like this:
+#
+#    js_test(
+#        name = "hello_test",
+#        srcs = ["hello_test.js"],
+#        browsers = [
+#            # For experimental purposes only. Eventually you should
+#            # create your own browser definitions.
+#            "@io_bazel_rules_webtesting//browsers:chromium-local",
+#        ],
+#        data = ["@polyfill//:custom_elements"],
+#        entry_points = ["googlecodelabs.hello_test"],
+#        suppress = ["JSC_EXTRA_REQUIRE_WARNING"],
+#        deps = [
+#            ":hello_lib",
+#            "@io_bazel_rules_closure//closure/library:testing",
+#        ],
+#    )
+#
+# Additionally, a gen_hello_test.html file is generated,
+# declaring the hello_test_bin.js script source.
+closure_js_test(
+    name = "hello_test",
+    srcs = ["hello_test.js"],
+    entry_points = ["googlecodelabs.hello_test"],
+    deps = [":hello_lib"],
+)

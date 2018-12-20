@@ -1,0 +1,241 @@
+/**
+ * @license
+ * Copyright 2018 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+google-codelab #drawer {
+  background: #fff;
+  width: 256px;
+  flex-shrink: 0;
+  position: relative;
+  border-right: 1px solid #DADCE0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+google-codelab #drawer .steps {
+  flex-shrink: 1;
+  flex-grow: 1;
+  overflow-x: visible;
+  display: flex;
+}
+
+google-codelab #drawer ol {
+  margin: 0;
+  padding: 16px 12px;
+  counter-reset: li-count;
+  list-style: none;
+  overflow-x: visible;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+google-codelab #drawer ol li {
+  display: block;
+  counter-increment: li-count;
+}
+
+google-codelab #drawer ol li a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #80868B;
+  border-radius: 4px;
+  padding: 6px 16px;
+  min-height: 48px;
+  font-weight: 400;
+  line-height: 20px;
+  box-sizing: content-box;
+  position: relative;
+  font-family: 'Roboto', 'Noto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: all 300ms ease-in-out;
+}
+
+google-codelab #drawer ol li a:active,
+google-codelab #drawer ol li a:focus {
+  background: #c6c6c6;
+  -webkit-tap-highlight-color: transparent;
+  outline: 0;
+}
+
+google-codelab #drawer ol li a .step {
+  display: flex;
+  align-items: center;
+}
+
+google-codelab #drawer ol li .step:before {
+  content: counter(li-count);
+  display: inline-block;
+  font-style: normal;
+  width: 26px;
+  min-width: 26px;
+  color: #fff;
+  background: #80868B;
+  border-radius: 50%;
+  text-align: center;
+  height: 26px;
+  vertical-align: middle;
+  line-height: 26px;
+  margin-right: 8px;
+  font-weight: 400;
+  position: relative;
+  z-index: 2;
+  transition: all 300ms ease-in-out;
+}
+
+google-codelab #drawer ol li a:before,
+google-codelab #drawer ol li a:after {
+  content: '';
+  display: block;
+  background-color: #80868B;
+  width: 2px;
+  height: 50%;
+  z-index: 1;
+  position: absolute;
+  margin-left: 12px;
+}
+
+google-codelab #drawer ol li a:before {
+  top: 0;
+}
+
+google-codelab #drawer ol li a:after {
+  bottom: 0;
+}
+
+google-codelab #drawer ol li:first-child a:before,
+google-codelab #drawer ol li:last-child a:after {
+  display: none;
+}
+
+google-codelab #drawer ol li[selected] a,
+google-codelab #drawer ol li a:focus {
+  color: #212121;
+  font-weight: 600;
+}
+
+google-codelab #drawer ol li[selected] a {
+  background-color: #e0e0e0;
+}
+
+google-codelab #drawer ol li[selected] .step:before {
+  font-weight: 600;
+}
+
+google-codelab #drawer ol li[completed] a {
+  color: #212121;
+}
+
+google-codelab #drawer ol li[completed] a:before,
+google-codelab #drawer ol li[completed] a:after,
+google-codelab #drawer ol li[completed] .step:before {
+  background-color: #1A73E8;
+  color: #fff;
+}
+
+google-codelab #drawer ol li[selected] a:after {
+  background-color: #80868B;
+}
+
+
+google-codelab #drawer .metadata {
+  color: #777;
+  font-size: 0.7em;
+  padding: 16px;
+  flex-shrink: 0;
+}
+
+google-codelab #drawer .metadata a {
+  color: currentcolor;
+  margin-left: 4px;
+}
+
+google-codelab #codelab-nav-buttons #menu {
+  display: none;
+}
+
+google-codelab #drawer {
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+  }
+}
+
+
+@media (max-width: 768px) {
+  google-codelab {
+    display: block;
+    position: relative;
+  }
+
+  google-codelab #main {
+    height: 100%;
+  }
+
+  google-codelab #codelab-nav-buttons #arrow-back {
+    display: none;
+  }
+
+  google-codelab #codelab-nav-buttons #menu {
+    display: flex;
+  }
+
+  google-codelab #drawer {
+    width: 256px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    will-change: transform;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0);
+    pointer-events: none;
+    transform: translate3d(-100%, 0, 0);
+    transition: transform ease-in-out 0.3s, box-shadow 0.3s;
+  }
+
+  google-codelab[drawer--open] #drawer {
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+    transform: translate3d(0, 0, 0);
+    pointer-events: all;
+  }
+
+  google-codelab #main::before {
+    content: '';
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    transition: opacity ease-in-out 0.38s;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  google-codelab[drawer--open] #main::before {
+    opacity: 1;
+    pointer-events: all;
+  }
+}

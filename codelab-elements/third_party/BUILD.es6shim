@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "es6all",
+    srcs = [
+        "es6-sham.min.js",
+        "es6-sham.map",
+        "es6-shim.min.js",
+        "es6-shim.map",
+    ]
+)

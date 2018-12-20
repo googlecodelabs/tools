@@ -1,0 +1,191 @@
+<!--
+Copyright (c) 2016 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Embeddable codelab demo</title>
+  <link rel="stylesheet"
+      href="//fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,500italic,700,700italic|Roboto+Mono:400,700|Material+Icons">
+  <link rel="stylesheet"
+      href="https://developers.google.com/_static/80c6b067d5/css/devsite-google-blue.css">
+  <link rel="stylesheet" href="https://developers.google.com/maps/styles/common.css">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <link rel="import" href="../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../paper-button/paper-button.html">
+  <link rel="import" href="../google-codelab-elements.html">
+  <style is="custom-style">
+    #container {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    google-codelab {
+      height: 700px;
+      /*background-color: #eee;*/
+    }
+    :root {
+      --google-codelab-background: transparent;
+
+      /* Other customizations */
+      /*--google-codelab-step-link-color: initial;*/
+      /*--google-codelab-fab-background: red;*/
+      /*--google-codelab-footer-text-color: green;*/
+    }
+  </style>
+</head>
+<body unresolved>
+
+<div id="container">
+
+<h1>Codelabs  > Build Google Maps Using Web Components & No Code!</h1>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur quis dolor vel arcu blandit tristique. Proin vestibulum nec felis non fringilla. Pellentesque vulputate dui ut risus bibendum, sed egestas arcu ullamcorper. Quisque eget eros pellentesque, aliquet tortor placerat, vehicula lectus. Fusce sit amet mattis turpis, et tempus orci. Vestibulum mauris velit, vulputate a risus quis, imperdiet hendrerit ante. Nunc sollicitudin risus tortor, ac venenatis sem volutpat malesuada. Mauris neque metus, ornare eget porta id, tincidunt vitae magna. In scelerisque quam auctor maximus pellentesque. Sed laoreet ex mi, vel lacinia urna consectetur id. Sed est quam, finibus eget orci in, vulputate tempus diam</p>
+
+  <google-codelab theme="minimal"
+                  title="Build Google Maps Using Web Components & No Code!"
+                  feedback-link="https://github.com/googlecodelabs"
+                  environment="web"
+                  last-updated="2015-01-28"
+                  no-toolbar
+                  no-arrows
+                  no-highlight>
+
+    <google-codelab-step label="Overview" duration="2">
+
+          <p><img src="img-1.png" style="max-width: 624px"></p><p>In this codelab, You'll create a fully working Google Maps app using elements in Polymer's <a href="https://elements.polymer-project.org/browse?package=google-web-components">Google Web Components</a>&#160;collection. The app will be responsive, include driving directions, and transit a mode. Along the way, you'll also learn about Polymer's data-binding features and <a href="https://elements.polymer-project.org/browse?package=iron-elements">iron element</a>&#160;set.</p>
+<h3 class="checklist">What you'll learn</h3>
+<ul class="checklist">
+<li>How to start a new Polymer-based project using Chrome Dev Editor</li>
+<li>How to use elements in Polymer's iron, paper, and Google Web Component sets.</li>
+<li>How to use Polymer's data binding features to reduce boilerplate code.</li>
+</ul>
+<h3>What you'll need</h3>
+<ul>
+<li>Basic understanding of HTML, CSS, and web development.</li>
+<li>Install <a href="https://chrome.google.com/webstore/detail/chrome-dev-editor-develop/pnoffddplpippgcfjdhbmhkofpnaalpg?hl=en">Chrome Dev Editor</a>&#160;or use your own editor of choice.</li>
+</ul>
+<google-codelab-survey survey-id="test-survey-123"><h4>How&#160;would rate your experience with Polymer?</h4>
+<paper-radio-group><paper-radio-button>Novice</paper-radio-button><paper-radio-button>Intermediate</paper-radio-button><paper-radio-button>Advanced</paper-radio-button></paper-radio-group></google-codelab-survey>
+
+      </google-codelab-step>
+
+    <google-codelab-step label="Getting set up" duration="3">
+
+<h2>Create a new project</h2>
+
+<aside class="special"><p>This codelab uses Chrome Dev Editor, a Chrome app IDE. If you don't have it installed yet, please install it from Chrome Web Store.</p>
+<p><paper-button raised class="colored"><iron-icon icon="file-download"></iron-icon><a href="https://chrome.google.com/webstore/detail/chrome-dev-editor-develop/pnoffddplpippgcfjdhbmhkofpnaalpg?hl=en">Download Chrome Dev Editor</a></paper-button></p></aside>
+<p>The first time you run Chrome Dev Editor it will ask you to setup your workspace environment.</p><p>Fire up Chrome Dev Editor and start a new project:</p><ol start="1">
+<li>Click <img src="img-2.png" style="max-width: 27px">to start a new project.</li>
+<li>Enter <strong>"PolymerMapsCodelab"</strong>&#160;as the <strong>Project name</strong>.</li>
+<li>In the <strong>Project type</strong>&#160;dropdown, select "JavaScript web app (using Polymer paper elements)".</li>
+<li>Click the <strong>Create</strong>&#160;button.</li>
+</ol><p><img src="img-3.png" style="max-width: 343px"></p><p>Chrome Dev Editor creates a basic scaffold for your Polymer app. In the background, it also uses <a href="http://bower.io/">Bower</a>&#160;to download and install a list of dependencies (including the Polymer core library) into the <code>bower_components</code>/ folder. <strong>Fetching the components make take some time if your internet connection is slow</strong>. You'll learn more about using Bower in the next step.</p>
+<h3>bower.json</h3>
+
+<pre><code language="">PolymerMapsCodelab/
+  bower_components/ &lt;!-- installed dependencies from Bower --&gt;
+  bower.json  &lt;!-- Bower metadata files used for managing deps --&gt;
+  index.html  &lt;!-- your app --&gt;
+  main.js
+  styles.css</code></pre>
+
+<h2>Preview the app</h2>
+<p>At any point, select the <strong>index.html</strong>&#160;file and hit the <img src="img-4.png" style="max-width: 27px">&#160;button in the top toolbar to run the app. Chrome Dev Editor fires up a web server and navigates to the index.html&#160;page. This is great way to preview changes as you make them.</p><p><img src="img-5.png" style="max-width: 624px"></p>
+<h2>Next up</h2>
+<p>At this point the app doesn't do much. Let's add a map!</p>
+
+      </google-codelab-step>
+
+    <google-codelab-step label="Using <google-map>" duration="5">
+
+          <p>The <a href="https://elements.polymer-project.org/browse?package=google-web-components">Google Web Components</a>&#160;provide the <code>&lt;google-map&gt;</code>&#160;element for declaratively rendering a Google Map. To use it, you first need to install it using Bower.</p>
+<aside class="special"><p><strong>What is Bower?</strong></p>
+<p><a href="http://bower.io/">Bower</a>&#160;is a client-side package management tool that can be used with any web app. When working with Polymer, it simplifies the hassles of dependency management. Every component defines its own set of dependencies. When you use Bower to install a component, the component's dependencies are installed alongside it under <code>bower_components/</code>.</p></aside>
+
+<h2>Install the <google-map> element</h2>
+<p>Normally, you'd run <code>bower install GoogleWebComponents/google-map --save</code>&#160;on the command line to install <code>&lt;google-map&gt;</code> and save it as a dependency. However, Chrome Dev Editor does not have a command line for running Bower commands. Instead, you need to manually edit <code>bower.json</code>&#160;to include <code>google-map</code>, then run Chrome Dev Editor's <strong>Bower Update</strong>&#160;feature. <strong>Bower Update</strong>&#160;checks the dependencies in <code>bower.json</code>&#160;and installs any missing ones.</p><ol start="1"><li>Edit <code>bower.json</code>&#160;and add <code>google-map</code>&#160;to the <code>dependencies</code>&#160;object:</li></ol>
+<pre class="indented"><code language="">"dependencies": {
+  "iron-elements": "PolymerElements/iron-elements#^1.0.0",
+  "paper-elements": "PolymerElements/paper-elements#^1.0.1",
+  "google-map": "GoogleWebComponents/google-map#^1.0.3"
+}</code></pre>
+<ol start="2">
+<li>Right-click the <code>bower.json</code>&#160;filename in the editor.</li>
+<li>Select <strong>Bower Update</strong>&#160;from the context menu.</li>
+</ol><p><img src="img-6.png" style="max-width: 220px"></p><p>The download may take few seconds. You can verify that <code>&lt;google-map&gt;</code>&#160;(and any dependencies) were installed by checking that <code>bower_components/google-map/</code>&#160;was created and populated.</p>
+<h2>Use the <google-map> element</h2>
+<p>To employ <code>&lt;google-map&gt;</code>, you need to:</p><ol start="1">
+<li>Use an <a href="http://www.html5rocks.com/en/tutorials/webcomponents/imports/">HTML Import</a>&#160;to load it in <code>index.html</code>.</li>
+<li>Declare an instance of the element on the page.</li>
+</ol><p>In <code>index.html</code>,<strong>&#160;remove all other HTML imports</strong>&#160;<strong>in the</strong> <strong>&lt;head&gt;</strong>&#160;and replace them with a single import that loads <code>google-map.html</code>:</p>
+<h3>index.html</h3>
+
+<pre><code language="">&lt;head&gt;
+  ....
+  &lt;script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"&gt;&lt;/script&gt;
+  &lt;link rel="import" href="bower_components/google-map/google-map.html"&gt;
+&lt;/head&gt;</code></pre>
+
+<aside class="warning"><p><strong>Important</strong>: all imports need to come <strong>after</strong>&#160;<code>webcomponents-lite.min.js</code>&#160;so the polyfill can properly load them.</p></aside>
+<p>Next, replace the contents of <code>&lt;body&gt;</code>&#160;with an instance of <code>&lt;google-map&gt;</code>:</p>
+<h3>index.html</h3>
+
+<pre><code language="">&lt;body unresolved&gt;
+  &lt;google-map latitude="37.779" longitude="-122.3892" zoom="13"&gt;&lt;/google-map&gt;
+&lt;/body&gt;</code></pre>
+<p>As you can see, using <code>&lt;google-map&gt;</code>&#160;is completely declarative! The map is centered using the <code>latitude</code>&#160;and <code>longitude</code>&#160;attributes and its zoom level is set by the <code>zoom</code>&#160;attribute.</p>
+<h3>Style the map</h3>
+<p>If you run the app right now, nothing will display. In order for the map to properly display itself, you need to set its container (in this case, <code>&lt;body&gt;</code>) to have a fixed height.</p><p>Open <code>styles.css</code>&#160;and replace its contents with default styling:</p>
+<h3>styles.css</h3>
+
+<pre><code language="">body, html {
+  font-family: 'Roboto', Arial, sans-serif;
+  height: 100%;
+  margin: 0;
+}</code></pre>
+
+<h3>Add a marker</h3>
+<p><code>&lt;google-map&gt;</code>&#160;supports adding map markers to the map by declaring <code>&lt;google-map-marker&gt;</code>&#160;elements as children. The marker locations are also set using <code>latitude</code>&#160;and <code>longitude</code>&#160;attributes.</p><p>Back in <strong>index.html</strong>, add a draggable <code>&lt;google-map-marker&gt;</code>&#160;to the map:</p>
+<h3>index.html</h3>
+
+<pre><code language="">&lt;google-map latitude="37.779" longitude="-122.3892" zoom="13" disable-default-ui&gt;
+  &lt;google-map-marker latitude="37.779" longitude="-122.3892"
+      title="Go Giants!" draggable="true"&gt;&lt;/google-map-marker&gt;
+&lt;/google-map&gt;</code></pre>
+<p>Notice that we've also disabled the map's controls by setting <code>disableDefaultUi</code>&#160;to true. Since it's a boolean property, its presence as an HTML attribute makes it truthy.</p>
+<h2>Run the app</h2>
+<p>If you haven't already done so, hit the <img src="img-7.png" style="max-width: 29px">&#160;button. At this point, you should see a map that takes up the entire viewport and has a single marker pin.</p><p><img src="img-8.png" style="max-width: 624px"></p>
+<h3 class="faq">Frequently Asked Questions</h3>
+<ul class="faq"><li>
+<a href="https://elements.polymer-project.org/elements/google-map">Where are the reference docs for &lt;google-map&gt; and &lt;google-map&gt;</a>?</li></ul>
+
+      </google-codelab-step>
+
+  </google-codelab>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur quis dolor vel arcu blandit tristique. Proin vestibulum nec felis non fringilla. Pellentesque vulputate dui ut risus bibendum, sed egestas arcu ullamcorper. Quisque eget eros pellentesque, aliquet tortor placerat, vehicula lectus. Fusce sit amet mattis turpis, et tempus orci. Vestibulum mauris velit, vulputate a risus quis, imperdiet hendrerit ante. Nunc sollicitudin risus tortor, ac venenatis sem volutpat malesuada. Mauris neque metus, ornare eget porta id, tincidunt vitae magna. In scelerisque quam auctor maximus pellentesque. Sed laoreet ex mi, vel lacinia urna consectetur id. Sed est quam, finibus eget orci in, vulputate tempus diam</p>
+
+</div>
+
+</body>
+</html>

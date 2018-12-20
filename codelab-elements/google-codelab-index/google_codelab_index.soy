@@ -1,0 +1,67 @@
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+{namespace googlecodelabs.CodelabIndex.Templates}
+
+/**
+ * Renders the card
+ */
+{template .card}
+  {@param title: string}
+  {@param category: string}
+  {@param duration: number}
+  {@param updated: string}
+  {@param author: string}
+  <div class="card-header {$category}-bg">
+    <span class="category-icon {$category}-icon"></span>
+    <span class="card-duration">
+      {if $duration}
+        <img src="//codelabs.developers.google.com/images/schedule.svg">
+        {$duration} min
+      {/if}
+    </span>
+  </div>
+  <div class="card-description">
+    {$title}
+  </div>
+  <div class="card-footer {$category}-footer">
+    <span class="card-start {$category}-start">Start</span>
+    <span class="card-updated">
+      {if $author}<div>{$author}</div>{/if}
+      {if $updated}<div>Updated {$updated}</div>{/if}
+    </span>
+  </div>
+{/template}
+
+
+{template .sortby}
+  {@param sort: string}
+  {@param categories: list<string>}
+  <div id="sort-by-tabs" class="sort-by-inner">
+    <a href="#" sort="alpha" {if $sort == 'alpha'}selected{/if}>A-Z</a>
+    <a href="#" sort="recent" {if $sort == 'recent'}selected{/if}>Recent</a>
+    <a href="#" sort="duration" {if $sort == 'duration'}selected{/if}>Duration</a>
+  </div>
+  <div class="sort-by-inner">
+    <select id="codelab-categories">
+      <option value="">Category</option>
+      {for $i in range(length($categories))}
+        <option value="{$categories[$i]}">{$categories[$i]}</option>
+      {/for}
+    </select>
+  </div>
+{/template}

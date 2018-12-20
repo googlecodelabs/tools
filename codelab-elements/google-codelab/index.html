@@ -1,0 +1,967 @@
+<!--
+Copyright (c) 2015 Google Inc.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>codelab demo</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="/google-codelab-step/google_codelab_step_scss_bin.css">
+  <link rel="stylesheet" href="/google-codelab-survey/google_codelab_survey_scss_bin.css">
+  <link rel="stylesheet" href="google_codelab_scss_bin.css">
+  <style>
+    body {
+      transition: opacity ease-in 0.2s;
+    }
+
+    body[unresolved] {
+      opacity: 0;
+      display: block;
+      overflow: hidden;
+      position: relative;
+    }
+  </style>
+</head>
+
+<body unresolved>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid="UA-49880327-15" id="accelerated-mobile-pages-advanced" title="Accelerated Mobile Pages Advanced Concepts" environment="web" feedback-link="mailto:tomgreenaway@google.com">
+    <google-codelab-step label="Overview" duration="1">
+      <p>This codelab is a continuation of the concepts introduced in Accelerated Mobile Pages Foundations. You should already
+        have completed the previous code lab before starting this lab or at least have a basic understanding AMP&#39;s core
+        concepts already.</p>
+      <p>In this codelab, you&#39;ll learn how AMP handles advertising, analytics, video embedding, social media integration,
+        image carousels and more. To achieve this you will build upon the example from the Foundations codelab by adding
+        these features via the various AMP components.</p>
+      <h2 class="checklist">What you&#39;ll learn</h2>
+      <ul class="checklist">
+        <li>Display ads with amp-ad.</li>
+        <li>Embed Youtube videos, Twitter cards and responsive text elements.</li>
+        <li>Build carousels with images and combinations of content using amp-carousel.</li>
+        <li>Simple tracking patterns with amp-analytics.</li>
+        <li>Ways to add site navigation to your page.</li>
+        <li>How fonts work with AMP.</li>
+      </ul>
+      <h2>What you&#39;ll need</h2>
+      <ul>
+        <li>The sample code</li>
+        <li>Chrome (or an equivalent browser that can inspect the JavaScript console)</li>
+        <li>Python (preferably 2.7) or the Chrome 200 OK Web Server extension</li>
+        <li>Code Editor (for example Atom, Sublime, Notepad++)</li>
+      </ul>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Get the sample code" duration="1">
+      <p>You can either download all the sample code to your computer:</p>
+      <p>
+        <a href="https://github.com/googlecodelabs/accelerated-mobile-pages-advanced/archive/master.zip" target="_blank">
+          <paper-button class="colored" raised>
+            <iron-icon icon="file-download"></iron-icon>Download Zip</paper-button>
+        </a>
+      </p>
+      <p>...or clone the GitHub repository from the command line:</p>
+      <pre><code>$ git clone https://github.com/googlecodelabs/accelerated-mobile-pages-advanced.git</code></pre>
+      <p>You will download a ZIP file containing several example resources files and the starting
+        <code>article.html</code> page. </p>
+      <p>Unzip the folder and navigate to the directory via the command line on your computer.</p>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Run the sample page" duration="4">
+      <p>In order to test our sample page we need to access the files from a web server. There are several ways to create a
+        temporary local web server for the purposes of testing. For this code lab we will provide instructions for 3 options
+        available:</p>
+      <ul>
+        <li>
+          <strong>The Google Chrome app &#34;Web Server for Chrome&#34;</strong> - This is the recommended approach as it is the
+          simplest and cross platform solution available. Note: this approach requires Google Chrome to be installed.</li>
+        <li>
+          <strong>Firebase Hosting</strong> - An alternative option if you&#39;re also interested in exploring our new static asset
+          hosting platform &#34;Firebase Hosting&#34;. SSL-enabled by default.</li>
+        <li>
+          <strong>A local HTTP Python Server</strong> - Requires access to the command-line.</li>
+      </ul>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: It is strongly recommended that HTTPS be used in production environments. HTTPS has several benefits
+          beyond just security including SEO. You can read more about this topic
+          <a href="https://webmasters.googleblog.com/2014/08/https-as-ranking-signal.html"
+            target="_blank">here</a>.</p>
+      </aside>
+      <h2>Option #1: Web Server for Chrome</h2>
+      <p>You can find the &#34;Web Server for Chrome&#34; app at
+        <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb"
+          target="_blank">this link</a> on the Chrome Web Store.</p>
+      <p>
+        <img style="max-width: 624.00px" src="img/a322aaec88da31f0.png">
+      </p>
+      <p>After installing the Chrome App you must point the app at a particular folder via the &#34;Choose Folder&#34; button.
+        For this code lab you should select the folder where you unzipped the code lab example files.</p>
+      <p>Additionally you should tick the &#34;Automatically show index.html&#34; option and set the port to &#34;8000&#34;.
+        You will need to restart the the web server for these changes to take effect.</p>
+      <p>Access
+        <a href="https://localhost:4443/index.html" target="_blank">this URL</a> via:</p>
+      <pre>http://localhost:8000/article.amp.html</pre>
+      <p>If the above URL loads successfully you can continue to the next section.</p>
+      <h2>Option #2: Firebase Hosting</h2>
+      <p>If you are interested in exploring our new Firebase static web hosting you can follow the instructions
+        <a href="https://firebase.google.com/docs/hosting/quickstart"
+          target="_blank">available here</a> to deploy your AMP site to a Firebase hosting URL.</p>
+      <p>Firebase Hosting is a static hosting provider that you can use to quickly deploy and host a static website and its
+        assets; including HTML, CSS, and JavaScript files. Users benefit from reduced latency because static content is cached
+        in a content delivery network (CDN) with points of presence (PoPs) located around the world.</p>
+      <p>Lastly, Firebase Hosting is always served via SSL so it&#39;s great for AMP and the web in general. If you&#39;re more
+        interested in purely focusing on AMP then simply ignore this option.</p>
+      <h2>Option #3: HTTP Python Server</h2>
+      <p>If you don&#39;t use Chrome or you are struggling to install the Chrome extension you can also use Python from the
+        command-line to fire up a local web server.</p>
+      <p>To run Python&#39;s built-in HTTP server from the command line simply execute the following:</p>
+      <pre>python -m SimpleHTTPServer</pre>
+      <p>And access
+        <a href="http://localhost:8000/index.html" target="_blank">this URL</a>:</p>
+      <pre>http://localhost:8000/article.amp.html</pre>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Learn the core AMP components" duration="3">
+      <p>AMP&#39;s component system allows us to quickly build efficient and responsive features into our articles with minimal
+        effort. The core AMP JavaScript library in the
+        <code>&lt;head&gt;</code> tag includes several core components:</p>
+      <ul>
+        <li>
+          <a href="https://www.ampproject.org/docs/reference/amp-ad.html" target="_blank">amp-ad</a> - Container to display an ad.</li>
+        <li>
+          <a href="https://www.ampproject.org/docs/reference/amp-img.html" target="_blank">amp-img</a> - Replacement for the HTML img tag.</li>
+        <li>
+          <a href="https://www.ampproject.org/docs/reference/amp-pixel.html" target="_blank">amp-pixel</a> - Used as tracking pixel to count page views.</li>
+        <li>
+          <a href="https://www.ampproject.org/docs/reference/amp-video.html" target="_blank">amp-video</a> - Replacement for the HTML5 video tag.</li>
+      </ul>
+      <p>All of the above core components can be used immediately in an AMP document. Our example code already utilises
+        <code>amp-img</code> in our page and we explored how it relates to the AMP layout system in the AMP Foundations code lab, so let&#39;s
+        explore
+        <code>amp-ad</code> in the next chapter!</p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: Embedding HTML5 videos and tracking pixels are important features in web development. If you are
+          interested in embedding these components you can explore their respective reference pages
+          <a href="https://www.ampproject.org/docs/reference/amp-video.html"
+            target="_blank">here</a> and
+          <a href="https://www.ampproject.org/docs/reference/amp-pixel.html" target="_blank">here</a>.</p>
+      </aside>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Adding an ad" duration="10">
+      <p>Your sample
+        <code>article.amp.html</code> page should be as follows:</p>
+      <pre><code>&lt;!doctype html&gt;
+&lt;html ⚡ lang=&#34;en&#34;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&#34;utf-8&#34; /&gt;
+    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width,minimum-scale=1,initial-scale=1&#34;&gt;
+
+    &lt;link rel=&#34;canonical&#34; href=&#34;/article.html&#34;&gt;
+    &lt;link rel=&#34;shortcut icon&#34; href=&#34;amp_favicon.png&#34;&gt;
+
+    &lt;title&gt;News Article&lt;/title&gt;
+
+    &lt;style amp-boilerplate&gt;body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}&lt;/style&gt;&lt;noscript&gt;&lt;style amp-boilerplate&gt;body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}&lt;/style&gt;&lt;/noscript&gt;
+    &lt;style amp-custom&gt;
+      body {
+        width: auto;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background: Tomato;
+        color: white;
+        font-size: 2em;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        padding: 0.5em;
+        background: white;
+        box-shadow: 0px 3px 5px grey;
+      }
+
+      p {
+        padding: 0.5em;
+        margin: 0.5em;
+      }
+    &lt;/style&gt;
+    &lt;script async src=&#34;https://cdn.ampproject.org/v0.js&#34;&gt;&lt;/script&gt;
+    &lt;script type=&#34;application/ld+json&#34;&gt;
+    {
+     &#34;@context&#34;: &#34;http://schema.org&#34;,
+     &#34;@type&#34;: &#34;NewsArticle&#34;,
+     &#34;mainEntityOfPage&#34;:{
+       &#34;@type&#34;:&#34;WebPage&#34;,
+       &#34;@id&#34;:&#34;https://example.com/my-article.html&#34;
+     },
+     &#34;headline&#34;: &#34;My First AMP Article&#34;,
+     &#34;image&#34;: {
+       &#34;@type&#34;: &#34;ImageObject&#34;,
+       &#34;url&#34;: &#34;https://example.com/article_thumbnail1.jpg&#34;,
+       &#34;height&#34;: 800,
+       &#34;width&#34;: 800
+     },
+     &#34;datePublished&#34;: &#34;2015-02-05T08:00:00+08:00&#34;,
+     &#34;dateModified&#34;: &#34;2015-02-05T09:20:00+08:00&#34;,
+     &#34;author&#34;: {
+       &#34;@type&#34;: &#34;Person&#34;,
+       &#34;name&#34;: &#34;John Doe&#34;
+     },
+     &#34;publisher&#34;: {
+       &#34;@type&#34;: &#34;Organization&#34;,
+       &#34;name&#34;: &#34;⚡ AMP Times&#34;,
+       &#34;logo&#34;: {
+         &#34;@type&#34;: &#34;ImageObject&#34;,
+         &#34;url&#34;: &#34;https://example.com/amptimes_logo.jpg&#34;,
+         &#34;width&#34;: 600,
+         &#34;height&#34;: 60
+       }
+     },
+     &#34;description&#34;: &#34;My first experience in an AMPlified world&#34;
+    }
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;header&gt;
+      News Site
+    &lt;/header&gt;
+    &lt;article&gt;
+      &lt;h1&gt;Article Name&lt;/h1&gt;
+
+      &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam egestas tortor sapien, non tristique ligula accumsan eu.&lt;/p&gt;
+
+      &lt;amp-img src=&#34;mountains.jpg&#34; layout=&#34;responsive&#34; width=&#34;266&#34; height=&#34;150&#34;&gt;&lt;/amp-img&gt;
+    &lt;/article&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>The above is a simple page, the most interesting fact of this page is that it passes both AMP validation and the Schema.org
+        search engine meta data validation. If this page were deployed on a news website it would be eligible for inclusion
+        in the new Google search carousel dedicated to AMP content so it&#39;s a great starting point for our work.</p>
+      <p>Before we alter the page let&#39;s open up the Chrome Developer Tools. When working on a website (especially a mobile
+        focused website) it is usually a good idea to simulate a mobile experience when testing in the browser.
+        <strong>Start</strong> by opening the
+        <a href="https://developer.chrome.com/devtools/docs/console" target="_blank">Developer Console</a> in Chrome via
+        <code>Menu &gt; More Tools &gt; Developer Tools</code>:</p>
+      <p>
+        <img style="max-width: 515.00px" src="img/f43aa9981defd294.png">
+      </p>
+      <p>Now inspect the JavaScript output in the developer console. Make sure you have the Console tab selected:</p>
+      <p>
+        <img style="max-width: 201.00px" src="img/a21ac67adf427ddc.png">
+      </p>
+      <p>Now click the device simulation button in the developer console. It is represented by a phone and tablet sitting next
+        one another:</p>
+      <p>
+        <img style="max-width: 136.00px" src="img/afb844ab04c5e37a.png">
+      </p>
+      <p>In the menu that appears, set the device to &#34;Nexus 5X&#34;:</p>
+      <p>
+        <img style="max-width: 375.00px" src="img/3f1ab21e1e5c772b.png">
+      </p>
+      <p>Now we can start working on the page itself. Let&#39;s try
+        <strong>adding</strong> an ad to our AMP article!</p>
+      <p>All ads in AMP are constructed using the
+        <code>amp-ad</code> component. Using this component we can configure our ads in several ways such as the width, height and layout mode.
+        However, many ad platforms will require additional configuration such as the account ID for the ad network, which
+        ad should be served or options for targeting the advertising. For
+        <code>amp-ad</code> we simply fill in the various options required as HTML attributes.</p>
+      <p>Take a look at this example of a
+        <strong>Double Click</strong> ad:</p>
+      <pre><code>&lt;amp-ad
+  width=&#34;300&#34;
+  height=&#34;250&#34;
+  type=&#34;doubleclick&#34;
+  data-slot=&#34;/35096353/amptesting/image/static&#34;&gt;
+&lt;/amp-ad&gt;</code></pre>
+      <p>As you can see this is a very simple configuration. Take note of the
+        <code>type</code> attribute, this attribute informs the amp-ad component of which ad platform you want to use. In this case we wanted
+        <strong>Double Click&#39;s</strong> platform and therefore the type value was
+        <code>doubleclick</code>.</p>
+      <p>The
+        <code>data-slot</code> attribute is more unique. Any attributes starting with
+        <code>data-</code> in amp-ad are vendor specific attributes. This means that not all vendors will necessarily require this particular
+        attribute nor will they necessarily react if it is supplied. For example, compare the above
+        <strong>Double Click</strong> example with a test advertisement from the
+        <strong>A9</strong> platform:</p>
+      <pre><code>&lt;amp-ad
+  width=&#34;300&#34;
+  height=&#34;250&#34;
+  type=&#34;a9&#34;
+  data-aax_size=&#34;300x250&#34;
+  data-aax_pubname=&#34;test123&#34;
+  data-aax_src=&#34;302&#34;&gt;
+&lt;/amp-ad&gt;</code></pre>
+      <p>Try
+        <strong>adding</strong> both of the above examples into your article just after the
+        <code>&lt;header&gt;</code> tag.
+        <strong>Refresh</strong> the page and you should see two testing ads have appeared:</p>
+      <p>
+        <img style="max-width: 221.19px" src="img/fb8ec99e99f182ac.png">
+      </p>
+      <aside class="warning">
+        <p>
+          <strong>Important</strong>: You may have some errors in your developer console such as ‘Mixed Content&#39; or ‘XMLHttpRequest
+          cannot load&#39;. The former is likely related to the A9 advertisement as not all the content it loads is secure.
+          This is a noteable requirement for all ads served on AMP.</p>
+      </aside>
+      <p>Let&#39;s explore some more options available to use with Double Click. Try
+        <strong>adding</strong> these two geotargeting ad configurations to your page:</p>
+      <pre><code>&lt;amp-ad
+  width=&#34;300&#34;
+  height=&#34;250&#34;
+  type=&#34;doubleclick&#34;
+  data-slot=&#34;/35096353/amptesting/geo/uk&#34;&gt;
+  &lt;div fallback&gt;No ad appeared because you&#39;re not browsing from the UK!&lt;/div&gt;
+&lt;/amp-ad&gt;
+
+&lt;amp-ad
+  width=&#34;300&#34;
+  height=&#34;250&#34;
+  type=&#34;doubleclick&#34;
+  data-slot=&#34;/35096353/amptesting/geo/us&#34;&gt;
+  &lt;div fallback&gt;No ad appeared because you&#39;re not browsing from the US!&lt;/div&gt;
+&lt;/amp-ad&gt;</code></pre>
+      <p>Unfortunately the geotargeting cannot be controlled from the code of the page itself. However, these test adverts have
+        already been configured in the Double Click dashboard to only show in particular countries, specifically the United
+        Kingdom and the United States of America.</p>
+      <p>
+        <strong>Refresh</strong> the page and take a look. The following screenshot was captured from Australia, so neither advert
+        is loading:</p>
+      <p>
+        <img style="max-width: 375.00px" src="img/b79cf053ec60b7a4.png">
+      </p>
+      <p>The above geotargeting example demonstrates how amp-ad is flexible enough for all sorts of ad platform features. </p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: You might notice that inside these amp-ad tags are additional div tags with an attribute named fallback
+          on them. Can you guess what the fallback attribute denotes? It informs AMP&#39;s loading system to only show the
+          contents of that element when the parent element fails to load successfully. Meaning the parent element falls back
+          on the child element -- hence the term ‘fallback&#39;.</p>
+      </aside>
+      <p>The following are the currently supported ad networks:</p>
+      <ul>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/a9.md" target="_blank">A9</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/adblade.md" target="_blank">Adblade</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/adform.md" target="_blank">Adform</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/adreactor.md" target="_blank">AdReactor</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/google/adsense.md" target="_blank">AdSense</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/adtech.md" target="_blank">AdTech</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/criteo.md" target="_blank">Criteo</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/dotandads.md" target="_blank">Dot and Media</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/google/doubleclick.md" target="_blank">Doubleclick</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/flite.md" target="_blank">Flite</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/industrybrains.md" target="_blank">Industrybrains</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/openx.md" target="_blank">OpenX</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/plista.md" target="_blank">plista</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/smartadserver.md" target="_blank">Smart AdServer</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/yieldmo.md" target="_blank">Yieldmo</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/revcontent.md" target="_blank">Revcontent</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/triplelift.md" target="_blank">TripleLift</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/teads.md" target="_blank">Teads</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/imobile.md" target="_blank">I-Mobile</a>
+        </li>
+        <li>
+          <a href="https://github.com/ampproject/amphtml/blob/master/ads/webediads.md" target="_blank">Webediads</a>
+        </li>
+      </ul>
+      <p>Be sure to check out the documentation page for the
+        <a href="https://www.ampproject.org/docs/reference/amp-ad.html"
+          target="_blank">AMP Ad component</a> for information on the latest supported ad platforms.</p>
+      <p>In the next chapter we&#39;ll explore more advanced AMP components and how to include them in our AMP documents.</p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: No ad network provided JavaScript is allowed to run inside the AMP document. Instead the AMP runtime
+          loads an iframe from a different origin (via iframe sandbox) as the AMP document and executes the ad network&#39;s
+          JS inside that iframe sandbox.</p>
+      </aside>
+      <aside class="warning">
+        <p>
+          <strong>Important</strong>: The specification of amp-ad is likely to significantly evolve over time. The current approach
+          is designed to bootstrap the format to be able to show ads.</p>
+      </aside>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Expand content with extended components" duration="10">
+      <p>By now you have a basic AMP document with text, an image and even an advertisement embedded on the page -- all key
+        ingredients to telling a story and monetising your content. However, modern websites often include more functionality
+        than simply pictures and text.</p>
+      <p>So let&#39;s take our AMP document to the next level and explore what components are available beyond the core components
+        mentioned earlier.</p>
+      <p>In this chapter we&#39;ll try adding more advanced web functionality that is commonly found on news articles:</p>
+      <ul>
+        <li>YouTube videos</li>
+        <li>Tweets</li>
+        <li>Article quotes</li>
+      </ul>
+      <h2>Embed a YouTube video</h2>
+      <p>Let&#39;s try embedding a YouTube video into the document. The following code will embed a video,
+        <strong>add</strong> it to your page:</p>
+      <pre><code>&lt;amp-youtube
+  data-videoid=&#34;mGENRKrdoGY&#34;
+  layout=&#34;responsive&#34;
+  width=&#34;480&#34;
+  height=&#34;270&#34;&gt;
+  &lt;div fallback&gt;
+    &lt;p&gt;The video could not be loaded.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/amp-youtube&gt;</code></pre>
+      <p>
+        <strong>Refresh</strong> the page and look at the page. You should see this text instead of a video: &#34;The video could
+        not be loaded.&#34;</p>
+      <p>Even if your browser can show YouTube videos without issue you will still receive this error. Why? The video hasn&#39;t
+        actually failed to load, rather the component itself failed.</p>
+      <p>Remember, not all components are included in the core AMP library JavaScript file. We need to include an additional
+        JavaScript request for the YouTube component in particular. All components except for a core set will require these
+        additional JavaScript references.</p>
+      <p>
+        <strong>Add</strong> the following request to the
+        <code>&lt;head&gt;</code> tag:</p>
+      <pre><code>&lt;script async custom-element=&#34;amp-youtube&#34; src=&#34;https://cdn.ampproject.org/v0/amp-youtube-0.1.js&#34;&gt;&lt;/script&gt;</code></pre>
+      <p>
+        <strong>Refresh</strong> the page and you should see the YouTube video:</p>
+      <p>
+        <img style="max-width: 238.24px" src="img/350dceb89c6e3968.png">
+      </p>
+      <p>Once again we have specified the width and height of the video in order for the aspect ratio to be calculated by the
+        AMP layout system. Furthermore the layout type has been set to responsive meaning this video will fill the width
+        of its parent element.</p>
+      <p>Learn more about the
+        <a href="https://www.ampproject.org/docs/reference/extended/amp-youtube.html" target="_blank">YouTube component</a>.</p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: In addition to the YouTube component AMP includes a generic HTML5 video component aptly named
+          <a
+            href="https://www.ampproject.org/docs/reference/amp-video.html" target="_blank">amp-video</a> and an AMP component dedicated the Brightcove Video Cloud or Perform player named
+            <a href="https://www.ampproject.org/docs/reference/extended/amp-brightcove.html"
+              target="_blank">amp-brightcove</a>. Check out &#34;
+            <a href="https://ampbyexample.com/advanced/integrating_videos_in_amp_an_overview/"
+              target="_blank">AMP By Example</a>&#34; for more video playback examples including Facebook videos, Instagram, Vine, Twitter
+            &amp; Dailymotion.</p>
+      </aside>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: The
+          <a href="https://www.ampproject.org/docs/guides/responsive/control_layout.html#fallback" target="_blank">fallback attribute</a> is useful for providing information in the case that a component fails to load. What if
+          the user&#39;s browser does not support a particular AMP component? It is a better user experience to keep the
+          user informed of why functionality might be missing.</p>
+      </aside>
+      <h2>Display a Tweet</h2>
+      <p>Embedding preformatted tweets from Twitter is a common feature of news articles. The AMP Twitter component can provide
+        this functionality with ease.</p>
+      <p>Start by adding the following JavaScript request to the
+        <code>&lt;head&gt;</code> tag of your document:</p>
+      <pre><code>&lt;script async custom-element=&#34;amp-twitter&#34; src=&#34;https://cdn.ampproject.org/v0/amp-twitter-0.1.js&#34;&gt;&lt;/script&gt;</code></pre>
+      <p>Now in your article
+        <strong>add</strong> this code to embed the tweet itself:</p>
+      <pre><code>&lt;amp-twitter
+  width=&#34;486&#34;
+  height=&#34;657&#34;
+  layout=&#34;responsive&#34;
+  data-tweetid=&#34;638793490521001985&#34;&gt;
+&lt;/amp-twitter&gt;</code></pre>
+      <p>The
+        <code>data-tweetid</code> attribute is another example of a custom attribute being required by a particular platform vendor. In this case
+        Twitter recognises the
+        <code>data-tweetid</code> attribute as corresponding to a particular tweet to be embedded in the page.</p>
+      <p>
+        <strong>Refresh</strong> your browser and take a look at the page. You should see the tweet appear:</p>
+      <p>
+        <img style="max-width: 237.73px" src="img/7c7f4389428d02f9.png">
+      </p>
+      <p>Learn more about the
+        <a href="https://www.ampproject.org/docs/reference/extended/amp-twitter.html" target="_blank">Twitter component</a>.</p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: AMP includes even more components for embedding content from social networks. Check out the
+          <a href="https://www.ampproject.org/docs/reference/extended/amp-instagram.html"
+            target="_blank">Instagram component</a> and the
+          <a href="https://www.ampproject.org/docs/reference/extended/amp-vine.html" target="_blank">Vine component</a>.</p>
+      </aside>
+      <h2>Highlight an article quote</h2>
+      <p>A common element in news articles is to highlight particularly engaging snippets of text from the article. For example,
+        a quotation from a particular source or an important fact might be repeated in a larger font to attract attention
+        from the reader.</p>
+      <p>However, since not all quotations or snippets of text are necessarily the same length of string characters it can be
+        difficult to balance the larger font size with the amount of space the particular text will consume on the page.</p>
+      <p>AMP includes another component specifically for this type of situation called amp-fit-text. It allows you to define
+        a fixed width and fixed height element and a maximum font size. The component intelligently scales the font size
+        to
+        <strong>fit</strong> the quotation&#39;s text within the width and height available.</p>
+      <p>Let&#39;s give it a try. Firstly, add the component&#39;s library to the &lt;head&gt; tag:</p>
+      <pre><code>&lt;script async custom-element=&#34;amp-fit-text&#34; src=&#34;https://cdn.ampproject.org/v0/amp-fit-text-0.1.js&#34;&gt;&lt;/script&gt;</code></pre>
+      <p>
+        <strong>Add</strong> the following to your page:</p>
+      <pre><code>&lt;amp-fit-text width=&#34;400&#34; height=&#34;75&#34; layout=&#34;responsive&#34; max-font-size=&#34;42&#34;&gt;
+  Big, bold article quote goes here.
+&lt;/amp-fit-text&gt;</code></pre>
+      <p>
+        <strong>Refresh</strong> the page and look at the result!</p>
+      <p>Now experiment further. What happens if the quotation is much shorter?</p>
+      <pre><code>&lt;amp-fit-text width=&#34;400&#34; height=&#34;75&#34; layout=&#34;responsive&#34; max-font-size=&#34;42&#34;&gt;
+  #YOLO
+&lt;/amp-fit-text&gt;</code></pre>
+      <p>Or how about a longer quotation?</p>
+      <pre><code>&lt;amp-fit-text width=&#34;400&#34; height=&#34;75&#34; layout=&#34;responsive&#34; max-font-size=&#34;42&#34;&gt;
+   And the Raven, never flitting, still is sitting, still is sitting. On the pallid bust of Pallas just above my chamber door; And his eyes have all the seeming of a demon&#39;s that is dreaming, And the lamp-light o&#39;er him streaming throws his shadow on the floor; And my soul from out that shadow that lies floating on the floor. Shall be lifted—nevermore!
+&lt;/amp-fit-text&gt;</code></pre>
+      <p>As a last experiment with amp-fit-text, try creating a short piece of text such as #YOLO with a much larger height
+        -- for example, a value of 400 -- and maintaining the max-font-size attribute value of 42. What would the resulting
+        page look like? Does the text center vertically or does the height of the amp-fit-text tag shrink to fit the max
+        font size? Knowing what you know about AMP&#39;s layout system try to answer the question before editing the document!</p>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Complex Carousels" duration="10">
+      <p>Another common feature in web development is a carousel. AMP includes a generic component designed to fulfil this need.
+        Let&#39;s start with a simple example such as a carousel of images.</p>
+      <p>Remember to include the carousel component library by adding the following JavaScript request to the
+        <code>&lt;head&gt;</code> tag of your document:</p>
+      <pre><code>&lt;script async custom-element=&#34;amp-carousel&#34; src=&#34;https://cdn.ampproject.org/v0/amp-carousel-0.1.js&#34;&gt;&lt;/script&gt;</code></pre>
+      <p>Next we&#39;ll embed a simple carousel of images with a responsive layout and a pre-defined width and height.
+        <strong>Add</strong> the following to your page:</p>
+      <pre><code>&lt;amp-carousel layout=&#34;fixed-height&#34; height=&#34;168&#34; type=&#34;carousel&#34; &gt;
+  &lt;amp-img src=&#34;mountains-1.jpg&#34; width=&#34;300&#34; height=&#34;168&#34;&gt;&lt;/amp-img&gt;
+  &lt;amp-img src=&#34;mountains-2.jpg&#34; width=&#34;300&#34; height=&#34;168&#34;&gt;&lt;/amp-img&gt;
+  &lt;amp-img src=&#34;mountains-3.jpg&#34; width=&#34;300&#34; height=&#34;168&#34;&gt;&lt;/amp-img&gt;
+&lt;/amp-carousel&gt;</code></pre>
+      <p>
+        <strong>Refresh</strong> your page and you should see a carousel in your page:</p>
+      <p>
+        <img style="max-width: 239.00px" src="img/9dec2e61f3d3b641.png">
+      </p>
+      <p>The carousel component can be configured in a variety of ways. Try changing the type to
+        <code>slides</code> instead and look at the result. Be sure to change the
+        <code>layout</code> attribute of the
+        <code>amp-carousel</code> and the images inside it to be
+        <code>responsive</code> as well.</p>
+      <p>Now instead of a scrolling list of elements you&#39;ll see one element at a time. Try
+        <strong>swiping</strong> horizontally to move through the elements. If you swipe to the third element you won&#39;t be able
+        to swipe any further.</p>
+      <p>Next,
+        <strong>add</strong> the
+        <code>loop</code> attribute.
+        <strong>Refresh</strong> the page and try swiping to the left immediately. The carousel loops endlessly.</p>
+      <p>Lastly, let&#39;s make this carousel autoplay at a rate of every 2 seconds.
+        <strong>Add</strong> the
+        <code>autoplay</code> attribute to the page and the delay attribute with a value of 2000 like so:
+        <code>delay=&#34;2000&#34;</code>.</p>
+      <p>Your final result should look something like this:</p>
+      <pre><code>&lt;amp-carousel layout=&#34;responsive&#34; width=&#34;300&#34; height=&#34;168&#34;
+         type=&#34;slides&#34; autoplay delay=&#34;2000&#34; loop&gt;
+  &lt;amp-img src=&#34;mountains-1.jpg&#34; width=&#34;300&#34; height=&#34;168&#34; layout=&#34;responsive&#34;&gt;&lt;/amp-img&gt;
+  &lt;amp-img src=&#34;mountains-2.jpg&#34; width=&#34;300&#34; height=&#34;168&#34; layout=&#34;responsive&#34;&gt;&lt;/amp-img&gt;
+  &lt;amp-img src=&#34;mountains-3.jpg&#34; width=&#34;300&#34; height=&#34;168&#34; layout=&#34;responsive&#34;&gt;&lt;/amp-img&gt;
+&lt;/amp-carousel&gt;</code></pre>
+      <p>
+        <strong>Refresh</strong> the page and give it a spin!</p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: You may have noticed we&#39;re using the layout type
+          <code>fixed-height</code> in the carousel. It&#39;s a requirement of the
+          <code>carousel</code> type while the
+          <code>slides</code> type required the
+          <code>responsive</code> layout type. Fixed-height elements take the space available to them but keep the height unchanged. The height
+          attribute must be defined while the width attribute should not be present or should be set to auto for
+          <code>fixed-height</code> to work.</p>
+      </aside>
+      <p>Image carousels are great but what if we want more complex content to appear in our carousel? Let&#39;s try mixing
+        things up a bit by placing an advert, some text and an image altogether in a single carousel. Can amp-carousel really
+        handle such a mixture all at once? You bet.</p>
+      <p>First let&#39;s
+        <strong>add </strong>this styling to the page to ensure the amp-fit-text and amp-carousel components work together safely:</p>
+      <pre><code>amp-fit-text {
+    white-space: normal;
+}</code></pre>
+      <p>Now try putting the following carousel code into your page:</p>
+      <pre><code>&lt;amp-carousel layout=&#34;fixed-height&#34; height=&#34;250&#34; type=&#34;carousel&#34; &gt;
+    &lt;amp-img src=&#34;blocky-mountains-1.jpg&#34; width=&#34;300&#34; height=&#34;250&#34;&gt;&lt;/amp-img&gt;
+
+    &lt;amp-ad width=&#34;300&#34; height=&#34;250&#34;
+      type=&#34;doubleclick&#34;
+      data-slot=&#34;/35096353/amptesting/image/static&#34;&gt;
+        &lt;div placeholder&gt;This advert is still loading.&lt;/div&gt;
+    &lt;/amp-ad&gt;
+
+    &lt;amp-fit-text width=&#34;300&#34; height=&#34;250&#34; layout=&#34;fixed&#34;&gt;
+        Big, bold article quote goes here.
+    &lt;/amp-fit-text&gt;
+&lt;/amp-carousel&gt;</code></pre>
+      <p>
+        <strong>Refresh</strong> the page and you should see something like this:</p>
+      <p>
+        <img style="max-width: 371.00px" src="img/25c5ac88e3641e75.png">
+      </p>
+      <p>
+        <img style="max-width: 372.00px" src="img/5c79e3f467c21ce6.png">
+      </p>
+      <p>Learn more about the
+        <a href="https://www.ampproject.org/docs/reference/extended/amp-carousel.html" target="_blank">Carousel component</a>.</p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: In our last example you may have noticed the amp-ad component included a child div element with
+          the
+          <code>placeholder</code> attribute. If you recall we encountered a similar scenario with amp-ad earlier in the codelab with the
+          <code>fallback</code> system. What&#39;s the difference between placeholder and fallback?
+          <code>Fallback</code> elements appear when the parent element fails to load, i.e. if there was no advert available. Whereas
+          <code>placeholder</code> elements appear in place of the parent element while it is loading. In a sense, each attribute bookends the loading
+          process of the parent element.</p>
+      </aside>
+      <aside class="warning">
+        <p>
+          <strong>Important</strong>: Unfortunately the amp-ad component uses an iframe behind the scenes which can interfere with
+          the swiping gestures of the carousel itself. This is a known issue that is being investigated.</p>
+      </aside>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Track with amp-analytics" duration="10">
+      <p>Analytics platforms are commonly integrated into websites via inline JavaScript snippets and function calls which trigger
+        events that are sent back to the analytics system. AMP provides a flexible JSON configuration syntax to replicate
+        this process for several analytics partners.</p>
+      <p>The following is an example of traditional JavaScript driven Google Analytics tracking which we will rewrite in amp-analytic&#39;s
+        JSON format. Firstly the traditional JavaScript approach:</p>
+      <pre><code>&lt;script&gt;
+(function(i,s,o,g,r,a,m){i[&#39;GoogleAnalyticsObject&#39;]=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,&#39;script&#39;,&#39;//www.google-analytics.com/analytics.js&#39;,&#39;ga&#39;);
+
+ga(&#39;create&#39;, &#39;UA-XXXXX-Y&#39;, &#39;auto&#39;);
+ga(&#39;send&#39;, &#39;pageview&#39;);
+&lt;/script&gt;</code></pre>
+      <p>The above is quite simple, it sends a notification for the pageview event to be tracked.</p>
+      <p>To replicate all of the above in the amp-analytics component, we first include the component library in our document&#39;s
+        &lt;head&gt;:</p>
+      <pre><code>&lt;script async custom-element=&#34;amp-analytics&#34; src=&#34;https://cdn.ampproject.org/v0/amp-analytics-0.1.js&#34;&gt;&lt;/script&gt;</code></pre>
+      <p>And then we include the component as follows:</p>
+      <pre><code>&lt;amp-analytics type=&#34;googleanalytics&#34;&gt;
+&lt;script type=&#34;application/json&#34;&gt;
+{
+  &#34;vars&#34;: {
+    &#34;account&#34;: &#34;UA-YYYY-Y&#34;
+  },
+  &#34;triggers&#34;: {
+    &#34;default pageview&#34;: {
+      &#34;on&#34;: &#34;visible&#34;,
+      &#34;request&#34;: &#34;pageview&#34;,
+      &#34;vars&#34;: {
+        &#34;title&#34;: &#34;Name of the Article&#34;
+      }
+    }
+  }
+}
+&lt;/script&gt;
+&lt;/amp-analytics&gt;</code></pre>
+      <p>It may seem more complicated but it&#39;s actually a very flexible format for describing several different types of
+        events. Additionally, the JSON format does not include the blob of JavaScript code in the traditional example which
+        could potentially lead to mistakes if accidentally altered.</p>
+      <p>In the JSON format the triggers key includes a set of keys which represent all event triggers we will track, the keys
+        of those triggers are descriptions of the event, for example &#34;default pageview&#34; in the above. The title key
+        value relates to the name of the page being viewed.</p>
+      <p>Expanding the above example we can add another trigger &#34;click on #header trigger&#34;:</p>
+      <pre><code>&lt;amp-analytics type=&#34;googleanalytics&#34;&gt;
+&lt;script type=&#34;application/json&#34;&gt;
+{
+  &#34;vars&#34;: {
+    &#34;account&#34;: &#34;UA-YYYY-Y&#34;
+  },
+  &#34;triggers&#34;: {
+    &#34;default pageview&#34;: {
+      &#34;on&#34;: &#34;visible&#34;,
+      &#34;request&#34;: &#34;pageview&#34;,
+      &#34;vars&#34;: {
+        &#34;title&#34;: &#34;Name of the Article&#34;
+      }
+    },
+    &#34;click on #header trigger&#34;: {
+      &#34;on&#34;: &#34;click&#34;,
+      &#34;selector&#34;: &#34;#header&#34;,
+      &#34;request&#34;: &#34;event&#34;,
+      &#34;vars&#34;: {
+        &#34;eventCategory&#34;: &#34;examples&#34;,
+        &#34;eventAction&#34;: &#34;clicked-header&#34;
+      }
+    }
+  }
+}
+&lt;/script&gt;
+&lt;/amp-analytics&gt;</code></pre>
+      <p>This trigger is exactly what it sounds like, by using the DOM selector &#34;#header&#34; we can query for a tag with
+        the id &#34;header&#34; and on the event of it being &#34;clicked&#34; or tapped on the device we send an event action
+        &#34;clicked-header&#34; to the analytics platform with the category label &#34;examples&#34;.</p>
+      <p>If you have a custom tracking platform you wish to integrate with you can still use amp-analytics and define your own
+        personalised URL endpoints for the tracking information. Read more about the
+        <code>amp-analytics</code> component
+        <a href="https://www.ampproject.org/docs/reference/extended/amp-analytics.html" target="_blank">here</a>!</p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: In all of these analytics examples &#34;UA-YYYY-Y&#34; should be replaced with your own website&#39;s
+          Google Analytics tracking code.</p>
+      </aside>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: If you are interested in simpler tracking systems you might want to take a look at amp-pixel. If
+          you only need to track page views it is a lighter weight solution than amp-analytics as it only aims to solve the
+          requirements of traditional pixel tracking. Read more about it
+          <a href="https://www.ampproject.org/docs/reference/amp-pixel.html"
+            target="_blank">here</a>!</p>
+      </aside>
+      <aside class="warning">
+        <p>
+          <strong>Important</strong>: The analytics component is still a work in progress. As the amp-analytics component develops
+          there will be more analytics platforms coming on board and more types of events to track. For the latest information
+          read the
+          <a href="https://www.ampproject.org/docs/reference/extended/amp-analytics.html" target="_blank">reference document</a>.</p>
+      </aside>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Navigating your site" duration="5">
+      <p>A common requirement of mobile websites is the inclusion of a site navigation menu. These menus can take many different
+        forms. Here are a few examples of how navigation can be presented on an AMP document:</p>
+      <ol type="1" start="1">
+        <li>Link back to your home page -- the simplest option.</li>
+        <li>A sub-heading menu via the carousel component.</li>
+      </ol>
+      <h2>Home Page Link</h2>
+      <p>The simplest way to get your users to access your website&#39;s regular navigation options is to just funnel them back
+        to your regular website interface!</p>
+      <p>Try
+        <strong>adding</strong> this HTML link to the &lt;header&gt; tag:</p>
+      <pre><code>&lt;header&gt;
+  &lt;a href=&#34;homepage.html&#34;&gt;
+    &lt;amp-img class=&#34;home-button&#34; src=&#34;icons/home.png&#34; width=&#34;36&#34; height=&#34;36&#34;&gt;&lt;/amp-img&gt;
+  &lt;/a&gt;
+
+  News Site
+&lt;/header&gt;</code></pre>
+      <p>And
+        <strong>add</strong> this rule to your inline CSS:</p>
+      <pre><code>.home-button {
+  float: left;
+}</code></pre>
+      <p>Now
+        <strong>refresh </strong>the page. You should see a link in the top-left corner of the page pointing to
+        <code>homepage.html</code> - if you click this link you&#39;ll quickly discover it doesn&#39;t lead anywhere.</p>
+      <p>
+        <img style="max-width: 359.00px" src="img/53b42d1efc0e0295.png">
+      </p>
+      <p>This link can be replaced with the URL of your website&#39;s homepage to enable your users to navigate to other parts
+        of your site via your regular website&#39;s navigation.</p>
+      <p>As mentioned, this is the simplest approach available -- leveraging your existing website navigation. Next we&#39;ll
+        explore two alternatives.</p>
+      <h2>Sub Heading Menu</h2>
+      <p>Another approach to this problem is to present your site&#39;s navigation menu inside the AMP document. To keep contained
+        to a small section of your page we can use a carousel to present a scrollable menu beneath the site&#39;s header.</p>
+      <p>Since we need the carousel component, be sure to
+        <strong>add</strong> the component&#39;s JavaScript to the
+        <code>&lt;head&gt;</code> tag of your page:</p>
+      <pre><code>&lt;script async custom-element=&#34;amp-carousel&#34; src=&#34;https://cdn.ampproject.org/v0/amp-carousel-0.1.js&#34;&gt;&lt;/script&gt;</code></pre>
+      <p>Try
+        <strong>adding</strong> this HTML snippet just below your
+        <code>&lt;header&gt;</code> tag:</p>
+      <pre><code>...
+&lt;/header&gt;
+&lt;div class=&#34;sub-menu&#34;&gt;
+  &lt;amp-carousel layout=&#34;fixed-height&#34; height=&#34;38&#34; type=&#34;carousel&#34;&gt;
+    &lt;a href=&#34;#example1&#34;&gt;Example 1&lt;/a&gt;
+    &lt;a href=&#34;#example2&#34;&gt;Example 2&lt;/a&gt;
+    &lt;a href=&#34;#example3&#34;&gt;Longer Named Example 3&lt;/a&gt;
+    &lt;a href=&#34;#example4&#34;&gt;Example 4&lt;/a&gt;
+    &lt;a href=&#34;#example5&#34;&gt;Example 5&lt;/a&gt;
+    &lt;a href=&#34;#example6&#34;&gt;Example 6&lt;/a&gt;
+  &lt;/amp-carousel&gt;
+&lt;/div&gt;
+&lt;article&gt;
+...</code></pre>
+      <p>And
+        <strong>add</strong> these rules to your inline CSS:</p>
+      <pre><code>.sub-menu {
+  background: black;
+}
+
+.sub-menu a {
+  display: block;
+  background: tomato;
+  margin: 5px;
+  padding: 5px;
+  color: white;
+  text-decoration: none;
+}</code></pre>
+      <p>Now
+        <strong>refresh </strong>the page. You should see a menu of links appearing below your article title. This menu can be scrolled
+        horizontally to store many navigation links.</p>
+      <p>
+        <img style="max-width: 359.00px" src="img/dd9ae517d0d8e68f.png">
+      </p>
+      <p>This sub-menu navigation is a great way to store lots of links without consuming too much space on your page. </p>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Adding fonts" duration="5">
+      <p>As discussed earlier there are no external stylesheet requests allowed in AMP documents. However, there is one exception
+        to this rule: fonts.</p>
+      <p>Fonts are an important part of the article reading experience for web users and since web browsers fetch font files
+        via external stylesheet requests this exclusion in AMP is necessary.</p>
+      <p>Let&#39;s try
+        <strong>adding</strong> a reference to the Raleway font to the document:</p>
+      <pre><code>&lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;https://fonts.googleapis.com/css?family=Raleway&#34;&gt;</code></pre>
+      <p>Now update your CSS to include a reference to Raleway:</p>
+      <pre><code>body {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  font-family: &#39;Raleway&#39;, sans-serif;
+}</code></pre>
+      <p>
+        <strong>Refresh</strong> your page and check out your page&#39;s new look. Also inspect the validator&#39;s output and you
+        will note that there are no complaints with regard to this external request.</p>
+      <aside class="special">
+        <p>
+          <strong>Note</strong>: Including a font in your document doesn&#39;t require any additional components. Having said that,
+          there is actually a component named amp-font. It isn&#39;t actually used to load web fonts, instead you can use
+          it to detect whether a web font has successfully loaded or not and respond appropriately if necessary.</p>
+        <p>You can use this feature to hide your text until your font is fully loaded so the user doesn&#39;t see the text snap
+          from its temporary font to its true font. In the case that the font then fails you might want to just reveal the
+          temporary font instead. After all, the worst scenario would be if the user didn&#39;t get to read any text! Read
+          more about amp-font
+          <a href="https://www.ampproject.org/docs/reference/extended/amp-font.html" target="_blank">here</a>.</p>
+      </aside>
+
+
+    </google-codelab-step>
+
+    <google-codelab-step label="Congratulations!" duration="1">
+      <p>You&#39;ve finished the Advanced AMP code lab and successfully explored many key components of AMP!</p>
+      <p>Hopefully it&#39;s clear to you how amp-ad and amp-analytics can be used to support all sorts of different ad platforms
+        and analytics vendors. Be sure to explore the full list of AMP components
+        <a href="https://www.ampproject.org/docs/reference/extended.html"
+          target="_blank">available</a>.</p>
+      <p>The following are some additional topics and links you might want to explore to
+        <strong>
+          <em>amplify </em>
+        </strong>your skills even further!</p>
+      <ul>
+        <li>
+          <a href="https://ampbyexample.com/" target="_blank">AMP By Example</a> - An extensive catalog of examples for AMP components and component patterns.</li>
+        <li>
+          <a href="https://dfp-amp-testing-1185.appspot.com/" target="_blank">Double Click Ad Examples</a> - An extensive catalog of amp-ad examples.</li>
+        <li>
+          <a href="https://www.ampproject.org/docs/guides/discovery.html" target="_blank">All about Page Discovery</a>
+        </li>
+        <li>
+          <a href="https://www.ampproject.org/docs/reference/spec.html" target="_blank">Disallowed HTML Tags</a>
+        </li>
+        <li>
+          <a href="https://www.ampproject.org/docs/guides/responsive/style_pages.html#disallowed-styles" target="_blank">Restricted CSS Rules &amp; Animations</a>
+        </li>
+        <li>
+          <a href="https://www.ampproject.org/docs/guides/amp_replacements.html" target="_blank">More on iFrames</a>
+        </li>
+        <li>
+          <a href="https://www.ampproject.org/docs/get_started/about-amp.html#amp-cdn" target="_blank">The AMP CDN</a>
+        </li>
+        <li>
+          <a href="https://www.ampproject.org/docs/reference/extended.html" target="_blank">List of available AMP Components</a>
+        </li>
+      </ul>
+
+      <google-codelab-survey survey-id="polymer-maps-1">
+        <h4>How would rate your experience with Polymer?</h4>
+        <paper-radio-group>
+          <paper-radio-button>Novice</paper-radio-button>
+          <paper-radio-button>Intermediate</paper-radio-button>
+          <paper-radio-button>Advanced</paper-radio-button>
+        </paper-radio-group>
+
+        <h4>How will you use use this tutorial?</h4>
+        <paper-radio-group>
+          <paper-radio-button>I won't</paper-radio-button>
+          <paper-radio-button>Complete it</paper-radio-button>
+        </paper-radio-group>
+      </google-codelab-survey>
+
+
+    </google-codelab-step>
+
+  </google-codelab>
+  <script src="/external/polyfill/src/native-shim.js"></script>
+  <script src="/external/polyfill/custom-elements.min.js"></script>
+  <script src="/external/prettify/src/prettify.js"></script>
+  <script src="/google-codelab-analytics/google_codelab_analytics_bin.js"></script>
+  <script src="/google-codelab-step/google_codelab_step_bin.js"></script>
+  <script src="/google-codelab-survey/google_codelab_survey_bin.js"></script>
+  <script src="/google-codelab/google_codelab_bin.js"></script>
+</body>
+
+</html>
