@@ -61,15 +61,6 @@ new_http_archive(
     url = "https://github.com/webcomponents/custom-elements/archive/v1.0.8.zip",
 )
 
-es6shim_ver = "8d7aec1403751686dbbd3c4fa13a7bb584a75bf3"
-new_http_archive(
-    name = "es6shim",
-    build_file = "third_party/BUILD.es6shim",
-    sha256 = "108e7de0edc041a36561e1518fc5d87569f5cfd5449977658cc9b1e2c84743b3",
-    strip_prefix = "es6-shim-{v}".format(v=es6shim_ver),
-    url = "https://github.com/es-shims/es6-shim/archive/{v}.zip".format(v=es6shim_ver),
-)
-
 git_repository(
     name = "io_bazel_rules_sass",
     remote = "https://github.com/bazelbuild/rules_sass.git",
