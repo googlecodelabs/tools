@@ -37,9 +37,9 @@ $(OUTDIR)/claat2: $(SRCS) VERSION
 
 serve: $(OUTDIR)/claat2
 	mkdir -p $(OUTDIR)/deps
-	cd ../codelab-elements; \
+	cd ../; \
 	    bazel build :bundle; \
-	    mv -f bazel-genfiles/bundle.zip ../claat/$(OUTDIRNAME)/deps
+	    mv -f bazel-genfiles/bundle.zip claat/$(OUTDIRNAME)/deps
 	unzip -o $(OUTDIR)/deps/bundle.zip -d $(OUTDIR)/deps/codelab-elements
 	cd bin; ./claat2 serve
 

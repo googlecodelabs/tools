@@ -4,7 +4,7 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
-load("//tools:defs.bzl",
+load("//codelab-elements/tools:defs.bzl",
      "closure_js_library", "closure_js_binary", "closure_js_test")
 
 

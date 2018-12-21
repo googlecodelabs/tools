@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+genrule(
+    name = "bundle",
+    outs = ["bundle.zip"],
+    srcs = [
+        "LICENSE",
+        "//codelab-elements:README.md",
+        "//codelab-elements:all_files",
+        "@prettify//:prettify",
+        "@polyfill//:custom_elements",
+        "@polyfill//:native_shim",
+    ],
+    cmd = "zip -j $@ $(SRCS)",
+)
