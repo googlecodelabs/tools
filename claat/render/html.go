@@ -214,7 +214,7 @@ func (hw *htmlWriter) button(n *types.ButtonNode) {
 }
 
 func (hw *htmlWriter) code(n *types.CodeNode) {
-	hw.writeString("<pre>")
+	hw.writeString("<pre title>")
 	if !n.Term {
 		hw.writeString("<code")
 		if n.Lang != "" {
