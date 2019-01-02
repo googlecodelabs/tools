@@ -1,0 +1,70 @@
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+load("//codelab-elements/tools:defs.bzl",
+     "closure_js_library", "closure_js_binary", "closure_js_test")
+load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_template_library")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary", "sass_library")
+
+filegroup(
+    name = "google_codelab_files",
+    srcs = glob([
+        "*.html",
+        "img/**",
+    ]) + [
+        ":google_codelab_scss_bin",
+        ":google_codelab_bin",
+    ],
+)
+
+# Codelab step.
+closure_js_library(
+    name = "google_codelab",
+    srcs = [
+        "google_codelab.js",
+        "google_codelab_def.js"
+    ],
+    deps = [
+        "@io_bazel_rules_closure//closure/library",
+        ":google_codelab_soy",
+    ]
+)
+
+# Compiled version of GoogleCodelabStep element, suitable for distribution.
+closure_js_binary(
+    name = "google_codelab_bin",
+    entry_points = ["googlecodelabs.CodelabDef"],
+    deps = [":google_codelab"],
+)
+
+sass_library(
+    name = "google_codelab_scss",
+    srcs = ["google_codelab.scss"],
+)
+
+sass_library(
+    name = "google_codelab_drawer_scss",
+    srcs = ["_drawer.scss"],
+)
+
+sass_library(
+    name = "google_codelab_steps_scss",
+    srcs = ["_steps.scss"],
+)
+
+sass_binary(
+    name = "google_codelab_scss_bin",
+    src = "google_codelab.scss",
+    deps = [
+        ":google_codelab_drawer_scss",
+        ":google_codelab_steps_scss",
+    ]
+)
+
+closure_js_template_library(
+    name = "google_codelab_soy",
+    srcs = ["google_codelab.soy"]
+)

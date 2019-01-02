@@ -1,3 +1,4 @@
+bazel-*
 .DS_Store
 .drone.sec.yml
 .idea/

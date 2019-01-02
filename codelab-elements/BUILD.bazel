@@ -1,0 +1,58 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//codelab-elements/tools:defs.bzl", "concat")
+
+licenses(["notice"])
+
+exports_files(["README.md"])
+
+filegroup(
+    name = "all_files",
+    srcs = [
+        ":codelab_elements_js",
+        ":codelab_elements_css",
+        ":codelab_index_js",
+        ":codelab_index_css",
+    ],
+)
+
+genrule(
+    name = "codelab_elements_js",
+    outs = ["codelab-elements.js"],
+    srcs = [
+        "//codelab-elements/google-codelab-analytics:google_codelab_analytics_bin",
+        "//codelab-elements/google-codelab:google_codelab_bin",
+        "//codelab-elements/google-codelab-step:google_codelab_step_bin",
+        "//codelab-elements/google-codelab-survey:google_codelab_survey_bin",
+    ],
+    cmd = concat("js"),
+)
+
+genrule(
+    name = "codelab_elements_css",
+    outs = ["codelab-elements.css"],
+    srcs = [
+        "//codelab-elements/google-codelab:google_codelab_scss_bin",
+        "//codelab-elements/google-codelab-step:google_codelab_step_scss_bin",
+        "//codelab-elements/google-codelab-survey:google_codelab_survey_scss_bin",
+    ],
+    cmd = concat("css"),
+)
+
+genrule(
+    name = "codelab_index_js",
+    outs = ["codelab-index.js"],
+    srcs = [
+        "//codelab-elements/google-codelab-index:google_codelab_index_bin",
+    ],
+    cmd = concat("js"),
+)
+
+genrule(
+    name = "codelab_index_css",
+    outs = ["codelab-index.css"],
+    srcs = [
+        "//codelab-elements/google-codelab-index:google_codelab_index_scss_bin",
+    ],
+    cmd = concat("css"),
+)

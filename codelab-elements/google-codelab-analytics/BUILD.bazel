@@ -1,0 +1,46 @@
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+load("//codelab-elements/tools:defs.bzl",
+     "closure_js_library", "closure_js_binary", "closure_js_test")
+
+
+filegroup(
+    name = "google_codelab_analytics_files",
+    srcs = [
+      ":google_codelab_analytics_bin",
+    ],
+)
+
+# Codelab Analytics.
+closure_js_library(
+    name = "google_codelab_analytics",
+    srcs = [
+        "google_codelab_analytics.js",
+        "google_codelab_analytics_def.js"
+    ],
+    deps = [
+        "@io_bazel_rules_closure//closure/library",
+    ],
+)
+
+# Codelab Analytics Tests
+closure_js_test(
+    name = "google_codelab_analytics_test",
+    srcs = ["google_codelab_analytics_test.js"],
+    entry_points = ["googlecodelabs.CodelabAnalyticsTest"],
+    deps = [
+      "@io_bazel_rules_closure//closure/library",
+      ":google_codelab_analytics"
+    ],
+)
+
+# Compiled version of GoogleCodelabAnalytics element, suitable for distribution.
+closure_js_binary(
+    name = "google_codelab_analytics_bin",
+    entry_points = ["googlecodelabs.CodelabAnalyticsDef"],
+    deps = [":google_codelab_analytics"],
+)

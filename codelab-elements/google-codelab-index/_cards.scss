@@ -1,0 +1,153 @@
+/**
+ * @license
+ * Copyright 2018 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+google-codelab-index-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0 0 24px 0;
+}
+
+google-codelab-index-cards[num="1"],
+google-codelab-index-cards[num="2"] {
+  justify-content: flex-start;
+}
+
+google-codelab-index-cards .card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 330px;
+  margin: 0 0 16px 0;
+  background-color: #fff;
+  max-width: 330px;
+  flex-basis: 330px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+google-codelab-index-cards[num="1"] .card,
+google-codelab-index-cards[num="2"] .card {
+  margin-right: 8px;
+}
+
+google-codelab-index-cards .card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+}
+
+google-codelab-index-cards .card-header .category-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  background-size: 70%;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+
+google-codelab-index-cards .card-header .card-duration {
+  display: flex;
+  align-items: center;
+  color: #FFFFFF;
+}
+
+google-codelab-index-cards .card-header .card-duration img {
+  margin-right: 4px;
+}
+
+google-codelab-index-cards .card .card-description {
+  padding: 16px 32px;
+  flex: 1 0 auto;
+  color: #3C4043
+}
+
+google-codelab-index-cards .card .card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #DADCE0;
+  padding: 8px 16px;
+}
+
+google-codelab-index-cards .card .card-start {
+  color: #5c5c5c;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  min-width: 5.14em;
+  margin: 0 0.29em;
+  font: inherit;
+  text-transform: uppercase;
+  outline-width: 0;
+  border-radius: 3px;
+  user-select: none;
+  cursor: pointer;
+  z-index: 0;
+  padding: 0.7em 0.57em;
+  font-family: 'Roboto', 'Noto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+google-codelab-index-cards .card .card-updated {
+  font-size: 12px;
+  color: #9AA0A6;
+  line-height: 16px;
+  text-align: right;
+}
+
+@import "categories";
+
+@media (min-width: 768px) {
+  google-codelab-index-cards .card {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 1136px) and (min-width: 767px) {
+  google-codelab-index-cards .card {
+      flex: 0 0 33%;
+      margin: 0 0% 2% 0;
+      min-height: 200px;
+  }
+}
+
+@media (max-width: 767px) {
+  google-codelab-index-cards {
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+  }
+
+  google-codelab-index-cards .card {
+      margin: 0 0 16px;
+      min-width: 330px;
+      max-width: 100%;
+      width: 100%;
+      flex: 1 0 200px;
+  }
+  google-codelab-index-cards[num="1"] .card,
+  google-codelab-index-cards[num="2"] .card {
+    margin-right: 0;
+  }
+}
