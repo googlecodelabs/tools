@@ -181,7 +181,7 @@ class CodelabStep extends HTMLElement {
   handleSnippetCopy_(el) {
     const event = new CustomEvent(CODELAB_ACTION_EVENT, {
       detail: {
-        'category': 'codelab',
+        'category': 'snippet',
         'action': 'copy',
         'label': el.textContent.substring(0, 500)
       }
