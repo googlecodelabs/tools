@@ -1,15 +1,25 @@
 sudo: false
+dist: trusty
 git:
   depth: 3
 language: go
 go:
 - 1.9.x  # need for App Engine
 - 1.11.x # latest release because "master" is dev version
+env:
+- BAZEL=0.19.1
+before_install:
+- |
+  wget -O install.sh "https://github.com/bazelbuild/bazel/releases/download/${BAZEL}/bazel-${BAZEL}-installer-linux-x86_64.sh"
+  chmod +x install.sh
+  ./install.sh --user
+  rm -f install.sh
 install:
 - go get github.com/golang/lint/golint
 - go get -t -d ./claat/...
 script:
 - make -C claat test lint
+- bash codelab-elements/tools/ci-presubmit.sh
 
 before_deploy:
 - make -C claat release -j
