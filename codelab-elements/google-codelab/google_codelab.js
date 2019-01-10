@@ -732,7 +732,7 @@ class Codelab extends HTMLElement {
   firePageLoadEvents_() {
     this.fireEvent_(CODELAB_PAGEVIEW_EVENT, {
       'page': location.pathname + '#' + this.currentSelectedStep_,
-      'title': this.title_
+      'title': this.steps_[this.currentSelectedStep_].getAttribute(LABEL_ATTR)
     });
 
     window.requestAnimationFrame(() => {
