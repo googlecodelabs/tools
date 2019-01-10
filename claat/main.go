@@ -88,6 +88,7 @@ func main() {
 			GlobalGA:  *globalGA,
 			Output:    *output,
 			Prefix:    *prefix,
+			Srcs:      flag.Args(),
 			Tmplout:   *tmplout,
 		})
 	case "serve":

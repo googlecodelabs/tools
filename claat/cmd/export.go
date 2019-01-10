@@ -42,6 +42,8 @@ type CmdExportOptions struct {
 	Output string
 	// Prefix is a URL prefix to prepend when using HTML format.
 	Prefix string
+	// Srcs is the sources to export codelabs from.
+	Srcs []string
 	// Tmplout is the output format.
 	Tmplout string
 }
@@ -58,15 +60,15 @@ func CmdExport(opts CmdExportOptions) int {
 		meta *types.Meta
 		err  error
 	}
-	args := unique(flag.Args())
-	ch := make(chan *result, len(args))
-	for _, src := range args {
+	srcs := unique(opts.Srcs)
+	ch := make(chan *result, len(srcs))
+	for _, src := range srcs {
 		go func(src string) {
 			meta, err := exportCodelab(src, opts)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
-	for range args {
+	for range srcs {
 		res := <-ch
 		if res.err != nil {
 			exitCode = 1
