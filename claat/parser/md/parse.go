@@ -590,6 +590,15 @@ func code(ds *docState, term bool) types.Node {
 		v = "\n" + v
 	}
 	n := types.NewCodeNode(v, term)
+	for _, attr := range ds.cur.Attr {
+		if attr.Key == "class" {
+			for _, class := range strings.Split(attr.Val, " ") {
+				if strings.HasPrefix(class, "language-") {
+					n.Lang = class
+				}
+			}
+		}
+	}
 	n.MutateBlock(elem)
 	return n
 }
