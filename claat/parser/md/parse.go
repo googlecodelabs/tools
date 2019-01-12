@@ -597,6 +597,7 @@ func code(ds *docState, term bool) types.Node {
 					n.Lang = class
 				}
 			}
+			break
 		}
 	}
 	n.MutateBlock(elem)
