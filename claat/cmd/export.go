@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -52,7 +51,7 @@ type CmdExportOptions struct {
 // It returns a process exit code.
 func CmdExport(opts CmdExportOptions) int {
 	var exitCode int
-	if flag.NArg() == 0 {
+	if len(opts.Srcs) == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
 	type result struct {
