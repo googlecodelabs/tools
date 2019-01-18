@@ -25,6 +25,7 @@ import (
 
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
 // Options type to make the CmdExport signature succinct.
@@ -59,7 +60,7 @@ func CmdExport(opts CmdExportOptions) int {
 		meta *types.Meta
 		err  error
 	}
-	srcs := unique(opts.Srcs)
+	srcs := util.Unique(opts.Srcs)
 	ch := make(chan *result, len(srcs))
 	for _, src := range srcs {
 		go func(src string) {
@@ -312,18 +313,4 @@ func writeMeta(path string, cm *types.ContextMeta) error {
 // The base argument is codelab parent directory.
 func codelabDir(base string, m *types.Meta) string {
 	return filepath.Join(base, m.ID)
-}
-
-// unique de-dupes a.
-// The argument a is not modified.
-func unique(a []string) []string {
-	seen := make(map[string]struct{}, len(a))
-	res := make([]string, 0, len(a))
-	for _, s := range a {
-		if _, y := seen[s]; !y {
-			res = append(res, s)
-			seen[s] = struct{}{}
-		}
-	}
-	return res
 }
