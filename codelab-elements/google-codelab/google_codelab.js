@@ -486,7 +486,7 @@ class Codelab extends HTMLElement {
     }
 
     const targetUrl = new URL(target.getAttribute('href'));
-    // Substring bexcause the hash property includes the "#".
+    // Substring because the hash property includes the "#".
     const selected = targetUrl.hash.substring(1);
     this.setAttribute(SELECTED_ATTR, selected);
   }
