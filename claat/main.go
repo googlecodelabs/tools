@@ -64,7 +64,7 @@ func main() {
 
 	useElems, err := strconv.ParseBool(useElements)
 	if err != nil {
-		os.Exit(1)
+		useElems = false
 	}
 	if useElems && *tmplout == "html"{
 		*tmplout = "htmlElements"
