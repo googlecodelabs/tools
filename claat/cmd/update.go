@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
 // Options type to make the CmdUpdate signature succinct.
@@ -179,7 +180,7 @@ func scanPaths(roots []string) ([]string, error) {
 		}
 		dirs = append(dirs, res.dirs...)
 	}
-	return unique(dirs), nil
+	return util.Unique(dirs), nil
 }
 
 // walkPath walks root dir recursively, looking for metaFilename files.
