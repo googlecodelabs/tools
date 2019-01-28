@@ -57,7 +57,7 @@ tests on.
 
 Check out a demo HelloElement target. To build the element, execute the following:
 
-    bazel build //demo:hello_bin
+    bazel build //codelab-elements/demo:hello_bin
 
 It should output something like this:
 
@@ -91,7 +91,7 @@ with debug enabled:
 
 To browse things around manually with a real browser, execute the following:
 
-    bazel run //tools:server
+    bazel run //codelab-elements/tools:server
 
 and navigate to http://localhost:8080.
 
