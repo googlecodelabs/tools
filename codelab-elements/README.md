@@ -46,7 +46,7 @@ All you need is [bazel](https://docs.bazel.build/versions/master/install.html).
 
 After bazel is installed, try executing the following:
 
-    bazel test --test_output=all //demo:hello_test
+    bazel test --test_output=all //codelab-elements/demo:hello_test
 
 It will take some time at the first run because bazel will download and compile
 all dependencies needed to work with the code and run tests. This includes
@@ -74,18 +74,18 @@ It should output something like this:
 All elements should have their test targets.
 As a starting point, check out HelloElement tests:
 
-    bazel test --test_output=errors //demo:hello_test
+    bazel test --test_output=errors //codelab-elements/demo:hello_test
 
 You should see something like this:
 
     INFO: Elapsed time: 5.394s, Critical Path: 4.60s
     INFO: Build completed successfully, 2 total actions
-    //demo:hello_test_chromium-local                      PASSED in 4.6s
+    //codelab-elements/demo:hello_test_chromium-local                      PASSED in 4.6s
 
 When things go wrong, it is usually easier to inspect and analyze output
 with debug enabled:
 
-    bazel test -s --verbose_failures --test_output=all --test_arg=-debug demo/hello_test
+    bazel test -s --verbose_failures --test_output=all --test_arg=-debug codelab-elements/demo/hello_test
 
 ### Manual inspection from a browser
 
