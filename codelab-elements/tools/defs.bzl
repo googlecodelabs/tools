@@ -75,7 +75,7 @@ gen_test_html = rule(
   implementation=_gen_test_html_impl,
   attrs={
         "test_file_js": attr.string(mandatory=True),
-        "_template": attr.label(default=Label("//tools:gen_test_html.template"),
+        "_template": attr.label(default=Label("//codelab-elements/tools:gen_test_html.template"),
                                 allow_files=True, single_file=True),
   },
   outputs={"html_file": "%{name}.html"},
@@ -169,7 +169,7 @@ def js_test(name,
   web_test_suite(
       name = name,
       data = [":%s_bin" % name, html],
-      test = "//tools:webtest",
+      test = "//codelab-elements/tools:webtest",
       args = ["--test_url", "$(location %s)" % html],
       browsers = browsers,
       visibility = visibility,
