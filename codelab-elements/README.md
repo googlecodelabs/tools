@@ -44,6 +44,8 @@ from https://github.com/googlecodelabs/codelab-elements.
 
 All you need is [bazel](https://docs.bazel.build/versions/master/install.html).
 
+**Currently, the build process requires bazel version 0.18.1.**
+
 After bazel is installed, try executing the following:
 
     bazel test --test_output=all //codelab-elements/demo:hello_test
