@@ -47,7 +47,7 @@ var (
 	extra     = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
 	globalGA  = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
 	output    = flag.String("o", ".", "output directory or '-' for stdout")
-	prefix    = flag.String("prefix", "../../", "URL prefix for html format")
+	prefix    = flag.String("prefix", "https://storage.googleapis.com", "URL prefix for html format")
 	tmplout   = flag.String("f", "html", "output format")
 )
 
