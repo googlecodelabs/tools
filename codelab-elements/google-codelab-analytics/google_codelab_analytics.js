@@ -294,7 +294,7 @@ class CodelabAnalytics extends HTMLElement {
     /** @type {!HTMLScriptElement} */
     const resource = /** @type {!HTMLScriptElement} */ (
         document.createElement('script'));
-    resource.src = '//www.google-analytics.com/analytics.js';
+    resource.src = 'https://www.google-analytics.com/analytics.js';
     resource.async = false;
     return new Promise((resolve, reject) => {
       resource.onload = () => resolve(resource);
