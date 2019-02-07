@@ -97,6 +97,64 @@ To browse things around manually with a real browser, execute the following:
 
 and navigate to http://localhost:8080.
 
+# Deploying the built artifacts to a CDN
+
+We now store the built artifacts in a world-readable Google Cloud Storage bucket (gs://codelab-elements). The list of artifacts we need to serve from this bucket are as follows:
+
+- codelab-elements.css
+- native-shim.js
+- custom-elements.min.js
+- prettify.js
+- codelab-elements.js
+
+The manual process for deploying these artifacts is as follows:
+
+```
+cd googlecodelabs/tools # start at repo level
+bazel build //... # build everything
+mkdir pkg
+cd pkg
+unzip ../bazel-genfiles/bundle.zip
+export SRC="codelab-elements.css native-shim.js custom-elements.min.js prettify.js codelab-elements.js codelab-index.css codelab-index.js"
+gsutil -m cp -a public-read $SRC  gs://codelab-elements
+```
+Then you need to include these artifacts using their full path, which is:
+
+`https://storage.googleapis.com/codelab-elements/FILE`
+
+where 'FILE' is replaced by one of the source files defined in the SRC variable above.
+
+Here's an index.html obtaining the codelab-elements from Google Cloud Storage:
+
+```
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0,initial-scale=1.0, user-scalable=yes">
+  <title>A codelab demo</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-123"></google-codelab-analytics>
+  <google-codelab codelab-gaid="UA-345" id="codelab-demo" title="A codelab demo">
+    <google-codelab-step label="Overview" duration="1">
+      Contents of the first step.
+    </google-codelab-step>
+    <google-codelab-step label="Second" duration="10">
+      Contents of the second step.
+    </google-codelab-step>
+  </google-codelab>
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+</body>
+</html>
+```
+
 ## Notes
 
 This is not an official Google product.
