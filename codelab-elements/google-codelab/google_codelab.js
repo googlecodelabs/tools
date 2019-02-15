@@ -485,7 +485,8 @@ class Codelab extends HTMLElement {
       return;
     }
 
-    const selected = new URL(target.getAttribute('href')).hash.substring(1);
+    const selected = new URL(target.getAttribute('href'), document.location.origin)
+        .hash.substring(1);
 
     this.setAttribute(SELECTED_ATTR, selected);
   }
