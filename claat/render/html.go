@@ -12,328 +12,305 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package render
+package cmd
 
 import (
-	"bytes"
+	"encoding/json"
 	"fmt"
-	htmlTemplate "html/template"
-	"io"
-	"sort"
-	"strconv"
-	"strings"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 
+	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
-// TODO: render HTML using golang/x/net/html or template.
+// Options type to make the CmdExport signature succinct.
+type CmdExportOptions struct {
+	// AuthToken is the token to use for the Drive API.
+	AuthToken string
+	// Expenv is the codelab environment to export to.
+	Expenv string
+	// ExtraVars is extra template variables.
+	ExtraVars map[string]string
+	// GlobalGA is the global Google Analytics account to use.
+	GlobalGA string
+	// Output is the output directory, or "-" for stdout.
+	Output string
+	// Prefix is a URL prefix to prepend when using HTML format.
+	Prefix string
+	// Srcs is the sources to export codelabs from.
+	Srcs []string
+	// Tmplout is the output format.
+	Tmplout string
+}
 
-var (
-	doubleQuote = []byte{'"'}
-	lessThan    = []byte{'<'}
-	greaterThan = []byte{'>'}
-	newLine     = []byte{'\n'}
-)
-
-// HTML renders nodes as the markup for the target env.
-func HTML(env string, nodes ...types.Node) (htmlTemplate.HTML, error) {
-	var buf bytes.Buffer
-	if err := WriteHTML(&buf, env, nodes...); err != nil {
-		return "", err
+// CmdExport is the "claat export ..." subcommand.
+// It returns a process exit code.
+func CmdExport(opts CmdExportOptions) int {
+	var exitCode int
+	if len(opts.Srcs) == 0 {
+		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
-	return htmlTemplate.HTML(buf.String()), nil
-}
-
-// WriteHTML does the same as HTML but outputs rendered markup to w.
-func WriteHTML(w io.Writer, env string, nodes ...types.Node) error {
-	hw := htmlWriter{w: w, env: env}
-	return hw.write(nodes...)
-}
-
-type htmlWriter struct {
-	w   io.Writer // output writer
-	env string    // target environment
-	err error     // error during any writeXxx methods
-}
-
-func (hw *htmlWriter) matchEnv(v []string) bool {
-	if len(v) == 0 || hw.env == "" {
-		return true
+	type result struct {
+		src  string
+		meta *types.Meta
+		err  error
 	}
-	i := sort.SearchStrings(v, hw.env)
-	return i < len(v) && v[i] == hw.env
-}
-
-func (hw *htmlWriter) write(nodes ...types.Node) error {
-	for _, n := range nodes {
-		if !hw.matchEnv(n.Env()) {
-			continue
+	srcs := util.Unique(opts.Srcs)
+	ch := make(chan *result, len(srcs))
+	for _, src := range srcs {
+		go func(src string) {
+			meta, err := exportCodelab(src, opts)
+			ch <- &result{src, meta, err}
+		}(src)
+	}
+	for range srcs {
+		res := <-ch
+		if res.err != nil {
+			exitCode = 1
+			log.Printf(reportErr, res.src, res.err)
+		} else if !isStdout(opts.Output) {
+			log.Printf(reportOk, res.meta.ID)
 		}
-		switch n := n.(type) {
-		case *types.TextNode:
-			hw.text(n)
-		case *types.ImageNode:
-			hw.image(n)
-		case *types.URLNode:
-			hw.url(n)
-		case *types.ButtonNode:
-			hw.button(n)
-		case *types.CodeNode:
-			hw.code(n)
-			hw.writeBytes(newLine)
-		case *types.ListNode:
-			hw.list(n)
-			hw.writeBytes(newLine)
-		case *types.ImportNode:
-			if len(n.Content.Nodes) == 0 {
-				break
+	}
+	return exitCode
+}
+
+// exportCodelab fetches codelab src from either local disk or remote,
+// parses and stores the results on disk, in a dir ancestored by output.
+//
+// Stored results include codelab content formatted in tmplout, its assets
+// and metadata in JSON format.
+//
+// There's a special case where basedir has a value of "-", in which
+// nothing is stored on disk and the only output, codelab formatted content,
+// is printed to stdout.
+func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
+	clab, err := slurpCodelab(src, opts.AuthToken)
+	if err != nil {
+		return nil, err
+	}
+	var client *http.Client // need for downloadImages
+	if clab.typ == srcGoogleDoc {
+		client, err = driveClient(opts.AuthToken)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// codelab export context
+	lastmod := types.ContextTime(clab.mod)
+	meta := &clab.Meta
+	ctx := &types.Context{
+		Source:  src,
+		Env:     opts.Expenv,
+		Format:  opts.Tmplout,
+		Prefix:  opts.Prefix,
+		MainGA:  opts.GlobalGA,
+		Updated: &lastmod,
+	}
+
+	dir := opts.Output // output dir or stdout
+	if !isStdout(dir) {
+		dir = codelabDir(dir, meta)
+		// download or copy codelab assets to disk, and rewrite image URLs
+		mdir := filepath.Join(dir, imgDirname)
+		if _, err := slurpImages(client, src, mdir, clab.Steps); err != nil {
+			return nil, err
+		}
+	}
+	// write codelab and its metadata to disk
+	return meta, writeCodelab(dir, clab.Codelab, opts.ExtraVars, ctx)
+}
+
+// writeCodelab stores codelab main content in ctx.Format and its metadata
+// in JSON format on disk.
+// extraVars is extra variables to pass into the template context.
+func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, ctx *types.Context) error {
+	// output to stdout does not include metadata
+	if !isStdout(dir) {
+		// make sure codelab dir exists
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return err
+		}
+		// codelab metadata
+		cm := &types.ContextMeta{Context: *ctx, Meta: clab.Meta}
+		f := filepath.Join(dir, metaFilename)
+		if err := writeMeta(f, cm); err != nil {
+			return err
+		}
+	}
+
+	// main content file(s)
+	data := &struct {
+		render.Context
+		Current *types.Step
+		StepNum int
+		Prev    bool
+		Next    bool
+	}{Context: render.Context{
+		Env:      ctx.Env,
+		Prefix:   ctx.Prefix,
+		GlobalGA: ctx.MainGA,
+		Meta:     &clab.Meta,
+		Steps:    clab.Steps,
+		Extra:    extraVars,
+	}}
+	if ctx.Format != "offline" {
+		w := os.Stdout
+		if !isStdout(dir) {
+			ext := ctx.Format
+			if ext != "md" {
+				ext = "html"
 			}
-			hw.list(n.Content)
-			hw.writeBytes(newLine)
-		case *types.ItemsListNode:
-			hw.itemsList(n)
-			hw.writeBytes(newLine)
-		case *types.GridNode:
-			hw.grid(n)
-			hw.writeBytes(newLine)
-		case *types.InfoboxNode:
-			hw.infobox(n)
-			hw.writeBytes(newLine)
-		case *types.SurveyNode:
-			hw.survey(n)
-			hw.writeBytes(newLine)
-		case *types.HeaderNode:
-			hw.header(n)
-			hw.writeBytes(newLine)
-		case *types.YouTubeNode:
-			hw.youtube(n)
-			hw.writeBytes(newLine)
+			f, err := os.Create(filepath.Join(dir, "index."+ext))
+			if err != nil {
+				return err
+			}
+			w = f
+			defer f.Close()
 		}
-		if hw.err != nil {
-			return hw.err
+		return render.Execute(w, ctx.Format, data)
+	}
+	for i, step := range clab.Steps {
+		data.Current = step
+		data.StepNum = i + 1
+		data.Prev = i > 0
+		data.Next = i < len(clab.Steps)-1
+		w := os.Stdout
+		if !isStdout(dir) {
+			name := "index.html"
+			if i > 0 {
+				name = fmt.Sprintf("step-%d.html", i+1)
+			}
+			f, err := os.Create(filepath.Join(dir, name))
+			if err != nil {
+				return err
+			}
+			w = f
+			defer f.Close()
+		}
+		if err := render.Execute(w, ctx.Format, data); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func (hw *htmlWriter) writeBytes(b []byte) {
-	if hw.err != nil {
-		return
+func slurpImages(client *http.Client, src, dir string, steps []*types.Step) (map[string]string, error) {
+	// make sure img dir exists
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return nil, err
 	}
-	_, hw.err = hw.w.Write(b)
-}
 
-func (hw *htmlWriter) writeString(s string) {
-	hw.writeBytes([]byte(s))
-}
+	type res struct {
+		url, file string
+		err       error
+	}
 
-func (hw *htmlWriter) writeFmt(f string, a ...interface{}) {
-	hw.writeString(fmt.Sprintf(f, a...))
-}
-
-func (hw *htmlWriter) writeEscape(s string) {
-	htmlTemplate.HTMLEscape(hw.w, []byte(s))
-}
-
-func (hw *htmlWriter) text(n *types.TextNode) {
-	if n.Bold {
-		hw.writeString("<strong>")
-	}
-	if n.Italic {
-		hw.writeString("<em>")
-	}
-	if n.Code {
-		hw.writeString("<code>")
-	}
-	s := htmlTemplate.HTMLEscapeString(n.Value)
-	hw.writeString(strings.Replace(s, "\n", "<br>", -1))
-	if n.Code {
-		hw.writeString("</code>")
-	}
-	if n.Italic {
-		hw.writeString("</em>")
-	}
-	if n.Bold {
-		hw.writeString("</strong>")
-	}
-}
-
-func (hw *htmlWriter) image(n *types.ImageNode) {
-	hw.writeString("<img")
-	if n.Alt != "" {
-		hw.writeFmt(" alt=%q", n.Alt)
-	}
-	if n.Title != "" {
-		hw.writeFmt(" title=%q", n.Title)
-	}
-	if n.MaxWidth > 0 {
-		hw.writeFmt(` style="max-width: %.2fpx"`, n.MaxWidth)
-	}
-	hw.writeString(` src="`)
-	hw.writeString(n.Src)
-	hw.writeBytes(doubleQuote)
-	hw.writeBytes(greaterThan)
-}
-
-func (hw *htmlWriter) url(n *types.URLNode) {
-	hw.writeString("<a")
-	if n.URL != "" {
-		hw.writeString(` href="`)
-		hw.writeString(n.URL)
-		hw.writeBytes(doubleQuote)
-	}
-	if n.Name != "" {
-		hw.writeString(` name="`)
-		hw.writeEscape(n.Name)
-		hw.writeBytes(doubleQuote)
-	}
-	if n.Target != "" {
-		hw.writeString(` target="`)
-		hw.writeEscape(n.Target)
-		hw.writeBytes(doubleQuote)
-	}
-	hw.writeBytes(greaterThan)
-	hw.write(n.Content.Nodes...)
-	hw.writeString("</a>")
-}
-
-func (hw *htmlWriter) button(n *types.ButtonNode) {
-	hw.writeString("<paper-button")
-	if n.Colored {
-		hw.writeString(` class="colored"`)
-	}
-	if n.Raised {
-		hw.writeString(" raised")
-	}
-	hw.writeBytes(greaterThan)
-	if n.Download {
-		hw.writeString(`<iron-icon icon="file-download"></iron-icon>`)
-	}
-	hw.write(n.Content.Nodes...)
-	hw.writeString("</paper-button>")
-}
-
-func (hw *htmlWriter) code(n *types.CodeNode) {
-	hw.writeString("<pre>")
-	if !n.Term {
-		hw.writeString("<code")
-		if n.Lang != "" {
-			hw.writeFmt(" language=%q class=%q", n.Lang, n.Lang)
-		}
-		hw.writeBytes(greaterThan)
-	}
-	hw.writeEscape(n.Value)
-	if !n.Term {
-		hw.writeString("</code>")
-	}
-	hw.writeString("</pre>")
-}
-
-func (hw *htmlWriter) list(n *types.ListNode) {
-	wrap := n.Block() == true
-	if wrap {
-		hw.writeString("<p>")
-	}
-	hw.write(n.Nodes...)
-	if wrap {
-		hw.writeString("</p>")
-	}
-}
-
-func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
-	tag := "ul"
-	if n.Type() == types.NodeItemsList && (n.Start > 0 || n.ListType != "") {
-		tag = "ol"
-	}
-	hw.writeBytes(lessThan)
-	hw.writeString(tag)
-	switch n.Type() {
-	case types.NodeItemsCheck:
-		hw.writeString(` class="checklist"`)
-	case types.NodeItemsFAQ:
-		hw.writeString(` class="faq"`)
-	default:
-		if n.ListType != "" {
-			hw.writeString(` type="`)
-			hw.writeString(n.ListType)
-			hw.writeBytes(doubleQuote)
-		}
-		if n.Start > 0 {
-			hw.writeFmt(` start="%d"`, n.Start)
+	ch := make(chan *res, 100)
+	defer close(ch)
+	var count int
+	for _, st := range steps {
+		nodes := imageNodes(st.Content.Nodes)
+		count += len(nodes)
+		for _, n := range nodes {
+			go func(n *types.ImageNode) {
+				url := n.Src
+				file, err := slurpBytes(client, src, dir, url)
+				if err == nil {
+					n.Src = filepath.Join(imgDirname, file)
+				}
+				ch <- &res{url, file, err}
+			}(n)
 		}
 	}
-	hw.writeBytes(greaterThan)
-	hw.writeBytes(newLine)
 
-	for _, i := range n.Items {
-		hw.writeString("<li>")
-		hw.write(i.Nodes...)
-		hw.writeString("</li>\n")
-	}
-
-	hw.writeString("</")
-	hw.writeString(tag)
-	hw.writeBytes(greaterThan)
-}
-
-func (hw *htmlWriter) grid(n *types.GridNode) {
-	hw.writeString("<table>\n")
-	for _, r := range n.Rows {
-		hw.writeString("<tr>")
-		for _, c := range r {
-			hw.writeFmt(`<td colspan="%d" rowspan="%d">`, c.Colspan, c.Rowspan)
-			hw.write(c.Content.Nodes...)
-			hw.writeString("</td>")
+	var err error
+	imap := make(map[string]string, count)
+	for i := 0; i < count; i++ {
+		r := <-ch
+		imap[r.file] = r.url
+		if r.err != nil && err == nil {
+			// record first error
+			err = fmt.Errorf("%s => %s: %v", r.url, r.file, r.err)
 		}
-		hw.writeString("</tr>\n")
 	}
-	hw.writeString("</table>")
+
+	return imap, err
 }
 
-func (hw *htmlWriter) infobox(n *types.InfoboxNode) {
-	hw.writeString(`<aside class="`)
-	hw.writeEscape(string(n.Kind))
-	hw.writeString(`">`)
-	hw.write(n.Content.Nodes...)
-	hw.writeString("</aside>")
-}
-
-func (hw *htmlWriter) survey(n *types.SurveyNode) {
-	hw.writeString(`<google-codelab-survey survey-id="`)
-	hw.writeString(n.ID)
-	hw.writeBytes(doubleQuote)
-	hw.writeString(">\n")
-	for _, g := range n.Groups {
-		hw.writeString("<h4>")
-		hw.writeEscape(g.Name)
-		hw.writeString("</h4>\n<paper-radio-group>\n")
-		for _, o := range g.Options {
-			hw.writeString("<paper-radio-button>")
-			hw.writeEscape(o)
-			hw.writeString("</paper-radio-button>\n")
+// imageNodes filters out everything except types.NodeImage nodes, recursively.
+func imageNodes(nodes []types.Node) []*types.ImageNode {
+	var imgs []*types.ImageNode
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *types.ImageNode:
+			imgs = append(imgs, n)
+		case *types.ListNode:
+			imgs = append(imgs, imageNodes(n.Nodes)...)
+		case *types.ItemsListNode:
+			for _, i := range n.Items {
+				imgs = append(imgs, imageNodes(i.Nodes)...)
+			}
+		case *types.HeaderNode:
+			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
+		case *types.URLNode:
+			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
+		case *types.ButtonNode:
+			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
+		case *types.InfoboxNode:
+			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
+		case *types.GridNode:
+			for _, r := range n.Rows {
+				for _, c := range r {
+					imgs = append(imgs, imageNodes(c.Content.Nodes)...)
+				}
+			}
 		}
-		hw.writeString("</paper-radio-group>\n")
 	}
-	hw.writeString("</google-codelab-survey>")
+	return imgs
 }
 
-func (hw *htmlWriter) header(n *types.HeaderNode) {
-	tag := "h" + strconv.Itoa(n.Level)
-	hw.writeBytes(lessThan)
-	hw.writeString(tag)
-	switch n.Type() {
-	case types.NodeHeaderCheck:
-		hw.writeString(` class="checklist"`)
-	case types.NodeHeaderFAQ:
-		hw.writeString(` class="faq"`)
+// importNodes filters out everything except types.NodeImport nodes, recursively.
+func importNodes(nodes []types.Node) []*types.ImportNode {
+	var imps []*types.ImportNode
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *types.ImportNode:
+			imps = append(imps, n)
+		case *types.ListNode:
+			imps = append(imps, importNodes(n.Nodes)...)
+		case *types.InfoboxNode:
+			imps = append(imps, importNodes(n.Content.Nodes)...)
+		case *types.GridNode:
+			for _, r := range n.Rows {
+				for _, c := range r {
+					imps = append(imps, importNodes(c.Content.Nodes)...)
+				}
+			}
+		}
 	}
-	hw.writeBytes(greaterThan)
-	hw.write(n.Content.Nodes...)
-	hw.writeString("</")
-	hw.writeString(tag)
-	hw.writeBytes(greaterThan)
+	return imps
 }
 
-func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
-	hw.writeFmt("<google-youtube fluid video-id=%q></google-youtube>", n.VideoID)
+// writeMeta writes codelab metadata to a local disk location
+// specified by path.
+func writeMeta(path string, cm *types.ContextMeta) error {
+	b, err := json.MarshalIndent(cm, "", "  ")
+	if err != nil {
+		return err
+	}
+	b = append(b, '\n')
+	return ioutil.WriteFile(path, b, 0644)
+}
+
+// codelabDir returns codelab root directory.
+// The base argument is codelab parent directory.
+func codelabDir(base string, m *types.Meta) string {
+	return filepath.Join(base, m.ID)
 }
