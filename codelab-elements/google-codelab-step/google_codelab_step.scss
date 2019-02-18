@@ -214,9 +214,11 @@ google-codelab-step .instructions paper-button.red {
 }
 
 google-codelab-step .instructions iron-icon {
-  padding-right: 8px;
   max-height: 16px;
   max-width: 16px;
+  margin-top: 4px;
+  margin-right: 7px;
+  font-size: 16px;
 }
 
 google-codelab-step .instructions img {
