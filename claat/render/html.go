@@ -50,6 +50,11 @@ func WriteHTML(w io.Writer, env string, nodes ...types.Node) error {
 	return hw.write(nodes...)
 }
 
+// ReplaceDoubleCurlyBracketsWithEntity replaces Double Curly Brackets with their charater entity.
+func ReplaceDoubleCurlyBracketsWithEntity(s string) string {
+	return strings.Replace(s, "{{", "&#123;&#123;", -1)
+}
+
 type htmlWriter struct {
 	w   io.Writer // output writer
 	env string    // target environment
@@ -132,7 +137,8 @@ func (hw *htmlWriter) writeFmt(f string, a ...interface{}) {
 }
 
 func (hw *htmlWriter) writeEscape(s string) {
-	htmlTemplate.HTMLEscape(hw.w, []byte(s))
+	s = htmlTemplate.HTMLEscapeString(s)
+	hw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
 }
 
 func (hw *htmlWriter) text(n *types.TextNode) {
@@ -146,6 +152,7 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 		hw.writeString("<code>")
 	}
 	s := htmlTemplate.HTMLEscapeString(n.Value)
+	s = ReplaceDoubleCurlyBracketsWithEntity(s)
 	hw.writeString(strings.Replace(s, "\n", "<br>", -1))
 	if n.Code {
 		hw.writeString("</code>")
