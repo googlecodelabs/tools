@@ -21,41 +21,41 @@ const EventHandler = goog.require('goog.events.EventHandler');
 
 /**
  * The general codelab action event fired for trackable interactions.
- * @const string
+ * @type {string}
  */
 const ACTION_EVENT = 'google-codelab-action';
 
 /**
  * The general codelab pageview event fired for trackable pageviews.
- * @const string
+ * @type {string}
  */
 const PAGEVIEW_EVENT = 'google-codelab-pageview';
 
 /**
  * The Google Analytics ID. Analytics CE will not complete initialization
  * without a valid Analytics ID value set for this.
- * @const {string}
+ * @type {string}
  */
 const GAID_ATTR = 'gaid';
 
 /**
  * The GAID defined by the current codelab.
- * @const {string}
+ * @type {string}
  */
 const CODELAB_GAID_ATTR = 'codelab-gaid';
 
-/** @const {string} */
+/** @type {string} */
 const CODELAB_ENV_ATTR = 'environment';
 
-/** @const {string} */
+/** @type {string} */
 const CODELAB_CATEGORY_ATTR = 'category';
 
-/** @const {string} */
+/** @type {string} */
 const ANALYTICS_READY_ATTR = 'anayltics-ready';
 
 /**
  * A list of selectors whose elements are waiting for this to be set up.
- * @const Array<string>
+ * @type {Array<string>}
  */
 const DEPENDENT_SELECTORS = ['google-codelab'];
 
