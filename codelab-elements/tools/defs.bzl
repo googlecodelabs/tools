@@ -29,8 +29,10 @@ def concat(ext):
     return "ls $(SRCS) | grep -E '\.{ext}$$' | xargs cat > $@".format(ext = ext)
 
 def closure_js_library(**kwargs):
-    """Invokes actual closure_js_library with defaults suitable
-    for non-test JS source files.
+    """Invokes closure_js_library with non-test compilation defaults.
+
+    Args:
+      **kwargs: Additional arguments, passed to _closure_js_library_alias.
     """
     kwargs.setdefault("convention", "GOOGLE")
     suppress = kwargs.pop("suppress", [])
@@ -39,8 +41,10 @@ def closure_js_library(**kwargs):
     _closure_js_library_alias(**kwargs)
 
 def closure_js_binary(**kwargs):
-    """Invokes actual closure_js_binary with defaults suitable
-    for non-test JS files compilation.
+    """Invokes closure_js_binary with non-test compilation defaults.
+
+    Args:
+      **kwargs: Additional arguments, passed to _closure_js_binary_alias.
     """
     kwargs.setdefault("compilation_level", "ADVANCED")
     kwargs.setdefault("dependency_mode", "STRICT")
@@ -132,8 +136,9 @@ def js_test(
       suppress: List of codes the linter should ignore,
         passed to the generated closure_js_library target.
       visibility: Target visibility.
-      kwargs: Additional arguments, passed to the web_test_suite target.
+      **kwargs: Additional arguments, passed to the web_test_suite target.
     """
+    _ignore = [compilation_level]
     if not srcs:
         fail("js_test rules can not have an empty 'srcs' list")
     for src in srcs:
@@ -193,6 +198,9 @@ def closure_js_test(**kwargs):
     - adds custom elements polyfill to the data
     - suppresses linter's known false positives
     - sets default list of browsers to run tests on
+
+    Args:
+      **kwargs: Additional arguments, passed to the js_test target.
     """
     deps = kwargs.pop("deps", [])
     deps.append("@io_bazel_rules_closure//closure/library:testing")
