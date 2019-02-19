@@ -179,7 +179,12 @@ google-codelab-step .instructions strong {
   font-weight: 600;
 }
 
+google-codelab-step .instructions :link paper-button {
+  text-decoration: none !important;
+}
+
 google-codelab-step .instructions paper-button {
+  display: inline-block;
   border-radius: 4px;
   color: #FFFFFF;
   font-family: 'Google Sans', Arial, sans-serif;
@@ -214,10 +219,9 @@ google-codelab-step .instructions paper-button.red {
 }
 
 google-codelab-step .instructions iron-icon {
-  max-height: 16px;
-  max-width: 16px;
-  margin-top: 4px;
+  vertical-align: sub;
   margin-right: 7px;
+  margin-left: 3px;
   font-size: 16px;
 }
 
