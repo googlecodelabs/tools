@@ -55,7 +55,7 @@ const ANALYTICS_READY_ATTR = 'anayltics-ready';
 
 /**
  * A list of selectors whose elements are waiting for this to be set up.
- * @const {Array<string>}
+ * @const {!Array<string>}
  */
 const DEPENDENT_SELECTORS = ['google-codelab'];
 
