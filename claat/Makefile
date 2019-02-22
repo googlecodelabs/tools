@@ -50,7 +50,7 @@ serve: $(OUTDIR)/claat2
 
 release: $(RELEASES)
 	echo $(VERSION) > $(OUTDIR)/VERSION
-	cd $(OUTDIR) && sha1sum claat-* > sha1sum.txt
+	cd $(OUTDIR) && sha1sum claat* > sha1sum.txt
 
 test: .test
 .test: $(SRCS)
