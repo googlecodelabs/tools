@@ -301,6 +301,9 @@ func importNodes(nodes []types.Node) []*types.ImportNode {
 // writeMeta writes codelab metadata to a local disk location
 // specified by path.
 func writeMeta(path string, cm *types.ContextMeta) error {
+	if cm.Context.Format == "htmlElements" {
+		cm.Context.Format = "html"
+	}
 	b, err := json.MarshalIndent(cm, "", "  ")
 	if err != nil {
 		return err
