@@ -86,8 +86,7 @@ gen_test_html = rule(
         "test_file_js": attr.string(mandatory = True),
         "_template": attr.label(
             default = Label("//codelab-elements/tools:gen_test_html.template"),
-            allow_files = True,
-            single_file = True,
+            allow_single_file = True,
         ),
     },
     outputs = {"html_file": "%{name}.html"},
