@@ -20,9 +20,12 @@ the License.
     <meta name="book_path" value="/_book.yaml" />
     <meta name="full_width" value="true" />
     <meta name="no_page_title" value="true" />
+    <meta name="keywords" value='"{{range $index, $tag := .Meta.Tags}}{{if $index}}","{{end}}tag_{{$tag}}{{end}}","{{range $index, $cat := .Meta.Categories}}{{if $index}}","{{end}}category_{{$cat}}{{end}}"' />
+    <meta name="description" content="{{.Meta.Summary}}">
     <meta name="hide_last_updated" value="true" />
     <meta name="hide_ratings_widget" value="true" />
-    <meta name="page_type" value="article" />
+    <meta name="page_type" value="codelab" />
+    <meta name="duration" value="{{.Meta.Duration}}" />
     <style>
       body {
         transition: opacity ease-in 0.2s;
