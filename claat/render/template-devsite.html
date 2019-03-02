@@ -21,7 +21,9 @@ the License.
     <meta name="full_width" value="true" />
     <meta name="no_page_title" value="true" />
     <meta name="keywords" value='"{{range $index, $tag := .Meta.Tags}}{{if $index}}","{{end}}tag_{{$tag}}{{end}}","{{range $index, $cat := .Meta.Categories}}{{if $index}}","{{end}}category_{{$cat}}{{end}}"' />
-    <meta name="description" content="{{.Meta.Summary}}">
+    {{if .Meta.Summary}}
+    <meta name="description" content="{{.Meta.Summary}}" />
+    {{end}}
     <meta name="hide_last_updated" value="true" />
     <meta name="hide_ratings_widget" value="true" />
     <meta name="page_type" value="codelab" />
