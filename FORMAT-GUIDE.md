@@ -8,18 +8,14 @@ Copy [g.co/codelabs/template](g.co/codelabs/template) as a starting template and
 
 To preview a codelab (optional one-off setup):
 
-- Install the [Preview Codelab Chrome extension](https://chrome.google.com/webstore/detail/preview-codelab/lhojjnijnkiglhkggagbapfonpdlinji) in your browser. It should create a button in your browser that looks like this:
-
-![alt_text](images/Codelab-Formatting0.png "image_tooltip")
+- Install the [Preview Codelab Chrome extension](https://chrome.google.com/webstore/detail/preview-codelab/lhojjnijnkiglhkggagbapfonpdlinji) in your browser.
  
-  - Click the Chrome extension's button pictured above while you're in your codelab Google Doc tab, or
+  - Click the Chrome extension's button while you're in your codelab Google Doc tab, or
   - Navigate manually to **https://codelabs-preview.appspot.com/?file_id=[google-doc-id]**.
 
 ## Formatting Reference
 
 1. Table of Contents    
-
-![alt_text](images/Codelab-Formatting1.png "image_tooltip")
 
     Every codelab document must use the **Heading 1** paragraph style to delineate the steps of the codelab. In turn, these headings will be used to automatically create a Table of Contents which shows the student exactly where they are in the codelab and lets them jump to any step.
 
@@ -85,7 +81,6 @@ You can also use this to target specific events, for instance:  \
 
     Within the steps of your codelab you should use the **Heading 2**,** Heading 3 **and** Heading 4** paragraph styles to organize your content. These will get translated to `<h2>`, `<h3>` and `<h4>` tags in the codelab markup.
 
-
     Also, if you wish to include some additional administrative information at the beginning of your codelab you can freely use the **Heading 2**,** Heading 3 **and** Heading 4** paragraph styles and they will not show up in the codelab as long as they appear before the first **Heading 1**.
 
 4. Text Styles
@@ -96,17 +91,9 @@ You can also use this to target specific events, for instance:  \
 
 5. Responsive Images
 
-![alt_text](images/Codelab-Formatting2.png "image_tooltip")
-
     Inline images in your codelab should just work seamlessly. You can re-size them in your codelab document and that width will be applied as a **max-width** on the image in the codelab markup so that images are the same size relative to the text but also scale down appropriately for smaller browsers. 
 
 6. Info Boxes
-
-    Here are some examples of "Info Boxes":  
-
-![alt_text](images/Codelab-Formatting3.png "image_tooltip")
-
-![alt_text](images/Codelab-Formatting4.png "image_tooltip")
 
     For additional information that you would like to specially call-out in your codelab, there are two styles of info boxes:
 
@@ -130,8 +117,6 @@ Important: When opening an app via a deep link, the app should provide users wit
 
 7. Command-line Snippets
 
-![alt_text](images/Codelab-Formatting5.png "image_tooltip")
-
     It's often the case that you will have command-line instructions or log messages which are formatted with a monospaced font and have pre-defined whitespace. You can add these sections to your codelab by creating a **single-cell table** and making sure that all the text is formatted using the **<code>Consolas </code></strong>font. For example:
 
     ```
@@ -141,8 +126,6 @@ adb shell am start -a android.intent.action.VIEW \
 
 
 8. Code Snippets
-
-![alt_text](images/Codelab-Formatting6.png "image_tooltip")
 
     Code snippets with syntax highlighting can be added by creating a **single-cell table** and making sure that all the text is formatted using the **<code>Courier New</code></strong> font. For example:
 
@@ -172,8 +155,6 @@ adb shell am start -a android.intent.action.VIEW \
 
 9. Frequently Asked Questions
 
-![alt_text](images/Codelab-Formatting7.png "image_tooltip")
-
     As the author of the codelab, you have developed and tested your code. You've probably run into all sorts of common issues or misconceptions. By linking to frequently asked questions, after each step where they often occur, you will reassure the students that they have everything they need to complete the codelab and avoid having to explain everything inline in your codelab.
     FAQs are easy to add. All the author needs to do is provide an unordered list of hyperlinks and preface it with a **Heading 3** header with the exact text: **Frequently Asked Questions**. For example:
 
@@ -188,8 +169,6 @@ adb shell am start -a android.intent.action.VIEW \
 
 10. Download Buttons
 
-![alt_text](images/Codelab-Formatting8.png "image_tooltip")
-
     You can make it really easy to get started by including direct download buttons inline in your codelab. In order to add a button to your codelab, simply add a hyperlink and make sure that it is highlighted with a **dark green 1** background. For example:
 
         [Download Zip](https://github.com/google/search-samples/archive/master.zip)
@@ -197,8 +176,6 @@ adb shell am start -a android.intent.action.VIEW \
     Additionally, if the link text begins with the word "Download", a file download icon will be added to the button.
 
 11. Per-step Time Estimates
-
-![alt_text](images/Codelab-Formatting9.png "image_tooltip")
 
     Many participants are not fully committed to completing a codelab when they start it. One of the ways that we can keep them in our codelab is by giving them accurate estimates about how much additional effort is required to complete the codelab at each step.
 
@@ -242,8 +219,6 @@ adb shell am start -a android.intent.action.VIEW \
 
 14. Resumable Codelabs
 
-![alt_text](images/Codelab-Formatting10.png "image_tooltip")
-
     When a user returns to a codelab, they may be returning via a bookmark or a short-link posted online, it usually takes them to the first page of the codelab. In that case, the codelab remembers where they left off and asks them if they wish to resume where they left off. This makes it easier for the user to jump back in and gives us more accurate analytics about how long users spend on each step.
 
     This is simply part of the framework. There is nothing that you need to do as a codelab author to enable this feature.
@@ -253,8 +228,6 @@ adb shell am start -a android.intent.action.VIEW \
     At the bottom of every step of the codelab there is a link for reporting bugs. This link can be configured using the **Feedback Link** setting in your metadata table. 
 
 16. Inline Surveys
-
-![alt_text](images/Codelab-Formatting12.png "image_tooltip")
 
     **NOTE: Surveys cannot be used to collect data that can individually, or in conjunction with other information from this site, help locate and identify a particular user or reveal their sensitive demographics information. Any data collected should be sufficiently anonymized and aggregated. Also, consider that the surveys can possibly send a numerical ID of the selections instead of the actual value itself. Apart from helping on the localization front, this can also help prevent from injecting obvious PII values into GA.**
 
