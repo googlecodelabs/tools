@@ -27,17 +27,17 @@ To preview a codelab:
 
 
 
-  You are free to add your own metadata here if you'd like but certain key/value pairs are reserved for specific codelab publishing features. The current list of reserved metadata terms are:
+    You are free to add your own metadata here if you'd like but certain key/value pairs are reserved for specific codelab publishing features. The current list of reserved metadata terms are:
 
-  * **Summary:** A short summary of the codelab that will be shown in the codelab browser UI.
-  * **URL:** The URL suffix where this codelab will be published, i.e. the path after the root URL to a collection of codelabs. For example, the Google Codelabs site uses codelabs.developers.google.com/codelabs/ as root and this value is appended to that base to form the unique URL for a given codelab.
-  * **Category:** A single, top-level category that will be used to group codelabs by platform. Categories are normally curated by an organization (e.g. we have a set we use for the Google Codelabs site) but each publisher is free to use this value at their discretion.
-  * **Environment**: A tag that allows use to output some codelabs for a specific environment. All codelabs default to the "Web" environment but given some hardware constraints we might only want to generate them for a "Kiosk" environment where we know people will have the right hardware. \
+    * **Summary:** A short summary of the codelab that will be shown in the codelab browser UI.
+    * **URL:** The URL suffix where this codelab will be published, i.e. the path after the root URL to a collection of codelabs. For example, the Google Codelabs site uses codelabs.developers.google.com/codelabs/ as root and this value is appended to that base to form the unique URL for a given codelab.
+    * **Category:** A single, top-level category that will be used to group codelabs by platform. Categories are normally curated by an organization (e.g. we have a set we use for the Google Codelabs site) but each publisher is free to use this value at their discretion.
+    * **Environment**: A tag that allows use to output some codelabs for a specific environment. All codelabs default to the "Web" environment but given some hardware constraints we might only want to generate them for a "Kiosk" environment where we know people will have the right hardware. \
 You can also use this to target specific events, for instance:  \
 "Web, polymer-summit" (without quotes)
-  * **Status:** One or more of (Draft, Published, Deprecated, Hidden) to indicate the progress and whether the codelab is ready to be published. 'Hidden' implies the codelab is for restricted use, should be available only by direct URL, and should not appear on the main index page.
-  * **Feedback Link:** The URL that the student should be sent to when they click on the feedback link to report a bug in the codelab.
-  * **Analytics Account:** This allows you to specify a custom Google Analytics ID for your codelab. If no ID is specified, it defaults to a global codelabs analytics account. 
+    * **Status:** One or more of (Draft, Published, Deprecated, Hidden) to indicate the progress and whether the codelab is ready to be published. 'Hidden' implies the codelab is for restricted use, should be available only by direct URL, and should not appear on the main index page.
+    * **Feedback Link:** The URL that the student should be sent to when they click on the feedback link to report a bug in the codelab.
+    * **Analytics Account:** This allows you to specify a custom Google Analytics ID for your codelab. If no ID is specified, it defaults to a global codelabs analytics account. 
 
 1. Headers
 
@@ -59,44 +59,20 @@ You can also use this to target specific events, for instance:  \
 
     For additional information that you would like to specially call-out in your codelab, there are two styles of info boxes:
 
-1. Positive information like best practices and time saving tips should be formatted as a **single-cell table** with a **light green 3** background.
+    1. Positive information like best practices and time saving tips should be formatted as a **single-cell table** with a **light green 3** background.
 
-2. Negative information like warnings and API usage restrictions should be formatted as a **single-cell table** with a **light orange 3** background.
+    2. Negative information like warnings and API usage restrictions should be formatted as a **single-cell table** with a **light orange 3** background.
 
     It is recommended that you keep your infoboxes clean, concise and focused on a single topic. If you have information which may be useful to know but is not a critical part of the codelab instructions, then you should link to that information from the FAQ section rather than including it as an infobox.
 
 1. Command-line Snippets
 
-    It's often the case that you will have command-line instructions or log messages which are formatted with a monospaced font and have pre-defined whitespace. You can add these sections to your codelab by creating a **single-cell table** and making sure that all the text is formatted using the **Consolas font**. For example:
-
-    ```
-adb shell am start -a android.intent.action.VIEW \
--d "http://recipe-app.com/recipe/pierogi-poutine" com.recipe_app
-```
-
+    It's often the case that you will have command-line instructions or log messages which are formatted with a monospaced font and have pre-defined whitespace. You can add these sections to your codelab by creating a **single-cell table** and making sure that all the text is formatted using the **Consolas font**.
 
 1. Code Snippets
 
-    Code snippets with syntax highlighting can be added by creating a **single-cell table** and making sure that all the text is formatted using the **<code>Courier New</code></strong> font. For example:
-
-### 
-    [AndroidManifest.xml](https://github.com/google/search-samples/blob/master/app-indexing/app/src/main/AndroidManifest.xml) {#androidmanifest-xml}
-
-
-    ```
-<activity android:name="com.recipe_app.client.RecipeActivity"
-         android:label="@string/title_gizmos" >
-   <intent-filter android:label="@string/filter_title_viewrecipe">
-       <action android:name="android.intent.action.VIEW" />
-       <!-- URIs that begin with "http://recipe-app.com/recipe" -->
-       <data android:scheme="http"
-             android:host="recipe-app.com"
-             android:pathPrefix="/recipe" />
-       <category android:name="android.intent.category.DEFAULT" />
-       <category android:name="android.intent.category.BROWSABLE" />
-   </intent-filter>
-</activity>
-```
+    Code snippets with syntax highlighting can be added by creating a **single-cell table** and making sure that all the text is formatted using the **<code>Courier New</code></strong> font.
+    
     Any additional styles applied to the code will be overridden by the syntax highlighting. This means that you're free to use code highlighting Add-ons in your codelab doc but it will have no effect on how the code is highlighted in the final codelab.
 
     It is also strongly recommended that you provide a **Heading 3** header directly above your code snippet with the file name. This helps students keep track of where the code is coming from. The codelab framework also uses the file extension of the prior header as a clue for how to highlight the code.
@@ -106,22 +82,13 @@ adb shell am start -a android.intent.action.VIEW \
 1. Frequently Asked Questions
 
     As the author of the codelab, you have developed and tested your code. You've probably run into all sorts of common issues or misconceptions. By linking to frequently asked questions, after each step where they often occur, you will reassure the students that they have everything they need to complete the codelab and avoid having to explain everything inline in your codelab.
-    FAQs are easy to add. All the author needs to do is provide an unordered list of hyperlinks and preface it with a **Heading 3** header with the exact text: **Frequently Asked Questions**. For example:
-
-**Frequently Asked Questions**
-
-*   [How do I install Android Studio?](https://developer.android.com/sdk/installing/studio.html)
-*   [How do I enable USB debugging?](http://developer.android.com/tools/device.html)
-*   [Why doesn't Android Studio see my device?](http://stackoverflow.com/a/16598454)
-*   [Android error: Failed to install *.apk on device *: timeout?](http://stackoverflow.com/a/4786299)
-
+    FAQs are easy to add. All the author needs to do is provide an unordered list of hyperlinks and preface it with a **Heading 3** header with the exact text: **Frequently Asked Questions**.
+    
     Link icons will be added automatically for stackoverflow.com, developers.google.com, developers.android.com and support.google.com. All links will be configured to open in a new tab.
 
 1. Download Buttons
 
-    You can make it really easy to get started by including direct download buttons inline in your codelab. In order to add a button to your codelab, simply add a hyperlink and make sure that it is highlighted with a **dark green 1** background. For example:
-
-        [Download Zip](https://github.com/google/search-samples/archive/master.zip)
+    You can make it really easy to get started by including direct download buttons inline in your codelab. In order to add a button to your codelab, simply add a hyperlink and make sure that it is highlighted with a **dark green 1** background.
 
     Additionally, if the link text begins with the word "Download", a file download icon will be added to the button.
 
@@ -129,10 +96,7 @@ adb shell am start -a android.intent.action.VIEW \
 
     Many participants are not fully committed to completing a codelab when they start it. One of the ways that we can keep them in our codelab is by giving them accurate estimates about how much additional effort is required to complete the codelab at each step.
 
-    In order to add this feature to your codelab, simply annotate each step in your codelab doc with a Duration: which uses **dark grey 1 **text. For example:
-
-        **Get the sample code**
-        Duration: 2:00
+    In order to add this feature to your codelab, simply annotate each step in your codelab doc with a Duration: which uses **dark grey 1 **text.
 
     That's it. The codelab framework will do everything else for you. If you forget to annotate a step with a duration, the default is 1:00. Also, if the last step of your codelab is just a congratulations page, you should set the duration of that step to **0**.
 
@@ -140,12 +104,8 @@ adb shell am start -a android.intent.action.VIEW \
 
     Sometimes it's useful to have different versions of a codelab for different environments. For example, you might have some steps that only apply to students who take the codelab in a classroom setting while other steps only apply to people who are following the instructions at their own pace online.
 
-    The format is similar to the duration metadata. You simply specify one or more environments with an Environment: which uses **dark grey 1 **text. The Duration and/or Environment fields, when present, should be followed by a blank line and should be set in normal text (not in Heading 1, lest they be considered part of the step title). For example:
-
-        **Get the sample code**
-        Duration: 2:00
-        Environment: Web, Kiosk
-
+    The format is similar to the duration metadata. You simply specify one or more environments with an Environment: which uses **dark grey 1 **text. The Duration and/or Environment fields, when present, should be followed by a blank line and should be set in normal text (not in Heading 1, lest they be considered part of the step title).
+    
     If no environment metadata is specified, the default environment is "Web, Kiosk".
 
     When previewing your codelab, you can change environments using the &env=web or &env=kiosk parameters.
@@ -160,10 +120,10 @@ adb shell am start -a android.intent.action.VIEW \
 
     The instruction syntax is:
 
-*   start with [[ (two square brackets)
-*   followed by **import** keyword in bold
-*   followed by a link to a doc
-*   end with ]] (two square brackets)
+    *   start with [[ (two square brackets)
+    *   followed by **import** keyword in bold
+    *   followed by a link to a doc
+    *   end with ]] (two square brackets)
 
     Caveat: The imported doc is limited to content within a step (hence the term "fragment"). Including multiple steps, or even the step title/heading, within the imported doc is not supported. 
 
@@ -183,33 +143,18 @@ adb shell am start -a android.intent.action.VIEW \
 
     As we've seen in previous years, participants consume our codelabs for a wide range of reasons. In order to give us some more insight into how different people consume codelabs, we can ask them some quick multiple choice questions in the early stages of our codelab. 
 
-    You can configure these short survey questions to ask whatever you think is relevant to your codelab. In order to include a survey question in your codelab, add a single-cell table with a **light blue 3** background. Format your question with the **Heading 4** paragraph style and provide an **unordered list** of choices. For example:
-
-    ```
-How will you use this tutorial?
-Only read through it
-Read it and complete the exercises
-
-```
+    You can configure these short survey questions to ask whatever you think is relevant to your codelab. In order to include a survey question in your codelab, add a single-cell table with a **light blue 3** background. Format your question with the **Heading 4** paragraph style and provide an **unordered list** of choices.
 
     The participants' answers will automatically be added as custom variables in Google Analytics which can help you understand things like:
 
-*   _What is the difference in completion rate between novices and experts?_
-*   _What is the average time spent for people who wanted to write code vs. people who just wanted to read?_
-*   _Is the bounce rate affected by the students' preference in IDE?_
+    *   _What is the difference in completion rate between novices and experts?_
+    *   _What is the average time spent for people who wanted to write code vs. people who just wanted to read?_
+    *   _Is the bounce rate affected by the students' preference in IDE?_
 
     Of course, we need to be mindful of our participants' time and concentration and only ask a few key questions. It is _not_ recommended to have a survey after each step.
 
 1. What you'll learn
 
-    Having a header 2 of "What you'll learn" followed by a bullet point list creates a list of check marks. Here is an example markup:
+    Having a header 2 of "What you'll learn" followed by a bullet point list creates a list of check marks.
 
-    What you'll learn
-
-*   How to write a Dockerfile
-*   How to build a container
-*   How to run a container
-*   How to use the GCP Container Registry Service
-*   How Containers differ from Virtual machines
-
-    A title of "What we've covered" has the same effect
+    A title of "What we've covered" has the same effect.
