@@ -15,7 +15,7 @@ To preview a codelab (optional one-off setup):
   - Click the Chrome extension's button pictured above while you're in your codelab Google Doc tab, or
   - Navigate manually to **https://codelabs-preview.appspot.com/?file_id=[google-doc-id]**.
 
-## Formatting Reference {#formatting-reference}
+## Formatting Reference
 
 1. Table of Contents    
 
@@ -103,8 +103,6 @@ You can also use this to target specific events, for instance:  \
 6. Info Boxes
 
     Here are some examples of "Info Boxes":  
-
-<p id="gdcalert4" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/Codelab-Formatting3.png). Store image on your image server and adjust path/filename if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert5">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
 
 ![alt_text](images/Codelab-Formatting3.png "image_tooltip")
 
