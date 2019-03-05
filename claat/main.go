@@ -137,7 +137,7 @@ func usage() {
 
 const usageText = `Usage: claat <cmd> [options] src [src ...]
 
-Available commands are: export, serve, update, version.
+Available commands are: export, build, serve, update, version.
 
 ## Export command
 
