@@ -71,7 +71,7 @@ You can also use this to target specific events, for instance:  \
 
 1. Code Snippets
 
-    Code snippets with syntax highlighting can be added by creating a **single-cell table** and making sure that all the text is formatted using the **<code>Courier New</code></strong> font.
+    Code snippets with syntax highlighting can be added by creating a **single-cell table** and making sure that all the text is formatted using the **`Courier New`** font.
     
     Any additional styles applied to the code will be overridden by the syntax highlighting. This means that you're free to use code highlighting Add-ons in your codelab doc but it will have no effect on how the code is highlighted in the final codelab.
 
@@ -96,7 +96,7 @@ You can also use this to target specific events, for instance:  \
 
     Many participants are not fully committed to completing a codelab when they start it. One of the ways that we can keep them in our codelab is by giving them accurate estimates about how much additional effort is required to complete the codelab at each step.
 
-    In order to add this feature to your codelab, simply annotate each step in your codelab doc with a Duration: which uses **dark grey 1 **text.
+    In order to add this feature to your codelab, simply annotate each step in your codelab doc with a Duration: which uses **dark grey 1** text.
 
     That's it. The codelab framework will do everything else for you. If you forget to annotate a step with a duration, the default is 1:00. Also, if the last step of your codelab is just a congratulations page, you should set the duration of that step to **0**.
 
@@ -104,7 +104,7 @@ You can also use this to target specific events, for instance:  \
 
     Sometimes it's useful to have different versions of a codelab for different environments. For example, you might have some steps that only apply to students who take the codelab in a classroom setting while other steps only apply to people who are following the instructions at their own pace online.
 
-    The format is similar to the duration metadata. You simply specify one or more environments with an Environment: which uses **dark grey 1 **text. The Duration and/or Environment fields, when present, should be followed by a blank line and should be set in normal text (not in Heading 1, lest they be considered part of the step title).
+    The format is similar to the duration metadata. You simply specify one or more environments with an Environment: which uses **dark grey 1** text. The Duration and/or Environment fields, when present, should be followed by a blank line and should be set in normal text (not in Heading 1, lest they be considered part of the step title).
     
     If no environment metadata is specified, the default environment is "Web, Kiosk".
 
