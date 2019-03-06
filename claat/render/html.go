@@ -342,5 +342,8 @@ func (hw *htmlWriter) header(n *types.HeaderNode) {
 }
 
 func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
-	hw.writeFmt("<google-youtube fluid video-id=%q></google-youtube>", n.VideoID)
+	hw.writeFmt(`<iframe class="youtube-video" `+
+		`src="https://www.youtube.com/embed/%s" allow="accelerometer; `+
+		`autoplay; encrypted-media; gyroscope; picture-in-picture" `+
+		`allowfullscreen></iframe>`, n.VideoID)
 }
