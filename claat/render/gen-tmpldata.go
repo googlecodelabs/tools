@@ -33,7 +33,6 @@ var files = map[string]struct {
 	html bool
 }{
 	"html":         {"template.html", true},
-	"htmlElements": {"template-elements.html", true},
 	"devsite":      {"template-devsite.html", true},
 	"md":           {"template.md", false},
 	"offline":      {"template-offline.html", true},
