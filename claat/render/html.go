@@ -173,8 +173,8 @@ func (hw *htmlWriter) image(n *types.ImageNode) {
 	if n.Title != "" {
 		hw.writeFmt(" title=%q", n.Title)
 	}
-	if n.MaxWidth > 0 {
-		hw.writeFmt(` style="max-width: %.2fpx"`, n.MaxWidth)
+	if n.Width > 0 {
+		hw.writeFmt(` style="width: %.2fpx"`, n.Width)
 	}
 	hw.writeString(` src="`)
 	hw.writeString(n.Src)
