@@ -10,7 +10,7 @@ your own codelabs.
 If you're interested in authoring codelabs, create a doc following the [Codelab Formatting Guide](FORMAT-GUIDE.md). 
 and see the [claat](claat) directory for a detailed description of the `claat` command line tool.
 
-Also, consider joining [this group](https://groups.google.com/forum/#!forum/codelab-authors),
+Also, consider joining [codelab-authors Google Group](https://groups.google.com/forum/#!forum/codelab-authors),
 which connects you with other authors and provides updates on new releases. 
 
 ## What is this?
