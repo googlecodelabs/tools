@@ -61,6 +61,7 @@ You can also use this to target specific events, for instance:  \
      - Add an image in the document. The image can be a screenshot of the video for instance but it doesn't really matter since it won't be displayed but replaced by the embedded video.
      - Add an "Alt Text" to the image by doing **Cmd+Opt+Y** or **Right click > "Alt Text..."**
      - Put a Youtube video link in the **Description** field of the Alt Text. in the format `https://www.yoututbe.com/watch?v=[video_ID]`
+    > Specifying a start time is not supported at this time.
 
 1. Info Boxes
 
