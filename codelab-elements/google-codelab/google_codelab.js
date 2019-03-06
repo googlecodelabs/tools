@@ -712,7 +712,7 @@ class Codelab extends HTMLElement {
       return '/';
     }
 
-    if (index == 'index') {
+    if (index === 'index') {
       index = '';
     }
     const u = new URL(index, document.location.origin);
