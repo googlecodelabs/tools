@@ -23,30 +23,22 @@ RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 	 $(OUTDIR)/claat-linux-amd64 \
 	 $(OUTDIR)/claat-linux-386 \
 	 $(OUTDIR)/claat-windows-amd64.exe \
-	 $(OUTDIR)/claat-windows-386.exe \
-	 $(OUTDIR)/claat2-darwin-amd64 \
-	 $(OUTDIR)/claat2-linux-amd64 \
-	 $(OUTDIR)/claat2-linux-386 \
-	 $(OUTDIR)/claat2-windows-amd64.exe \
-	 $(OUTDIR)/claat2-windows-386.exe
+	 $(OUTDIR)/claat-windows-386.exe
 
 SRCS = $(shell find . -name '*.go') render/tmpldata.go
 
-all: $(OUTDIR)/claat $(OUTDIR)/claat2
+all: $(OUTDIR)/claat
 
 $(OUTDIR)/claat: $(SRCS) VERSION
-	go build -o $@ -ldflags "-X main.version=$(VERSION) -X main.useElements=false"
+	go build -o $@ -ldflags "-X main.version=$(VERSION)"
 
-$(OUTDIR)/claat2: $(SRCS) VERSION
-	go build -o $@ -ldflags "-X main.version=$(VERSION) -X main.useElements=true"
-
-serve: $(OUTDIR)/claat2
+serve: $(OUTDIR)/claat
 	mkdir -p $(OUTDIR)/deps
 	cd ../; \
 	    bazel build :bundle; \
 	    mv -f bazel-genfiles/bundle.zip claat/$(OUTDIRNAME)/deps
 	unzip -o $(OUTDIR)/deps/bundle.zip -d $(OUTDIR)/deps/codelab-elements
-	cd bin; ./claat2 serve
+	cd bin; ./claat serve
 
 release: $(RELEASES)
 	echo $(VERSION) > $(OUTDIR)/VERSION
@@ -69,16 +61,8 @@ $(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
 $(OUTDIR)/claat-%: $(SRCS) VERSION
 	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build \
 		-buildmode exe \
-		-ldflags "-X main.version=$(VERSION) -X main.useElements=false -s -w" \
+		-ldflags "-X main.version=$(VERSION) -s -w" \
 		-o $@
 
-$(OUTDIR)/claat2-%: GOOS=$(firstword $(subst -, ,$*))
-$(OUTDIR)/claat2-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
-$(OUTDIR)/claat2-%: $(SRCS) VERSION
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build \
-		-buildmode exe \
-		-ldflags "-X main.version=$(VERSION) -X main.useElements=true -s -w" \
-		-o $@
-
-%/tmpldata.go: %/gen-tmpldata.go %/template-elements.html %/template.html %/template.md %/template-offline.html
+%/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md %/template-offline.html
 	cd $* && go generate
