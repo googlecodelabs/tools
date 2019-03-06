@@ -132,10 +132,10 @@ func (lw *liteWriter) image(n *types.ImageNode) *html.Node {
 		Data: atom.Img.String(),
 		Attr: []html.Attribute{{Key: "src", Val: n.Src}},
 	}
-	if n.MaxWidth > 0 {
+	if n.Width > 0 {
 		hn.Attr = append(hn.Attr, html.Attribute{
 			Key: "style",
-			Val: fmt.Sprintf("max-width: %.2fpx", n.MaxWidth),
+			Val: fmt.Sprintf("width: %.2fpx", n.Width),
 		})
 	}
 	return hn

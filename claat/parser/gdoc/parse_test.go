@@ -333,7 +333,7 @@ func TestParseDoc(t *testing.T) {
 	content.Append(para)
 
 	img = types.NewImageNode("https://host/small.png")
-	img.MaxWidth = 25.5
+	img.Width = 25.5
 	para = types.NewListNode(img, types.NewTextNode(" icon."))
 	para.MutateBlock(true)
 	content.Append(para)
