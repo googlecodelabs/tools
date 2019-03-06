@@ -7,11 +7,11 @@ using some simple formatting conventions. You can also author codelabs using mar
 This repo contains all the tools and documentation you’ll need for building and publishing
 your own codelabs.
 
-If you're interested in authoring codelabs, join [this group](https://groups.google.com/forum/#!forum/codelab-authors),
-which connects you with other authors and provides access to the [Codelab Formatting Guide](https://g.co/codelabs/guide).
+If you're interested in authoring codelabs, create a doc following the [Codelab Formatting Guide](FORMAT-GUIDE.md). 
+and see the [claat](claat) directory for a detailed description of the `claat` command line tool.
 
-See the [claat](claat) directory for detailed description of the `claat` command
-line tool.
+Also, consider joining [this group](https://groups.google.com/forum/#!forum/codelab-authors),
+which connects you with other authors and provides updates on new releases. 
 
 ## What is this?
 
