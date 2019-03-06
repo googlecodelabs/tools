@@ -395,8 +395,7 @@ func (lw *liteWriter) youtube(n *types.YouTubeNode) *html.Node {
 		Data: atom.Iframe.String(),
 		Attr: []html.Attribute{
 			{Key: "src", Val: fmt.Sprintf("https://www.youtube.com/embed/%s", n.VideoID)},
-			{Key: "type", Val: "text/html"},
-			{Key: "frameborder", Val: "0"},
+			{Key: "allow", Val: "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"},
 			{Key: "allowfullscreen", Val: "1"},
 			{Key: "class", Val: "keep-ar__box"},
 		},
