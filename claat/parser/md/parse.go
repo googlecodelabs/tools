@@ -657,7 +657,7 @@ func image(ds *docState) types.Node {
 		if err != nil {
 			return nil
 		}
-		n.MaxWidth = float32(w)
+		n.Width = float32(w)
 	}
 
 	n.MutateBlock(findBlockParent(ds.cur))
