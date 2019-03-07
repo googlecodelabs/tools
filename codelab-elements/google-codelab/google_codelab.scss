@@ -15,25 +15,6 @@
  * limitations under the License.
  */
 
-html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-body {
-  font-family: "Roboto",sans-serif;
-  transition: opacity ease-in 0.2s;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-[hidden] {
-  display: none !important;
-}
-
 google-codelab {
   display: flex;
   width: 100%;
