@@ -15,7 +15,7 @@ To preview a codelab:
 
 ## Formatting Reference
 
-1. Table of Contents    
+1. Table of Contents
 
     Every codelab document must use the **Heading 1** paragraph style to delineate the steps of the codelab. In turn, these headings will be used to automatically create a Table of Contents which shows the student exactly where they are in the codelab and lets them jump to any step.
 
@@ -54,6 +54,14 @@ You can also use this to target specific events, for instance:  \
 1. Responsive Images
 
     Inline images in your codelab should just work seamlessly. You can re-size them in your codelab document and that width will be applied as a **max-width** on the image in the codelab markup so that images are the same size relative to the text but also scale down appropriately for smaller browsers. 
+
+1. Youtube Videos
+
+    Youtube Videos can be embedded by doing:
+     - Add an image in the document. The image can be a screenshot of the video for instance but it doesn't really matter since it won't be displayed but replaced by the embedded video.
+     - Add an "Alt Text" to the image by doing **Cmd+Opt+Y** or **Right click > "Alt Text..."**
+     - Put a Youtube video link in the **Description** field of the Alt Text. in the format `https://www.yoututbe.com/watch?v=[video_ID]`
+    > Specifying a start time is not supported at this time.
 
 1. Info Boxes
 
