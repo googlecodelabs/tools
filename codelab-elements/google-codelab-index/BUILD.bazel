@@ -63,6 +63,7 @@ sass_library(
 sass_library(
     name = "cards_scss",
     srcs = ["_cards.scss"],
+    deps = [":categories_scss"],
 )
 
 sass_library(
@@ -73,10 +74,7 @@ sass_library(
 sass_binary(
     name = "google_codelab_index_scss_bin",
     src = "google_codelab_index.scss",
-    deps = [
-        ":cards_scss",
-        ":categories_scss",
-    ]
+    deps = [":cards_scss"],
 )
 
 closure_js_template_library(
