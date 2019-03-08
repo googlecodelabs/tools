@@ -102,9 +102,9 @@ const CODELAB_ACTION_EVENT = 'google-codelab-action';
 const CODELAB_PAGEVIEW_EVENT = 'google-codelab-pageview';
 
 /**
- * The general codelab action event fired when the Codelab elemnt is setup.
+ * The general codelab action event fired when the codelab element is ready.
  */
-const CODELAB_SETUP_EVENT = 'google-codelab-setup'
+const CODELAB_READY_EVENT = 'google-codelab-ready'
 
 /**
  * @extends {HTMLElement}
@@ -164,6 +164,9 @@ class Codelab extends HTMLElement {
     /** @private {boolean} */
     this.hasSetup_ = false;
 
+    /** @private {boolean} */
+    this.ready_ = false;
+
     /** @private {?Transition} */
     this.transitionIn_ = null;
 
@@ -200,6 +203,11 @@ class Codelab extends HTMLElement {
     if (this.resumed_) {
       console.log('resumed');
       // TODO Show resume dialog
+    }
+
+    if (!this.ready_) {
+      this.ready_ = true;
+      this.fireEvent_(CODELAB_READY_EVENT);
     }
   }
 
@@ -254,11 +262,11 @@ class Codelab extends HTMLElement {
         break;
       case ANALYTICS_READY_ATTR:
         if (this.hasAttribute(ANALYTICS_READY_ATTR)) {
-          if (this.hasSetup_) {
+          if (this.ready_) {
             this.firePageLoadEvents_();
           } else {
-            this.addEventListener(CODELAB_SETUP_EVENT,
-                                  () => this.firePageLoadEvents_());
+            document.body.addEventListener(CODELAB_READY_EVENT,
+                () => this.firePageLoadEvents_());
           }
         }
         break;
@@ -796,7 +804,6 @@ class Codelab extends HTMLElement {
     }
 
     this.hasSetup_ = true;
-    this.fireEvent_(CODELAB_SETUP_EVENT);
   }
 }
 
