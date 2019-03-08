@@ -249,7 +249,9 @@ class Codelab extends HTMLElement {
         break;
       case ANALYTICS_READY_ATTR:
         if (this.hasAttribute(ANALYTICS_READY_ATTR)) {
-          this.firePageLoadEvents_();
+          window.addEventListener("load", (event) => {
+            this.firePageLoadEvents_();
+          });
         }
         break;
     }
