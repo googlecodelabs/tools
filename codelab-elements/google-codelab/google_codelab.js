@@ -102,6 +102,11 @@ const CODELAB_ACTION_EVENT = 'google-codelab-action';
 const CODELAB_PAGEVIEW_EVENT = 'google-codelab-pageview';
 
 /**
+ * The general codelab action event fired when the Codelab elemnt is setup.
+ */
+const CODELAB_SETUP_EVENT = 'google-codelab-setup'
+
+/**
  * @extends {HTMLElement}
  */
 class Codelab extends HTMLElement {
@@ -249,9 +254,12 @@ class Codelab extends HTMLElement {
         break;
       case ANALYTICS_READY_ATTR:
         if (this.hasAttribute(ANALYTICS_READY_ATTR)) {
-          window.addEventListener("load", (event) => {
+          if (this.hasSetup_) {
             this.firePageLoadEvents_();
-          });
+          } else {
+            this.addEventListener(CODELAB_SETUP_EVENT,
+                                  () => this.firePageLoadEvents_());
+          }
         }
         break;
     }
@@ -788,6 +796,7 @@ class Codelab extends HTMLElement {
     }
 
     this.hasSetup_ = true;
+    this.fireEvent_(CODELAB_SETUP_EVENT);
   }
 }
 
