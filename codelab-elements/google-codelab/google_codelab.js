@@ -265,7 +265,7 @@ class Codelab extends HTMLElement {
           if (this.ready_) {
             this.firePageLoadEvents_();
           } else {
-            document.body.addEventListener(CODELAB_READY_EVENT,
+            this.addEventListener(CODELAB_READY_EVENT,
                 () => this.firePageLoadEvents_());
           }
         }
@@ -744,9 +744,10 @@ class Codelab extends HTMLElement {
    */
   fireEvent_(eventName, detail={}) {
     const event = new CustomEvent(eventName, {
-      detail: detail
+      detail: detail,
+      bubbles: true,
     });
-    document.body.dispatchEvent(event);
+    this.dispatchEvent(event);
   }
 
   /**
