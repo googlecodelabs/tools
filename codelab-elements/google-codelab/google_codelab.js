@@ -104,7 +104,7 @@ const CODELAB_PAGEVIEW_EVENT = 'google-codelab-pageview';
 /**
  * The general codelab action event fired when the codelab element is ready.
  */
-const CODELAB_READY_EVENT = 'google-codelab-ready'
+const CODELAB_READY_EVENT = 'google-codelab-ready';
 
 /**
  * @extends {HTMLElement}
