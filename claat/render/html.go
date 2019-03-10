@@ -151,6 +151,9 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 	if n.Code {
 		hw.writeString("<code>")
 	}
+	if !n.Bold && !n.Italic && !n.Code {
+		hw.writeString("<span>")
+	}
 	s := htmlTemplate.HTMLEscapeString(n.Value)
 	s = ReplaceDoubleCurlyBracketsWithEntity(s)
 	hw.writeString(strings.Replace(s, "\n", "<br>", -1))
@@ -162,6 +165,9 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 	}
 	if n.Bold {
 		hw.writeString("</strong>")
+	}
+	if !n.Bold && !n.Italic && !n.Code {
+		hw.writeString("</span>")
 	}
 }
 
