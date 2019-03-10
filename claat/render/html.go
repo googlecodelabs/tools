@@ -151,9 +151,6 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 	if n.Code {
 		hw.writeString("<code>")
 	}
-	if !n.Bold && !n.Italic && !n.Code {
-		hw.writeString("<span>")
-	}
 	s := htmlTemplate.HTMLEscapeString(n.Value)
 	s = ReplaceDoubleCurlyBracketsWithEntity(s)
 	hw.writeString(strings.Replace(s, "\n", "<br>", -1))
@@ -165,9 +162,6 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 	}
 	if n.Bold {
 		hw.writeString("</strong>")
-	}
-	if !n.Bold && !n.Italic && !n.Code {
-		hw.writeString("</span>")
 	}
 }
 
@@ -245,12 +239,34 @@ func (hw *htmlWriter) code(n *types.CodeNode) {
 func (hw *htmlWriter) list(n *types.ListNode) {
 	wrap := n.Block() == true
 	if wrap {
-		hw.writeString("<p>")
+		if onlyImages(n.Nodes...) {
+			hw.writeString(`<p class="image-container">`)
+		} else {
+			hw.writeString("<p>")
+		}
 	}
 	hw.write(n.Nodes...)
 	if wrap {
 		hw.writeString("</p>")
 	}
+}
+
+// Returns true if the list of Nodes contains only images or white spaces.
+func onlyImages(nodes ...types.Node) bool {
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *types.TextNode:
+			if len(strings.TrimSpace(n.Value)) != 0 {
+				continue
+			}
+			return false
+		case *types.ImageNode:
+			continue
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {

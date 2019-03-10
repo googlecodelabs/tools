@@ -230,9 +230,8 @@ google-codelab-step .instructions img {
   vertical-align: bottom;
 }
 
-google-codelab-step .instructions img:only-child {
-  display: flex;
-  margin: auto;
+google-codelab-step .instructions .image-container {
+  text-align: center;
 }
 
 google-codelab-step .instructions table {
