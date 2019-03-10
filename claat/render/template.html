@@ -35,7 +35,9 @@ the License.
 </head>
 <body>
   <google-codelab-analytics gaid="{{.GlobalGA}}"></google-codelab-analytics>
-  <google-codelab title="{{.Meta.Title}}"
+  <google-codelab codelab-gaid="{{.Meta.GA}}"
+                  id="{{.Meta.ID}}"
+                  title="{{.Meta.Title}}"
                   environment="{{index .Env}}"
                   feedback-link="{{.Meta.Feedback}}">
     {{range .Steps}}{{if matchEnv .Tags $.Env}}
