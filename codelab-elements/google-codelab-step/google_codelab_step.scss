@@ -230,6 +230,10 @@ google-codelab-step .instructions img {
   vertical-align: bottom;
 }
 
+google-codelab-step .instructions .image-container {
+  text-align: center;
+}
+
 google-codelab-step .instructions table {
   border-spacing: 0;
 }
@@ -307,8 +311,11 @@ google-codelab-step .instructions h3 > a[href*="github"]:visited {
 }
 
 google-codelab-step .youtube-video {
+  display: flex;
+  margin: auto;
   width: 560px;
   height: 315px;
   border: none;
   max-width: 100%;
+  max-height: 51vw;
 }
