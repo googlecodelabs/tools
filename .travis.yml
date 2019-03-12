@@ -7,7 +7,7 @@ go:
 - 1.9.x  # need for App Engine
 - 1.11.x # latest release because "master" is dev version
 env:
-- BAZEL=0.19.1
+- BAZEL=0.18.1
 before_install:
 - |
   wget -O install.sh "https://github.com/bazelbuild/bazel/releases/download/${BAZEL}/bazel-${BAZEL}-installer-linux-x86_64.sh"
