@@ -81,7 +81,7 @@ testSuite({
 
     document.body.addEventListener('google-codelab-action', (e) => {
       const detail = e.detail;
-      assertEquals('codelab', detail['category']);
+      assertEquals('snippet', detail['category']);
       assertEquals('copy', detail['action']);
       assertEquals('Code', detail['label']);
     });
