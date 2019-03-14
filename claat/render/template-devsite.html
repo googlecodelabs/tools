@@ -1,0 +1,58 @@
+<!--
+Copyright (c) 2019 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+<html devsite>
+  <head>
+    <title>{{.Meta.Title}}</title>
+    <meta name="project_path" value="/_project.yaml" />
+    <meta name="book_path" value="/_book.yaml" />
+    <meta name="full_width" value="true" />
+    <meta name="no_page_title" value="true" />
+    <meta name="keywords" value='"{{range $index, $tag := .Meta.Tags}}{{if $index}}","{{end}}tag_{{$tag}}{{end}}","{{range $index, $cat := .Meta.Categories}}{{if $index}}","{{end}}category_{{$cat}}{{end}}"' />
+    {{if .Meta.Summary}}
+    <meta name="description" content="{{.Meta.Summary}}" />
+    {{end}}
+    <meta name="hide_last_updated" value="true" />
+    <meta name="hide_ratings_widget" value="true" />
+    <meta name="page_type" value="codelab" />
+    <meta name="duration" value="{{.Meta.Duration}}" />
+    <style>
+      body {
+        transition: opacity ease-in 0.2s;
+      }
+
+      body[unresolved] {
+        opacity: 0;
+        display: block;
+        overflow: hidden;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body class="devsite-full-width-page">
+    <google-codelab-analytics gaid="{{.GlobalGA}}"></google-codelab-analytics>
+    <google-codelab codelab-gaid="{{.Meta.GA}}"
+                    id="{{.Meta.ID}}"
+                    title="{{.Meta.Title}}"
+                    environment="{{index .Env}}"
+                    feedback-link="{{.Meta.Feedback}}">
+      {{range .Steps}}{{if matchEnv .Tags $.Env}}
+        <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
+          {{.Content | renderHTML $.Env}}
+        </google-codelab-step>
+      {{end}}{{end}}
+    </google-codelab>
+  </body>
+</html>

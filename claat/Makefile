@@ -27,25 +27,22 @@ RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 
 SRCS = $(shell find . -name '*.go') render/tmpldata.go
 
-all: $(OUTDIR)/claat $(OUTDIR)/claat2
+all: $(OUTDIR)/claat
 
 $(OUTDIR)/claat: $(SRCS) VERSION
-	go build -o $@ -ldflags "-X main.version=$(VERSION) -X main.useElements=false"
+	go build -o $@ -ldflags "-X main.version=$(VERSION)"
 
-$(OUTDIR)/claat2: $(SRCS) VERSION
-	go build -o $@ -ldflags "-X main.version=$(VERSION) -X main.useElements=true"
-
-serve: $(OUTDIR)/claat2
+serve: $(OUTDIR)/claat
 	mkdir -p $(OUTDIR)/deps
 	cd ../; \
 	    bazel build :bundle; \
 	    mv -f bazel-genfiles/bundle.zip claat/$(OUTDIRNAME)/deps
 	unzip -o $(OUTDIR)/deps/bundle.zip -d $(OUTDIR)/deps/codelab-elements
-	cd bin; ./claat2 serve
+	cd bin; ./claat serve
 
 release: $(RELEASES)
 	echo $(VERSION) > $(OUTDIR)/VERSION
-	cd $(OUTDIR) && sha1sum claat-* > sha1sum.txt
+	cd $(OUTDIR) && sha1sum claat* > sha1sum.txt
 
 test: .test
 .test: $(SRCS)
@@ -67,5 +64,5 @@ $(OUTDIR)/claat-%: $(SRCS) VERSION
 		-ldflags "-X main.version=$(VERSION) -s -w" \
 		-o $@
 
-%/tmpldata.go: %/gen-tmpldata.go %/template-elements.html %/template.html %/template.md %/template-offline.html
+%/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md %/template-offline.html
 	cd $* && go generate

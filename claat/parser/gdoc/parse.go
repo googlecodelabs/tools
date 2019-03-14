@@ -29,6 +29,7 @@ import (
 
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
 func init() {
@@ -227,7 +228,7 @@ func parseDoc(doc *html.Node) (*types.Codelab, error) {
 	}
 
 	finalizeStep(ds.step) // TODO: last ds.step is never finalized in newStep
-	ds.clab.Tags = unique(ds.clab.Tags)
+	ds.clab.Tags = util.Unique(ds.clab.Tags)
 	sort.Strings(ds.clab.Tags)
 	ds.clab.Duration = int(ds.totdur.Minutes())
 	return ds.clab, nil
@@ -237,7 +238,7 @@ func finalizeStep(s *types.Step) {
 	if s == nil {
 		return
 	}
-	s.Tags = unique(s.Tags)
+	s.Tags = util.Unique(s.Tags)
 	sort.Strings(s.Tags)
 	s.Content.Nodes = blockNodes(s.Content.Nodes)
 	s.Content.Nodes = compactNodes(s.Content.Nodes)
@@ -384,7 +385,7 @@ func metaTable(ds *docState) {
 		case "summary":
 			ds.clab.Summary = s
 		case "category", "categories":
-			ds.clab.Categories = unique(stringSlice(s))
+			ds.clab.Categories = util.Unique(stringSlice(s))
 		case "environment", "environments", "tags":
 			ds.clab.Tags = stringSlice(s)
 			toLowerSlice(ds.clab.Tags)
@@ -436,7 +437,7 @@ func metaStep(ds *docState) {
 		ds.step.Duration = roundDuration(d)
 		ds.totdur += ds.step.Duration
 	case metaEnvironment:
-		ds.env = unique(stringSlice(value))
+		ds.env = util.Unique(stringSlice(value))
 		toLowerSlice(ds.env)
 		ds.step.Tags = append(ds.step.Tags, ds.env...)
 		ds.clab.Tags = append(ds.clab.Tags, ds.env...)
@@ -656,7 +657,7 @@ func image(ds *docState) types.Node {
 		return nil
 	}
 	n := types.NewImageNode(s)
-	n.MaxWidth = styleFloatValue(ds.cur, "width")
+	n.Width = styleFloatValue(ds.cur, "width")
 	n.MutateBlock(findBlockParent(ds.cur))
 	n.Alt = nodeAttr(ds.cur, "alt")
 	n.Title = nodeAttr(ds.cur, "title")
@@ -828,20 +829,6 @@ func stringSlice(v string) []string {
 		}
 	}
 	return a
-}
-
-// unique removes duplicates from slice.
-// Original arg is not modified. Elements order is preserved.
-func unique(a []string) []string {
-	seen := make(map[string]bool, len(a))
-	res := make([]string, 0, len(a))
-	for _, s := range a {
-		if !seen[s] {
-			res = append(res, s)
-			seen[s] = true
-		}
-	}
-	return res
 }
 
 func toLowerSlice(a []string) {

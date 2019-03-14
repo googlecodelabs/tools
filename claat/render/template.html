@@ -21,25 +21,23 @@ the License.
   <meta name="theme-color" content="#4F7DC9">
   <meta charset="UTF-8">
   <title>{{.Meta.Title}}</title>
-  <script src="{{.Prefix}}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="{{.Prefix}}elements/codelab.html">
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
-  <style is="custom-style">
-    body {
-      font-family: "Roboto",sans-serif;
-      background: var(--google-codelab-background, #F8F9FA);
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="{{.Prefix}}/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
     }
   </style>
-  <!-- TODO: add theming
-  <link rel="import" href="{{.Prefix}}bower_components/google-codelab-elements/theme-{{.Meta.Theme}}.html">
-  <style is="custom-style" include="google-codelab-theme-{{.Meta.Theme}}"></style>
-  * the above will replace this:
-  <link rel="stylesheet" href="{{.Prefix}}codelab_components/google-codelab/themes/{{.Meta.Theme}}.css">
-  -->
 </head>
-<body unresolved class="fullbleed">
-
-  <google-codelab title="{{.Meta.Title}}"
+<body>
+  <google-codelab-analytics gaid="{{.GlobalGA}}"></google-codelab-analytics>
+  <google-codelab codelab-gaid="{{.Meta.GA}}"
+                  id="{{.Meta.ID}}"
+                  title="{{.Meta.Title}}"
                   environment="{{index .Env}}"
                   feedback-link="{{.Meta.Feedback}}">
     {{range .Steps}}{{if matchEnv .Tags $.Env}}
@@ -49,33 +47,10 @@ the License.
     {{end}}{{end}}
   </google-codelab>
 
-  <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    {{if .GlobalGA}}ga('create', '{{.GlobalGA}}', 'auto');{{end}}
-
-    (function() {
-      var gaCodelab = '{{.Meta.GA}}';
-      if (gaCodelab) {
-        ga('create', gaCodelab, 'auto', {name: 'codelab'});
-      }
-
-      var gaView;
-      var parts = location.search.substring(1).split('&');
-      for (var i = 0; i < parts.length; i++) {
-        var param = parts[i].split('=');
-        if (param[0] === 'viewga') {
-          gaView = param[1];
-          break;
-        }
-      }
-      if (gaView && gaView !== gaCodelab) {
-        ga('create', gaView, 'auto', {name: 'view'});
-      }
-    })();
-  </script>
+  <script src="{{.Prefix}}/codelab-elements/native-shim.js"></script>
+  <script src="{{.Prefix}}/codelab-elements/custom-elements.min.js"></script>
+  <script src="{{.Prefix}}/codelab-elements/prettify.js"></script>
+  <script src="{{.Prefix}}/codelab-elements/codelab-elements.js"></script>
 
 </body>
 </html>

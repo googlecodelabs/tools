@@ -21,13 +21,13 @@ const EventHandler = goog.require('goog.events.EventHandler');
 
 /**
  * The general codelab action event fired for trackable interactions.
- * @const string
+ * @const {string}
  */
 const ACTION_EVENT = 'google-codelab-action';
 
 /**
  * The general codelab pageview event fired for trackable pageviews.
- * @const string
+ * @const {string}
  */
 const PAGEVIEW_EVENT = 'google-codelab-pageview';
 
@@ -55,7 +55,7 @@ const ANALYTICS_READY_ATTR = 'anayltics-ready';
 
 /**
  * A list of selectors whose elements are waiting for this to be set up.
- * @const Array<string>
+ * @const {!Array<string>}
  */
 const DEPENDENT_SELECTORS = ['google-codelab'];
 
@@ -294,7 +294,7 @@ class CodelabAnalytics extends HTMLElement {
     /** @type {!HTMLScriptElement} */
     const resource = /** @type {!HTMLScriptElement} */ (
         document.createElement('script'));
-    resource.src = '//www.google-analytics.com/analytics.js';
+    resource.src = 'https://www.google-analytics.com/analytics.js';
     resource.async = false;
     return new Promise((resolve, reject) => {
       resource.onload = () => resolve(resource);

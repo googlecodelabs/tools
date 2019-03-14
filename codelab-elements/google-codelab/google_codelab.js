@@ -102,6 +102,11 @@ const CODELAB_ACTION_EVENT = 'google-codelab-action';
 const CODELAB_PAGEVIEW_EVENT = 'google-codelab-pageview';
 
 /**
+ * The general codelab action event fired when the codelab element is ready.
+ */
+const CODELAB_READY_EVENT = 'google-codelab-ready';
+
+/**
  * @extends {HTMLElement}
  */
 class Codelab extends HTMLElement {
@@ -159,6 +164,9 @@ class Codelab extends HTMLElement {
     /** @private {boolean} */
     this.hasSetup_ = false;
 
+    /** @private {boolean} */
+    this.ready_ = false;
+
     /** @private {?Transition} */
     this.transitionIn_ = null;
 
@@ -195,6 +203,11 @@ class Codelab extends HTMLElement {
     if (this.resumed_) {
       console.log('resumed');
       // TODO Show resume dialog
+    }
+
+    if (!this.ready_) {
+      this.ready_ = true;
+      this.fireEvent_(CODELAB_READY_EVENT);
     }
   }
 
@@ -249,7 +262,12 @@ class Codelab extends HTMLElement {
         break;
       case ANALYTICS_READY_ATTR:
         if (this.hasAttribute(ANALYTICS_READY_ATTR)) {
-          this.firePageLoadEvents_();
+          if (this.ready_) {
+            this.firePageLoadEvents_();
+          } else {
+            this.addEventListener(CODELAB_READY_EVENT,
+                () => this.firePageLoadEvents_());
+          }
         }
         break;
     }
@@ -485,7 +503,9 @@ class Codelab extends HTMLElement {
       return;
     }
 
-    const selected = target.getAttribute('href').substring(1);
+    const selected = new URL(target.getAttribute('href'), document.location.origin)
+        .hash.substring(1);
+
     this.setAttribute(SELECTED_ATTR, selected);
   }
 
@@ -710,6 +730,9 @@ class Codelab extends HTMLElement {
       return '/';
     }
 
+    if (index === 'index') {
+      index = '';
+    }
     const u = new URL(index, document.location.origin);
     return u.pathname;
   }
@@ -721,9 +744,10 @@ class Codelab extends HTMLElement {
    */
   fireEvent_(eventName, detail={}) {
     const event = new CustomEvent(eventName, {
-      detail: detail
+      detail: detail,
+      bubbles: true,
     });
-    document.body.dispatchEvent(event);
+    this.dispatchEvent(event);
   }
 
   /**
@@ -731,8 +755,8 @@ class Codelab extends HTMLElement {
    */
   firePageLoadEvents_() {
     this.fireEvent_(CODELAB_PAGEVIEW_EVENT, {
-      'page': location.pathname,
-      'title': this.title_
+      'page': location.pathname + '#' + this.currentSelectedStep_,
+      'title': this.steps_[this.currentSelectedStep_].getAttribute(LABEL_ATTR)
     });
 
     window.requestAnimationFrame(() => {

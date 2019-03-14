@@ -7,11 +7,11 @@ using some simple formatting conventions. You can also author codelabs using mar
 This repo contains all the tools and documentation you’ll need for building and publishing
 your own codelabs.
 
-If you're interested in authoring codelabs, join [this group](https://groups.google.com/forum/#!forum/codelab-authors),
-which connects you with other authors and provides access to the [Codelab Formatting Guide](https://g.co/codelabs/guide).
+If you're interested in authoring codelabs, create a doc following the [Codelab Formatting Guide](FORMAT-GUIDE.md). 
+and see the [claat](claat) directory for a detailed description of the `claat` command line tool.
 
-See the [claat](claat) directory for detailed description of the `claat` command
-line tool.
+Also, consider joining the [codelab-authors Google Group](https://groups.google.com/forum/#!forum/codelab-authors),
+which connects you with other authors and provides updates on new releases. 
 
 ## What is this?
 
@@ -92,7 +92,7 @@ which you can do online. The CLA is necessary mainly because we need your
 permission to use and distribute your codelab.
 * Draft your content using the tools and techniques documented in this repo. 
 * When you're ready for a review, submit a link to your source doc to codelab-submissions@google.com and we'll get it reviewed by one or more subject matter expert(s).
-* Once reviewed and approved by Google, we'll copy the source doc, add attribution for your authorship, and publish it on our official codelabs site (g.co/codelabs).
+* Once reviewed and approved by Google, we'll copy the source doc, add attribution for your authorship, and publish it on our official codelabs site (https://g.co/codelabs).
 
 ## Why bother with this approach when I can write tutorials directly in Markdown?
 
@@ -114,7 +114,7 @@ for disaster.
 
 ## What are the supported input formats?
 
-* Google Docs (following g.co/codelabs/guide formatting conventions)
+* Google Docs (following https://g.co/codelabs/guide formatting conventions)
 * Markdown
 
 ## What are the supported output formats?

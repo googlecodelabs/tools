@@ -256,7 +256,13 @@ func slurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, er
 		ext = filepath.Ext(imgURL)
 	} else {
 		b, err = slurpRemoteBytes(client, u.String(), 5)
-		ext = ".png"
+		if string(b[6:10]) == "JFIF" {
+			ext = ".jpeg"
+		} else if string(b[0:3]) == "GIF" {
+			ext = ".gif"
+		} else {
+			ext = ".png"
+		}
 	}
 	if err != nil {
 		return "", err

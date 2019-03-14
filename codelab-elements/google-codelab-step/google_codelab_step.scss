@@ -179,7 +179,12 @@ google-codelab-step .instructions strong {
   font-weight: 600;
 }
 
+google-codelab-step .instructions :link paper-button {
+  text-decoration: none !important;
+}
+
 google-codelab-step .instructions paper-button {
+  display: inline-block;
   border-radius: 4px;
   color: #FFFFFF;
   font-family: 'Google Sans', Arial, sans-serif;
@@ -214,14 +219,19 @@ google-codelab-step .instructions paper-button.red {
 }
 
 google-codelab-step .instructions iron-icon {
-  padding-right: 8px;
-  max-height: 16px;
-  max-width: 16px;
+  vertical-align: sub;
+  margin-right: 7px;
+  margin-left: 3px;
+  font-size: 16px;
 }
 
 google-codelab-step .instructions img {
   max-width: 100%;
   vertical-align: bottom;
+}
+
+google-codelab-step .instructions .image-container {
+  text-align: center;
 }
 
 google-codelab-step .instructions table {
@@ -298,4 +308,14 @@ google-codelab-step .instructions h3 > a[href*="github"]:visited {
   background-repeat: no-repeat;
   background-size: 18px;
   background-image: url('data:image/png;base64,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');
+}
+
+google-codelab-step .youtube-video {
+  display: flex;
+  margin: auto;
+  width: 560px;
+  height: 315px;
+  border: none;
+  max-width: 100%;
+  max-height: 51vw;
 }

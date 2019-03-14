@@ -50,6 +50,11 @@ func WriteHTML(w io.Writer, env string, nodes ...types.Node) error {
 	return hw.write(nodes...)
 }
 
+// ReplaceDoubleCurlyBracketsWithEntity replaces Double Curly Brackets with their charater entity.
+func ReplaceDoubleCurlyBracketsWithEntity(s string) string {
+	return strings.Replace(s, "{{", "&#123;&#123;", -1)
+}
+
 type htmlWriter struct {
 	w   io.Writer // output writer
 	env string    // target environment
@@ -132,7 +137,8 @@ func (hw *htmlWriter) writeFmt(f string, a ...interface{}) {
 }
 
 func (hw *htmlWriter) writeEscape(s string) {
-	htmlTemplate.HTMLEscape(hw.w, []byte(s))
+	s = htmlTemplate.HTMLEscapeString(s)
+	hw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
 }
 
 func (hw *htmlWriter) text(n *types.TextNode) {
@@ -146,6 +152,7 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 		hw.writeString("<code>")
 	}
 	s := htmlTemplate.HTMLEscapeString(n.Value)
+	s = ReplaceDoubleCurlyBracketsWithEntity(s)
 	hw.writeString(strings.Replace(s, "\n", "<br>", -1))
 	if n.Code {
 		hw.writeString("</code>")
@@ -166,8 +173,8 @@ func (hw *htmlWriter) image(n *types.ImageNode) {
 	if n.Title != "" {
 		hw.writeFmt(" title=%q", n.Title)
 	}
-	if n.MaxWidth > 0 {
-		hw.writeFmt(` style="max-width: %.2fpx"`, n.MaxWidth)
+	if n.Width > 0 {
+		hw.writeFmt(` style="width: %.2fpx"`, n.Width)
 	}
 	hw.writeString(` src="`)
 	hw.writeString(n.Src)
@@ -232,12 +239,34 @@ func (hw *htmlWriter) code(n *types.CodeNode) {
 func (hw *htmlWriter) list(n *types.ListNode) {
 	wrap := n.Block() == true
 	if wrap {
-		hw.writeString("<p>")
+		if onlyImages(n.Nodes...) {
+			hw.writeString(`<p class="image-container">`)
+		} else {
+			hw.writeString("<p>")
+		}
 	}
 	hw.write(n.Nodes...)
 	if wrap {
 		hw.writeString("</p>")
 	}
+}
+
+// Returns true if the list of Nodes contains only images or white spaces.
+func onlyImages(nodes ...types.Node) bool {
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *types.TextNode:
+			if len(strings.TrimSpace(n.Value)) != 0 {
+				continue
+			}
+			return false
+		case *types.ImageNode:
+			continue
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
@@ -335,5 +364,8 @@ func (hw *htmlWriter) header(n *types.HeaderNode) {
 }
 
 func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
-	hw.writeFmt("<google-youtube fluid video-id=%q></google-youtube>", n.VideoID)
+	hw.writeFmt(`<iframe class="youtube-video" `+
+		`src="https://www.youtube.com/embed/%s" allow="accelerometer; `+
+		`autoplay; encrypted-media; gyroscope; picture-in-picture" `+
+		`allowfullscreen></iframe>`, n.VideoID)
 }

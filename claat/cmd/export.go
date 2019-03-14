@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -26,6 +25,7 @@ import (
 
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
 // Options type to make the CmdExport signature succinct.
@@ -42,6 +42,8 @@ type CmdExportOptions struct {
 	Output string
 	// Prefix is a URL prefix to prepend when using HTML format.
 	Prefix string
+	// Srcs is the sources to export codelabs from.
+	Srcs []string
 	// Tmplout is the output format.
 	Tmplout string
 }
@@ -50,7 +52,7 @@ type CmdExportOptions struct {
 // It returns a process exit code.
 func CmdExport(opts CmdExportOptions) int {
 	var exitCode int
-	if flag.NArg() == 0 {
+	if len(opts.Srcs) == 0 {
 		log.Fatalf("Need at least one source. Try '-h' for options.")
 	}
 	type result struct {
@@ -58,15 +60,15 @@ func CmdExport(opts CmdExportOptions) int {
 		meta *types.Meta
 		err  error
 	}
-	args := unique(flag.Args())
-	ch := make(chan *result, len(args))
-	for _, src := range args {
+	srcs := util.Unique(opts.Srcs)
+	ch := make(chan *result, len(srcs))
+	for _, src := range srcs {
 		go func(src string) {
 			meta, err := exportCodelab(src, opts)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
-	for range args {
+	for range srcs {
 		res := <-ch
 		if res.err != nil {
 			exitCode = 1
@@ -162,7 +164,7 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 		w := os.Stdout
 		if !isStdout(dir) {
 			ext := ctx.Format
-			if ext == "htmlElements" {
+			if ext != "md" {
 				ext = "html"
 			}
 			f, err := os.Create(filepath.Join(dir, "index."+ext))
@@ -299,6 +301,9 @@ func importNodes(nodes []types.Node) []*types.ImportNode {
 // writeMeta writes codelab metadata to a local disk location
 // specified by path.
 func writeMeta(path string, cm *types.ContextMeta) error {
+	if cm.Context.Format == "htmlElements" {
+		cm.Context.Format = "html"
+	}
 	b, err := json.MarshalIndent(cm, "", "  ")
 	if err != nil {
 		return err
@@ -311,18 +316,4 @@ func writeMeta(path string, cm *types.ContextMeta) error {
 // The base argument is codelab parent directory.
 func codelabDir(base string, m *types.Meta) string {
 	return filepath.Join(base, m.ID)
-}
-
-// unique de-dupes a.
-// The argument a is not modified.
-func unique(a []string) []string {
-	seen := make(map[string]struct{}, len(a))
-	res := make([]string, 0, len(a))
-	for _, s := range a {
-		if _, y := seen[s]; !y {
-			res = append(res, s)
-			seen[s] = struct{}{}
-		}
-	}
-	return res
 }
