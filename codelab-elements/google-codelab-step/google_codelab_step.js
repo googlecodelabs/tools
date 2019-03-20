@@ -148,28 +148,33 @@ class CodelabStep extends HTMLElement {
       return;
     }
 
-    // If there is an google-codelab-about element we keep ti aside.
+    // If there is an google-codelab-about element we keep it aside.
     const aboutElements = this.getElementsByTagName('google-codelab-about');
     if (aboutElements.length > 0) {
       this.about_ = aboutElements[0];
       this.about_.parentNode.removeChild(this.about_);
     }
 
+    // Encapsulate instructions inside containers.
     this.instructions_ = dom.createElement('div');
     this.instructions_.classList.add('instructions');
     this.inner_ = dom.createElement('div');
     this.inner_.classList.add('inner');
     this.inner_.innerHTML = this.innerHTML;
+    dom.appendChild(this.instructions_, this.inner_);
     dom.removeChildren(this);
 
+    // Generate the title using a soy template.
     const title = soy.renderAsElement(Templates.title, {
       step: this.step_,
       label: this.label_,
     });
     this.title_ = title;
 
+    // Inject the title in the containers.
     dom.insertChildAt(this.inner_, title, 0);
 
+    // Add prettyprint to code blocks.
     const codeElements = this.inner_.querySelectorAll('pre code');
     codeElements.forEach((el) => {
       const code = window['prettyPrintOne'](el.innerHTML);
@@ -178,12 +183,11 @@ class CodelabStep extends HTMLElement {
         el, 'copy', () => this.handleSnippetCopy_(el));
     });
 
-    // re-insert the about element before the instructions.
+    // Re-insert the about element before the instructions.
     if (this.about_) {
       dom.appendChild(this, this.about_);
     }
-
-    dom.appendChild(this.instructions_, this.inner_);
+    // Insert instructions container.
     dom.appendChild(this, this.instructions_);
 
     this.hasSetup_ = true;
