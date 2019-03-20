@@ -131,7 +131,7 @@ func TestParseMetadata(t *testing.T) {
 	wantMeta := types.Meta{
 		Title:      title,
 		ID:         "zyxwvut",
-		Author:     "john smith",
+		Authors:    "john smith",
 		Summary:    "abcdefghij",
 		Categories: []string{"not", "really"},
 		Tags:       []string{"kiosk", "web"},
@@ -141,7 +141,7 @@ func TestParseMetadata(t *testing.T) {
 
 	content := `---
 id: zyxwvut
-author: john smith
+authors: john smith
 summary: abcdefghij
 categories: not, really
 environments: kiosk, web

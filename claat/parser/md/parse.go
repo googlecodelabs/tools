@@ -41,7 +41,7 @@ import (
 
 // Metadata constants for the YAML header
 const (
-	MetaAuthor           = "author"
+	MetaAuthors          = "authors"
 	MetaSummary          = "summary"
 	MetaID               = "id"
 	MetaCategories       = "categories"
@@ -353,9 +353,9 @@ func standardSplit(s string) []string {
 func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 	for k, v := range m {
 		switch k {
-		case MetaAuthor:
+		case MetaAuthors:
 			// Directly assign the summary to the codelab field.
-			c.Author = v
+			c.Authors = v
 		case MetaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v

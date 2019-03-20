@@ -38,6 +38,7 @@ type Context struct {
 	GlobalGA string
 	Meta     *types.Meta
 	Steps    []*types.Step
+	Updated  string
 	Extra    map[string]string // Extra variables passed from the command line.
 }
 
@@ -95,7 +96,7 @@ var funcMap = map[string]interface{}{
 		if meta.Status != nil {
 			res += kvLine(mdParse.MetaStatus, meta.Status.String())
 		}
-		res += kvLine(mdParse.MetaAuthor, meta.Author)
+		res += kvLine(mdParse.MetaAuthors, meta.Authors)
 		res += kvLine(mdParse.MetaCategories, strings.Join(meta.Categories, ","))
 		res += kvLine(mdParse.MetaTags, strings.Join(meta.Tags, ","))
 		res += kvLine(mdParse.MetaFeedbackLink, meta.Feedback)

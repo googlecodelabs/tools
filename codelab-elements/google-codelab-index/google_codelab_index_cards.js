@@ -23,7 +23,7 @@ const dom = goog.require('goog.dom');
 const soy = goog.require('goog.soy');
 
 /** @const {string} */
-const AUTHOR_ATTR = 'author';
+const AUTHORS_ATTR = 'authors';
 
 /** @const {string} */
 const CATEGORY_ATTR = 'category';
@@ -378,7 +378,7 @@ class Cards extends HTMLElement {
       duration: parseInt(link.getAttribute(DURATION_ATTR), 10) || 0,
       updated: this.prettyDate_(link.getAttribute(UPDATED_ATTR)) || '',
       tags: link.getAttribute(TAGS_ATTR) || '',
-      author: link.getAttribute(AUTHOR_ATTR) || ''
+      authors: link.getAttribute(AUTHORS_ATTR) || ''
     };
     soy.renderElement(link, Templates.card, info);
     link.classList.add('card');

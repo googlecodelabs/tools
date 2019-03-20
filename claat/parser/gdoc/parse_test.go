@@ -145,7 +145,7 @@ func TestMetaTable(t *testing.T) {
 				<td>Test summary</td>
 			</tr>
 			<tr>
-				<td>Author</td>
+				<td>Authors</td>
 				<td>John Smith &lt;user@example.com&gt;</td>
 			</tr>
 			<tr>
@@ -180,7 +180,7 @@ func TestMetaTable(t *testing.T) {
 	}
 	meta := types.Meta{
 		Summary:    "Test summary",
-		Author:     "John Smith <user@example.com>",
+		Authors:     "John Smith <user@example.com>",
 		Categories: []string{"Foo", "Bar"},
 		Theme:      "foo",
 		Status:     clab.Meta.Status, // verified separately

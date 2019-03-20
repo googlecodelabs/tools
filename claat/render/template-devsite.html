@@ -20,14 +20,17 @@ the License.
     <meta name="book_path" value="/_book.yaml" />
     <meta name="full_width" value="true" />
     <meta name="no_page_title" value="true" />
-    <meta name="keywords" value='"{{range $index, $tag := .Meta.Tags}}{{if $index}}","{{end}}tag_{{$tag}}{{end}}","{{range $index, $cat := .Meta.Categories}}{{if $index}}","{{end}}category_{{$cat}}{{end}}"' />
+    <meta name="keywords" value='"{{range $index, $tag := .Meta.Tags}}{{if $index}}","{{end}}tag_{{$tag}}{{end}}{{range $index, $cat := .Meta.Categories}}","category_{{$cat}}{{end}}"' />
     {{if .Meta.Summary}}
-    <meta name="description" content="{{.Meta.Summary}}" />
+      <meta name="description" content="{{.Meta.Summary}}" />
     {{end}}
     <meta name="hide_last_updated" value="true" />
     <meta name="hide_ratings_widget" value="true" />
     <meta name="page_type" value="codelab" />
     <meta name="duration" value="{{.Meta.Duration}}" />
+    {{if .Meta.Authors}}
+      <meta name="authors" value="{{.Meta.Authors}}" />
+    {{end}}
     <style>
       body {
         transition: opacity ease-in 0.2s;
@@ -48,11 +51,17 @@ the License.
                     title="{{.Meta.Title}}"
                     environment="{{index .Env}}"
                     feedback-link="{{.Meta.Feedback}}">
-      {{range .Steps}}{{if matchEnv .Tags $.Env}}
+      {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
         <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
+          {{if eq $i 0}}
+            <google-codelab-about {{if $.Updated}}last-updated="{{$.Updated}}"{{end}}
+                                  {{if $.Meta.Authors}}authors="{{$.Meta.Authors}}"{{end}}>
+            </google-codelab-about>
+          {{end}}
           {{.Content | renderHTML $.Env}}
         </google-codelab-step>
       {{end}}{{end}}
+      <devsite-badger></devsite-badger> 
     </google-codelab>
   </body>
 </html>
