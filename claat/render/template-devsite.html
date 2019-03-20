@@ -49,14 +49,16 @@ the License.
                     title="{{.Meta.Title}}"
                     environment="{{index .Env}}"
                     feedback-link="{{.Meta.Feedback}}">         
-      {{range .Steps}}{{if matchEnv .Tags $.Env}}
+      {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
         <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
+          {{if eq $i 0}}
+            <google-codelab-about {{if $.Updated}}last-updated="{{$.Updated}}"{{end}}
+                                  {{if $.Meta.Authors}}authors="{{$.Meta.Authors}}"{{end}}>
+            </google-codelab-about>
+          {{end}}
           {{.Content | renderHTML $.Env}}
         </google-codelab-step>
       {{end}}{{end}}
-      <google-codelab-about {{if $.Updated}}last-updated="{{$.Updated}}"{{end}}
-                            {{if $.Meta.Authors}}authors="{{$.Meta.Authors}}"{{end}}>
-      </google-codelab-about>
     </google-codelab>
   </body>
 </html>

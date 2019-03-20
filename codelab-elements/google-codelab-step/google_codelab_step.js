@@ -74,6 +74,11 @@ class CodelabStep extends HTMLElement {
     this.title_ = null;
 
     /**
+     * @private {?Element}
+     */
+    this.about_ = null;
+
+    /**
      * @private {!EventHandler}
      * @const
      */
@@ -143,6 +148,13 @@ class CodelabStep extends HTMLElement {
       return;
     }
 
+    // If there is an google-codelab-about element we keep ti aside.
+    const aboutElements = this.getElementsByTagName('google-codelab-about');
+    if (aboutElements.length > 0) {
+      this.about_ = aboutElements[0];
+      this.about_.parentNode.removeChild(this.about_);
+    }
+
     this.instructions_ = dom.createElement('div');
     this.instructions_.classList.add('instructions');
     this.inner_ = dom.createElement('div');
@@ -165,6 +177,11 @@ class CodelabStep extends HTMLElement {
       this.eventHandler_.listen(
         el, 'copy', () => this.handleSnippetCopy_(el));
     });
+
+    // re-insert the about element before the instructions.
+    if (this.about_) {
+      dom.appendChild(this, this.about_);
+    }
 
     dom.appendChild(this.instructions_, this.inner_);
     dom.appendChild(this, this.instructions_);
