@@ -28,6 +28,7 @@ the License.
     <meta name="hide_ratings_widget" value="true" />
     <meta name="page_type" value="codelab" />
     <meta name="duration" value="{{.Meta.Duration}}" />
+    <meta name="authors" value="{{.Meta.Authors}}" />
     <style>
       body {
         transition: opacity ease-in 0.2s;
@@ -48,6 +49,9 @@ the License.
                     title="{{.Meta.Title}}"
                     environment="{{index .Env}}"
                     feedback-link="{{.Meta.Feedback}}">
+      <google-codelab-about {{if .Updated}}last-updated="{{.Updated}}"{{end}}
+                            {{if .Meta.Authors}}authors="{{.Meta.Authors}}"{{end}}>
+      </google-codelab-about>            
       {{range .Steps}}{{if matchEnv .Tags $.Env}}
         <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
           {{.Content | renderHTML $.Env}}

@@ -25,7 +25,7 @@
   {@param category: string}
   {@param duration: number}
   {@param updated: string}
-  {@param author: string}
+  {@param authors: string}
   <div class="card-header {$category}-bg">
     <span class="category-icon {$category}-icon"></span>
     <span class="card-duration">
@@ -41,7 +41,7 @@
   <div class="card-footer {$category}-footer">
     <span class="card-start {$category}-start">Start</span>
     <span class="card-updated">
-      {if $author}<div>{$author}</div>{/if}
+      {if $authors}<div>{$authors}</div>{/if}
       {if $updated}<div>Updated {$updated}</div>{/if}
     </span>
   </div>
