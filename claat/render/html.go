@@ -256,7 +256,7 @@ func onlyImages(nodes ...types.Node) bool {
 	for _, n := range nodes {
 		switch n := n.(type) {
 		case *types.TextNode:
-			if len(strings.TrimSpace(n.Value)) != 0 {
+			if len(strings.TrimSpace(n.Value)) == 0 {
 				continue
 			}
 			return false
