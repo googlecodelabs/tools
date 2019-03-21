@@ -62,7 +62,8 @@ the License.
           
           {{if eq (inc $i) (len $.Steps)}}
             <devsite-binary-rating></devsite-binary-rating>
-            <devsite-paylist-next-step></devsite-paylist-next-step>
+            <devsite-quizz codelab-id="{{$.Meta.ID}}"></devsite-quizz>
+            <devsite-paylist-next-step codelab-id="{{$.Meta.ID}}"></devsite-paylist-next-step>
           {{end}}
         </google-codelab-step>
       {{end}}{{end}}
