@@ -62,6 +62,9 @@ const DURATION_ATTR = 'duration';
 const HIDDEN_ATTR = 'hidden';
 
 /** @const {string} */
+const ID_ATTR = 'id';
+
+/** @const {string} */
 const COMPLETED_ATTR = 'completed';
 
 /** @const {string} */
@@ -95,6 +98,11 @@ const ANALYTICS_READY_ATTR = 'anayltics-ready';
  * The general codelab action event fired for trackable interactions.
  */
 const CODELAB_ACTION_EVENT = 'google-codelab-action';
+
+/**
+ * The general codelab action event fired when the codelab has ben completed.
+ */
+const CODELAB_COMPLETED_EVENT = 'google-codelab-completed';
 
 /**
  * The general codelab action event fired for trackable interactions.
@@ -557,6 +565,18 @@ class Codelab extends HTMLElement {
   /**
    * @private
    */
+  sendCodelabsCompletedEvent_() {
+    const selectedStep = parseInt(this.getAttribute(SELECTED_ATTR), 0);
+    if (selectedStep === this.steps_.length - 1) {
+      this.fireEvent_(CODELAB_COMPLETED_EVENT, {
+        'codelab-id': this.id_,
+      });
+    }
+  }
+
+  /**
+   * @private
+   */
   setupSteps_() {
     this.steps_.forEach((step, index) => {
       step = /** @type {!Element} */ (step);
@@ -577,6 +597,8 @@ class Codelab extends HTMLElement {
     }
 
     selected = Math.min(Math.max(0, parseInt(selected, 10)), this.steps_.length - 1);
+
+    this.sendCodelabsCompletedEvent_();
 
     if (this.currentSelectedStep_ === selected || isNaN(selected)) {
       // Either the current step is already selected or an invalid option was provided
@@ -797,7 +819,7 @@ class Codelab extends HTMLElement {
       }
     }
 
-    this.id_ = this.getAttribute('id');
+    this.id_ = this.getAttribute(ID_ATTR);
     const progress = this.storage_.get(`progress_${this.id_}`);
     if (progress && progress !== '0') {
       this.resumed_ = true;
