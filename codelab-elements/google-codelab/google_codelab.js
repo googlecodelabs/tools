@@ -131,6 +131,9 @@ class Codelab extends HTMLElement {
     this.stepsContainer_ = null;
 
     /** @private {?Element} */
+    this.timeContainer_ = null;
+
+    /** @private {?Element} */
     this.titleContainer_ = null;
 
     /** @private {?Element} */
@@ -540,7 +543,7 @@ class Codelab extends HTMLElement {
    * @private
    */
   updateTimeRemaining_() {
-    if (!this.titleContainer_) {
+    if (!this.timeContainer_) {
       return;
     }
 
@@ -554,11 +557,11 @@ class Codelab extends HTMLElement {
     }
 
     const newTimeEl =  soy.renderAsElement(Templates.timeRemaining, {time});
-    const oldTimeEl = this.titleContainer_.querySelector('#time-remaining');
+    const oldTimeEl = this.timeContainer_.querySelector('#time-remaining');
     if (oldTimeEl) {
       dom.replaceNode(newTimeEl, oldTimeEl);
     } else {
-      dom.appendChild(this.titleContainer_, newTimeEl);
+      dom.appendChild(this.timeContainer_, newTimeEl);
     }
   }
 
@@ -801,6 +804,7 @@ class Codelab extends HTMLElement {
 
     this.drawer_ = this.querySelector('#drawer');
     this.titleContainer_ = this.querySelector('#codelab-title');
+    this.timeContainer_ = this.querySelector('#codelab-time-container');
     this.stepsContainer_ = this.querySelector('#steps');
     this.controls_ = this.querySelector('#controls');
     this.prevStepBtn_ = this.querySelector('#controls #previous-step');

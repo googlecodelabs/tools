@@ -21,7 +21,7 @@ google-codelab #drawer {
   flex-shrink: 0;
   position: relative;
   border-right: 1px solid #DADCE0;
-  z-index: 100;
+  z-index: 1001;
   display: flex;
   flex-direction: column;
 }
@@ -206,7 +206,7 @@ google-codelab #drawer {
     left: 0;
     top: 0;
     bottom: 0;
-    z-index: 1000;
+    z-index: 1001;
     will-change: transform;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0);
     pointer-events: none;
