@@ -496,14 +496,14 @@ class Codelab extends HTMLElement {
    * @private
    */
   handleDrawerClick_(e) {
-    e.preventDefault();
-    e.stopPropagation();
     let target = /** @type {!Element} */ (e.target);
 
     while (target !== this.drawer_) {
       if (target.tagName.toUpperCase() === 'A') {
         break;
       }
+      e.preventDefault();
+      e.stopPropagation();
       target = /** @type {!Element} */ (target.parentNode);
     }
 
