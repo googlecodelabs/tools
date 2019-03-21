@@ -19,6 +19,7 @@ google-codelab {
   display: flex;
   width: 100%;
   height: 100%;
+  padding-top: 64px;
 }
 
 google-codelab #main {
@@ -30,6 +31,10 @@ google-codelab #main {
 }
 
 google-codelab #codelab-title {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   background: #FFFFFF;
   box-shadow: 0px 1px 2px 0px rgba(60, 64, 67, 0.3), 0px 2px 6px 2px rgba(60, 64, 67, 0.15);
   color: #3C4043;
@@ -37,9 +42,9 @@ google-codelab #codelab-title {
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  padding: 0 16px;
+  padding: 0 36px 0 16px;
   -webkit-font-smoothing: antialiased;
-  z-index: 99;
+  z-index: 1000;
 }
 
 google-codelab #codelab-title h1 {

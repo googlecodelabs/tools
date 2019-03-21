@@ -23,13 +23,15 @@
 {template .structure}
   {@param homeUrl: string}
   <div id="drawer">Drawer</div>
-  <div id="main">
-    <div id="codelab-title">
-      <div id="codelab-nav-buttons">
-        <a href="{$homeUrl}" id="arrow-back"><i class="material-icons">arrow_back</i></a>
-        <a href="#" id="menu"><i class="material-icons">menu</i></a>
-      </div>
+  <div id="codelab-title">
+    <div id="codelab-nav-buttons">
+      <a href="{$homeUrl}" id="arrow-back"><i class="material-icons">close</i></a>
+      <a href="#" id="menu"><i class="material-icons">menu</i></a>
     </div>
+    <div id="codelab-time-container"></div>
+    <devsite-user></devsite-user>
+  </div>
+  <div id="main">
     <div id="steps"></div>
     <div id="controls">
       <div id="fabs">
