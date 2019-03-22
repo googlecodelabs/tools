@@ -16,10 +16,10 @@
  */
 
 goog.module('googlecodelabs.CodelabStepDef');
-const CodelabStep = goog.require('googlecodelabs.CodelabStep');
+const CodelabAbout = goog.require('googlecodelabs.CodelabAbout');
 
 try {
-  window.customElements.define(CodelabStep.getTagName(), CodelabStep);
+  window.customElements.define(CodelabAbout.getTagName(), CodelabAbout);
 } catch (e) {
-  console.warn('googlecodelabs.CodelabStep', e);
+  console.warn('googlecodelabs.CodelabAbout', e);
 }
