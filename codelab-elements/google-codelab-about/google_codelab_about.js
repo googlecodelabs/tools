@@ -17,11 +17,11 @@
 
 goog.module('googlecodelabs.CodelabAbout');
 
+const DateTimeFormat = goog.require('goog.i18n.DateTimeFormat');
 const EventHandler = goog.require('goog.events.EventHandler');
 const Templates = goog.require('googlecodelabs.CodelabAbout.Templates');
 const dom = goog.require('goog.dom');
 const soy = goog.require('goog.soy');
-const DateTimeFormat = goog.require('goog.i18n.DateTimeFormat');
 
 /** @const {string} */
 const LAST_UPDATED_ATTR = 'last-updated';
