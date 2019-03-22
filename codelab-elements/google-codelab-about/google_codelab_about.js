@@ -43,17 +43,17 @@ class CodelabAbout extends HTMLElement {
   constructor() {
     super();
 
-    /** @private {boolean} */
-    this.lastUpdated_ = false;
-
-    /** @private {boolean} */
+    /** @private {string} */
     this.authors_ = false;
+
+    /** @private {string} */
+    this.codelabTitle_ = false;
 
     /** @private {boolean} */
     this.hasSetup_ = false;
 
-    /** @private {boolean} */
-    this.codelabTitle_ = false;
+    /** @private {string} */
+    this.lastUpdated_ = false;
 
     /**
      * @private {!EventHandler}
