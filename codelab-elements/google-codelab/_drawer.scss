@@ -31,6 +31,7 @@ google-codelab #drawer .steps {
   flex-grow: 1;
   overflow-x: visible;
   display: flex;
+  max-height: calc(100% - 54px);
 }
 
 google-codelab #drawer ol {
@@ -126,7 +127,7 @@ google-codelab #drawer ol li[completed] .step:before {
 
 google-codelab #drawer .metadata {
   color: #777;
-  font-size: 0.7em;
+  font-size: 14px;
   padding: 16px;
   flex-shrink: 0;
 }
