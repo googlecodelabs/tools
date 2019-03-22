@@ -44,6 +44,7 @@ closure_js_binary(
 sass_binary(
     name = "google_codelab_about_scss_bin",
     src = "google_codelab_about.scss",
+)
 
 closure_js_template_library(
     name = "google_codelab_about_soy",
