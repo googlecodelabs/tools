@@ -54,7 +54,8 @@ the License.
       {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
         <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
           {{if eq $i 0}}
-            <google-codelab-about {{if $.Updated}}last-updated="{{$.Updated}}"{{end}}
+            <google-codelab-about codelab-title="{{$.Meta.Title}}"
+                                  {{if $.Updated}}last-updated="{{$.Updated}}"{{end}}
                                   {{if $.Meta.Authors}}authors="{{$.Meta.Authors}}"{{end}}>
             </google-codelab-about>
           {{end}}
