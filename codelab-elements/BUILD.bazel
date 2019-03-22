@@ -22,6 +22,7 @@ genrule(
     srcs = [
         "//codelab-elements/google-codelab-analytics:google_codelab_analytics_bin",
         "//codelab-elements/google-codelab:google_codelab_bin",
+        "//codelab-elements/google-codelab-about:google_codelab_about_bin",
         "//codelab-elements/google-codelab-step:google_codelab_step_bin",
         "//codelab-elements/google-codelab-survey:google_codelab_survey_bin",
     ],
@@ -33,6 +34,7 @@ genrule(
     outs = ["codelab-elements.css"],
     srcs = [
         "//codelab-elements/google-codelab:google_codelab_scss_bin",
+        "//codelab-elements/google-codelab-about:google_codelab_about_scss_bin",
         "//codelab-elements/google-codelab-step:google_codelab_step_scss_bin",
         "//codelab-elements/google-codelab-survey:google_codelab_survey_scss_bin",
     ],
