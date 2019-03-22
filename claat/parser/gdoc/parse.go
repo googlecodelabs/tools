@@ -380,6 +380,8 @@ func metaTable(ds *docState) {
 		switch strings.ToLower(stringifyNode(tr.FirstChild, true)) {
 		case "id", "url":
 			ds.clab.ID = s
+		case "author":
+			ds.clab.Authors = s
 		case "authors":
 			ds.clab.Authors = s
 		case "summary":
