@@ -18,7 +18,6 @@
 goog.module('googlecodelabs.CodelabAbout');
 
 const DateTimeFormat = goog.require('goog.i18n.DateTimeFormat');
-const EventHandler = goog.require('goog.events.EventHandler');
 const Templates = goog.require('googlecodelabs.CodelabAbout.Templates');
 const dom = goog.require('goog.dom');
 const soy = goog.require('goog.soy');
@@ -43,23 +42,17 @@ class CodelabAbout extends HTMLElement {
   constructor() {
     super();
 
-    /** @private {string} */
-    this.authors_ = false;
+    /** @private {?string} */
+    this.authors_ = null;
 
-    /** @private {string} */
-    this.codelabTitle_ = false;
+    /** @private {?string} */
+    this.codelabTitle_ = null;
 
     /** @private {boolean} */
     this.hasSetup_ = false;
 
-    /** @private {string} */
-    this.lastUpdated_ = false;
-
-    /**
-     * @private {!EventHandler}
-     * @const
-     */
-    this.eventHandler_ = new EventHandler();
+    /** @private {?string} */
+    this.lastUpdated_ = null;
   }
 
   /**
