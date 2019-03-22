@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-goog.module('googlecodelabs.CodelabStepDef');
+goog.module('googlecodelabs.CodelabAboutDef');
 const CodelabAbout = goog.require('googlecodelabs.CodelabAbout');
 
 try {
