@@ -55,7 +55,6 @@ google-codelab #drawer ol li a {
   align-items: center;
   font-size: 14px;
   color: #80868B;
-  border-radius: 4px;
   padding: 3px 10px;
   min-height: 48px;
   font-weight: 400;
@@ -65,7 +64,7 @@ google-codelab #drawer ol li a {
   font-family: 'Roboto', 'Noto', sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: all 300ms ease-in-out;
-  border: 1px #ccc solid;
+  border: 1px #dadce0 solid;
   border-radius: 5px;
   margin: 6px 0;
   background: white;
@@ -124,7 +123,6 @@ google-codelab #drawer ol li[completed] .step:before {
   color: #fff;
 }
 
-
 google-codelab #drawer .metadata {
   color: #777;
   font-size: 14px;
@@ -141,7 +139,7 @@ google-codelab #codelab-nav-buttons #menu {
   display: none;
 }
 
-google-codelab #drawer {
+google-codelab #drawer ol {
   ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
@@ -152,7 +150,6 @@ google-codelab #drawer {
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
   }
 }
-
 
 @media (max-width: 768px) {
   google-codelab {
