@@ -122,7 +122,6 @@ class CodelabAbout extends HTMLElement {
    * @private
    */
   setupDom_() {
-    dom.removeChildren(this);
     // Generate the content using a soy template.
     soy.renderElement(this, Templates.about, {
       lastUpdated: CodelabAbout.formatDate_(this.lastUpdated_),
