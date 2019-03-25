@@ -64,11 +64,10 @@ the License.
           {{if eq (inc $i) (len $.Steps)}}
             <devsite-binary-rating></devsite-binary-rating>
             <devsite-quizz codelab-id="{{$.Meta.ID}}"></devsite-quizz>
-            <devsite-paylist-next-step codelab-id="{{$.Meta.ID}}"></devsite-paylist-next-step>
+            <devsite-playlist-next-step codelab-id="{{$.Meta.ID}}"></devsite-playlist-next-step>
           {{end}}
         </google-codelab-step>
       {{end}}{{end}}
-      <devsite-badger></devsite-badger> 
     </google-codelab>
   </body>
 </html>
