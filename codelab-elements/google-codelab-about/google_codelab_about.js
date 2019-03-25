@@ -19,7 +19,6 @@ goog.module('googlecodelabs.CodelabAbout');
 
 const DateTimeFormat = goog.require('goog.i18n.DateTimeFormat');
 const Templates = goog.require('googlecodelabs.CodelabAbout.Templates');
-const dom = goog.require('goog.dom');
 const soy = goog.require('goog.soy');
 
 /** @const {string} */
