@@ -19,7 +19,6 @@ goog.module('googlecodelabs.CodelabAbout');
 
 const DateTimeFormat = goog.require('goog.i18n.DateTimeFormat');
 const Templates = goog.require('googlecodelabs.CodelabAbout.Templates');
-const dom = goog.require('goog.dom');
 const soy = goog.require('goog.soy');
 
 /** @const {string} */
@@ -122,7 +121,6 @@ class CodelabAbout extends HTMLElement {
    * @private
    */
   setupDom_() {
-    dom.removeChildren(this);
     // Generate the content using a soy template.
     soy.renderElement(this, Templates.about, {
       lastUpdated: CodelabAbout.formatDate_(this.lastUpdated_),
