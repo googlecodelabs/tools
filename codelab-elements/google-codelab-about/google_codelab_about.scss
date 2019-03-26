@@ -24,6 +24,10 @@ google-codelab-about .codelab-title {
   font-size: 32px;
   margin: 20px 0 30px 0;
   line-height: 45px;
+
+  .token {
+    display: inline-block;
+  }
 }
 
 google-codelab-about .about-card {
