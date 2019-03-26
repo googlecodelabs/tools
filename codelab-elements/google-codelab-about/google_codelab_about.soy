@@ -21,12 +21,16 @@
  * Renders the step title
  */
 {template .about}
-  {@param? codelabTitle: string}
+  {@param? codelabTitle: list<string>}
   {@param? lastUpdated: string}
   {@param? authors: string}
 
   {if $codelabTitle}
-    <div class="codelab-title">{$codelabTitle}</div>
+    <div class="codelab-title">
+    {for $token in $codelabTitle}
+      <div>{$token}</div>
+    {/for}
+    </div>
   {/if}
 
   <div class="about-card">

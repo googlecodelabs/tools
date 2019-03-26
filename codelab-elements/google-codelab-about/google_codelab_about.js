@@ -125,7 +125,7 @@ class CodelabAbout extends HTMLElement {
     soy.renderElement(this, Templates.about, {
       lastUpdated: CodelabAbout.formatDate_(this.lastUpdated_),
       authors: this.authors_,
-      codelabTitle: this.codelabTitle_,
+      codelabTitle: this.codelabTitle_.split(':').join(':||').split('||'),
     });
 
     this.hasSetup_ = true;
