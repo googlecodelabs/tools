@@ -355,7 +355,9 @@ func (hw *htmlWriter) header(n *types.HeaderNode) {
 		hw.writeString(` class="checklist"`)
 	case types.NodeHeaderFAQ:
 		hw.writeString(` class="faq"`)
+
 	}
+	hw.writeString(` is-upgraded`)
 	hw.writeBytes(greaterThan)
 	hw.write(n.Content.Nodes...)
 	hw.writeString("</")
