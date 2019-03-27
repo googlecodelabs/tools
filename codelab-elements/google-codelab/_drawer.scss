@@ -34,6 +34,10 @@ google-codelab #drawer .steps {
   max-height: calc(100% - 54px);
 }
 
+google-codelab #drawer .steps:only-child {
+  max-height: 100%;
+}
+
 google-codelab #drawer ol {
   margin: 0;
   padding: 16px 12px;
