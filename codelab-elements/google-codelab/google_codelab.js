@@ -219,6 +219,7 @@ class Codelab extends HTMLElement {
     if (!this.ready_) {
       this.ready_ = true;
       this.fireEvent_(CODELAB_READY_EVENT);
+      this.setAttribute(CODELAB_READY_EVENT, '');
     }
   }
 
@@ -571,9 +572,11 @@ class Codelab extends HTMLElement {
   sendCodelabsCompletedEvent_() {
     const selectedStep = parseInt(this.getAttribute(SELECTED_ATTR), 0);
     if (selectedStep === this.steps_.length - 1) {
-      this.fireEvent_(CODELAB_COMPLETED_EVENT, {
-        'codelab-id': this.id_,
-      });
+      if (this.id_) {
+        this.fireEvent_(CODELAB_COMPLETED_EVENT, {
+          'codelab-id': this.id_,
+        });
+      }
     }
   }
 
@@ -726,7 +729,10 @@ class Codelab extends HTMLElement {
       this.updateHistoryState(`#${selected}`, true);
     }
 
-    this.storage_.set(`progress_${this.id_}`, String(this.currentSelectedStep_));
+    if (this.id_) {
+      this.storage_.set(`progress_${this.id_}`,
+                        String(this.currentSelectedStep_));
+    }
   }
 
   /**
