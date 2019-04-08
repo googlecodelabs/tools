@@ -100,11 +100,6 @@ const ANALYTICS_READY_ATTR = 'anayltics-ready';
 const CODELAB_ACTION_EVENT = 'google-codelab-action';
 
 /**
- * The general codelab action event fired when the codelab has ben completed.
- */
-const CODELAB_COMPLETED_EVENT = 'google-codelab-completed';
-
-/**
  * The general codelab action event fired for trackable interactions.
  */
 const CODELAB_PAGEVIEW_EVENT = 'google-codelab-pageview';
@@ -283,6 +278,20 @@ class Codelab extends HTMLElement {
         }
         break;
     }
+  }
+
+  /**
+   * @return {!EventHandler}
+   */
+  getEventHandler() {
+    return this.eventHandler_;
+  }
+
+  /**
+   * @return {!Array<!Element>}
+   */
+  getSteps() {
+    return this.steps_;
   }
 
   /**
