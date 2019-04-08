@@ -381,22 +381,6 @@ class Codelab extends HTMLElement {
     this.eventHandler_.listen(document.body, events.EventType.KEYDOWN, (e) => {
       this.handleKeyDown_(e);
     });
-
-    // If a quiz is present, we fire the codelab-completed event only on
-    // quiz completion. Otherwise when the last step is opened.
-    if (this.querySelector('devsite-quiz')) {
-      this.eventHandler_.listen(this, 'devsite-quiz-success', (e) => {
-        this.fireEvent_(CODELAB_COMPLETED_EVENT, {'codelab-id': this.id_});
-      });
-    } else {
-      this.eventHandler_.listen(this, CODELAB_PAGEVIEW_EVENT, (e) => {
-        const selectedStep = parseInt(this.getAttribute(SELECTED_ATTR), 0);
-        if (selectedStep === this.steps_.length - 1 && this.id_) {
-          this.fireEvent_(CODELAB_COMPLETED_EVENT, {'codelab-id': this.id_});
-          console.log('CODELAB_COMPLETED_EVENT');
-        }
-      });
-    }
   }
 
   /**
