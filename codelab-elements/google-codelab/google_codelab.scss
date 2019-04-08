@@ -99,8 +99,9 @@ google-codelab #controls {
   right: 0;
   display: flex;
   justify-content: center;
-  z-index: 10;
   padding: 0 32px;
+  flex-direction: column;
+  z-index: 1001;
 }
 
 google-codelab #fabs {
