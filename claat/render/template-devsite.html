@@ -60,12 +60,6 @@ the License.
             </google-codelab-about>
           {{end}}
           {{.Content | renderHTML $.Env}}
-          
-          {{if eq (inc $i) (len $.Steps)}}
-            <devsite-binary-rating></devsite-binary-rating>
-            <devsite-quizz codelab-id="{{$.Meta.ID}}"></devsite-quizz>
-            <devsite-playlist-next-step codelab-id="{{$.Meta.ID}}"></devsite-playlist-next-step>
-          {{end}}
         </google-codelab-step>
       {{end}}{{end}}
     </google-codelab>
