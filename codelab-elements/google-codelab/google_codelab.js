@@ -764,7 +764,7 @@ class Codelab extends HTMLElement {
   /**
    * @param {string} eventName
    * @param {!Object=} detail
-   * @private
+   * @protected
    */
   fireEvent_(eventName, detail={}) {
     const event = new CustomEvent(eventName, {
