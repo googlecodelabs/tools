@@ -100,11 +100,6 @@ const ANALYTICS_READY_ATTR = 'anayltics-ready';
 const CODELAB_ACTION_EVENT = 'google-codelab-action';
 
 /**
- * The general codelab action event fired when the codelab has ben completed.
- */
-const CODELAB_COMPLETED_EVENT = 'google-codelab-completed';
-
-/**
  * The general codelab action event fired for trackable interactions.
  */
 const CODELAB_PAGEVIEW_EVENT = 'google-codelab-pageview';
@@ -283,6 +278,20 @@ class Codelab extends HTMLElement {
         }
         break;
     }
+  }
+
+  /**
+   * @return {!EventHandler}
+   */
+  getEventHandler() {
+    return this.eventHandler_;
+  }
+
+  /**
+   * @return {!Array<!Element>}
+   */
+  getSteps() {
+    return this.steps_;
   }
 
   /**
@@ -569,20 +578,6 @@ class Codelab extends HTMLElement {
   /**
    * @private
    */
-  sendCodelabsCompletedEvent_() {
-    const selectedStep = parseInt(this.getAttribute(SELECTED_ATTR), 0);
-    if (selectedStep === this.steps_.length - 1) {
-      if (this.id_) {
-        this.fireEvent_(CODELAB_COMPLETED_EVENT, {
-          'codelab-id': this.id_,
-        });
-      }
-    }
-  }
-
-  /**
-   * @private
-   */
   setupSteps_() {
     this.steps_.forEach((step, index) => {
       step = /** @type {!Element} */ (step);
@@ -602,9 +597,8 @@ class Codelab extends HTMLElement {
       return;
     }
 
-    selected = Math.min(Math.max(0, parseInt(selected, 10)), this.steps_.length - 1);
-
-    this.sendCodelabsCompletedEvent_();
+    selected = Math.min(Math.max(0, parseInt(selected, 10)),
+                        this.steps_.length - 1);
 
     if (this.currentSelectedStep_ === selected || isNaN(selected)) {
       // Either the current step is already selected or an invalid option was provided
@@ -770,7 +764,7 @@ class Codelab extends HTMLElement {
   /**
    * @param {string} eventName
    * @param {!Object=} detail
-   * @private
+   * @protected
    */
   fireEvent_(eventName, detail={}) {
     const event = new CustomEvent(eventName, {
