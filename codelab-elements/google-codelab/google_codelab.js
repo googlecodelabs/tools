@@ -282,15 +282,17 @@ class Codelab extends HTMLElement {
 
   /**
    * @return {!EventHandler}
+   * @export
    */
-  getEventHandler() {
+  get eventHandler() {
     return this.eventHandler_;
   }
 
   /**
    * @return {!Array<!Element>}
+   * @export
    */
-  getSteps() {
+  get steps() {
     return this.steps_;
   }
 
