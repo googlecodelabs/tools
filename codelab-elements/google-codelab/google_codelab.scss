@@ -99,14 +99,17 @@ google-codelab #controls {
   right: 0;
   display: flex;
   justify-content: center;
-  z-index: 10;
   padding: 0 32px;
+  flex-direction: column;
+  z-index: 1001;
 }
 
 google-codelab #fabs {
   display: flex;
   flex-grow: 1;
   max-width: 1025px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 google-codelab #fabs .spacer {
