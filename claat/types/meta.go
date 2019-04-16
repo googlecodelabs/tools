@@ -29,6 +29,7 @@ type Meta struct {
 	Duration   int           `json:"duration"`           // Codelab duration in minutes
 	Title      string        `json:"title"`              // Codelab title
 	Authors    string        `json:"authors,omitempty"`  // Arbitrary authorship text
+	BadgeID    string        `json:"badge_id,omitempty"` // ID of the BAdge to grant on codelab completion on devsite
 	Summary    string        `json:"summary"`            // Short summary
 	Theme      string        `json:"theme"`              // Usually first item of Categories
 	Status     *LegacyStatus `json:"status"`             // Draft, Published, Hidden, etc.
