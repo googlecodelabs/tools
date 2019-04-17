@@ -24,6 +24,7 @@
   {@param? codelabTitle: list<string>}
   {@param? lastUpdated: string}
   {@param? authors: string}
+  {@param? badgeId: string}
 
   {if $codelabTitle}
     <div class="codelab-title">
@@ -56,6 +57,8 @@
       {/if}
     </div>
 
-    <devsite-badge-to-earn></devsite-badge-to-earn>
+    {if $badgeId}
+      <devsite-badge-to-earn badge-id="$badgeId"></devsite-badge-to-earn>
+    {/if}
   </div>
 {/template}
