@@ -29,7 +29,7 @@
 google-codelab #drawer .steps {
   flex-shrink: 1;
   flex-grow: 1;
-  overflow-x: visible;
+  overflow-x: auto;
   display: flex;
   max-height: calc(100% - 54px);
 }
