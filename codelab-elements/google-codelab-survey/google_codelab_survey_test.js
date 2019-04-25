@@ -62,8 +62,8 @@ testSuite({
   testCodelabSurveyUpgraded() {
     document.body.appendChild(div);
     const surveyCE = div.querySelector('google-codelab-survey');
-    const radioInputEl = surveyCE.querySelector('input#title-text');
-    const radioLabelEl = surveyCE.querySelector('label#title-text-label');
+    const radioInputEl = surveyCE.querySelector('input#question--title-text');
+    const radioLabelEl = surveyCE.querySelector('label#question--title-text-label');
     const radioTextEl = surveyCE.querySelector('.option-text');
     const surveyWrapperEl = surveyCE.querySelector('.survey-questions');
     assertNotNull(radioInputEl);
@@ -71,7 +71,7 @@ testSuite({
     assertNotNull(radioLabelEl);
     assertEquals('test', surveyWrapperEl.getAttribute('survey-name', ''));
     assertEquals('Title Text', radioTextEl.textContent);
-    assertEquals('title-text', radioLabelEl.getAttribute('for', ''));
+    assertEquals('question--title-text', radioLabelEl.getAttribute('for', ''));
     assertTrue(surveyCE.hasAttribute('upgraded'));
   },
 
