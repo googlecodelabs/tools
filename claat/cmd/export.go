@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
@@ -156,6 +157,7 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 		Env:      ctx.Env,
 		Prefix:   ctx.Prefix,
 		GlobalGA: ctx.MainGA,
+		Updated:  time.Time(*ctx.Updated).Format(time.RFC3339),
 		Meta:     &clab.Meta,
 		Steps:    clab.Steps,
 		Extra:    extraVars,
@@ -301,6 +303,9 @@ func importNodes(nodes []types.Node) []*types.ImportNode {
 // writeMeta writes codelab metadata to a local disk location
 // specified by path.
 func writeMeta(path string, cm *types.ContextMeta) error {
+	if cm.Context.Format == "htmlElements" {
+		cm.Context.Format = "html"
+	}
 	b, err := json.MarshalIndent(cm, "", "  ")
 	if err != nil {
 		return err

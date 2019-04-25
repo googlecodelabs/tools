@@ -132,10 +132,10 @@ func (lw *liteWriter) image(n *types.ImageNode) *html.Node {
 		Data: atom.Img.String(),
 		Attr: []html.Attribute{{Key: "src", Val: n.Src}},
 	}
-	if n.MaxWidth > 0 {
+	if n.Width > 0 {
 		hn.Attr = append(hn.Attr, html.Attribute{
 			Key: "style",
-			Val: fmt.Sprintf("max-width: %.2fpx", n.MaxWidth),
+			Val: fmt.Sprintf("width: %.2fpx", n.Width),
 		})
 	}
 	return hn
@@ -395,8 +395,7 @@ func (lw *liteWriter) youtube(n *types.YouTubeNode) *html.Node {
 		Data: atom.Iframe.String(),
 		Attr: []html.Attribute{
 			{Key: "src", Val: fmt.Sprintf("https://www.youtube.com/embed/%s", n.VideoID)},
-			{Key: "type", Val: "text/html"},
-			{Key: "frameborder", Val: "0"},
+			{Key: "allow", Val: "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"},
 			{Key: "allowfullscreen", Val: "1"},
 			{Key: "class", Val: "keep-ar__box"},
 		},

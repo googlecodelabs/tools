@@ -162,8 +162,8 @@ func (mw *mdWriter) image(n *types.ImageNode) {
 	}
 
 	// If available append width to the src string of the image.
-	if n.MaxWidth > 0 {
-		mw.writeString(fmt.Sprintf(" width=\"%.2f\" ", n.MaxWidth))
+	if n.Width > 0 {
+		mw.writeString(fmt.Sprintf(" width=\"%.2f\" ", n.Width))
 	}
 
 	mw.writeString("/>")

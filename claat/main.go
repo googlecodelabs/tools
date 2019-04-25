@@ -26,7 +26,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/cmd"
@@ -37,7 +36,6 @@ import (
 )
 
 var (
-	useElements string // set by linker -X
 	version string // set by linker -X
 
 	// Flags.
@@ -62,14 +60,6 @@ func main() {
 		return
 	}
 
-	useElems, err := strconv.ParseBool(useElements)
-	if err != nil {
-		useElems = false
-	}
-	if useElems && *tmplout == "html"{
-		*tmplout = "htmlElements"
-	}
-
 	flag.Usage = usage
 	flag.CommandLine.Parse(os.Args[2:])
 
@@ -92,9 +82,7 @@ func main() {
 			Tmplout:   *tmplout,
 		})
 	case "serve":
-		exitCode = cmd.CmdServe(*addr, useElems)
-	case "build":
-		exitCode = cmd.CmdBuild()
+		exitCode = cmd.CmdServe(*addr)
 	case "update":
 		exitCode = cmd.CmdUpdate(cmd.CmdUpdateOptions{
 			AuthToken: *authToken,
@@ -172,13 +160,6 @@ When writing to a directory, existing files will be overwritten.
 
 The program exits with non-zero code if at least one src could not be exported.
 
-## Build command
-
-Install all the dependencies needed by the codelab unless already installed.
-This is done automatically by the serve command.
-To clean up and rebuild all the dependencies, remove bower_components
-directory and run the build command again
-
 ## Serve command
 
 Serve provides a simple web server for viewing exported codelabs.
@@ -186,8 +167,6 @@ It takes no arguments and presents the current directory contents.
 Clicking on a directory representing an exported codelab will load
 all the required dependencies and render the generated codelab as
 it would appear in production.
-
-The serve command always runs the build command first.
 
 The serve command takes a -addr host:port option, to specify the
 desired hostname or IP address and port number to bind to.

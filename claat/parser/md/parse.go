@@ -41,7 +41,8 @@ import (
 
 // Metadata constants for the YAML header
 const (
-	MetaAuthor           = "author"
+	MetaAuthors          = "authors"
+	MetaBadgeID          = "badge id"
 	MetaSummary          = "summary"
 	MetaID               = "id"
 	MetaCategories       = "categories"
@@ -353,9 +354,12 @@ func standardSplit(s string) []string {
 func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 	for k, v := range m {
 		switch k {
-		case MetaAuthor:
+		case MetaAuthors:
 			// Directly assign the summary to the codelab field.
-			c.Author = v
+			c.Authors = v
+		case MetaBadgeID:
+			// Directly assign the codelab ID to the codelab field.
+			c.BadgeID = v
 		case MetaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v
@@ -657,7 +661,7 @@ func image(ds *docState) types.Node {
 		if err != nil {
 			return nil
 		}
-		n.MaxWidth = float32(w)
+		n.Width = float32(w)
 	}
 
 	n.MutateBlock(findBlockParent(ds.cur))

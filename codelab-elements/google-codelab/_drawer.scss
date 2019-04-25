@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-google-codelab #drawer {
+ google-codelab #drawer {
   background: #fff;
   width: 256px;
   flex-shrink: 0;
   position: relative;
-  border-right: 1px solid #DADCE0;
   z-index: 100;
   display: flex;
   flex-direction: column;
+  background: #F8F9FA;
 }
 
 google-codelab #drawer .steps {
@@ -31,6 +31,11 @@ google-codelab #drawer .steps {
   flex-grow: 1;
   overflow-x: visible;
   display: flex;
+  max-height: calc(100% - 54px);
+}
+
+google-codelab #drawer .steps:only-child {
+  max-height: 100%;
 }
 
 google-codelab #drawer ol {
@@ -54,8 +59,7 @@ google-codelab #drawer ol li a {
   align-items: center;
   font-size: 14px;
   color: #80868B;
-  border-radius: 4px;
-  padding: 6px 16px;
+  padding: 3px 10px;
   min-height: 48px;
   font-weight: 400;
   line-height: 20px;
@@ -64,6 +68,10 @@ google-codelab #drawer ol li a {
   font-family: 'Roboto', 'Noto', sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: all 300ms ease-in-out;
+  border: 1px #dadce0 solid;
+  border-radius: 5px;
+  margin: 6px 0;
+  background: white;
 }
 
 google-codelab #drawer ol li a:active,
@@ -71,6 +79,7 @@ google-codelab #drawer ol li a:focus {
   background: #c6c6c6;
   -webkit-tap-highlight-color: transparent;
   outline: 0;
+  border-color: #c6c6c6 !important;
 }
 
 google-codelab #drawer ol li a .step {
@@ -98,39 +107,15 @@ google-codelab #drawer ol li .step:before {
   transition: all 300ms ease-in-out;
 }
 
-google-codelab #drawer ol li a:before,
-google-codelab #drawer ol li a:after {
-  content: '';
-  display: block;
-  background-color: #80868B;
-  width: 2px;
-  height: 50%;
-  z-index: 1;
-  position: absolute;
-  margin-left: 12px;
-}
-
-google-codelab #drawer ol li a:before {
-  top: 0;
-}
-
-google-codelab #drawer ol li a:after {
-  bottom: 0;
-}
-
-google-codelab #drawer ol li:first-child a:before,
-google-codelab #drawer ol li:last-child a:after {
-  display: none;
-}
-
 google-codelab #drawer ol li[selected] a,
 google-codelab #drawer ol li a:focus {
   color: #212121;
   font-weight: 600;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.15);
 }
 
 google-codelab #drawer ol li[selected] a {
-  background-color: #e0e0e0;
+  border-color: #fff;
 }
 
 google-codelab #drawer ol li[selected] .step:before {
@@ -141,21 +126,14 @@ google-codelab #drawer ol li[completed] a {
   color: #212121;
 }
 
-google-codelab #drawer ol li[completed] a:before,
-google-codelab #drawer ol li[completed] a:after,
 google-codelab #drawer ol li[completed] .step:before {
   background-color: #1A73E8;
   color: #fff;
 }
 
-google-codelab #drawer ol li[selected] a:after {
-  background-color: #80868B;
-}
-
-
 google-codelab #drawer .metadata {
   color: #777;
-  font-size: 0.7em;
+  font-size: 14px;
   padding: 16px;
   flex-shrink: 0;
 }
@@ -169,7 +147,7 @@ google-codelab #codelab-nav-buttons #menu {
   display: none;
 }
 
-google-codelab #drawer {
+google-codelab #drawer ol {
   ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
@@ -180,7 +158,6 @@ google-codelab #drawer {
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
   }
 }
-
 
 @media (max-width: 768px) {
   google-codelab {
@@ -206,7 +183,7 @@ google-codelab #drawer {
     left: 0;
     top: 0;
     bottom: 0;
-    z-index: 1000;
+    z-index: 1001;
     will-change: transform;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0);
     pointer-events: none;

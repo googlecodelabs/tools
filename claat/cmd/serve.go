@@ -24,10 +24,7 @@ import (
 // CmdServe is the "claat serve ..." subcommand.
 // addr is the hostname and port to bind the web server to.
 // It returns a process exit code.
-func CmdServe(addr string, useElements bool) int {
-	if !useElements {
-		CmdBuild()
-	}
+func CmdServe(addr string) int {
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	log.Printf("Serving codelabs on %s, opening browser tab now...", addr)
 	ch := make(chan error, 1)

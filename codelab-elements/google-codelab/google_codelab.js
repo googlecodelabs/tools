@@ -62,6 +62,9 @@ const DURATION_ATTR = 'duration';
 const HIDDEN_ATTR = 'hidden';
 
 /** @const {string} */
+const ID_ATTR = 'id';
+
+/** @const {string} */
 const COMPLETED_ATTR = 'completed';
 
 /** @const {string} */
@@ -102,6 +105,11 @@ const CODELAB_ACTION_EVENT = 'google-codelab-action';
 const CODELAB_PAGEVIEW_EVENT = 'google-codelab-pageview';
 
 /**
+ * The general codelab action event fired when the codelab element is ready.
+ */
+const CODELAB_READY_EVENT = 'google-codelab-ready';
+
+/**
  * @extends {HTMLElement}
  */
 class Codelab extends HTMLElement {
@@ -116,6 +124,9 @@ class Codelab extends HTMLElement {
 
     /** @private {?Element} */
     this.stepsContainer_ = null;
+
+    /** @private {?Element} */
+    this.timeContainer_ = null;
 
     /** @private {?Element} */
     this.titleContainer_ = null;
@@ -159,6 +170,9 @@ class Codelab extends HTMLElement {
     /** @private {boolean} */
     this.hasSetup_ = false;
 
+    /** @private {boolean} */
+    this.ready_ = false;
+
     /** @private {?Transition} */
     this.transitionIn_ = null;
 
@@ -195,6 +209,12 @@ class Codelab extends HTMLElement {
     if (this.resumed_) {
       console.log('resumed');
       // TODO Show resume dialog
+    }
+
+    if (!this.ready_) {
+      this.ready_ = true;
+      this.fireEvent_(CODELAB_READY_EVENT);
+      this.setAttribute(CODELAB_READY_EVENT, '');
     }
   }
 
@@ -249,10 +269,31 @@ class Codelab extends HTMLElement {
         break;
       case ANALYTICS_READY_ATTR:
         if (this.hasAttribute(ANALYTICS_READY_ATTR)) {
-          this.firePageLoadEvents_();
+          if (this.ready_) {
+            this.firePageLoadEvents_();
+          } else {
+            this.addEventListener(CODELAB_READY_EVENT,
+                () => this.firePageLoadEvents_());
+          }
         }
         break;
     }
+  }
+
+  /**
+   * @return {!EventHandler}
+   * @export
+   */
+  get eventHandler() {
+    return this.eventHandler_;
+  }
+
+  /**
+   * @return {!Array<!Element>}
+   * @export
+   */
+  get steps() {
+    return this.steps_;
   }
 
   /**
@@ -470,14 +511,14 @@ class Codelab extends HTMLElement {
    * @private
    */
   handleDrawerClick_(e) {
-    e.preventDefault();
-    e.stopPropagation();
     let target = /** @type {!Element} */ (e.target);
 
     while (target !== this.drawer_) {
       if (target.tagName.toUpperCase() === 'A') {
         break;
       }
+      e.preventDefault();
+      e.stopPropagation();
       target = /** @type {!Element} */ (target.parentNode);
     }
 
@@ -514,7 +555,7 @@ class Codelab extends HTMLElement {
    * @private
    */
   updateTimeRemaining_() {
-    if (!this.titleContainer_) {
+    if (!this.timeContainer_) {
       return;
     }
 
@@ -528,11 +569,11 @@ class Codelab extends HTMLElement {
     }
 
     const newTimeEl =  soy.renderAsElement(Templates.timeRemaining, {time});
-    const oldTimeEl = this.titleContainer_.querySelector('#time-remaining');
+    const oldTimeEl = this.timeContainer_.querySelector('#time-remaining');
     if (oldTimeEl) {
       dom.replaceNode(newTimeEl, oldTimeEl);
     } else {
-      dom.appendChild(this.titleContainer_, newTimeEl);
+      dom.appendChild(this.timeContainer_, newTimeEl);
     }
   }
 
@@ -558,7 +599,8 @@ class Codelab extends HTMLElement {
       return;
     }
 
-    selected = Math.min(Math.max(0, parseInt(selected, 10)), this.steps_.length - 1);
+    selected = Math.min(Math.max(0, parseInt(selected, 10)),
+                        this.steps_.length - 1);
 
     if (this.currentSelectedStep_ === selected || isNaN(selected)) {
       // Either the current step is already selected or an invalid option was provided
@@ -672,7 +714,6 @@ class Codelab extends HTMLElement {
         }
         if (i === selected) {
           step.setAttribute(SELECTED_ATTR, '');
-          step.scrollIntoViewIfNeeded();
         } else {
           step.removeAttribute(SELECTED_ATTR);
         }
@@ -684,7 +725,10 @@ class Codelab extends HTMLElement {
       this.updateHistoryState(`#${selected}`, true);
     }
 
-    this.storage_.set(`progress_${this.id_}`, String(this.currentSelectedStep_));
+    if (this.id_) {
+      this.storage_.set(`progress_${this.id_}`,
+                        String(this.currentSelectedStep_));
+    }
   }
 
   /**
@@ -712,6 +756,9 @@ class Codelab extends HTMLElement {
       return '/';
     }
 
+    if (index === 'index') {
+      index = '';
+    }
     const u = new URL(index, document.location.origin);
     return u.pathname;
   }
@@ -719,13 +766,14 @@ class Codelab extends HTMLElement {
   /**
    * @param {string} eventName
    * @param {!Object=} detail
-   * @private
+   * @protected
    */
   fireEvent_(eventName, detail={}) {
     const event = new CustomEvent(eventName, {
-      detail: detail
+      detail: detail,
+      bubbles: true,
     });
-    document.body.dispatchEvent(event);
+    this.dispatchEvent(event);
   }
 
   /**
@@ -758,6 +806,7 @@ class Codelab extends HTMLElement {
 
     this.drawer_ = this.querySelector('#drawer');
     this.titleContainer_ = this.querySelector('#codelab-title');
+    this.timeContainer_ = this.querySelector('#codelab-time-container');
     this.stepsContainer_ = this.querySelector('#steps');
     this.controls_ = this.querySelector('#controls');
     this.prevStepBtn_ = this.querySelector('#controls #previous-step');
@@ -775,7 +824,7 @@ class Codelab extends HTMLElement {
       }
     }
 
-    this.id_ = this.getAttribute('id');
+    this.id_ = this.getAttribute(ID_ATTR);
     const progress = this.storage_.get(`progress_${this.id_}`);
     if (progress && progress !== '0') {
       this.resumed_ = true;

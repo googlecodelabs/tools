@@ -15,29 +15,11 @@
  * limitations under the License.
  */
 
-html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-body {
-  font-family: "Roboto",sans-serif;
-  transition: opacity ease-in 0.2s;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-[hidden] {
-  display: none !important;
-}
-
 google-codelab {
   display: flex;
   width: 100%;
   height: 100%;
+  padding-top: 64px;
 }
 
 google-codelab #main {
@@ -49,6 +31,10 @@ google-codelab #main {
 }
 
 google-codelab #codelab-title {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   background: #FFFFFF;
   box-shadow: 0px 1px 2px 0px rgba(60, 64, 67, 0.3), 0px 2px 6px 2px rgba(60, 64, 67, 0.15);
   color: #3C4043;
@@ -56,9 +42,9 @@ google-codelab #codelab-title {
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  padding: 0 16px;
+  padding: 0 36px 0 16px;
   -webkit-font-smoothing: antialiased;
-  z-index: 99;
+  z-index: 1000;
 }
 
 google-codelab #codelab-title h1 {
@@ -81,6 +67,7 @@ google-codelab #codelab-title #time-remaining {
   align-items: center;
   font-size: 16px;
   font-weight: 400;
+  white-space: nowrap;
 }
 
 google-codelab #codelab-title #time-remaining i {
@@ -112,14 +99,17 @@ google-codelab #controls {
   right: 0;
   display: flex;
   justify-content: center;
-  z-index: 10;
   padding: 0 32px;
+  flex-direction: column;
+  z-index: 1001;
 }
 
 google-codelab #fabs {
   display: flex;
   flex-grow: 1;
   max-width: 1025px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 google-codelab #fabs .spacer {

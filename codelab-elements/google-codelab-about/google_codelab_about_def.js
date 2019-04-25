@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-{namespace googlecodelabs.CodelabStep.Templates}
+goog.module('googlecodelabs.CodelabAboutDef');
+const CodelabAbout = goog.require('googlecodelabs.CodelabAbout');
 
-/**
- * Renders the step title
- */
-{template .title}
-  {@param step: string}
-  {@param label: string}
-  <h2 is-upgraded class="step-title">{$step}. {$label}</h2>
-{/template}
+try {
+  window.customElements.define(CodelabAbout.getTagName(), CodelabAbout);
+} catch (e) {
+  console.warn('googlecodelabs.CodelabAbout', e);
+}

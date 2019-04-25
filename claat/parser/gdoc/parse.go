@@ -380,8 +380,10 @@ func metaTable(ds *docState) {
 		switch strings.ToLower(stringifyNode(tr.FirstChild, true)) {
 		case "id", "url":
 			ds.clab.ID = s
-		case "author":
-			ds.clab.Author = s
+		case "author", "authors":
+			ds.clab.Authors = s
+		case "badge", "badge id":
+			ds.clab.BadgeID = s
 		case "summary":
 			ds.clab.Summary = s
 		case "category", "categories":
@@ -657,7 +659,7 @@ func image(ds *docState) types.Node {
 		return nil
 	}
 	n := types.NewImageNode(s)
-	n.MaxWidth = styleFloatValue(ds.cur, "width")
+	n.Width = styleFloatValue(ds.cur, "width")
 	n.MutateBlock(findBlockParent(ds.cur))
 	n.Alt = nodeAttr(ds.cur, "alt")
 	n.Title = nodeAttr(ds.cur, "title")
