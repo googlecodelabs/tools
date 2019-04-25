@@ -31,6 +31,7 @@ type Meta struct {
 	Authors    string        `json:"authors,omitempty"`  // Arbitrary authorship text
 	BadgeID    string        `json:"badge_id,omitempty"` // ID of the BAdge to grant on codelab completion on devsite
 	Summary    string        `json:"summary"`            // Short summary
+	Source     string        `json:"source"`             // Codelab source doc
 	Theme      string        `json:"theme"`              // Usually first item of Categories
 	Status     *LegacyStatus `json:"status"`             // Draft, Published, Hidden, etc.
 	Categories []string      `json:"category"`           // Categories from the meta table
@@ -45,7 +46,6 @@ type Meta struct {
 // It is defined in this package so that it can be used by both cli and a server.
 type Context struct {
 	Env     string       `json:"environment"`       // Current export environment
-	Source  string       `json:"source"`            // Codelab source doc
 	Format  string       `json:"format"`            // Output format, e.g. "html"
 	Prefix  string       `json:"prefix,omitempty"`  // Assets URL prefix for HTML-based formats
 	MainGA  string       `json:"mainga,omitempty"`  // Global Google Analytics ID
