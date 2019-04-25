@@ -38,6 +38,11 @@ google-codelab #drawer .steps:only-child {
   max-height: 100%;
 }
 
+google-codelab #drawer .metadata .material-icons {
+  top: 6px;
+  position: relative;
+}
+
 google-codelab #drawer ol {
   margin: 0;
   padding: 16px 12px;
