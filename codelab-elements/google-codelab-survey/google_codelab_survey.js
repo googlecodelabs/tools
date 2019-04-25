@@ -195,7 +195,7 @@ class CodelabSurvey extends HTMLElement {
         polymerRadioEls.forEach(radioEl => {
           const title = radioEl.textContent;
           surveyOptions.push({
-            radioId: this.normalizeIdAttr_(title),
+            radioId: this.normalizeIdAttr_(questionEls[index].textContent, title),
             radioTitle: title
           });
         });
@@ -220,7 +220,7 @@ class CodelabSurvey extends HTMLElement {
     const surveyData = this.storedData_[this.surveyName_];
     if (surveyData) {
       Object.keys(surveyData).forEach(key => {
-        const id = this.normalizeIdAttr_(surveyData[key]);
+        const id = this.normalizeIdAttr_(key, surveyData[key]);
         /** @type {?HTMLInputElement} */
         const inp = /** @type {?HTMLInputElement} */ (
             this.querySelector(`#${id}`));
@@ -232,12 +232,14 @@ class CodelabSurvey extends HTMLElement {
   }
 
   /**
-   * @param {string} id
+   * @param {string} question
+   * @param {string} answer
    * @return {string}
    * @private
    */
-  normalizeIdAttr_(id) {
-    return id.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9 \-]/g, '').toLowerCase();
+  normalizeIdAttr_(question, answer) {
+    return `${question}--${answer}`.replace(/\s+/g, '-')
+        .replace(/[^a-zA-Z0-9 \-]/g, '').toLowerCase();
   }
 
   /**
