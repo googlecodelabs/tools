@@ -559,7 +559,6 @@ class Codelab extends HTMLElement {
       return;
     }
 
-
     let time = 0;
     for (let i = this.currentSelectedStep_; i < this.steps_.length; i++) {
       const step = /** @type {!Element} */ (this.steps_[i]);
