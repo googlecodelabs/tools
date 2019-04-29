@@ -226,8 +226,8 @@ func nodeAttr(n *html.Node, name string) string {
 }
 
 // stringifyNode extracts and concatenates all text nodes starting with root.
-// Line breaks are inserted at <br> and any non-<span> elements.
-func stringifyNode(root *html.Node, trim bool) string {
+// Line breaks are inserted at <br> and any non-<span> elements if requested.
+func stringifyNode(root *html.Node, trim bool, lineBreak bool) string {
 	if root.Type == html.TextNode {
 		s := textCleaner.Replace(root.Data)
 		if !trim {
@@ -236,7 +236,10 @@ func stringifyNode(root *html.Node, trim bool) string {
 		return strings.TrimSpace(s)
 	}
 	if root.DataAtom == atom.Br && !trim {
-		return "\n"
+		if lineBreak {
+			return "\n"
+		}
+		return ""
 	}
 	var buf bytes.Buffer
 	for c := root.FirstChild; c != nil; c = c.NextSibling {
@@ -248,7 +251,9 @@ func stringifyNode(root *html.Node, trim bool) string {
 			}
 		}
 		if c.DataAtom == atom.Br {
-			buf.WriteRune('\n')
+			if lineBreak {
+				buf.WriteRune('\n')
+			}
 			continue
 		}
 		if c.Type == html.TextNode {
@@ -256,9 +261,11 @@ func stringifyNode(root *html.Node, trim bool) string {
 			continue
 		}
 		if c.DataAtom != atom.Span && c.DataAtom != atom.A {
-			buf.WriteRune('\n')
+			if lineBreak {
+				buf.WriteRune('\n')
+			}
 		}
-		buf.WriteString(stringifyNode(c, false))
+		buf.WriteString(stringifyNode(c, false, lineBreak))
 	}
 	s := textCleaner.Replace(buf.String())
 	if !trim {

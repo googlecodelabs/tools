@@ -47,7 +47,7 @@ func parseStyle(doc *html.Node) (cssStyle, error) {
 	if node == nil {
 		return style, nil
 	}
-	css := stringifyNode(node, true)
+	css := stringifyNode(node, true, true)
 
 	var skip bool
 	var sel []string

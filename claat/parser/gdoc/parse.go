@@ -207,7 +207,7 @@ func parseDoc(doc *html.Node) (*types.Codelab, error) {
 		}
 		switch {
 		case hasClass(ds.cur, "title") && ds.step == nil:
-			if v := stringifyNode(ds.cur, true); v != "" {
+			if v := stringifyNode(ds.cur, true, false); v != "" {
 				ds.clab.Title = v
 			}
 			if ds.clab.ID == "" {
@@ -361,7 +361,7 @@ func parseNode(ds *docState) (types.Node, bool) {
 // newStep creates a new codelab step from ds.cur
 // and finalizes nodes of the previous step.
 func newStep(ds *docState) {
-	t := stringifyNode(ds.cur, true)
+	t := stringifyNode(ds.cur, true, false)
 	if t == "" {
 		return
 	}
@@ -376,8 +376,8 @@ func metaTable(ds *docState) {
 		if tr.FirstChild == nil || tr.FirstChild.NextSibling == nil {
 			continue
 		}
-		s := stringifyNode(tr.FirstChild.NextSibling, true)
-		switch strings.ToLower(stringifyNode(tr.FirstChild, true)) {
+		s := stringifyNode(tr.FirstChild.NextSibling, true, false)
+		switch strings.ToLower(stringifyNode(tr.FirstChild, true, false)) {
 		case "id", "url":
 			ds.clab.ID = s
 		case "author", "authors":
@@ -385,7 +385,7 @@ func metaTable(ds *docState) {
 		case "badge", "badge id":
 			ds.clab.BadgeID = s
 		case "summary":
-			ds.clab.Summary = s
+			ds.clab.Summary = stringifyNode(tr.FirstChild.NextSibling, true, true)
 		case "category", "categories":
 			ds.clab.Categories = util.Unique(stringSlice(s))
 		case "environment", "environments", "tags":
@@ -411,7 +411,7 @@ func metaTable(ds *docState) {
 func metaStep(ds *docState) {
 	var text string
 	for {
-		text += stringifyNode(ds.cur, false)
+		text += stringifyNode(ds.cur, false, false)
 		if ds.cur.NextSibling == nil || !isMeta(ds.css, ds.cur.NextSibling) {
 			break
 		}
@@ -463,7 +463,7 @@ func header(ds *docState) types.Node {
 		return nil
 	}
 	n := types.NewHeaderNode(headerLevel[ds.cur.DataAtom], nodes...)
-	switch strings.ToLower(stringifyNode(ds.cur, true)) {
+	switch strings.ToLower(stringifyNode(ds.cur, true, false)) {
 	case headerLearn, headerCover:
 		n.MutateType(types.NodeHeaderCheck)
 	case headerFAQ:
@@ -556,7 +556,7 @@ func survey(ds *docState) types.Node {
 		opt, next := surveyOpt(c.NextSibling)
 		if len(opt) > 0 {
 			gg = append(gg, &types.SurveyGroup{
-				Name:    stringifyNode(c, true),
+				Name:    stringifyNode(c, true, false),
 				Options: opt,
 			})
 		}
@@ -583,7 +583,7 @@ func surveyOpt(hn *html.Node) ([]string, *html.Node) {
 			if li.DataAtom != atom.Li {
 				continue
 			}
-			opt = append(opt, stringifyNode(li, true))
+			opt = append(opt, stringifyNode(li, true, true))
 		}
 	}
 	return opt, nil
@@ -598,7 +598,7 @@ func code(ds *docState, term bool) types.Node {
 		return text(ds)
 	}
 	// block code or terminal
-	v := stringifyNode(ds.cur, false)
+	v := stringifyNode(ds.cur, false, true)
 	if v == "" {
 		if countDirect(ds.cur.Parent) > 1 {
 			return nil
@@ -700,7 +700,7 @@ func button(ds *docState) types.Node {
 		return nil
 	}
 
-	s := strings.ToLower(stringifyNode(a, true))
+	s := strings.ToLower(stringifyNode(a, true, false))
 	dl := strings.HasPrefix(s, "download ")
 	btn := types.NewButtonNode(true, true, dl, nodes...)
 
@@ -719,7 +719,7 @@ func link(ds *docState) types.Node {
 		return nil
 	}
 
-	text := stringifyNode(ds.cur, false)
+	text := stringifyNode(ds.cur, false, true)
 	if strings.TrimSpace(text) == "" {
 		return nil
 	}
@@ -776,7 +776,7 @@ func text(ds *docState) types.Node {
 		}
 	}
 
-	v := stringifyNode(ds.cur, false)
+	v := stringifyNode(ds.cur, false, true)
 	n := types.NewTextNode(v)
 	n.Bold = bold
 	n.Italic = italic
