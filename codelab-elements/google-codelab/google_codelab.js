@@ -568,7 +568,7 @@ class Codelab extends HTMLElement {
       }
     }
 
-    this.timeContainer_.forEach((timeContainer) => {
+    Array.prototype.forEach.call(this.timeContainer_, (timeContainer) => {
       // Hide the time container if there was no time indication.
       if (!time) {
         timeContainer.style.display = 'none';
@@ -584,7 +584,6 @@ class Codelab extends HTMLElement {
         dom.appendChild(timeContainer, newTimeEl);
       }
     });
-
   }
 
   /**
