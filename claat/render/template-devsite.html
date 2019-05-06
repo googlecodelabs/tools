@@ -24,6 +24,7 @@ the License.
     {{if .Meta.Summary}}
       <meta name="description" content="{{.Meta.Summary}}" />
     {{end}}
+    <meta name="original_source" content="https://docs.google.com/document/d/{{.Meta.Source}}/edit" />
     <meta name="hide_last_updated" value="true" />
     <meta name="hide_ratings_widget" value="true" />
     <meta name="page_type" value="codelab" />
@@ -47,6 +48,7 @@ the License.
   <body class="devsite-full-width-page">
     <google-codelab-analytics gaid="{{.GlobalGA}}"></google-codelab-analytics>
     <google-codelab codelab-gaid="{{.Meta.GA}}"
+                    doc-id="{{.Meta.Source}}"
                     id="{{.Meta.ID}}"
                     title="{{.Meta.Title}}"
                     environment="{{index .Env}}"

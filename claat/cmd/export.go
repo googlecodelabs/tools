@@ -105,9 +105,9 @@ func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
 
 	// codelab export context
 	lastmod := types.ContextTime(clab.mod)
+	clab.Meta.Source = src
 	meta := &clab.Meta
 	ctx := &types.Context{
-		Source:  src,
 		Env:     opts.Expenv,
 		Format:  opts.Tmplout,
 		Prefix:  opts.Prefix,

@@ -28,7 +28,7 @@
       <a href="{$homeUrl}" id="arrow-back"><i class="material-icons">close</i></a>
       <a href="#" id="menu"><i class="material-icons">menu</i></a>
     </div>
-    <div id="codelab-time-container"></div>
+    <div class="codelab-time-container"></div>
     <devsite-user></devsite-user>
   </div>
   <div id="main">
@@ -59,7 +59,7 @@
  */
 {template .timeRemaining}
   {@param time: number}
-  <div id="time-remaining" title="Time remaining">
+  <div class="time-remaining" title="Time remaining">
    <i class="material-icons">access_time</i>
    {if $time == 1}
     {$time} min remaining
@@ -76,6 +76,7 @@
 {template .drawer}
   {@param steps: list<string>}
   {@param? feedback: string}
+  <div class="codelab-time-container"></div>
   <div class="steps">
     <ol>
       {for $step in $steps}
