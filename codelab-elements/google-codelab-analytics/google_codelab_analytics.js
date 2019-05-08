@@ -215,7 +215,7 @@ class CodelabAnalytics extends HTMLElement {
       // Always event for trackEvent_ method
       'hitType': 'event',
       'dimension1': this.codelabEnv_,
-      'dimension2': this.codelabCategory_,
+      'dimension2': this.codelabCategory_ || '',
       'eventCategory': category,
       'eventAction': opt_action || '',
       'eventLabel': opt_label || '',
