@@ -157,8 +157,7 @@ class CodelabAnalytics extends HTMLElement {
           e.getBrowserEvent().detail);
         // Add tracking...
         this.trackEvent_(
-          detail['category'], detail['action'], detail['label'],
-          detail['value']);
+          detail['category'], detail['action'], detail['label']);
       });
 
     this.pageviewEventHandler_.listen(document.body, PAGEVIEW_EVENT,
@@ -209,10 +208,9 @@ class CodelabAnalytics extends HTMLElement {
    * @param {string} category The event category.
    * @param {string=} opt_action The event action.
    * @param {?string=} opt_label The event label.
-   * @param {?number=} opt_value The event value.
    * @private
    */
-  trackEvent_(category, opt_action, opt_label, opt_value) {
+  trackEvent_(category, opt_action, opt_label) {
     const params = {
       // Always event for trackEvent_ method
       'hitType': 'event',
@@ -221,7 +219,6 @@ class CodelabAnalytics extends HTMLElement {
       'eventCategory': category,
       'eventAction': opt_action || '',
       'eventLabel': opt_label || '',
-      'eventValue': opt_value || '',
     };
     this.gaSend_(params);
   }
