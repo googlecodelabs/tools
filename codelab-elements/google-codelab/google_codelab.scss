@@ -162,6 +162,10 @@ google-codelab #drawer .codelab-time-container {
   display: none;
 }
 
+iron-icon[icon="file-download"]::after {
+  content: 'cloud_download';
+}
+
 @media (max-width: 768px) {
   google-codelab #codelab-title .codelab-time-container {
     display: none;
