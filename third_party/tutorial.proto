@@ -45,7 +45,6 @@ message BlockContent {
     Image image = 2;
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
-    Table table = 6;
   }
 };
 
@@ -103,16 +102,4 @@ message List {
     UNORDERED = 2;
   }
   ListVariety list_variety = 2;
-};
-
-message Table {
-  repeated TableRow table_rows = 1;
-};
-
-message TableRow {
-  repeated TableCell table_cells = 1;
-};
-
-message TableCell {
-  repeated InlineContent inline_contents = 1;
 };
