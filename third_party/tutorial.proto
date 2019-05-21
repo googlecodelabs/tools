@@ -92,7 +92,7 @@ message CodeBlock {
   string text = 4;
   string language_hint = 3;
 
-  reserved 1, 2;
+  reserved 1, "inline_contents", 2, "code_location";
 };
 
 message ListStep {
