@@ -46,6 +46,8 @@ message BlockContent {
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
     Table table = 6;
+
+    reserved 5;
   }
 };
 
