@@ -45,6 +45,7 @@ message BlockContent {
     Image image = 2;
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
+    List list = 7;
 
     reserved 5, 6;
   }
@@ -94,11 +95,13 @@ message CodeBlock {
 };
 
 message ListStep {
-  repeated Content contents = 1;
+  repeated InlineContent contents = 2;
+
+  reserved 1;
 };
 
 message List {
-  repeated ListStep list_steps = 1;
+  repeated ListStep steps = 1;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
