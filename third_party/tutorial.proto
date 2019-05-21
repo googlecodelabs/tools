@@ -89,9 +89,10 @@ message InfoBox {
 };
 
 message CodeBlock {
-  repeated InlineContent inline_contents = 1;
-  string code_location = 2;
+  string text = 4;
   string language_hint = 3;
+
+  reserved 1, 2;
 };
 
 message ListStep {
