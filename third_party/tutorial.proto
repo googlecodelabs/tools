@@ -46,6 +46,10 @@ message BlockContent {
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
     List list = 7;
+    Survey survey = 8;
+    Checklist checklist = 9;
+    FAQ faq = 10;
+    Button button = 11;
 
     reserved 5, 6;
   }
@@ -111,3 +115,23 @@ message List {
   }
   ListVariety list_variety = 2;
 };
+
+message Survey {
+  string title = 1;
+  List questions = 2;
+}
+
+message Checklist {
+  string title = 1;
+  List items = 2;
+}
+
+message FAQ {
+  string title = 1;
+  List questions = 2;
+}
+
+message Button {
+  Link link = 1;
+  bool isDownloadButton = 2;
+}
