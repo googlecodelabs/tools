@@ -45,6 +45,8 @@ message BlockContent {
     Image image = 2;
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
+
+    reserved 5, 6;
   }
 };
 
