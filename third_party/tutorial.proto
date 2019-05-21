@@ -66,8 +66,10 @@ message InlineContent {
 };
 
 message Heading {
-  repeated InlineContent inline_contents = 1;
+  string text = 1;
   int32 level = 2;
+
+  reserved 1;
 };
 
 message Image {
