@@ -17,19 +17,19 @@ syntax = "proto3";
 package devrel.tutorial;
 
 message Tutorial {
-  Title title = 1;
+  string title = 4;
   map<string, string> metadata = 2;
   repeated Step steps = 3;
+
+  reserved 1;
 };
 
 message Step {
-  Title title = 1;
+  string title = 4;
   map<string, string> metadata = 2;
   repeated Content content = 3;
-};
 
-message Title {
-  repeated InlineContent inline_contents = 1;
+  reserved 1;
 };
 
 message Content {
