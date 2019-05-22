@@ -69,7 +69,8 @@ message Heading {
   string text = 1;
   int32 level = 2;
 
-  reserved 1, "inline_contents";
+  reserved 1;
+  reserved "inline_contents";
 };
 
 message Image {
