@@ -1,0 +1,194 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../polymer/polymer.html">
+
+<!--
+Displays a page on a device layout.
+
+    <device-view device="phone" src="https://www.polymer-project.org/"></device-view>
+
+-->
+<dom-module id="device-view">
+
+  <template>
+
+    <style>
+
+      :host {
+        display: block;
+        position: relative;
+      }
+
+      .container {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      :host([device=phone]) {
+        width: 360px;
+        height: 600px;
+        margin: 60px 0 96px;
+      }
+
+      :host([device=phone][landscape]) {
+        width: 600px;
+        height: 360px;
+        margin: 0;
+      }
+
+      :host([device=tablet]) {
+        width: 720px;
+        height: 1024px;
+        margin: 60px 0 96px;
+      }
+
+      :host([device=tablet][landscape]) {
+        width: 1024px;
+        height: 720px;
+        margin: 0;
+      }
+
+      :host([device=laptop]) {
+        width: 1366px;
+        height: 800px;
+      }
+
+      :host([device=phone]):before,
+      :host([device=tablet]):before {
+        display: block;
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: -60px -16px -96px -16px;
+        border-radius: 32px;
+        background: #666;
+      }
+
+      :host([device=phone][landscape]):before,
+      :host([device=tablet][landscape]):before {
+        margin: -16px -96px -16px -60px;
+      }
+
+      :host([device=phone]):after,
+      :host([device=tablet]):after {
+        display: block;
+        content: "";
+        position: absolute;
+        bottom: -76px;
+        left: 50%;
+        width: 56px;
+        height: 56px;
+        margin-left: -28px;
+        border-radius: 28px;
+        background: #fff;
+      }
+
+      :host([device=phone][landscape]):after,
+      :host([device=tablet][landscape]):after {
+        top: 50%;
+        right: -76px;
+        bottom: auto;
+        left: auto;
+        margin-top: -28px;
+      }
+
+      :host([device=laptop]):before {
+        display: block;
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: -24px;
+        border-radius: 12px;
+        background: #666;
+      }
+
+      :host([device=laptop]):after {
+        display: block;
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: -56px;
+        left: -140px;
+        height: 56px;
+        margin: -24px;
+        border-bottom-right-radius: 12px;
+        border-bottom-left-radius: 12px;
+        background: #777;
+      }
+
+      iframe {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        border: 0;
+      }
+
+    </style>
+
+    <div class="container">
+      <iframe src="{{src}}"></iframe>
+    </div>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'device-view',
+
+      properties: {
+
+        /**
+         * The url of the page to display.
+         */
+        src: String,
+
+        /**
+         * The device layout to show.  Possible values are `phone`, `tablet` and `laptop`.
+         */
+        device: {
+          type: String,
+          value: 'phone',
+          reflectToAttribute: true
+        },
+
+        /**
+         * Use landscape orientaion if this is true.
+         */
+        landscape: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        }
+
+      },
+
+      /**
+       * Toggles the landscape orientation.
+       */
+      toggleLandscape: function() {
+        this.landscape = !this.landscape;
+      }
+
+    });
+
+  </script>
+
+</dom-module>

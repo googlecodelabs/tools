@@ -1,0 +1,152 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE
+The complete set of authors may be found at http://polymer.github.io/AUTHORS
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS
+-->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>test for app-header-layout</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../../test-fixture/test-fixture-mocha.js"></script>
+  <link rel="import" href="../../../test-fixture/test-fixture.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../../app-header/app-header.html">
+  <link rel="import" href="../app-header-layout.html">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    app-header {
+      background: green;
+    }
+
+    .content {
+      width: 100%;
+      height: 3000px;
+      background-color: red;
+    }
+
+    [has-scrolling-region] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <test-fixture id="trivialAppHeaderLayout">
+    <template>
+      <app-header-layout>
+        <app-header condenses>
+          <app-toolbar></app-toolbar>
+          <app-toolbar>
+            <div main-title spacer>Title</div>
+          </app-toolbar>
+        </app-header>
+        <div class="content"></div>
+      </app-header-layout>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="trivialOwnScrollingRegion">
+    <template>
+      <app-header-layout has-scrolling-region>
+        <app-header fixed condenses>
+          <app-toolbar></app-toolbar>
+          <app-toolbar>
+            <div main-title spacer>Title</div>
+          </app-toolbar>
+        </app-header>
+        <div class="content"></div>
+      </app-header-layout>
+    </template>
+  </test-fixture>
+
+  <script>
+
+    suite('basic features', function() {
+      var headerLayout, header, toolbar;
+
+      setup(function() {
+        headerLayout = fixture('trivialAppHeaderLayout');
+        header = headerLayout.querySelector('app-header');
+        toolbar = headerLayout.querySelector('app-toolbar');
+      });
+
+      test('default values', function() {
+        assert.isFalse(headerLayout.hasScrollingRegion);
+        assert.equal(header.scrollTarget, document.documentElement);
+      });
+
+      test('scrolling region', function() {
+        headerLayout.hasScrollingRegion = true;
+        assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
+      });
+
+      test('header box size', function(done) {
+        headerLayout.hasScrollingRegion = false;
+
+        flush(function() {
+          assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+              'should have the same width of app-header-layout');
+
+          headerLayout.style.width = '200px';
+          headerLayout.resetLayout();
+          flush(function() {
+            assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+              'should have the same width of app-header-layout even after setting a width');
+            done();
+          });
+        });
+      });
+
+      test('fullbleed', function(done) {
+        headerLayout.setAttribute('fullbleed', '');
+        flush(function() {
+          assert.deepEqual(headerLayout.getBoundingClientRect(),
+              headerLayout.offsetParent.getBoundingClientRect());
+          done();
+        });
+      });
+    });
+
+    suite('Header layout with scrolling region', function() {
+      var headerLayout, header, toolbar;
+
+      setup(function() {
+        headerLayout = fixture('trivialOwnScrollingRegion');
+        header = headerLayout.querySelector('app-header');
+        toolbar = headerLayout.querySelector('app-toolbar');
+      });
+
+      test('layout', function(done) {
+        flush(function() {
+          assert.equal(parseInt(headerLayout.$.contentContainer.style.paddingTop, 10),
+              header.offsetHeight,
+              'should add padding to the content container');
+          done();
+        });
+      });
+    });
+
+  </script>
+
+</body>
+</html>

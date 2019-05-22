@@ -1,0 +1,92 @@
+<!--
+Copyright (c) 2015 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+
+<script>
+
+  var GoogleCodelabs = window.GoogleCodelabs || {};
+
+  /**
+   * `GoogleCodelabs.AnalyticsBehavior` implements Google Analytics functionality.
+   *
+   * @polymerBehavior GoogleCodelabs.AnalyticsBehavior
+   */
+  GoogleCodelabs.AnalyticsBehavior = {
+    listeners: {
+      'google-codelab-step': '_trackStepChanged',
+      'google-codelab-complete': '_trackCodelabComplete',
+      'google-codelab-snippet-copy': '_trackSnippetCopy',
+      'google-codelab-survey-answer': '_trackSurveyAnswer'
+    },
+
+    get _isTrackingEnabled() { return !!window.ga; },
+
+    _gaSend: function(hit, target, params) {
+      params.hitType = hit;
+      params.dimension1 = target.environment;
+      params.dimension2 = target.category;
+      window['ga'](function() {
+        var trackers = ga.getAll();
+        for (var i = 0; i < trackers.length; i++) {
+          var tracker = trackers[i];
+          tracker.send(params);
+        }
+      });
+    },
+
+    _trackStepChanged: function(e, detail) {
+      if (!this._isTrackingEnabled) {
+        return;
+      }
+      this._gaSend('pageview', e.target, {
+        page: location.pathname + '#' + detail.index,
+        title: detail.step.label
+      });
+    },
+
+    _trackCodelabComplete: function(e) {
+      if (!this._isTrackingEnabled) {
+        return;
+      }
+      this._gaSend('event', e.target, {
+        eventCategory: 'codelab',
+        eventAction: 'complete',
+        eventLabel: e.target.title
+      });
+    },
+
+    _trackSnippetCopy: function(e, detail) {
+      if (!this._isTrackingEnabled) {
+        return;
+      }
+      this._gaSend('event', e.target, {
+        eventCategory: 'snippet',
+        eventAction: 'copy',
+        eventLabel: detail.snippet.substring(0, 500)
+      });
+    },
+
+    _trackSurveyAnswer: function(e, detail) {
+      if (!this._isTrackingEnabled) {
+        return;
+      }
+      this._gaSend('event', e.target, {
+        eventCategory: 'survey',
+        eventAction: detail.question.substring(0, 500),
+        eventLabel: detail.answer.substring(0, 500)
+      });
+    }
+  };
+</script>
