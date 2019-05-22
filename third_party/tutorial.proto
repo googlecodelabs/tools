@@ -45,13 +45,11 @@ message BlockContent {
     Image image = 2;
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
-    HorizontalRule horizontal_rule = 5;
     Table table = 6;
-  }
-};
 
-message HorizontalRule {
-  // No fields.
+    reserved 5; 
+    reserved "horizontal_rule";
+  }
 };
 
 message Link {
