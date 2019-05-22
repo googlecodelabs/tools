@@ -50,9 +50,9 @@ message BlockContent {
     Checklist checklist = 9;
     FAQ faq = 10;
     Button button = 11;
-
-    reserved 5, 6;
   }
+
+  reserved 5, 6;
 };
 
 message Link {
