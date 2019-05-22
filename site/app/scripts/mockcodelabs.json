@@ -1,0 +1,16 @@
+[{
+  "title": "Codelab 1",
+  "summary": "This is some nice summary text.",
+  "duration": 30,
+  "categoryClass": "web"
+}, {
+  "title": "Codelab 2",
+  "summary": "This is some nice summary text.",
+  "duration": 20,
+  "categoryClass": "android"
+}, {
+  "title": "Codelab 3",
+  "summary": "This is some nice summary text.",
+  "duration": 60,
+  "categoryClass": "cloud"
+}]

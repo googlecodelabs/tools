@@ -1,0 +1,117 @@
+#mainToolbar .logo-icon {
+    margin-top: 8px;
+}
+
+.lucky-container {
+    border-radius: 4px;
+    box-shadow: 0 1px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+}
+
+.chips {
+    list-style: none;
+    margin: 10px 0 0;
+}
+
+.chips__item {
+    border: 1px solid #ededed;
+    border-radius: 18px;
+    display: inline-block;
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 4px 16px 4px 6px;
+    margin: 0 6px 6px 0;
+    color: #000;
+}
+
+.chips__item.selected {
+    border-color: #fff;
+}
+
+.chips__item::before {
+    display: inline-block;
+    content: '';
+    border-radius: 50%;
+    height: 10px;
+    width: 10px;
+    margin-right: 4px;
+}
+
+.chips__item--ads::before,
+.chips__item--ads.selected {
+    color: #fff;
+    background-color: #574ddd;
+}
+
+.chips__item--android-and-play::before,
+.chips__item--android-and-play.selected {
+    background-color: #8da0fc;
+}
+
+.chips__item--ar-and-vr::before,
+.chips__item--ar-and-vr.selected {
+    background-color: #abd0f2;
+}
+
+.chips__item--assistant::before,
+.chips__item--assistant.selected {
+    background-color: #27e5fd;
+}
+
+.chips__item--cloud::before,
+.chips__item--cloud.selected {
+    background-color: #1db8d2;
+}
+
+.chips__item--design::before,
+.chips__item--design.selected {
+    background-color: #069f86;
+}
+
+.chips__item--firebase::before,
+.chips__item--firebase.selected {
+    background-color: #39c79d;
+}
+
+.chips__item--flutter::before,
+.chips__item--flutter.selected {
+    background-color: #ff4081;
+}
+
+.chips__item--identity::before,
+.chips__item--identity.selected {
+    background-color: #94dd6b;
+}
+
+.chips__item--iot::before,
+.chips__item--iot.selected {
+    background-color: #bbf5cb;
+}
+
+.chips__item--location-and-maps::before,
+.chips__item--location-and-maps.selected {
+    background-color: #feebb6;
+}
+
+.chips__item--ml-and-ai::before,
+.chips__item--ml-and-ai.selected {
+    background-color: #fcd230;
+}
+
+.chips__item--payments::before,
+.chips__item--payments.selected {
+    background-color: #fd9127;
+}
+
+.chips__item--search::before,
+.chips__item--search.selected {
+    color: #fff;
+    background-color: #4768fd;
+}
+
+.chips__item--web::before,
+.chips__item--web.selected {
+    background-color: #fabfa9;
+}

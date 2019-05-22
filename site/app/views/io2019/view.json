@@ -1,0 +1,8 @@
+{
+  "title": "Google I/O 2019",
+  "description": "Mountain View, CA - May 7-9, 2019",
+  "hidden": true,
+  "tags": ["io2019"],
+  "exclude": ["^lang-.*"],
+  "logoUrl": "/io2019/io19_logo.png"
+}
