@@ -133,5 +133,5 @@ message FAQ {
 
 message Button {
   Link link = 1;
-  bool isDownloadButton = 2;
+  bool downloadable = 2;
 }
