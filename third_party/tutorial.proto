@@ -47,7 +47,8 @@ message BlockContent {
     CodeBlock code_block = 4;
     Table table = 6;
 
-    reserved 5, "horizontal_rule";
+    reserved 5; 
+    reserved "horizontal_rule";
   }
 };
 
