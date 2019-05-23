@@ -55,7 +55,7 @@ const DEFAULT_CATEGORY = 'Default';
 // BASE_URL is the canonical base URL where the site will reside. This should
 // always include the protocol (http:// or https://) and NOT including a
 // trailing slash.
-const BASE_URL = args.baseUrl || 'https://codelabs.developers.google.com';
+const BASE_URL = args.baseUrl || 'https://example.com';
 
 // CODELABS_DIR is the directory where the actual codelabs exist on disk.
 // Despite being a constant, this can be overridden with the --codelabs-dir
