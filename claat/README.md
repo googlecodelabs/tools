@@ -6,27 +6,31 @@ It then converts the input into a codelab format, HTML by default.
 
 For more info run `claat help`.
 
-## Install
+## Installation
 
 The easiest way is to download pre-compiled binary.
 The binaries, as well as their checksums are available at the
 [Releases page](https://github.com/googlecodelabs/tools/releases/latest).
 
-Alternatively, if you have [Go installed](https://golang.org/doc/install):
-
-    go get github.com/googlecodelabs/tools/claat
-
-If none of the above works, compile the tool from source following Dev workflow
-instructions below.
-
-## Dev workflow
+Alternatively, follow the instructions below:
 
 **Prerequisites**
+- Install [Go](https://golang.org/dl/) if you don't already have it.
+- Install `protoc`. Follow instructions [here](http://google.github.io/proto-lens/installing-protoc.html) (MacOS and Linux), or grab the latest `protoc` executable binary (`protoc-<ver>-<os>-<arch>.zip/bin/protoc` under `Assets`) for your system [here](https://github.com/protocolbuffers/protobuf/releases) and place it under your `PATH`.
+- Install Go's protobuf runtime
+  - `go get -u github.com/golang/protobuf/protoc-gen-go`
 
-1. Install [Go](https://golang.org/dl/) if you don't have it.
-2. Make sure this directory is placed under
-   `$GOPATH/src/github.com/googlecodelabs/tools`.
-3. Install package dependencies with `go get ./...` from this directory.
+**Tool installation**
+- Download this repo and place it under your `$GOPATH`/`go env GOPATH`
+  - `go get github.com/googlecodelabs/tools/claat`
+- Install package dependencies
+  - `cd $(go env GOPATH)/src/github.com/googlecodelabs/tools && go get ./...`
+- Build the binary
+  - `cd $(go env GOPATH)/src/github.com/googlecodelabs/tools/claat && make`
+- `claat` should now be accessible directly from command line.
+
+
+## Dev workflow
 
 To build the binary, run `make`.
 
