@@ -41,13 +41,15 @@ who care deeply about this kind of “learning by doing” approach to education
 Yes, the claat tool and the serving mechanism can be used by anyone to author their
 own codelabs and to serve up their own codelabs on the web.
 
+You can also use this tool to create a nice looking summary page like the one you see on the official [Google Codelabs site](https://g.co/codelabs).
+
 If you're interested in authoring codelabs, join [codelab-authors group](https://groups.google.com/forum/#!forum/codelab-authors),
 which connects you with other authors and provides access to the
-[Codelab Formatting Guide](https://g.co/codelabs/guide).
+[Codelab Formatting Guide](FORMAT-GUIDE.md).
 
 ## Ok, how do I use it?
 
-1. Create a doc following the syntax conventions described in the [Codelab Formatting Guide](https://g.co/codelabs/guide). Here’s an [example doc](https://docs.google.com/document/d/1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY/edit). Feel free to copy that doc as a starter template. Once you have your own source doc, note its DocId, which is the long string near the end of the URL (right after docs.google.com/document/d/).
+1. Create a doc following the syntax conventions described in the [Codelab Formatting Guide](FORMAT-GUIDE.md). Here’s an [example doc](https://docs.google.com/document/d/1E6XMcdTexh5O8JwGy42SY3Ehzi8gOfUGiqTiUX6N04o/). Feel free to copy that doc as a starter template. Once you have your own source doc, note its DocId, which is the long string near the end of the URL (right after docs.google.com/document/d/).
 
 1. Make one or more changes and preview your codelab, using the preview app provided by Google. To preview a codelab, install the [Preview Codelab Chrome extension](https://chrome.google.com/webstore/detail/preview-codelab/lhojjnijnkiglhkggagbapfonpdlinji) in your browser. Now you can preview a codelab directly from the Google Doc view by clicking the Chrome extension’s button, which will open a new tab to display the preview. Alternatively, navigate manually to https://codelabs-preview.appspot.com/?file_id=<google-doc-id>
 
@@ -64,6 +66,15 @@ which connects you with other authors and provides access to the
 
 This will start a local web server and open a browser tab to the local server. Click on the
 hyperlink represent your codelab of interest to experience a fully rendered version.
+
+## How do I generate my own landing page?
+
+See instructions in the [site directory's readme](site/README.md).
+
+## How do I generate a custom view?
+
+Copy the [sample view](site/app/views/sample), customize it to your liking,
+tag and rebuild the codelabs you want included, and then generate your view.
 
 ## How do I publish my codelabs?
 
@@ -114,7 +125,7 @@ for disaster.
 
 ## What are the supported input formats?
 
-* Google Docs (following https://g.co/codelabs/guide formatting conventions)
+* Google Docs (following FORMAT-GUIDE.md formatting conventions)
 * Markdown
 
 ## What are the supported output formats?
@@ -133,7 +144,7 @@ time (for example, see observablehq.com, which recently launched their Beta rele
 
 While this evolving format ecosystem is generally a good thing, having to maintain tutorials in
 multiple formats, or switch from one format to another can be painful. The Codelabs doc format
-(as specified in g.co/codelabs/guide) can provide a high level specification for maintaining
+(as specified in FORMAT-GUIDE.md) can provide a high level specification for maintaining
 a single source of truth, programmatically translated into one or more tutorial specific formats.
 
 ## Can I contribute?
