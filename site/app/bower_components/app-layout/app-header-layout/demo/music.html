@@ -1,0 +1,239 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
+
+  <title>Music Demo</title>
+
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <link rel="import" href="../../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../../iron-icons/av-icons.html">
+  <link rel="import" href="../../../iron-icon/iron-icon.html">
+  <link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../../paper-fab/paper-fab.html">
+  <link rel="import" href="../../app-box/app-box.html">
+  <link rel="import" href="../../app-header/app-header.html">
+  <link rel="import" href="../../app-scroll-effects/app-scroll-effects.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../app-header-layout.html">
+
+  <style is="custom-style">
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      background-color: #eee;
+    }
+
+    app-box {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      --app-box-background-front-layer: {
+        background-image: url(//app-layout-assets.appspot.com/assets/GIRL_PharrellWilliams.jpg);
+        background-repeat: no-repeat;
+        background-size: 100%;
+        padding-bottom: 1000px;
+      };
+    }
+
+    app-header {
+      color: #fff;
+      --app-header-background-rear-layer: {
+        background-color: #ef6c00;
+      };
+    }
+
+    paper-icon-button {
+      --paper-icon-button-ink-color: white;
+    }
+
+    paper-fab {
+      position: absolute;
+      top: 232px;
+      right: 160px;
+      --paper-fab-background: #ef6c00;
+      --paper-fab-keyboard-focus-background: #de5c00;
+      --iron-icon-width: 36px;
+      --iron-icon-height: 36px;
+    }
+
+    .content {
+      margin: 196px 120px 120px;
+      padding: 32px 32px 60px;
+      background-color: #fff;
+      color: #333;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14);
+    }
+
+    [main-title] {
+      margin-left: 30px;
+      font-weight: 300;
+    }
+
+    h2 {
+      margin: 30px 0 14px;
+    }
+
+    .artist-date {
+      @apply(--layout-horizontal);
+      padding-bottom: 12px;
+    }
+
+    .artist {
+      @apply(--layout-flex);
+    }
+
+    time {
+      margin-left: 20px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    summary {
+      padding: 16px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .song {
+      @apply(--layout);
+      @apply(--layout-center);
+      padding: 16px 0;
+    }
+
+    .song > .no {
+      width: 40px;
+    }
+
+    .song > .name {
+      @apply(--layout-flex);
+      padding-right: 10px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .song > .duration {
+      width: 60px;
+    }
+
+    /* mobile layout */
+    @media (max-width: 600px) {
+
+      .content {
+        margin: 254px 0 0 0;
+        box-shadow: none;
+      }
+
+      paper-fab {
+        top: 290px;
+        right: 16px;
+      }
+
+    }
+
+  </style>
+
+</head>
+<body unresolved>
+
+  <app-box
+      effects="parallax-background"
+      effects-config='{"parallax-background": {"scalar": -0.5}}'></app-box>
+
+  <app-header-layout>
+
+    <app-header reveals>
+      <app-toolbar>
+       <paper-icon-button icon="arrow-back"></paper-icon-button>
+        <div main-title></div>
+        <paper-icon-button icon="search"></paper-icon-button>
+      </app-toolbar>
+    </app-header>
+
+    <div class="content">
+
+      <h2>GIRL</h2>
+      <div class="artist-date">
+        <div class="artist">Pharrell Williams</div><time>March 3, 2014</time>
+      </div>
+      <summary>
+        Girl is the second studio album by American recording artist and record producer Pharrell Williams. The album was released on March 3, 2014, through Williams' label i Am Other and Columbia Records.
+      </summary>
+
+      <template is="dom-repeat" id="repeater">
+        <div class="song">
+          <div class="no">{{item.no}}</div>
+          <div class="name">{{item.name}}</div>
+          <div class="duration">{{item.duration}}</div>
+          <iron-icon icon="more-vert"></iron-icon>
+        </div>
+      </template>
+
+    </div>
+
+    <paper-fab icon="av:play-arrow"></paper-fab>
+
+  </app-header-layout>
+
+  <script>
+
+    addEventListener('WebComponentsReady', function() {
+
+      var appHeader = document.querySelector('app-header');
+      var appBox = document.querySelector('app-box');
+      var fadeBackgroundEffect = appHeader.createEffect('fade-background');
+
+      window.addEventListener('scroll', function() {
+        var progress = appBox.getScrollState().progress;
+        var isCondensed = progress > 0.25;
+
+        fadeBackgroundEffect.run(isCondensed ? 1 : 0);
+        appHeader.shadow = isCondensed;
+      });
+
+      var repeater = document.querySelector('#repeater');
+      repeater.items = [
+        {no: 1, name: 'Marilyn Monroe', duration: '5:51'},
+        {no: 2, name: 'Brand New', duration: '4:31'},
+        {no: 3, name: 'Hunter', duration: '4:00'},
+        {no: 4, name: 'Gush', duration: '3:54'},
+        {no: 5, name: 'Happy (From "Despicable Me 2")', duration: '3:52'},
+        {no: 6, name: 'Come Get It Bae', duration: '3:21'},
+        {no: 7, name: 'Gust of Wind', duration: '4:45'},
+        {no: 8, name: 'Lost Queen', duration: '7:56'},
+        {no: 9, name: 'Know Who You Are', duration: '3:56'},
+        {no: 10, name: 'It Girl', duration: '4:49'},
+        {no: 11, name: 'Marilyn Monroe', duration: '5:51'},
+        {no: 12, name: 'Brand New', duration: '4:31'},
+        {no: 13, name: 'Hunter', duration: '4:00'},
+        {no: 14, name: 'Gush', duration: '3:54'},
+        {no: 15, name: 'Happy (From "Despicable Me 2")', duration: '3:52'},
+        {no: 16, name: 'Come Get It Bae', duration: '3:21'},
+        {no: 17, name: 'Gust of Wind', duration: '4:45'},
+        {no: 18, name: 'Lost Queen', duration: '7:56'},
+        {no: 19, name: 'Know Who You Are', duration: '3:56'},
+        {no: 20, name: 'It Girl', duration: '4:49'}
+      ];
+
+    });
+
+  </script>
+
+</body>
+</html>

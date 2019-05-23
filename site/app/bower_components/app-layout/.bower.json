@@ -1,0 +1,54 @@
+{
+  "name": "app-layout",
+  "version": "0.10.7",
+  "description": "A set of layout elements for your app",
+  "authors": [
+    "The Polymer Authors"
+  ],
+  "license": "https://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/PolymerElements/app-layout",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PolymerElements/app-layout"
+  },
+  "main": "app-layout.html",
+  "dependencies": {
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
+    "iron-media-query": "PolymerElements/iron-media-query#^1.0.0",
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.0",
+    "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#^1.0.0",
+    "polymer": "Polymer/polymer#^1.6.0"
+  },
+  "devDependencies": {
+    "font-roboto": "PolymerElements/font-roboto#^1.0.0",
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-icon": "PolymerElements/iron-icon#^1.0.0",
+    "iron-icons": "PolymerElements/iron-icons#^1.0.0",
+    "iron-list": "PolymerElements/iron-list#^1.0.0",
+    "iron-pages": "PolymerElements/iron-pages#^1.0.0",
+    "iron-scroll-threshold": "PolymerElements/iron-scroll-threshold#^1.0.0",
+    "paper-card": "PolymerElements/paper-card#^1.0.0",
+    "paper-fab": "PolymerElements/paper-fab#^1.0.0",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^1.0.0",
+    "paper-item": "PolymerElements/paper-item#^1.0.0",
+    "paper-menu": "PolymerElements/paper-menu#^1.0.0",
+    "paper-progress": "PolymerElements/paper-progress#~1.0.2",
+    "paper-spinner": "PolymerElements/paper-spinner#^1.0.0",
+    "paper-styles": "PolymerElements/paper-styles#^1.0.0",
+    "paper-tabs": "PolymerElements/paper-tabs#^1.0.0",
+    "test-fixture": "PolymerElements/test-fixture#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "ignore": [],
+  "private": true,
+  "_release": "0.10.7",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.10.7",
+    "commit": "a28a9ac9e5937ac1bab83939f00256d232c91b65"
+  },
+  "_source": "https://github.com/PolymerElements/app-layout.git",
+  "_target": "^0.10.0",
+  "_originalSource": "PolymerElements/app-layout"
+}

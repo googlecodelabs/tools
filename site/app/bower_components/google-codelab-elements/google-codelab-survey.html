@@ -1,0 +1,189 @@
+<!--
+Copyright (c) 2015 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../paper-radio-group/paper-radio-group.html">
+<link rel="import" href="shared-style.html">
+
+<!--
+This elements provides support for Inline Surveys.
+It syncs answered questions with `localStorage`.
+
+Example:
+
+    <google-codelab-survey>
+      <h4>How would rate your experience with Polymer?</h4>
+      <paper-radio-group>
+        <paper-radio-button>Novice</paper-radio-button>
+        <paper-radio-button>Intermediate</paper-radio-button>
+        <paper-radio-button>Advanced</paper-radio-button>
+      </paper-radio-group>
+    </google-codelab-survey>
+
+### Styling
+
+The following custom properties are available for styling:
+
+Custom property                     | Description
+------------------------------------|------------
+`google-codelab-survey-background`  | The element background
+`google-codelab-survey-border`      | Left border of the background
+
+@demo demo/survey.html
+-->
+<dom-module id="google-codelab-survey">
+  <template strip-whitespace>
+    <style include="shared-style">
+      :host {
+        display: block;
+        margin: 2em 0;
+        padding: 0;
+        background: var(--google-codelab-survey-background, #E8F0FE);
+        border-left: var(--google-codelab-survey-border, 4px solid #185ABC);
+        border-radius: 4px;
+        color: #3C4043;
+      }
+
+      .survey > ::content h4 {
+        font-weight: 500;
+        font-size: 16px;
+        padding: 0.8em 0.6em 0 20px;
+        margin: 0;
+      }
+
+      .survey > ::content paper-radio-group {
+        padding: 0.4em 0 1.1em 30px;
+      }
+
+      .survey > ::content paper-radio-button {
+        display: block;
+        padding: 4px 0;
+      }
+    </style>
+    <iron-localstorage name="{{_storageKey(surveyId)}}" value="{{answers}}"
+        on-iron-localstorage-load-empty="_initAnswers"
+        on-iron-localstorage-load="_storageLoaded">
+    </iron-localstorage>
+    <div class="survey"><content></content></div>
+  </template>
+  <script>
+    Polymer({
+      is: 'google-codelab-survey',
+
+      /**
+       * Fired when user answers a survey question.
+       * @event google-codelab-survey-answer
+       * detail {{question: String, answer: String}}
+       */
+
+      properties: {
+        /**
+         * An identifier to differentiate multiple surveys.
+         * It is important to set this to a non-empty string
+         * when hosting 2+ codelabs/surveys on the same domain.
+         */
+        surveyId: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * All answers, synced with `localStorage`.
+         * Keys are questions text.
+         */
+        answers: {
+          type: Object,
+          notify: true
+        }
+      },
+
+      listeners: {
+        'click': '_onClick'
+      },
+
+      ready: function() {
+        var elems = Polymer.dom(this).queryDistributedElements('paper-radio-group');
+        for (var i = 0, elem; elem = elems[i]; i++) {
+          // use this method for its side effect: ensure `name` property is present
+          // on radio buttons
+          this._selectAnswer(elem);
+        }
+      },
+
+      _initAnswers: function() {
+        this.answers = {};
+      },
+
+      _storageKey: function(id) {
+        return 'codelab-survey-' + id;
+      },
+
+      _storageLoaded: function() {
+        var elems = this.getContentChildren();
+        var answer = '';
+        for (var i = 0, elem; elem = elems[i]; i++) {
+          if (elem.tagName === 'H4') {
+            answer = this.answers[this._elemText(elem)];
+            continue;
+          }
+          if (!answer || !elem.select) {
+            continue;
+          }
+          this._selectAnswer(elem, answer);
+        }
+      },
+
+      /**
+       * @param {?} groupEl .
+       * @param {?=} value .
+       */
+      _selectAnswer: function(groupEl, value) {
+        for (var i = 0, elem; elem = groupEl.children[i]; i++) {
+          if (!elem.name) {
+            elem.name = this._elemText(elem);
+          }
+          if (elem.name === value) {
+            groupEl.select(value);
+          }
+        }
+      },
+
+      _onClick: function(evt) {
+        evt = Polymer.dom(evt);
+        if (evt.localTarget.tagName !== 'PAPER-RADIO-BUTTON') {
+          return;
+        }
+        var qElem = evt.localTarget.parentElement.previousElementSibling;
+        if (!qElem || qElem.tagName !== 'H4') {
+          return;
+        }
+        var question = this._elemText(qElem);
+        var answer = evt.localTarget.name;
+        this.set('answers.' + question, answer);
+        this.fire('google-codelab-survey-answer', {
+          'question': question,
+          'answer': answer
+        });
+      },
+
+      _elemText: function(el) {
+        return el.textContent.trim().replace(/\n|\r/g, '');
+      }
+    });
+  </script>
+</dom-module>
