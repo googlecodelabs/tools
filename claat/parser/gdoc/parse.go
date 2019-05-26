@@ -650,9 +650,12 @@ func list(ds *docState) types.Node {
 // image creates a new ImageNode out of hn, parsing its src attribute.
 // It returns nil if src is empty.
 // It may also return a YouTubeNode if alt property contains specific substring.
+// or an IframeNode if the alt property contains a URL other than youtube.
 func image(ds *docState) types.Node {
 	if strings.Contains(nodeAttr(ds.cur, "alt"), "youtube.com/watch") {
 		return youtube(ds)
+	} else if strings.Contains(nodeAttr(ds.cur, "alt"), "https://") {
+		return iframe(ds)
 	}
 	s := nodeAttr(ds.cur, "src")
 	if s == "" {
@@ -676,6 +679,31 @@ func youtube(ds *docState) types.Node {
 		return nil
 	}
 	n := types.NewYouTubeNode(v)
+	n.MutateBlock(true)
+	return n
+}
+
+func iframe(ds *docState) types.Node {
+	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+	if err != nil {
+		return nil
+	}
+	// Allow only https.
+	if u.Scheme != "https" {
+		return nil
+	}
+	// Make sure URL is end in one on the whitelisted domains.
+	ok := false
+	for _, domain := range types.IframeWhitelist {
+		if strings.HasSuffix(u.Hostname(), domain) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return nil
+	}
+	n := types.NewIframeNode(u.String())
 	n.MutateBlock(true)
 	return n
 }
