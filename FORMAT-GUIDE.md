@@ -4,7 +4,7 @@ Bug or feature request? File it [here](https://github.com/googlecodelabs/tools/i
 
 ## Getting Started
 
-Copy [g.co/codelabs/template](https://g.co/codelabs/template) as a starting template and then iteratively mutate the metadata and contents to your liking, following the formatting rules described below.
+Copy [this template doc](https://docs.google.com/document/d/1E6XMcdTexh5O8JwGy42SY3Ehzi8gOfUGiqTiUX6N04o/edit) as a starting point and then iteratively mutate the metadata and contents to your liking, following the formatting rules described below.
 
 To preview a codelab:
 
