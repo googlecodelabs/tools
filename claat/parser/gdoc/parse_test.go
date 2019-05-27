@@ -229,8 +229,8 @@ func TestParseDoc(t *testing.T) {
 		<p><img src="https://host/small.png" style="height: 10px; width: 25.5px"> icon.</p>
 
 		<p><img alt="https://www.youtube.com/watch?v=vid" src="https://yt.com/vid.jpg"></p>
-		<p><img alt="https://repl.it/?foo=bar" src="https://yt.com/vid.jpg"></p>
-		<p><img alt="https://example.com/?foo=bar" src="https://yt.com/vid.jpg"></p>
+		<p><img alt="https://repl.it/?foo=bar" src="https://host/image.png"></p>
+		<p><img alt="https://example.com/?foo=bar" src="https://host/image.png"></p>
 
 		<h3><a name="a3"></a><span>What you&rsquo;ll learn</span></h3>
 		<ul class="start">
@@ -344,12 +344,15 @@ func TestParseDoc(t *testing.T) {
 	yt.MutateBlock(true)
 	content.Append(yt)
 
-	iframe1 := types.NewIframeNode("https://repl.it")
-	iframe1.MutateBlock(true)
-	content.Append(iframe1)
-	iframe2 := types.NewIframeNode("https://example.com")
-	iframe2.MutateBlock(true)
-	content.Append(iframe2)
+	iframe := types.NewIframeNode("https://repl.it/?foo=bar")
+	iframe.MutateBlock(true)
+	content.Append(iframe)
+
+	img = types.NewImageNode("https://host/image.png")
+	img.Alt = "https://example.com/?foo=bar"
+	para = types.NewListNode(img)
+	para.MutateBlock(true)
+	content.Append(para)
 
 	h := types.NewHeaderNode(3, types.NewTextNode("What you'll learn"))
 	h.MutateType(types.NodeHeaderCheck)
