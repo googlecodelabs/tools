@@ -68,7 +68,7 @@ You can also use this to target specific events, for instance:  \
     Iframes can be embedded by doing:
      - Add an image in the document. The image can be a screenshot of the iframe for instance but it doesn't really matter since it won't be displayed but replaced by the embedded iframe.
      - Add an "Alt Text" to the image by doing **Cmd+Opt+Y** or **Right click > "Alt Text..."**
-     - Put a full URL in the **Description** field of the Alt Text. in the format `https://www.domain.com/watch?foo=bar`
+     - Put a full URL in the **Description** field of the Alt Text. in the format `https://www.domain.com/watch?foo=bar`. Note that for security reasons, iframe embbedding is limited to https URLs.
 
 1. Info Boxes
 

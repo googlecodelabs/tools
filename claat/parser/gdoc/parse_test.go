@@ -349,7 +349,7 @@ func TestParseDoc(t *testing.T) {
 	content.Append(iframe)
 
 	img = types.NewImageNode("https://host/image.png")
-	img.Alt = "https://example.com/?foo=bar"
+	img.Alt = "The domain of the requested iframe (example.com) has not been whitelisted."
 	para = types.NewListNode(img)
 	para.MutateBlock(true)
 	content.Append(para)

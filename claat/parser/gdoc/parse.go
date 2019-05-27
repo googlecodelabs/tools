@@ -653,6 +653,7 @@ func list(ds *docState) types.Node {
 // or an IframeNode if the alt property contains a URL other than youtube.
 func image(ds *docState) types.Node {
 	alt := nodeAttr(ds.cur, "alt")
+	errorAlt := ""
 	if strings.Contains(alt, "youtube.com/watch") {
 		return youtube(ds)
 	} else if strings.Contains(alt, "https://") {
@@ -670,6 +671,8 @@ func image(ds *docState) types.Node {
 		}
 		if ok {
 			return iframe(ds)
+		} else {
+			errorAlt = "The domain of the requested iframe (" + u.Hostname() + ") has not been whitelisted."
 		}
 	}
 	s := nodeAttr(ds.cur, "src")
@@ -679,7 +682,11 @@ func image(ds *docState) types.Node {
 	n := types.NewImageNode(s)
 	n.Width = styleFloatValue(ds.cur, "width")
 	n.MutateBlock(findBlockParent(ds.cur))
-	n.Alt = nodeAttr(ds.cur, "alt")
+	if errorAlt != "" {
+		n.Alt = errorAlt
+	} else {
+		n.Alt = nodeAttr(ds.cur, "alt")
+	}
 	n.Title = nodeAttr(ds.cur, "title")
 	return n
 }
