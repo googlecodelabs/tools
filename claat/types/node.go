@@ -41,6 +41,7 @@ const (
 	NodeHeaderCheck          // Special kind of header, checklist
 	NodeHeaderFAQ            // Special kind of header, FAQ
 	NodeYouTube              // YouTube video
+	NodeIframe               // Embedded iframe
 	NodeImport               // A node which holds content imported from another resource
 )
 
@@ -468,4 +469,33 @@ type YouTubeNode struct {
 // Empty returns true if yt's VideoID field is zero.
 func (yt *YouTubeNode) Empty() bool {
 	return yt.VideoID != ""
+}
+
+// iframe whitelist - set of domains allow to embed iframes in a codelab.
+var IframeWhitelist = []string{
+	"google.com",
+	"google.dev",
+	"dartlang.org",
+	"web.dev",
+	"observablehq.com",
+	"repl.it",
+}
+
+// NewIframeNode creates a new embedded iframe.
+func NewIframeNode(url string) *IframeNode {
+	return &IframeNode{
+		node: node{typ: NodeIframe},
+		URL:  url,
+	}
+}
+
+// IframeNode is an embeddes iframe.
+type IframeNode struct {
+	node
+	URL string
+}
+
+// Empty returns true if iframe's URL field is empty.
+func (iframe *IframeNode) Empty() bool {
+	return iframe.URL != ""
 }

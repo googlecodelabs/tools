@@ -113,6 +113,9 @@ func (hw *htmlWriter) write(nodes ...types.Node) error {
 		case *types.YouTubeNode:
 			hw.youtube(n)
 			hw.writeBytes(newLine)
+		case *types.IframeNode:
+			hw.iframe(n)
+			hw.writeBytes(newLine)
 		}
 		if hw.err != nil {
 			return hw.err
@@ -370,4 +373,9 @@ func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
 		`src="https://www.youtube.com/embed/%s?rel=0" allow="accelerometer; `+
 		`autoplay; encrypted-media; gyroscope; picture-in-picture" `+
 		`allowfullscreen></iframe>`, n.VideoID)
+}
+
+func (hw *htmlWriter) iframe(n *types.IframeNode) {
+	hw.writeFmt(`<iframe class="youtube-video" src="%s"></iframe>`,
+		n.URL)
 }
