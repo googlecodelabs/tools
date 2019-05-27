@@ -674,7 +674,7 @@ func image(ds *docState) types.Node {
 			return iframe(ds)
 		} else {
 			errorAlt = "The domain of the requested iframe (" + u.Hostname() + ") has not been whitelisted."
-			fmt.Fprint(os.Stderr, errorAlt)
+			fmt.Fprint(os.Stderr, errorAlt+"\n")
 		}
 	}
 	s := nodeAttr(ds.cur, "src")
