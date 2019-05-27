@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -673,6 +674,7 @@ func image(ds *docState) types.Node {
 			return iframe(ds)
 		} else {
 			errorAlt = "The domain of the requested iframe (" + u.Hostname() + ") has not been whitelisted."
+			fmt.Fprint(os.Stderr, errorAlt)
 		}
 	}
 	s := nodeAttr(ds.cur, "src")
