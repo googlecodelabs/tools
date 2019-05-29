@@ -36,7 +36,7 @@ import (
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
-	"github.com/russross/blackfriday"
+	"gopkg.in/russross/blackfriday.v2"
 )
 
 // Metadata constants for the YAML header
@@ -161,21 +161,22 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 // claatMarkdown calls the Blackfriday Markdown parser with some special addons selected. It takes a byte slice as a parameter,
 // and returns its result as a byte slice.
 func claatMarkdown(b []byte) []byte {
-	htmlFlags := blackfriday.HTML_USE_XHTML |
-		blackfriday.HTML_USE_SMARTYPANTS |
-		blackfriday.HTML_SMARTYPANTS_FRACTIONS |
-		blackfriday.HTML_SMARTYPANTS_DASHES |
-		blackfriday.HTML_SMARTYPANTS_LATEX_DASHES
-	extns := blackfriday.EXTENSION_FENCED_CODE |
-		blackfriday.EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK |
-		blackfriday.EXTENSION_NO_INTRA_EMPHASIS |
-		blackfriday.EXTENSION_DEFINITION_LISTS |
-		blackfriday.EXTENSION_TABLES
-	o := blackfriday.Options{
-		Extensions: extns,
-	}
-	r := blackfriday.HtmlRenderer(htmlFlags, "", "")
-	return blackfriday.MarkdownOptions(b, r, o)
+	htmlFlags := blackfriday.UseXHTML |
+		blackfriday.Smartypants |
+		blackfriday.SmartypantsFractions |
+		blackfriday.SmartypantsDashes |
+		blackfriday.SmartypantsLatexDashes
+
+	params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
+	r := blackfriday.NewHTMLRenderer(params)
+
+	extns := blackfriday.FencedCode |
+		blackfriday.NoEmptyLineBeforeBlock |
+		blackfriday.NoIntraEmphasis |
+		blackfriday.DefinitionLists |
+		blackfriday.Tables
+
+	return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r))
 }
 
 // parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
