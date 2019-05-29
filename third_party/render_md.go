@@ -22,3 +22,7 @@ func init() {
 func (el *Heading) Md() string {
 	return executeTemplate(&el, "Heading", md)
 }
+
+func (el *StylizedText) Md() string {
+	return executeTemplate(&el, "StylizedText", md)
+}

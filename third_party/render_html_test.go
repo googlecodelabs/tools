@@ -26,3 +26,30 @@ func TestRenderHtmlHeading(t *testing.T) {
 	}
 	util.TestBatch(tests, t)
 }
+
+func TestRenderHtmlStylizedText(t *testing.T) {
+	p := &StylizedText{
+		Text: "hello!",
+	}
+	b := &StylizedText{
+		Text:   "hello!",
+		IsBold: true,
+	}
+	i := &StylizedText{
+		Text:         "hello!",
+		IsEmphasized: true,
+	}
+	b_i := &StylizedText{
+		Text:         "hello!",
+		IsBold:       true,
+		IsEmphasized: true,
+	}
+
+	tests := []*util.TestingBatch{
+		{p.Html(), "hello!"},
+		{b.Html(), "<strong>hello!</strong>"},
+		{i.Html(), "<em>hello!</em>"},
+		{b_i.Html(), "<strong><em>hello!</em></strong>"},
+	}
+	util.TestBatch(tests, t)
+}

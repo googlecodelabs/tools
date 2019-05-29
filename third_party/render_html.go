@@ -18,3 +18,7 @@ func init() {
 func (el *Heading) Html() string {
 	return executeTemplate(&el, "Heading", html)
 }
+
+func (el *StylizedText) Html() string {
+	return executeTemplate(&el, "StylizedText", html)
+}

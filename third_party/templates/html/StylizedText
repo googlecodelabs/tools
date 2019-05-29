@@ -1,0 +1,5 @@
+{{- if .IsBold -}} <strong> {{- end -}}
+{{- if .IsEmphasized -}} <em> {{- end -}}
+{{- .Text | html | js -}}
+{{- if .IsEmphasized -}} </em> {{- end -}}
+{{- if .IsBold -}} </strong> {{- end -}}
