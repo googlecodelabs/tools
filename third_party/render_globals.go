@@ -2,15 +2,14 @@ package devrel_tutorial
 
 import (
 	"bytes"
-	"log"
 	"text/template"
 	"github.com/googlecodelabs/tools/claat/util"
 )
 
 // Reviewing comment: Templates can live anywhere within the repo
 const (
-  mdTmplsDir = 	"github.com/googlecodelabs/tools/third_party/templates/md/*"
-  htmlTmplsDir = 	"github.com/googlecodelabs/tools/third_party/templates/html/*"
+	mdTmplsDir = "github.com/googlecodelabs/tools/third_party/templates/md/*"
+	htmlTmplsDir = "github.com/googlecodelabs/tools/third_party/templates/html/*"
 )
 
 var (
@@ -18,7 +17,6 @@ var (
 	html *template.Template
 )
 
-// Base Rendering Wrapper Types
 type (
 	ProtoRenderer interface {
 		Md() string

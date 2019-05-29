@@ -26,15 +26,14 @@ func LogIfError(err error) {
 }
 
 type TestingBatch struct {
-	i string
-	o string
+	I string
+	O string
 }
 
-func testMdBatch(tests []TestingBatch, t *testing.T) {
+func TestBatch(tests []*TestingBatch, t *testing.T) {
 	for _, test := range tests {
-		r := string(test)
-		if test.o != r {
-			t.Errorf("Expecting:\n\t'%s', but got \n\t'%s'", test.o, r)
+		if test.O != test.I {
+			t.Errorf("Expecting:\n\t'%s', but got \n\t'%s'", test.O, test.I)
 			continue
 		}
 	}

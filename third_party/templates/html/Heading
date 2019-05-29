@@ -1,1 +1,1 @@
-<h{{.Level}}> {{- .Text | safeHTML -}} </h{{.Level}}>
+<h{{.Level}}> {{- .Text | html | js -}} </h{{.Level}}>

@@ -1,19 +1,20 @@
 package devrel_tutorial
 
 import (
-	"strings"
 	"text/template"
 )
 
 func init() {
-	funcMap := template.FuncMap{
-		"safeHTML": func(s string) htmlTemplate.HTML {
-			return template.HTML(s)
-		},
-	}
-	html = template.Must(template.New("master").Funcs(funcMap).ParseGlob(htmlTmplsDir))
+	html = template.Must(template.New("master").ParseGlob(htmlTmplsDir))
 }
 
+// TODO if possible:
+//     Template names are named after their struct type,
+//     use `reflect.TypeOf(el).Elem().Name()`
+//     as a generic caller once a catch-all type, or
+//     field-persistent inferace-passing process is figured out
+
+// Leaf Types
 func (el *Heading) Html() string {
-	return executeTemplate(&el, "Heading", md)
+	return executeTemplate(&el, "Heading", html)
 }
