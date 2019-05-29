@@ -60,13 +60,11 @@ message Link {
 message InlineContent {
   oneof content {
     StylizedText text = 6;
-    string strong_text = 2;
-    string emphasized_text = 3;
-    string inline_code_text = 4;
     Link link = 5;
   }
 
-  reserved 1;
+  reserved 1, 2, 3, 4;
+  reserved "strong_text", "emphasized_text", "inline_code_text";
 };
 
 message StylizedText {
