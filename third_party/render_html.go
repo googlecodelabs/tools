@@ -13,3 +13,7 @@ func init() {
 	}
 	html = template.Must(template.New("master").Funcs(funcMap).ParseGlob(htmlTmplsDir))
 }
+
+func (el *Heading) Html() string {
+	return executeTemplate(&el, "Heading", md)
+}

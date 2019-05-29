@@ -15,3 +15,7 @@ func init() {
 	}
 	md = template.Must(template.New("master").ParseGlob(mdTmplsDir))
 }
+
+func (el *Heading) Md() string {
+	return executeTemplate(&el, "Heading", md)
+}
