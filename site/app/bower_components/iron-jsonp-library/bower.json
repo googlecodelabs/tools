@@ -1,0 +1,36 @@
+{
+  "name": "iron-jsonp-library",
+  "version": "1.0.4",
+  "description": "Loads jsonp libraries",
+  "authors": [
+    "Aleks Totic <a@totic.org>",
+    "The Polymer Authors"
+  ],
+  "keywords": [
+    "web-component",
+    "polymer",
+    "behavior"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PolymerElements/iron-jsonp-library.git"
+  },
+  "main": "iron-jsonp-library.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/PolymerElements/iron-jsonp-library/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "test-fixture": "PolymerElements/test-fixture#^1.0.0",
+    "web-component-tester": "polymer/web-component-tester#^3.4.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
+    "paper-styles": "PolymerElements/paper-styles#^1.0.2",
+    "paper-spinner": "PolymerElements/paper-spinner#^1.0.1"
+  }
+}

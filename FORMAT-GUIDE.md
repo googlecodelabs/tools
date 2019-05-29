@@ -4,7 +4,7 @@ Bug or feature request? File it [here](https://github.com/googlecodelabs/tools/i
 
 ## Getting Started
 
-Copy [g.co/codelabs/template](https://g.co/codelabs/template) as a starting template and then iteratively mutate the metadata and contents to your liking, following the formatting rules described below.
+Copy [this template doc](https://docs.google.com/document/d/1E6XMcdTexh5O8JwGy42SY3Ehzi8gOfUGiqTiUX6N04o/edit) as a starting point and then iteratively mutate the metadata and contents to your liking, following the formatting rules described below.
 
 To preview a codelab:
 
@@ -60,8 +60,15 @@ You can also use this to target specific events, for instance:  \
     Youtube Videos can be embedded by doing:
      - Add an image in the document. The image can be a screenshot of the video for instance but it doesn't really matter since it won't be displayed but replaced by the embedded video.
      - Add an "Alt Text" to the image by doing **Cmd+Opt+Y** or **Right click > "Alt Text..."**
-     - Put a Youtube video link in the **Description** field of the Alt Text. in the format `https://www.yoututbe.com/watch?v=[video_ID]`
+     - Put a Youtube video link in the **Description** field of the Alt Text. in the format `https://www.youtube.com/watch?v=[video_ID]`
     > Specifying a start time is not supported at this time.
+
+1. Embedded Iframes
+
+    Iframes can be embedded by doing:
+     - Add an image in the document. The image can be a screenshot of the iframe for instance but it doesn't really matter since it won't be displayed but replaced by the embedded iframe.
+     - Add an "Alt Text" to the image by doing **Cmd+Opt+Y** or **Right click > "Alt Text..."**
+     - Put a full URL in the **Description** field of the Alt Text. in the format `https://www.domain.com/watch?foo=bar`. Note that for security reasons, iframe embbedding is limited to an enumerated set of allowable iframe source URLs. Feel free to submit a PR if you'd like to augment that list or tweak your own version of the claat command.
 
 1. Info Boxes
 

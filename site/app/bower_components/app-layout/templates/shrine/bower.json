@@ -1,0 +1,21 @@
+{
+  "name": "shrine",
+  "authors": [
+    "The Polymer Authors"
+  ],
+  "private": true,
+  "dependencies": {
+    "app-layout": "polymerelements/app-layout#^0.10.0",
+    "app-route": "polymerelements/app-route#^0.9.1",
+    "iron-ajax": "polymerelements/iron-ajax#^1.0.0",
+    "iron-flex-layout": "polymerelements/iron-flex-layout#^1.0.0",
+    "iron-pages": "polymerelements/iron-pages#^1.0.0",
+    "iron-icon": "polymerelements/iron-icon#^1.0.0",
+    "iron-icons": "polymerelements/iron-icons#^1.0.0",
+    "iron-media-query": "polymerelements/iron-media-query#^1.0.0",
+    "paper-fab": "PolymerElements/paper-fab#^1.0.0",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^1.0.0",
+    "paper-tabs": "PolymerElements/paper-tabs#^1.0.0",
+    "polymer": "polymer/polymer#^1.4.0"
+  }
+}
