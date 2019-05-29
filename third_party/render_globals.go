@@ -18,6 +18,13 @@ var (
 	html *template.Template
 )
 
+type (
+	ProtoRenderer interface {
+		Md() string
+		Html() string
+	}
+)
+
 // Base Templating Logic
 func executeTemplate(d interface{}, tName string, t *template.Template) string {
 	var w bytes.Buffer
