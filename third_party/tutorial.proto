@@ -17,37 +17,39 @@ syntax = "proto3";
 package devrel.tutorial;
 
 message Tutorial {
-  Title title = 1;
+  string title = 4;
   map<string, string> metadata = 2;
   repeated Step steps = 3;
+  int32 total_duration = 5;
+
+  reserved 1;
 };
 
 message Step {
-  Title title = 1;
+  string title = 4;
   map<string, string> metadata = 2;
-  repeated Content content = 3;
-};
+  repeated BlockContent content = 3;
+  int32 duration = 5;
 
-message Title {
-  repeated InlineContent inline_contents = 1;
-};
-
-message Content {
-  oneof content {
-    InlineContent inline_content = 1;
-    BlockContent block_content = 2;
-  }
+  reserved 1, 3;
 };
 
 message BlockContent {
   oneof content {
+    Paragraph paragraph = 12;
     Heading heading = 1;
-    Image image = 2;
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
-    Table table = 6;
+    List list = 7;
+    Survey survey = 8;
+    Checklist checklist = 9;
+    FAQ faq = 10;
+    Button button = 11;
+    // still need youtube video
+    Image image = 2;
+    Video vide = 13;
 
-    reserved 5; 
+    reserved 5, 6;
     reserved "horizontal_rule";
   }
 };
@@ -74,12 +76,10 @@ message StylizedText {
 }
 
 message Heading {
-  repeated InlineContent inline_contents = 1;
+  string text = 1;
   int32 level = 2;
-};
 
-message Image {
-  // TODO
+  reserved 1;
 };
 
 message InfoBox {
@@ -94,17 +94,43 @@ message InfoBox {
 };
 
 message CodeBlock {
-  repeated InlineContent inline_contents = 1;
-  string code_location = 2;
+  string text = 4;
   string language_hint = 3;
+
+  reserved 1, "inline_contents", 2, "code_location";
 };
 
-message ListStep {
-  repeated Content contents = 1;
+// No idea about names here...
+message Link {
+  InlineContent source = 1;
+  string location = 2;
+};
+
+// Thought: think as 'media'?
+message Image {
+  string source = 1;
+  string size = 2;
+  string alt_title = 3;
+  string alt_description = 3;
+};
+
+message Video {
+  Image ImageSource = 1;
+}
+// end of 'thought'
+
+message InlineContent {
+  oneof content {
+    string text = 1;
+    string strong_text = 2;
+    string emphasized_text = 3;
+    string inline_code_text = 4;
+    Link link = 5;
+  }
 };
 
 message List {
-  repeated ListStep list_steps = 1;
+  repeated ListStep steps = 1;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
@@ -114,14 +140,28 @@ message List {
   ListVariety list_variety = 2;
 };
 
-message Table {
-  repeated TableRow table_rows = 1;
+message ListStep {
+  repeated InlineContent contents = 2;
+
+  reserved 1;
 };
 
-message TableRow {
-  repeated TableCell table_cells = 1;
-};
+message Survey {
+  string title = 1;
+  List questions = 2;
+}
 
-message TableCell {
-  repeated InlineContent inline_contents = 1;
-};
+message Checklist {
+  string title = 1;
+  List items = 2;
+}
+
+message FAQ {
+  string title = 1;
+  List questions = 2;
+}
+
+message Button {
+  Link link = 1;
+  bool isDownloadButton = 2;
+}
