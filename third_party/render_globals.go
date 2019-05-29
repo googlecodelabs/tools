@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"log"
 	"text/template"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
 // Reviewing comment: Templates can live anywhere within the repo
@@ -16,3 +17,10 @@ var (
 	md   *template.Template
 	html *template.Template
 )
+
+// Base Templating Logic
+func executeTemplate(d interface{}, tName string, t *template.Template) string {
+	var w bytes.Buffer
+	util.LogIfError(t.ExecuteTemplate(&w, tName, d))
+	return w.String()
+}

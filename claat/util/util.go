@@ -1,5 +1,9 @@
 package util
 
+import (
+	"log"
+)
+
 // Unique de-dupes a.
 // The argument a is not modified.
 func Unique(a []string) []string {
@@ -12,4 +16,10 @@ func Unique(a []string) []string {
 		}
 	}
 	return res
+}
+
+func LogIfError(err error) {
+  if err != nil {
+    log.Print(err)
+  }
 }

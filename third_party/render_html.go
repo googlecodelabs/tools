@@ -6,5 +6,10 @@ import (
 )
 
 func init() {
-	html = template.Must(template.New("master").ParseGlob(htmlTmplsDir))
+	funcMap := template.FuncMap{
+		"safeHTML": func(s string) htmlTemplate.HTML {
+			return template.HTML(s)
+		},
+	}
+	html = template.Must(template.New("master").Funcs(funcMap).ParseGlob(htmlTmplsDir))
 }
