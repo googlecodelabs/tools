@@ -1,0 +1,8 @@
+<google-codelab-analytics gaid="{{.GlobalGA}}"></google-codelab-analytics>
+<google-codelab codelab-gaid="{{.Meta.GA}}"
+                id="{{.Meta.ID}}"
+                title="{{.Meta.Title}}"
+                environment="{{index .Env}}"
+                feedback-link="{{.Meta.Feedback}}">
+  {{.Children_as_text}}
+</google-codelab>

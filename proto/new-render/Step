@@ -1,0 +1,9 @@
+<google-codelab-step label="{{.Title}}" duration="{{.Duration}}">
+  {{.Rendered_content}}
+</google-codelab-step>
+<!--
+{{range $i, $e := .Steps}}
+{{if matchEnv .Tags $.Env}}
+  {{.Content | renderHTML $.Env}}
+{{end}}
+-->

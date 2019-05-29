@@ -1,0 +1,159 @@
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package devrel.tutorial;
+
+// figure these out ~ make a visual to explain it all!
+message Image {
+  // TODO
+};
+
+message CodeBlock {
+  // no idea..
+  string text = 5;
+  string language = 3;
+
+  reserved 1, 2, 4;
+  reserved "inline_contents", "code_location";
+};
+// 
+message Tutorial {
+  string title = 4;
+  map<string, string> metadata = 2;
+  repeated Step children = 3;
+
+  reserved 1;
+};
+
+message Step {
+  string title = 4;
+  map<string, string> metadata = 2;
+  repeated BlockContent children = 5;
+  // int32 number = 6;
+
+  reserved 1, 3;
+};
+
+message BlockContent {
+  oneof content {
+    Heading heading = 1;
+    // can this be repeated?
+    TextBlock text = 12;
+    Button button = 11;
+    InfoBox info_box = 3;
+    CodeBlock code_block = 4;
+    List list = 7;
+    Survey survey = 8;
+    Checklist checklist = 9;
+    Faq faq = 10;
+    Image image = 2;
+  }
+
+  reserved 5, 6;
+};
+
+message Heading {
+  string text = 3;
+  int32 level = 2;
+
+  reserved 1;
+};
+
+message TextBlock {
+  repeated InlineContent children = 1;
+  string text = 2;
+};
+
+message InlineContent {
+  oneof content {
+    StylizedText text = 6;
+    InlineCode code = 7;
+    Link link = 5;
+  }
+
+  reserved 1, 2, 3, 4;
+  reserved "strong_text", "emphasized_text", "inline_code_text";
+}
+
+message StylizedText {
+  string text = 1;
+  bool is_bold = 2;
+  bool is_emphasized = 3;
+}
+
+message InlineCode {
+  string text = 1;
+}
+
+message Link {
+  string href = 3;
+  TextBlock text = 4;
+
+  // reserved ;
+  // reserved ;
+}
+
+message Button {
+  Link link = 1;
+  bool is_downloadable = 2;
+}
+
+message InfoBox {
+  TextBlock text = 3;
+
+  enum Disposition {
+    UNKNOWN_DISPOSITION = 0;
+    NOTE = 3;
+    WARNING = 4;
+    // Deprecated, leaving for backward compatibility
+    POSITIVE = 1;
+    NEGATIVE = 2;
+  };
+  Disposition disposition = 2;
+
+  reserved 1;
+  reserved "inline_contents";
+};
+
+message List {
+  // change back to ListStep
+  repeated TextBlock children = 3;
+  string text = 4;
+
+  enum ListVariety {
+    UNKNOWN_VARIETY = 0;
+    ORDERED = 1;
+    UNORDERED = 2;
+  }
+  ListVariety list_variety = 2;
+
+  reserved 1;
+};
+
+message Survey {
+  string title = 1;
+  List questions = 2;
+}
+
+message Checklist {
+  string title = 1;
+  List items = 2;
+}
+
+message Faq {
+  string title = 1;
+  List questions = 2;
+}

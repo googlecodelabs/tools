@@ -1,0 +1,52 @@
+package devrel_tutorial
+
+import (
+	"reflect"
+)
+
+func IsOneof(el reflect.Type) bool {
+	_, hasOneof := el.FieldByName("Content")
+	return hasOneof
+}
+
+// TODO: How to make the following cleaner/more generic?
+//       { [typString] = func(x) { return x.[Type] } ?
+//       using: https://github.com/golang/protobuf/issues/261#issuecomment-430496210
+
+func (el *InlineContent) GetInnerContent() ProtoRenderer {
+	switch x := el.Content.(type) {
+	case *InlineContent_Text:
+		return x.Text
+	case *InlineContent_Code:
+		return x.Code
+	case *InlineContent_Link:
+		return x.Link
+	}
+	return nil
+}
+
+func (el *BlockContent) GetInnerContent() ProtoRenderer {
+	switch x := el.Content.(type) {
+	case *BlockContent_Heading:
+		return x.Heading
+	case *BlockContent_Image:
+		return x.Image
+	case *BlockContent_InfoBox:
+		return x.InfoBox
+	case *BlockContent_CodeBlock:
+		return x.CodeBlock
+	case *BlockContent_List:
+		return x.List
+	case *BlockContent_Survey:
+		return x.Survey
+	case *BlockContent_Checklist:
+		return x.Checklist
+	case *BlockContent_Faq:
+		return x.Faq
+	case *BlockContent_Button:
+		return x.Button
+	case *BlockContent_Text:
+		return x.Text
+	}
+	return nil
+}

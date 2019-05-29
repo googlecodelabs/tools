@@ -1,0 +1,5 @@
+{{- if .IsBold -}} ** {{- end -}}
+{{- if .IsEmphasized -}} __ {{- end -}}
+{{- .Text -}}
+{{- if .IsEmphasized -}} __ {{- end -}}
+{{- if .IsBold -}} ** {{- end -}}

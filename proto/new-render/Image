@@ -1,0 +1,2 @@
+<img src="{{.Source}}" style="width: px" alt={{.Title}} title={{.Title}} />
+// {{%.2f}}

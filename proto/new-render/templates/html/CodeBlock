@@ -1,0 +1,2 @@
+<pre><code {{if .Lang}} language={{.Lang}} class={{.Lang}} {{end -}}
+></code></pre>
