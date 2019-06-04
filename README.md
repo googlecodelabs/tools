@@ -60,6 +60,11 @@ which connects you with other authors and provides access to the
         $ claat export 1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY  
         ok      your-first-pwapp
 
+    You can also specify markdown documents as input. It has to adhere to the mardown document syntax conventions described [here](https://github.com/googlecodelabs/tools/tree/master/claat/parser/md)
+
+        $ claat export document.md
+        ok      your-md-based-codelab
+
 1. Run the claat serve command.
 
         $ claat serve
