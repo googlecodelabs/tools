@@ -28,13 +28,10 @@ func TestFetch(t *testing.T) {
 
 	// Write some bytes to the file.
 	_, err = f.Write(contents)
+	defer f.Close()
 	if err != nil {
-		// Be sure to close the file if we're going to stop here.
-		f.Close()
 		t.Errorf("error writing to temp file: %s", err)
 	}
-
-	f.Close()
 
 	fsf := NewFileSystemFetcher(fname)
 	r, err := fsf.Fetch()
