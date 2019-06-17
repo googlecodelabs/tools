@@ -30,6 +30,7 @@ SRCS = $(shell find . -name '*.go') render/tmpldata.go
 all: $(OUTDIR)/claat
 
 $(OUTDIR)/claat: $(SRCS) VERSION
+	protoc tutorial.proto -I=../third_party --go_out=../third_party
 	go build -o $@ -ldflags "-X main.version=$(VERSION)"
 
 serve: $(OUTDIR)/claat
