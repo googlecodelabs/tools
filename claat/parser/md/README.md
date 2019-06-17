@@ -51,7 +51,8 @@ title, or the end of the document.
 
 Steps should be marked with the expected duration to complete them. To label a
 step with a duration, put "Duration: TIME" by itself on the line directly
-following the step title, where TIME is formatted like "h:mm".
+following the step title, where TIME is formatted like "hh:mm:ss" (or "mm:ss" if
+only one `:` is provided).
 
 ```
 ## Codelab Step
