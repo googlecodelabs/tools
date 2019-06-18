@@ -24,13 +24,13 @@ func newSampleProtoTemplate(el interface{}) sampleProtoTemplate {
 func runEncapsulatedTest(test encapsulatedTest, tmpl *template.Template, t *testing.T) {
 	// Check wheather template failed to render by checking if there was a panic
 	defer func(test encapsulatedTest) {
-		r := recover()
-		if r != nil && !test.WantErr {
-			t.Errorf("False positive panic for: %+v", test)
+		err := recover()
+		if err != nil && !test.WantErr {
+			t.Errorf("For: %#v\n\t%s", test, err)
 		}
 
-		if r == nil && test.WantErr {
-			t.Errorf("False negative panic for: %+v", test)
+		if err == nil && test.WantErr {
+			t.Errorf("Error did not occur for: %#v", test)
 		}
 	}(test)
 
@@ -50,6 +50,7 @@ func TestExecuteTemplate(t *testing.T) {
 
 	tests := []encapsulatedTest{
 		{newSampleProtoTemplate(3), "3", false},
+		{newSampleProtoTemplate(nil), "", true},
 		{newSampleProtoTemplate("not-valid"), "", true},
 	}
 
