@@ -14,7 +14,7 @@ func ExecuteTemplate(el interface{}, t *template.Template) string {
 	e := t.ExecuteTemplate(&w, reflect.TypeOf(el).Name(), el)
 	if e != nil {
 		// This method outputs directly to templates. Panicking to surfance errors
-		//   since we cannot handle multiple returns in templates
+		// since we cannot handle multiple returns in templates.
 		// Panics will be gracefully handled by a wrapper function
 		panic(fmt.Sprintf("Templating panic: %s\n", e))
 	}

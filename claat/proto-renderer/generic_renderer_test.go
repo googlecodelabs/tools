@@ -30,9 +30,9 @@ func TestExecuteTemplate(t *testing.T) {
 	tmpl := template.Must(template.New("dummy").Funcs(funcMap).ParseGlob(tmplsAbsDir))
 
 	tests := []encapsulatedTest{
-		{newSampleProtoTemplate(3), "3", false},
-		{newSampleProtoTemplate(nil), "", true},
-		{newSampleProtoTemplate("not-valid"), "", true},
+		{newSampleProtoTemplate(3), "3", true},
+		{newSampleProtoTemplate(nil), "", false},
+		{newSampleProtoTemplate("not-valid"), "", false},
 	}
 
 	for _, tc := range tests {
