@@ -45,11 +45,11 @@ func runEncapsulatedTest(test encapsulatedTest, tmpl *template.Template, t *test
 	defer func(test encapsulatedTest) {
 		err := recover()
 		if err != nil && test.ok {
-			t.Errorf("\nFor:\n\t%#v\nPanic occured:\n\t%s\t(false negative)", test, err)
+			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n) = %#v\nPanic occured:\n\t%#v\n(false negative)", test, tmpl, test.out, err)
 		}
 
 		if err == nil && !test.ok {
-			t.Errorf("\nPanic did not occur for:\n\t%#v\n\t(false positive)", test)
+			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n) = %#v\nWant panic\n(false positive)", test, tmpl, test.out)
 		}
 	}(test)
 
