@@ -8,9 +8,9 @@ import (
 )
 
 type encapsulatedTest struct {
-	In      sampleProtoTemplate
-	Out     string
-	WantErr bool
+	in  sampleProtoTemplate
+	out string
+	ok  bool
 }
 
 type sampleProtoTemplate struct {
@@ -19,25 +19,6 @@ type sampleProtoTemplate struct {
 
 func newSampleProtoTemplate(el interface{}) sampleProtoTemplate {
 	return sampleProtoTemplate{Value: el}
-}
-
-func runEncapsulatedTest(test encapsulatedTest, tmpl *template.Template, t *testing.T) {
-	// Check wheather template failed to render by checking if there was a panic
-	defer func(test encapsulatedTest) {
-		err := recover()
-		if err != nil && !test.WantErr {
-			t.Errorf("For: %#v\n\t%s", test, err)
-		}
-
-		if err == nil && test.WantErr {
-			t.Errorf("Error did not occur for: %#v", test)
-		}
-	}(test)
-
-	tmplOut := ExecuteTemplate(test.In, tmpl)
-	if test.Out != tmplOut && !test.WantErr {
-		t.Errorf("Expecting:\n\t'%s', but got \n\t'%s'", test.Out, test.In)
-	}
 }
 
 func TestExecuteTemplate(t *testing.T) {
@@ -54,7 +35,26 @@ func TestExecuteTemplate(t *testing.T) {
 		{newSampleProtoTemplate("not-valid"), "", true},
 	}
 
-	for _, test := range tests {
-		runEncapsulatedTest(test, tmpl, t)
+	for _, tc := range tests {
+		runEncapsulatedTest(tc, tmpl, t)
+	}
+}
+
+func runEncapsulatedTest(test encapsulatedTest, tmpl *template.Template, t *testing.T) {
+	// Check wheather template failed to render by checking for panic
+	defer func(test encapsulatedTest) {
+		err := recover()
+		if err != nil && test.ok {
+			t.Errorf("\nFor:\n\t%#v\nPanic occured:\n\t%s\t(false negative)", test, err)
+		}
+
+		if err == nil && !test.ok {
+			t.Errorf("\nPanic did not occur for:\n\t%#v\n\t(false positive)", test)
+		}
+	}(test)
+
+	tmplOut := ExecuteTemplate(test.in, tmpl)
+	if test.out != tmplOut {
+		t.Errorf("Expecting:\n\t'%s'\nBut got:\n\t'%s'", test.out, tmplOut)
 	}
 }
