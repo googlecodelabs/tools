@@ -13,6 +13,7 @@ type encapsulatedTest struct {
 	WantErr bool
 }
 
+// change this accordingly
 type sampleProtoTemplate struct {
 	Value interface{}
 }

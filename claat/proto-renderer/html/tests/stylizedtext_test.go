@@ -1,0 +1,5 @@
+package tests
+
+import (
+	"testing"
+)
