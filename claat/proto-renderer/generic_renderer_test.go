@@ -13,11 +13,12 @@ type encapsulatedTest struct {
 	ok  bool
 }
 
-// change this accordingly
+// TODO: update to be proto dependent on next PR
 type sampleProtoTemplate struct {
 	Value interface{}
 }
 
+// TODO: update to be proto dependent on next PR
 func newSampleProtoTemplate(el interface{}) sampleProtoTemplate {
 	return sampleProtoTemplate{Value: el}
 }
@@ -55,6 +56,7 @@ func runEncapsulatedTest(test encapsulatedTest, tmpl *template.Template, t *test
 	}(test)
 
 	tmplOut := ExecuteTemplate(test.in, tmpl)
+	// never gets here if above panicked
 	if test.out != tmplOut {
 		t.Errorf("Expecting:\n\t'%s'\nBut got:\n\t'%s'", test.out, tmplOut)
 	}

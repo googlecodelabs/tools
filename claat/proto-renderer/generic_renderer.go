@@ -11,6 +11,7 @@ import (
 // namespace, based on the passed Codelab proto element type
 func ExecuteTemplate(el interface{}, t *template.Template) string {
 	var w bytes.Buffer
+	// TODO: update to be proto dependent
 	e := t.ExecuteTemplate(&w, reflect.TypeOf(el).Name(), el)
 	if e != nil {
 		// This method outputs directly to templates. Panicking to surfance errors

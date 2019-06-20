@@ -2,35 +2,36 @@ package html
 
 import (
 	"go/build"
+	"io"
 	"path/filepath"
+	"strings"
 	"text/template"
 
-	"github.com/googlecodelabs/tools/proto-renderer"
+	"github.com/googlecodelabs/tools/claat/proto-renderer"
 )
 
 const (
-	tmplsRltvDir = "src/github.com/googlecodelabs/tools/proto-renderer/templates/*"
+	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates/*"
 )
 
 var (
-	t *template.Template
+	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
+	t           = template.Must(template.New("html").ParseGlob(tmplsAbsDir))
 )
 
-func init() {
-	tmplsAbsDir := filepath.Join(build.Default.GOPATH, tmplsRltvDir)
-	t = template.Must(template.New("html").ParseGlob(tmplsAbsDir))
-}
-
-// Render returns the rendered HTML representation of a devrel_tutorial proto
-// and the first error encountered rendering templates depth-first, if any
-func Render(el interface{}) (string, error) {
-	// "Catch" panics if they occur
+// Render returns the rendered HTML representation of a devrel_tutorial proto,
+// or the first error encountered rendering templates depth-first, if any
+func Render(el interface{}) (out io.Reader, err error) {
+	// "Catches" first nested panic and delegates handling to caller
 	defer func() {
-		err := recover()
-		if err != nil {
-			return "", err
+		r := recover()
+		if r != nil {
+			out = nil
+			err = genrenderer.AssertError(r)
 		}
 	}()
 
-	return genrenderer.ExecuteTemplate(el, t), nil
+	out = strings.NewReader(genrenderer.ExecuteTemplate(el, t))
+	// Compile time error if we omit this line even with named returns
+	return out, err
 }
