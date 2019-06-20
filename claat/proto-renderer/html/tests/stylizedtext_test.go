@@ -1,5 +1,0 @@
-package tests
-
-import (
-	"testing"
-)
