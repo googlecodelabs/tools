@@ -10,9 +10,7 @@ import (
 	"github.com/googlecodelabs/tools/claat/proto-renderer"
 )
 
-const (
-	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates/*"
-)
+const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates/*"
 
 var (
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
@@ -32,6 +30,5 @@ func Render(el interface{}) (out io.Reader, err error) {
 	}()
 
 	out = strings.NewReader(genrenderer.ExecuteTemplate(el, t))
-	// Compile time error if we omit this line even with named returns
 	return out, err
 }

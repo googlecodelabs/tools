@@ -8,19 +8,9 @@ import (
 )
 
 type encapsulatedTest struct {
-	in  sampleProtoTemplate
+	in  *SampleProtoTemplate
 	out string
 	ok  bool
-}
-
-// TODO: update to be proto dependent on next PR
-type sampleProtoTemplate struct {
-	Value interface{}
-}
-
-// TODO: update to be proto dependent on next PR
-func newSampleProtoTemplate(el interface{}) sampleProtoTemplate {
-	return sampleProtoTemplate{Value: el}
 }
 
 func TestExecuteTemplate(t *testing.T) {
@@ -32,9 +22,9 @@ func TestExecuteTemplate(t *testing.T) {
 	tmpl := template.Must(template.New("dummy").Funcs(funcMap).ParseGlob(tmplsAbsDir))
 
 	tests := []encapsulatedTest{
-		{newSampleProtoTemplate(3), "3", true},
-		{newSampleProtoTemplate(nil), "", false},
-		{newSampleProtoTemplate("not-valid"), "", false},
+		{NewSampleProtoTemplate(3), "3", true},
+		{NewSampleProtoTemplate(nil), "", false},
+		{NewSampleProtoTemplate("not-valid"), "", false},
 	}
 
 	for _, tc := range tests {
@@ -42,22 +32,26 @@ func TestExecuteTemplate(t *testing.T) {
 	}
 }
 
-func runEncapsulatedTest(test encapsulatedTest, tmpl *template.Template, t *testing.T) {
-	// Check wheather template failed to render by checking for panic
-	defer func(test encapsulatedTest) {
+// runEncapsulatedTest constrains the scope of panics, else we cannot iterate
+// through consecutive panic-causing test-cases
+func runEncapsulatedTest(tc encapsulatedTest, tmpl *template.Template, t *testing.T) (tmplOut string) {
+	// Check whether template failed to render by checking for panic
+	defer func(tc encapsulatedTest) {
 		err := recover()
-		if err != nil && test.ok {
-			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n) = %#v\nPanic occured:\n\t%#v\n(false negative)", test, tmpl, test.out, err)
+		if err != nil && tc.ok {
+			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n)\nPanic: %v(false negative)\nWant: %#v", tc.in, tmpl, err, tc.out)
 		}
 
-		if err == nil && !test.ok {
-			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n) = %#v\nWant panic\n(false positive)", test, tmpl, test.out)
+		if err == nil && !tc.ok {
+			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n) = %#v\nWant Panic\n(false positive)", tc.in, tmpl, tmplOut)
 		}
-	}(test)
+	}(tc)
 
-	tmplOut := ExecuteTemplate(test.in, tmpl)
+	tmplOut = ExecuteTemplate(tc.in, tmpl)
 	// never gets here if above panicked
-	if test.out != tmplOut {
-		t.Errorf("Expecting:\n\t'%s'\nBut got:\n\t'%s'", test.out, tmplOut)
+	if tc.out != tmplOut {
+		t.Errorf("Expecting:\n\t'%s'\nBut got:\n\t'%s'", tc.out, tmplOut)
 	}
+	// dummy return, using for shared defer scope
+	return tmplOut
 }

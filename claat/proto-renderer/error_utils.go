@@ -4,13 +4,14 @@ import (
 	"errors"
 )
 
+// AssertError handles type-assertions of panic-recovery messages.
+// Used by output-format packages to delegate error-handling to callers
 func AssertError(el interface{}) error {
-	var err error
 	switch x := el.(type) {
 	case string:
-		err = errors.New(x)
+		return errors.New(x)
 	case error:
-		err = x
+		return x
 	}
-	return err
+	return nil
 }
