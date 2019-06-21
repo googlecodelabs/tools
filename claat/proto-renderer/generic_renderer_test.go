@@ -21,9 +21,9 @@ var (
 		"returnString": func(i string) string { return i },
 	}
 	invalidCases = []encapsulatedTest{
-		{3, nil, true},
-		{nil, nil, true},
-		{UnsupportedType{}, nil, true},
+		{3, nil, false},
+		{nil, nil, false},
+		{UnsupportedType{}, nil, false},
 	}
 )
 
