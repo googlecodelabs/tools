@@ -33,8 +33,6 @@ func TestRender(t *testing.T) {
 			rndrOut := readerToString(o)
 			t.Errorf("\nRender(\n\t%#v\n) = %#v\nWant error\n(false positive)", tc.in, rndrOut)
 		}
-
-		// err == nil && tc.ok and err != nil && !tc.ok are expected
 	}
 }
 
