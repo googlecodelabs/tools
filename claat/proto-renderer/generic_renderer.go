@@ -14,7 +14,7 @@ func templateName(el interface{}) string {
 	case *SampleProtoTemplate:
 		return "sampleProtoTemplate"
 	}
-	return fmt.Sprintf("TYPE NOT SUPPORTED: %T, Val: %#v", el, el)
+	return fmt.Sprintf("type not supported: %#v", el)
 }
 
 // ExecuteTemplate returns the evaluated template per passed templating
