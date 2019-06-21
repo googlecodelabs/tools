@@ -8,12 +8,15 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
+// Maps protos to their type string name
 func templateName(el interface{}) string {
 	switch el.(type) {
 	case *devrel_tutorial.StylizedText:
 		return "StylizedText"
 	}
-	return fmt.Sprintf("TYPE NOT SUPPORTED: %T, Val: %#v", el, el)
+	// This will cause a debug-friendly panic
+	// TODO: Modularize into 'error_utils'
+	return fmt.Sprintf("type not supported: %T %#v", el, el)
 }
 
 // ExecuteTemplate returns the evaluated template per passed templating

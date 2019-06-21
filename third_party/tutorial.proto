@@ -46,10 +46,10 @@ message BlockContent {
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
     Table table = 6;
-
-    reserved 5; 
-    reserved "horizontal_rule";
   }
+
+  reserved 5; 
+  reserved "horizontal_rule";
 };
 
 message Link {
@@ -59,13 +59,20 @@ message Link {
 
 message InlineContent {
   oneof content {
-    string text = 1;
-    string strong_text = 2;
-    string emphasized_text = 3;
+    StylizedText text = 6;
     string inline_code_text = 4;
     Link link = 5;
   }
+
+  reserved 1, 2, 3; 
+  reserved "strong_text" "emphasized_text";
 };
+
+message StylizedText {
+  string text = 1;
+  bool is_strong = 2;
+  bool is_emphasized = 3;
+}
 
 message Heading {
   repeated InlineContent inline_contents = 1;
