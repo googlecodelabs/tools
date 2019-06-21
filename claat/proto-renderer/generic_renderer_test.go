@@ -23,7 +23,7 @@ var (
 	invalidCases = []encapsulatedTest{
 		{3, nil, false},
 		{nil, nil, false},
-		{UnsupportedType{}, nil, true},
+		{UnsupportedType{}, nil, false},
 	}
 )
 

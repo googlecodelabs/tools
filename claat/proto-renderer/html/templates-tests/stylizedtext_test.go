@@ -8,14 +8,18 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
-func TestRenderStylizedTextTemplate(t *testing.T) {
+func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
 	// h3 := &devrel_tutorial.Heading{
 	// 	Level: 3,
 	// 	Text:  "<script>some _very_ bad code!</script>",
 	// 	Text:  "D@ ?òü ǝ$çâpæ urlquery? '>__<' {&]",
 	// 	Text:  "**__Markdown not ![esca](ped)__**",
 	// }
+	tests := []*genrenderer.TestingBatch{}
+	genrenderer.CanonicalTemplateTestBatch(tests, t)
+}
 
+func TestRenderStylizedTextTemplate(t *testing.T) {
 	tests := []*genrenderer.TestingBatch{
 		{
 			genrenderer.AssertRenderedTemplate(
