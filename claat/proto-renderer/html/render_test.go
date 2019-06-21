@@ -30,17 +30,8 @@ func TestRender(t *testing.T) {
 
 		// plain want error, in != out verification is not in scope for 'Render'
 		if err == nil && !tc.ok {
-			rndrOut := readerToString(o)
+			rndrOut := genrenderer.ReaderToString(o)
 			t.Errorf("\nRender(\n\t%#v\n) = %#v\nWant error\n(false positive)", tc.in, rndrOut)
 		}
-
-		// err == nil && tc.ok and err != nil && !tc.ok are expected
 	}
-}
-
-// readerToString Making io.Reader more readable for errors
-func readerToString(i io.Reader) string {
-	var b bytes.Buffer
-	b.ReadFrom(i)
-	return b.String()
 }

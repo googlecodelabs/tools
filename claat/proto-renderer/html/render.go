@@ -14,7 +14,7 @@ const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/h
 
 var (
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
-	tmplNmspc   = template.Must(template.New("html").ParseGlob(tmplsAbsDir))
+	tmplNmspc   = template.Must(template.New("html-pkg").ParseGlob(tmplsAbsDir))
 )
 
 // Render returns the rendered HTML representation of a devrel_tutorial proto,
