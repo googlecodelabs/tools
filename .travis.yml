@@ -16,6 +16,8 @@ before_install:
   rm -f install.sh
 install:
 - go get github.com/golang/lint/golint
+  if: branch =~ /^dev.*$/
+  - protoc tutorial.proto -I=third_party --go_out=third_party
 - go get -t -d ./claat/...
 script:
 - make -C claat test lint
