@@ -5,28 +5,46 @@ import (
 	"path/filepath"
 	"testing"
 	"text/template"
+
+	"github.com/googlecodelabs/tools/claat/proto-renderer"
 )
 
 type encapsulatedTest struct {
-	in  *SampleProtoTemplate
+	in  interface{}
 	out string
 	ok  bool
 }
 
-func TestExecuteTemplate(t *testing.T) {
-	tmplsRltvDir := "src/github.com/googlecodelabs/tools/claat/proto-renderer/testdata/*"
-	tmplsAbsDir := filepath.Join(build.Default.GOPATH, tmplsRltvDir)
-	funcMap := template.FuncMap{
+func newDummyProto(in string) {
+	return &devrel_tutorial.StylizedText{
+		Text: in,
+	}
+}
+
+// Setup variables
+var (
+	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/testdata/*"
+	tmplsAbsDir  = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
+	funcMap      = template.FuncMap{
 		"returnInt": func(i int) int { return i },
 	}
-	tmpl := template.Must(template.New("dummy").Funcs(funcMap).ParseGlob(tmplsAbsDir))
+)
+
+func TestExecuteTemplate(t *testing.T) {
 
 	tests := []encapsulatedTest{
-		{NewSampleProtoTemplate(3), "3", true},
-		{NewSampleProtoTemplate(nil), "", false},
-		{NewSampleProtoTemplate("not-valid"), "", false},
+		// invalid inputs
+		{3, nil, false},
+		{nil, nil, false},
+		{encapsulatedTest{}, nil, false},
+		// valid inputs
+		{newDummyProto("hello"), "hello", true},
 	}
+}
+func TestExecuteTemplate(t *testing.T) {
 
+	// need bad  templatetests...
+	tmpl := template.Must(template.New("valid-dummy").Funcs(funcMap).ParseGlob(tmplsAbsDir))
 	for _, tc := range tests {
 		runEncapsulatedTest(tc, tmpl, t)
 	}

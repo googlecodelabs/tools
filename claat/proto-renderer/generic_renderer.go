@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"fmt"
 	"text/template"
+
+	"github.com/googlecodelabs/tools/third_party"
 )
 
-// TODO: update to be proto dependent on next PR
 func templateName(el interface{}) string {
 	switch el.(type) {
-	// This PR only comment: returns 'sampleProtoTemplate' to not break
-	// 'ExecuteTemplate' tests
-	case *SampleProtoTemplate:
-		return "sampleProtoTemplate"
+	case *devrel_tutorial.StylizedText:
+		return "StylizedText"
 	}
 	return fmt.Sprintf("TYPE NOT SUPPORTED: %T, Val: %#v", el, el)
 }
