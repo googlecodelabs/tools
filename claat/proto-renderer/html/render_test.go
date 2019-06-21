@@ -8,20 +8,17 @@ import (
 	"github.com/googlecodelabs/tools/claat/proto-renderer"
 )
 
-// unsupportedType is a dummy type used to showcase the failures of rendering
-// non-proto custom types since we take in "any" type as rendering input.
-type unsupportedType struct{}
-
 func TestRender(t *testing.T) {
-	// TODO: update to be proto dependent on next PR
 	tests := []struct {
 		in interface{}
 		ok bool
 	}{
+		// invalid cases
 		{nil, false},
 		{"invalid input type", false},
-		{unsupportedType{}, false},
-		{genrenderer.NewSampleProtoTemplate("3"), true},
+		{genrenderer.UnsupportedType{}, false},
+		// valid cases
+		{genrenderer.NewDummyProto("3"), true},
 	}
 
 	for _, tc := range tests {
@@ -36,6 +33,8 @@ func TestRender(t *testing.T) {
 			rndrOut := readerToString(o)
 			t.Errorf("\nRender(\n\t%#v\n) = %#v\nWant error\n(false positive)", tc.in, rndrOut)
 		}
+
+		// err == nil && tc.ok and err != nil && !tc.ok are expected
 	}
 }
 

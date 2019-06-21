@@ -1,12 +1,16 @@
 package genrenderer
 
-// TODO: delete these after next PR
-// SampleProtoTemplate serves as a dummy supported proto before proto redefinitions
-type SampleProtoTemplate struct {
-	Value interface{}
-}
+import (
+	"github.com/googlecodelabs/tools/third_party"
+)
 
-// NewSampleProtoTemplate pointer constructor for the above
-func NewSampleProtoTemplate(el interface{}) *SampleProtoTemplate {
-	return &SampleProtoTemplate{Value: el}
+// unsupportedType is a dummy type used to showcase the failures of rendering
+// non-proto custom types since we take in "any" type as rendering input.
+type UnsupportedType struct{}
+
+// Simple proto constructor
+func NewDummyProto(in string) *devrel_tutorial.StylizedText {
+	return &devrel_tutorial.StylizedText{
+		Text: in,
+	}
 }

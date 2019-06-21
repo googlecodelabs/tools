@@ -5,20 +5,12 @@ import (
 	"path/filepath"
 	"testing"
 	"text/template"
-
-	"github.com/googlecodelabs/tools/claat/proto-renderer"
 )
 
 type encapsulatedTest struct {
 	in  interface{}
-	out string
+	out interface{}
 	ok  bool
-}
-
-func newDummyProto(in string) {
-	return &devrel_tutorial.StylizedText{
-		Text: in,
-	}
 }
 
 // Setup variables
@@ -26,26 +18,41 @@ var (
 	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/testdata/*"
 	tmplsAbsDir  = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
 	funcMap      = template.FuncMap{
-		"returnInt": func(i int) int { return i },
+		"returnString": func(i string) string { return i },
+	}
+	invalidCases = []encapsulatedTest{
+		{3, nil, true},
+		{nil, nil, true},
+		{UnsupportedType{}, nil, true},
 	}
 )
 
-func TestExecuteTemplate(t *testing.T) {
+// Demonstrates behavior of non-namespace-compliant template objects
+func TestExecuteTemplateInvalidNamespace(t *testing.T) {
+	tmpl := template.New("always-panics-dummy")
+	runEncapsulatedTestSet(invalidCases, tmpl, t)
 
-	tests := []encapsulatedTest{
-		// invalid inputs
-		{3, nil, false},
-		{nil, nil, false},
-		{encapsulatedTest{}, nil, false},
-		// valid inputs
-		{newDummyProto("hello"), "hello", true},
+	// These cases are only valid for namepace-compliant templates
+	validYetNonCompliantCases := []encapsulatedTest{
+		{NewDummyProto("hello"), "hello", false},
 	}
+	runEncapsulatedTestSet(validYetNonCompliantCases, tmpl, t)
 }
-func TestExecuteTemplate(t *testing.T) {
 
-	// need bad  templatetests...
+// Demonstrates expected behavior
+func TestExecuteTemplateValidNamespace(t *testing.T) {
 	tmpl := template.Must(template.New("valid-dummy").Funcs(funcMap).ParseGlob(tmplsAbsDir))
-	for _, tc := range tests {
+	runEncapsulatedTestSet(invalidCases, tmpl, t)
+
+	validCases := []encapsulatedTest{
+		{NewDummyProto("hello"), "hello", true},
+	}
+	runEncapsulatedTestSet(validCases, tmpl, t)
+}
+
+// Iterator helper for 'runEncapsulatedTest'
+func runEncapsulatedTestSet(tcs []encapsulatedTest, tmpl *template.Template, t *testing.T) {
+	for _, tc := range tcs {
 		runEncapsulatedTest(tc, tmpl, t)
 	}
 }
@@ -66,7 +73,7 @@ func runEncapsulatedTest(tc encapsulatedTest, tmpl *template.Template, t *testin
 	}(tc)
 
 	tmplOut = ExecuteTemplate(tc.in, tmpl)
-	// never gets here if above panicked
+	// never gets below if above panicked
 	if tc.out != tmplOut {
 		t.Errorf("Expecting:\n\t'%s'\nBut got:\n\t'%s'", tc.out, tmplOut)
 	}
