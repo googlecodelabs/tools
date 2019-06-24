@@ -11,7 +11,7 @@ import (
 // templateName Maps protos to their type string name
 func templateName(el interface{}) string {
 	switch el.(type) {
-	case *devrel_tutorial.StylizedText, devrel_tutorial.StylizedText:
+	case *tutorial.StylizedText, tutorial.StylizedText:
 		return "StylizedText"
 	}
 	// This will cause a debug-friendly panic
@@ -19,7 +19,7 @@ func templateName(el interface{}) string {
 }
 
 // ExecuteTemplate returns the evaluated template per passed templating
-// namespace, based on the passed (tutorial) proto type string name
+// namespace, based on the passed tutorial proto type string name
 func ExecuteTemplate(el interface{}, t *template.Template) string {
 	var w bytes.Buffer
 	e := t.ExecuteTemplate(&w, templateName(el), el)

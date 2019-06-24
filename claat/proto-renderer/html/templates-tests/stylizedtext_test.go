@@ -3,64 +3,69 @@ package tests
 import (
 	"testing"
 
-	"github.com/googlecodelabs/tools/claat/proto-renderer"
 	"github.com/googlecodelabs/tools/claat/proto-renderer/html"
+	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
 	"github.com/googlecodelabs/tools/third_party"
 )
 
 func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
-	// h3 := &devrel_tutorial.Heading{
-	// 	Level: 3,
-	// 	Text:  "<script>some _very_ bad code!</script>",
-	// 	Text:  "D@ ?òü ǝ$çâpæ urlquery? '>__<' {&]",
-	// 	Text:  "**__Markdown not ![esca](ped)__**",
-	// }
-	tests := []*genrenderer.TestingBatch{}
-	genrenderer.CanonicalTemplateTestBatch(tests, t)
+	tests := []*testingUtils.RendererTestingBatch{
+		{
+			testingUtils.NewStylizedTextPlain("<script>alert(\"you've been hacked!\");</script>!"),
+			"&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!",
+			true,
+		},
+		{
+			testingUtils.NewStylizedTextPlain("D@ ?òü ǝ$çâpæ? ^>^ '>__<' {&]"),
+			"D@ ?òü ǝ$çâpæ? ^&gt;^ &#39;&gt;__&lt;&#39; {&amp;]",
+			true,
+		},
+		{
+			testingUtils.NewStylizedTextPlain("<h3>**__Markdown not ![esca](ped)__**</h3>"),
+			"&lt;h3&gt;**__Markdown not ![esca](ped)__**&lt;/h3&gt;",
+			true,
+		},
+	}
+	testingUtils.CanonicalRenderingTestBatch(html.Render, tests, t)
 }
 
 func TestRenderStylizedTextTemplate(t *testing.T) {
-	tests := []*genrenderer.TestingBatch{
+	tests := []*testingUtils.RendererTestingBatch{
 		{
-			genrenderer.AssertRenderedTemplate(
-				html.Render(&devrel_tutorial.StylizedText{
-					Text: "hello!",
-				}),
-			),
+			nil,
+			"",
+			false,
+		},
+		{
+			&tutorial.StylizedText{},
+			"",
+			true,
+		},
+		{
+			testingUtils.NewStylizedTextPlain(""),
+			"",
+			true,
+		},
+		{
+			testingUtils.NewStylizedTextPlain("hello!"),
 			"hello!",
 			true,
 		},
 		{
-			genrenderer.AssertRenderedTemplate(
-				html.Render(&devrel_tutorial.StylizedText{
-					Text:     "hello!",
-					IsStrong: true,
-				}),
-			),
+			testingUtils.NewStylizedTextStrong("hello!"),
 			"<strong>hello!</strong>",
 			true,
 		},
 		{
-			genrenderer.AssertRenderedTemplate(
-				html.Render(&devrel_tutorial.StylizedText{
-					Text:         "hello!",
-					IsEmphasized: true,
-				}),
-			),
+			testingUtils.NewStylizedTextEmphazied("hello!"),
 			"<em>hello!</em>",
 			true,
 		},
 		{
-			genrenderer.AssertRenderedTemplate(
-				html.Render(&devrel_tutorial.StylizedText{
-					Text:         "hello!",
-					IsStrong:     true,
-					IsEmphasized: true,
-				}),
-			),
+			testingUtils.NewStylizedTextStrongAndEmphazied("hello!"),
 			"<strong><em>hello!</em></strong>",
 			true,
 		},
 	}
-	genrenderer.CanonicalTemplateTestBatch(tests, t)
+	testingUtils.CanonicalRenderingTestBatch(html.Render, tests, t)
 }
