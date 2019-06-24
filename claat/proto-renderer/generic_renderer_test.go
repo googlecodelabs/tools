@@ -5,56 +5,80 @@ import (
 	"path/filepath"
 	"testing"
 	"text/template"
+
+	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
 )
 
 type encapsulatedTest struct {
-	in  sampleProtoTemplate
-	out string
+	in  interface{}
+	out interface{}
 	ok  bool
 }
 
-type sampleProtoTemplate struct {
-	Value interface{}
+// Setup variables
+var (
+	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/testdata/*"
+	tmplsAbsDir  = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
+	funcMap      = template.FuncMap{
+		"returnString": func(i string) string { return i },
+	}
+	invalidCases = []encapsulatedTest{
+		{3, nil, false},
+		{nil, nil, false},
+		{testingUtils.UnsupportedType{}, nil, false},
+	}
+)
+
+// Demonstrates behavior of non-namespace-compliant template objects
+func TestExecuteTemplateInvalidNamespace(t *testing.T) {
+	tmpl := template.New("always-panics-dummy")
+	runEncapsulatedTestSet(invalidCases, tmpl, t)
+
+	// These cases are only valid for namepace-compliant templates
+	validYetNonCompliantCases := []encapsulatedTest{
+		{testingUtils.NewDummyProto("hello"), "hello", false},
+	}
+	runEncapsulatedTestSet(validYetNonCompliantCases, tmpl, t)
 }
 
-func newSampleProtoTemplate(el interface{}) sampleProtoTemplate {
-	return sampleProtoTemplate{Value: el}
+// Demonstrates expected behavior
+func TestExecuteTemplateValidNamespace(t *testing.T) {
+	tmpl := template.Must(template.New("valid-dummy").Funcs(funcMap).ParseGlob(tmplsAbsDir))
+	runEncapsulatedTestSet(invalidCases, tmpl, t)
+
+	validCases := []encapsulatedTest{
+		{testingUtils.NewDummyProto("hello"), "hello", true},
+	}
+	runEncapsulatedTestSet(validCases, tmpl, t)
 }
 
-func TestExecuteTemplate(t *testing.T) {
-	tmplsRltvDir := "src/github.com/googlecodelabs/tools/claat/proto-renderer/testdata/*"
-	tmplsAbsDir := filepath.Join(build.Default.GOPATH, tmplsRltvDir)
-	funcMap := template.FuncMap{
-		"returnInt": func(i int) int { return i },
-	}
-	tmpl := template.Must(template.New("dummy").Funcs(funcMap).ParseGlob(tmplsAbsDir))
-
-	tests := []encapsulatedTest{
-		{newSampleProtoTemplate(3), "3", true},
-		{newSampleProtoTemplate(nil), "", false},
-		{newSampleProtoTemplate("not-valid"), "", false},
-	}
-
-	for _, tc := range tests {
+// Iterator helper for 'runEncapsulatedTest'
+func runEncapsulatedTestSet(tcs []encapsulatedTest, tmpl *template.Template, t *testing.T) {
+	for _, tc := range tcs {
 		runEncapsulatedTest(tc, tmpl, t)
 	}
 }
 
-func runEncapsulatedTest(test encapsulatedTest, tmpl *template.Template, t *testing.T) {
-	// Check wheather template failed to render by checking for panic
-	defer func(test encapsulatedTest) {
+// runEncapsulatedTest constrains the scope of panics, else we cannot iterate
+// through consecutive panic-causing test-cases
+func runEncapsulatedTest(tc encapsulatedTest, tmpl *template.Template, t *testing.T) (tmplOut string) {
+	// Check whether template failed to render by checking for panic
+	defer func(tc encapsulatedTest) {
 		err := recover()
-		if err != nil && test.ok {
-			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n) = %#v\nPanic occured:\n\t%#v\n(false negative)", test, tmpl, test.out, err)
+		if err != nil && tc.ok {
+			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n)\nPanic: %v(false negative)\nWant: %#v", tc.in, tmpl, err, tc.out)
 		}
 
-		if err == nil && !test.ok {
-			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n) = %#v\nWant panic\n(false positive)", test, tmpl, test.out)
+		if err == nil && !tc.ok {
+			t.Errorf("\nExecuteTemplate(\n\t%#v,\n\t%v,\n) = %#v\nWant Panic\n(false positive)", tc.in, tmpl, tmplOut)
 		}
-	}(test)
+	}(tc)
 
-	tmplOut := ExecuteTemplate(test.in, tmpl)
-	if test.out != tmplOut {
-		t.Errorf("Expecting:\n\t'%s'\nBut got:\n\t'%s'", test.out, tmplOut)
+	tmplOut = ExecuteTemplate(tc.in, tmpl)
+	// never gets below if above panicked
+	if tc.out != tmplOut {
+		t.Errorf("Expecting:\n\t%#v'\nBut got:\n\t%#v", tc.out, tmplOut)
 	}
+	// dummy return, using for shared defer scope
+	return tmplOut
 }
