@@ -17,7 +17,7 @@ var (
 	tmplNmspc   = template.Must(template.New("html-pkg").ParseGlob(tmplsAbsDir))
 )
 
-// Render returns the rendered HTML representation of a devrel_tutorial proto,
+// Render returns the rendered HTML representation of a tutorial proto,
 // or the first error encountered rendering templates depth-first, if any
 func Render(el interface{}) (out io.Reader, err error) {
 	// "Catches" first nested panic and delegates handling to caller

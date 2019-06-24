@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-package devrel.tutorial;
+package tutorial;
 
 message Tutorial {
   Title title = 1;

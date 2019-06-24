@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 	"text/template"
+
+	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
 )
 
 type encapsulatedTest struct {
@@ -23,7 +25,7 @@ var (
 	invalidCases = []encapsulatedTest{
 		{3, nil, false},
 		{nil, nil, false},
-		{UnsupportedType{}, nil, false},
+		{testingUtils.UnsupportedType{}, nil, false},
 	}
 )
 
@@ -34,7 +36,7 @@ func TestExecuteTemplateInvalidNamespace(t *testing.T) {
 
 	// These cases are only valid for namepace-compliant templates
 	validYetNonCompliantCases := []encapsulatedTest{
-		{NewDummyProto("hello"), "hello", false},
+		{testingUtils.NewDummyProto("hello"), "hello", false},
 	}
 	runEncapsulatedTestSet(validYetNonCompliantCases, tmpl, t)
 }
@@ -45,7 +47,7 @@ func TestExecuteTemplateValidNamespace(t *testing.T) {
 	runEncapsulatedTestSet(invalidCases, tmpl, t)
 
 	validCases := []encapsulatedTest{
-		{NewDummyProto("hello"), "hello", true},
+		{testingUtils.NewDummyProto("hello"), "hello", true},
 	}
 	runEncapsulatedTestSet(validCases, tmpl, t)
 }
@@ -75,7 +77,7 @@ func runEncapsulatedTest(tc encapsulatedTest, tmpl *template.Template, t *testin
 	tmplOut = ExecuteTemplate(tc.in, tmpl)
 	// never gets below if above panicked
 	if tc.out != tmplOut {
-		t.Errorf("Expecting:\n\t'%s'\nBut got:\n\t'%s'", tc.out, tmplOut)
+		t.Errorf("Expecting:\n\t%#v'\nBut got:\n\t%#v", tc.out, tmplOut)
 	}
 	// dummy return, using for shared defer scope
 	return tmplOut
