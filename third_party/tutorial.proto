@@ -64,7 +64,7 @@ message InlineContent {
     Link link = 5;
   }
 
-  reserved  2, 3;
+  reserved 2, 3; 
   reserved "strong_text" "emphasized_text";
 };
 
