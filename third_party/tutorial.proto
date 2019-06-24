@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-package devrel.tutorial;
+package tutorial;
 
 message Tutorial {
   Title title = 1;
@@ -59,12 +59,12 @@ message Link {
 
 message InlineContent {
   oneof content {
-    StylizedText text = 6;
+    StylizedText text = 1;
     string inline_code_text = 4;
     Link link = 5;
   }
 
-  reserved 1, 2, 3; 
+  reserved 2, 3; 
   reserved "strong_text" "emphasized_text";
 };
 
