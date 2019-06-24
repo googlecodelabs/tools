@@ -3,4 +3,5 @@ bazel-*
 .drone.sec.yml
 .idea/
 debug.test
+<<<<<<< HEAD
 *.pb.go
