@@ -13,6 +13,8 @@ func templateName(el interface{}) string {
 	switch el.(type) {
 	case *tutorial.StylizedText, tutorial.StylizedText:
 		return "StylizedText"
+	case *tutorial.InlineCode, tutorial.InlineCode:
+		return "InlineCode"
 	case *tutorial.TextBlock, tutorial.TextBlock:
 		return "TextBlock"
 	}

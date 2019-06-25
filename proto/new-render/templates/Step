@@ -1,3 +1,0 @@
-{{ range $el := renderRepeated .Content -}} 
-  {{- $el -}}
-{{- end }}

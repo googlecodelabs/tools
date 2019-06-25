@@ -1,4 +1,4 @@
-package tests
+package htmltests
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ import (
 func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
 	tests := []*testingUtils.RendererTestingBatch{
 		{
-			testingUtils.NewStylizedTextPlain("<script>alert(\"you've been hacked!\");</script>!"),
+			testingUtils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
 			"&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!",
 			true,
 		},

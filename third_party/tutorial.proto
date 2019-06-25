@@ -74,6 +74,10 @@ message StylizedText {
   bool is_emphasized = 3;
 }
 
+message InlineCode {
+  string code = 1;
+}
+
 message Heading {
   repeated InlineContent inline_contents = 1;
   int32 level = 2;
