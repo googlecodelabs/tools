@@ -33,3 +33,9 @@ func NewStylizedTextStrongAndEmphazied(txt string) *tutorial.StylizedText {
 		IsEmphasized: true,
 	}
 }
+
+func NewInlineCode(txt string) *tutorial.InlineCode {
+	return &tutorial.InlineCode{
+		Code: txt,
+	}
+}
