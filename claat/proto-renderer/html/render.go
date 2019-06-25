@@ -13,8 +13,11 @@ import (
 const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates/*"
 
 var (
+	tmplNmspc *template.Template
+	funcMap   = template.FuncMap{"renderRepeated": renderRepeated}
+	// check if this works... since the funcs are self referential
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
-	tmplNmspc   = template.Must(template.New("html-pkg").ParseGlob(tmplsAbsDir))
+	tmplNmspc   = template.Must(template.New("html-pkg").Funcs(funcMap).ParseGlob(tmplsAbsDir))
 )
 
 // Render returns the rendered HTML representation of a tutorial proto,
@@ -31,4 +34,10 @@ func Render(el interface{}) (out io.Reader, err error) {
 
 	out = strings.NewReader(genrenderer.ExecuteTemplate(el, tmplNmspc))
 	return out, err
+}
+
+// renderRepeated is a self-referential template function used
+// in all templates of protos with repeated fields
+func renderRepeated(contents interface{}) []string {
+	return genrenderer.RenderRepeated(contents, tmplNmspc)
 }

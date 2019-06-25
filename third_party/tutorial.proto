@@ -60,12 +60,12 @@ message Link {
 message InlineContent {
   oneof content {
     StylizedText text = 1;
-    string inline_code_text = 4;
+    InlineCode code = 6;
     Link link = 5;
   }
 
-  reserved 2, 3; 
-  reserved "strong_text" "emphasized_text";
+  reserved 2, 3, 4; 
+  reserved "strong_text" "emphasized_text", "inline_code_text";
 };
 
 message StylizedText {
@@ -100,29 +100,25 @@ message CodeBlock {
   string language_hint = 3;
 };
 
-message ListStep {
-  repeated Content contents = 1;
-};
-
 message List {
-  repeated ListStep list_steps = 1;
+  repeated TextBlock steps = 1;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
     ORDERED = 1;
     UNORDERED = 2;
   }
-  ListVariety list_variety = 2;
+  ListVariety variety = 2;
 };
 
 message Table {
-  repeated TableRow table_rows = 1;
+  repeated TableRow rows = 1;
 };
 
 message TableRow {
-  repeated TableCell table_cells = 1;
+  repeated TextBlock cells = 1;
 };
 
-message TableCell {
-  repeated InlineContent inline_contents = 1;
+message TextBlock {
+  repeated InlineContent content = 1;
 };
