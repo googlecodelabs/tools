@@ -119,14 +119,14 @@ message List {
 };
 
 message Table {
-  repeated TableRow rows = 1;
+  repeated TableRow rows = 2;
 
   reserved 1;
   reserved "table_rows";
 };
 
 message TableRow {
-  repeated TextBlock cells = 1;
+  repeated TextBlock cells = 2;
 
   reserved 1;
   reserved "table_cells";
