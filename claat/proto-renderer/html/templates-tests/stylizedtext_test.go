@@ -1,4 +1,4 @@
-package tests
+package htmltests
 
 import (
 	"testing"
