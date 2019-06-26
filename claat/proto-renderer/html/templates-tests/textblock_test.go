@@ -11,17 +11,17 @@ import (
 func TestRenderTestBlockTemplate(t *testing.T) {
 	tests := []*testingUtils.RendererTestingBatch{
 		{
-			&tutorial.TextBlock{},
-			"",
-			false,
+			InProto: &tutorial.TextBlock{},
+			Out:     "",
+			Ok:      false,
 		},
 		{
-			testingUtils.NewTextBlock(),
-			"",
-			false,
+			InProto: testingUtils.NewTextBlock(),
+			Out:     "",
+			Ok:      false,
 		},
 		{
-			testingUtils.NewTextBlock(
+			InProto: testingUtils.NewTextBlock(
 				testingUtils.NewInlineContentTextPlain(`hello, `),
 				testingUtils.NewInlineContentTextStrong(`world!`),
 				testingUtils.NewInlineContentTextEmphazied(` goodbye`),
@@ -29,8 +29,8 @@ func TestRenderTestBlockTemplate(t *testing.T) {
 				testingUtils.NewInlineContentTextStrongAndEmphazied(`cruel `),
 				testingUtils.NewInlineContentCode(`world!`),
 			),
-			"hello, <strong>world!</strong><em> goodbye</em> <strong><em>cruel </em></strong><code>world!</code>",
-			true,
+			Out: "hello, <strong>world!</strong><em> goodbye</em> <strong><em>cruel </em></strong><code>world!</code>",
+			Ok:  true,
 		},
 	}
 	testingUtils.CanonicalRenderingTestBatch(html.Render, tests, t)
