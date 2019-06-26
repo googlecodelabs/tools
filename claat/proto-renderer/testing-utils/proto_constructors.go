@@ -43,7 +43,7 @@ func NewInlineCode(txt string) *tutorial.InlineCode {
 func NewInlineContentCode(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Code{
-			&tutorial.InlineCode{
+			Code: &tutorial.InlineCode{
 				Code: txt,
 			},
 		},
@@ -53,7 +53,7 @@ func NewInlineContentCode(txt string) *tutorial.InlineContent {
 func NewInlineContentTextPlain(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
-			&tutorial.StylizedText{
+			Text: &tutorial.StylizedText{
 				Text: txt,
 			},
 		},
@@ -63,7 +63,7 @@ func NewInlineContentTextPlain(txt string) *tutorial.InlineContent {
 func NewInlineContentTextStrong(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
-			&tutorial.StylizedText{
+			Text: &tutorial.StylizedText{
 				Text:     txt,
 				IsStrong: true,
 			},
@@ -74,7 +74,7 @@ func NewInlineContentTextStrong(txt string) *tutorial.InlineContent {
 func NewInlineContentTextEmphasized(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
-			&tutorial.StylizedText{
+			Text: &tutorial.StylizedText{
 				Text:         txt,
 				IsEmphasized: true,
 			},
@@ -85,7 +85,7 @@ func NewInlineContentTextEmphasized(txt string) *tutorial.InlineContent {
 func NewInlineContentTextStrongAndEmphasized(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
-			&tutorial.StylizedText{
+			Text: &tutorial.StylizedText{
 				Text:         txt,
 				IsStrong:     true,
 				IsEmphasized: true,
