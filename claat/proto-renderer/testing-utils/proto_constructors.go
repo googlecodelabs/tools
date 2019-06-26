@@ -1,4 +1,4 @@
-package testingUtils
+package testingutils
 
 import (
 	"github.com/googlecodelabs/tools/third_party"

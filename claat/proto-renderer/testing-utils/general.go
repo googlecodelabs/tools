@@ -1,4 +1,4 @@
-package testingUtils
+package testingutils
 
 import (
 	"bytes"
@@ -56,7 +56,7 @@ func CanonicalRenderingTestBatch(renderer renderingFunc, tests []*RendererTestin
 	}
 }
 
-// readerToString makes io.Reader more readable for errors
+// ReaderToString makes io.Reader more readable for errors
 func ReaderToString(i io.Reader) string {
 	if i == nil {
 		return ""
