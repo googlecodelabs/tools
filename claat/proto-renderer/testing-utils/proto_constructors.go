@@ -19,14 +19,14 @@ func NewStylizedTextStrong(txt string) *tutorial.StylizedText {
 	}
 }
 
-func NewStylizedTextEmphazied(txt string) *tutorial.StylizedText {
+func NewStylizedTextEmphasized(txt string) *tutorial.StylizedText {
 	return &tutorial.StylizedText{
 		Text:         txt,
 		IsEmphasized: true,
 	}
 }
 
-func NewStylizedTextStrongAndEmphazied(txt string) *tutorial.StylizedText {
+func NewStylizedTextStrongAndEmphasized(txt string) *tutorial.StylizedText {
 	return &tutorial.StylizedText{
 		Text:         txt,
 		IsStrong:     true,

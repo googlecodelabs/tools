@@ -11,19 +11,19 @@ import (
 func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
 	tests := []*testingUtils.RendererTestingBatch{
 		{
-			testingUtils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
-			"&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!",
-			true,
+			InProto: testingUtils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
+			Out:     "&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewStylizedTextPlain("D@ ?òü ǝ$çâpæ? ^>^ '>__<' {&]"),
-			"D@ ?òü ǝ$çâpæ? ^&gt;^ &#39;&gt;__&lt;&#39; {&amp;]",
-			true,
+			InProto: testingUtils.NewStylizedTextPlain("D@ ?òü ǝ$çâpæ? ^>^ '>__<' {&]"),
+			Out:     "D@ ?òü ǝ$çâpæ? ^&gt;^ &#39;&gt;__&lt;&#39; {&amp;]",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewStylizedTextPlain("<h3>**__Markdown not ![esca](ped)__**</h3>"),
-			"&lt;h3&gt;**__Markdown not ![esca](ped)__**&lt;/h3&gt;",
-			true,
+			InProto: testingUtils.NewStylizedTextPlain("<h3>**__Markdown not ![esca](ped)__**</h3>"),
+			Out:     "&lt;h3&gt;**__Markdown not ![esca](ped)__**&lt;/h3&gt;",
+			Ok:      true,
 		},
 	}
 	testingUtils.CanonicalRenderingTestBatch(html.Render, tests, t)
@@ -32,34 +32,34 @@ func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
 func TestRenderStylizedTextTemplate(t *testing.T) {
 	tests := []*testingUtils.RendererTestingBatch{
 		{
-			&tutorial.StylizedText{},
-			"",
-			true,
+			InProto: &tutorial.StylizedText{},
+			Out:     "",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewStylizedTextPlain(""),
-			"",
-			true,
+			InProto: testingUtils.NewStylizedTextPlain(""),
+			Out:     "",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewStylizedTextPlain("hello!"),
-			"hello!",
-			true,
+			InProto: testingUtils.NewStylizedTextPlain("hello!"),
+			Out:     "hello!",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewStylizedTextStrong("hello!"),
-			"<strong>hello!</strong>",
-			true,
+			InProto: testingUtils.NewStylizedTextStrong("hello!"),
+			Out:     "<strong>hello!</strong>",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewStylizedTextEmphazied("hello!"),
-			"<em>hello!</em>",
-			true,
+			InProto: testingUtils.NewStylizedTextEmphasized("hello!"),
+			Out:     "<em>hello!</em>",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewStylizedTextStrongAndEmphazied("hello!"),
-			"<strong><em>hello!</em></strong>",
-			true,
+			InProto: testingUtils.NewStylizedTextStrongAndEmphasized("hello!"),
+			Out:     "<strong><em>hello!</em></strong>",
+			Ok:      true,
 		},
 	}
 	testingUtils.CanonicalRenderingTestBatch(html.Render, tests, t)
