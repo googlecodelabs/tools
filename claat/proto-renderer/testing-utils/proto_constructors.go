@@ -19,14 +19,14 @@ func NewStylizedTextStrong(txt string) *tutorial.StylizedText {
 	}
 }
 
-func NewStylizedTextEmphazied(txt string) *tutorial.StylizedText {
+func NewStylizedTextEmphasized(txt string) *tutorial.StylizedText {
 	return &tutorial.StylizedText{
 		Text:         txt,
 		IsEmphasized: true,
 	}
 }
 
-func NewStylizedTextStrongAndEmphazied(txt string) *tutorial.StylizedText {
+func NewStylizedTextStrongAndEmphasized(txt string) *tutorial.StylizedText {
 	return &tutorial.StylizedText{
 		Text:         txt,
 		IsStrong:     true,
@@ -71,7 +71,7 @@ func NewInlineContentTextStrong(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewInlineContentTextEmphazied(txt string) *tutorial.InlineContent {
+func NewInlineContentTextEmphasized(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
@@ -82,7 +82,7 @@ func NewInlineContentTextEmphazied(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewInlineContentTextStrongAndEmphazied(txt string) *tutorial.InlineContent {
+func NewInlineContentTextStrongAndEmphasized(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{

@@ -11,34 +11,34 @@ import (
 func TestRenderInlineContentTemplate(t *testing.T) {
 	tests := []*testingUtils.RendererTestingBatch{
 		{
-			&tutorial.InlineContent{},
-			"",
-			false,
+			InProto: &tutorial.InlineContent{},
+			Out:     "",
+			Ok:      false,
 		},
 		{
-			testingUtils.NewInlineContentTextPlain(""),
-			"",
-			true,
+			InProto: testingUtils.NewInlineContentTextPlain(""),
+			Out:     "",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewInlineContentTextStrong("strong"),
-			"<strong>strong</strong>",
-			true,
+			InProto: testingUtils.NewInlineContentTextStrong("strong"),
+			Out:     "<strong>strong</strong>",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewInlineContentTextEmphazied("emphasized"),
-			"<em>emphasized</em>",
-			true,
+			InProto: testingUtils.NewInlineContentTextEmphazied("emphasized"),
+			Out:     "<em>emphasized</em>",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewInlineContentTextStrongAndEmphazied("strong & emphasized"),
-			"<strong><em>strong &amp; emphasized</em></strong>",
-			true,
+			InProto: testingUtils.NewInlineContentTextStrongAndEmphazied("strong & emphasized"),
+			Out:     "<strong><em>strong &amp; emphasized</em></strong>",
+			Ok:      true,
 		},
 		{
-			testingUtils.NewInlineContentCode(`~!@#$%^&*()_+-=[]{}\|'";:/?.><,`),
-			`<code>~!@#$%^&amp;*()_+-=[]{}\\|&#39;&#34;;:/?.&gt;&lt;,</code>`,
-			true,
+			InProto: testingUtils.NewInlineContentCode(`~!@#$%^&*()_+-=[]{}\|'";:/?.><,`),
+			Out:     `<code>~!@#$%^&amp;*()_+-=[]{}\\|&#39;&#34;;:/?.&gt;&lt;,</code>`,
+			Ok:      true,
 		},
 	}
 	testingUtils.CanonicalRenderingTestBatch(html.Render, tests, t)
@@ -47,16 +47,16 @@ func TestRenderInlineContentTemplate(t *testing.T) {
 func TestRenderInlineContentTemplateIdentiy(t *testing.T) {
 	tests := []*testingUtils.RendererTestingIdendityBatch{
 		{
-			testingUtils.NewInlineContentTextPlain(`<script>alert("you've been hacked!");</script>!`),
-			testingUtils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
-			`&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!`,
-			true,
+			InProto:  testingUtils.NewInlineContentTextPlain(`<script>alert("you've been hacked!");</script>!`),
+			OutProto: testingUtils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
+			Out:      `&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!`,
+			Ok:       true,
 		},
 		{
-			testingUtils.NewInlineContentCode(`<script>alert("you've been hacked!");</script>!`),
-			testingUtils.NewInlineCode(`<script>alert("you've been hacked!");</script>!`),
-			`<code>&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!</code>`,
-			true,
+			InProto:  testingUtils.NewInlineContentCode(`<script>alert("you've been hacked!");</script>!`),
+			OutProto: testingUtils.NewInlineCode(`<script>alert("you've been hacked!");</script>!`),
+			Out:      `<code>&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!</code>`,
+			Ok:       true,
 		},
 	}
 	testingUtils.RenderingTestIdendityBatch(html.Render, tests, t)
