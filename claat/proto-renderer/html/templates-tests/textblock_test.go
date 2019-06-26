@@ -24,9 +24,9 @@ func TestRenderTestBlockTemplate(t *testing.T) {
 			InProto: testingUtils.NewTextBlock(
 				testingUtils.NewInlineContentTextPlain(`hello, `),
 				testingUtils.NewInlineContentTextStrong(`world!`),
-				testingUtils.NewInlineContentTextEmphazied(` goodbye`),
+				testingUtils.NewInlineContentTextEmphasized(` goodbye`),
 				testingUtils.NewInlineContentTextPlain(` `),
-				testingUtils.NewInlineContentTextStrongAndEmphazied(`cruel `),
+				testingUtils.NewInlineContentTextStrongAndEmphasized(`cruel `),
 				testingUtils.NewInlineContentCode(`world!`),
 			),
 			Out: "hello, <strong>world!</strong><em> goodbye</em> <strong><em>cruel </em></strong><code>world!</code>",
