@@ -32,11 +32,6 @@ func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
 func TestRenderStylizedTextTemplate(t *testing.T) {
 	tests := []*testingUtils.RendererTestingBatch{
 		{
-			nil,
-			"",
-			false,
-		},
-		{
 			&tutorial.StylizedText{},
 			"",
 			true,

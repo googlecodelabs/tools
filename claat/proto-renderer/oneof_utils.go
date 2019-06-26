@@ -13,9 +13,7 @@ func RenderOneof(el interface{}, t *template.Template) string {
 }
 
 // AssertAndExtractOneof ...
-func AssertAndExtractOneof(el interface{}) interface{} {
-  var underlyingType interface{}
-
+func AssertAndExtractOneof(el interface{}) (underlyingType interface{}) {
   // Pure Oneof protos
   switch el.(type) {
   case *tutorial.InlineContent:
@@ -31,16 +29,14 @@ func AssertAndExtractOneof(el interface{}) interface{} {
 }
 
 // InnerContentsInline asserts the underlying type of tutorial.InlineContent
-func InnerContentsInline(el *tutorial.InlineContent) interface{} {
-  var underlyingType interface{}
-
+func InnerContentsInline(el *tutorial.InlineContent) (underlyingType interface{}) {
   switch x := el.Content.(type) {
   case *tutorial.InlineContent_Text:
     // StylizedText
-    return x.Text
+    underlyingType = x.Text
   case *tutorial.InlineContent_Code:
     // InlineCode
-    return x.Code
+    underlyingType = x.Code
   }
 
   // debug-friendly panic
