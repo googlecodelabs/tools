@@ -1,4 +1,4 @@
-package testingUtils
+package testingutils
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
-// unsupportedType is a dummy type used to showcase the failures of rendering
+// UnsupportedType is a dummy type used to showcase the failures of rendering
 // non-proto custom types since we take in "any" type as rendering input.
 type UnsupportedType struct{}
 
@@ -56,7 +56,7 @@ func CanonicalRenderingTestBatch(renderer renderingFunc, tests []*RendererTestin
 	}
 }
 
-// readerToString makes io.Reader more readable for errors
+// ReaderToString makes io.Reader more readable for errors
 func ReaderToString(i io.Reader) string {
 	if i == nil {
 		return ""

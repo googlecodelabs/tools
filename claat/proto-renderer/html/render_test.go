@@ -14,9 +14,9 @@ func TestRender(t *testing.T) {
 		// invalid cases
 		{nil, false},
 		{"invalid input type", false},
-		{testingUtils.UnsupportedType{}, false},
+		{testingutils.UnsupportedType{}, false},
 		// valid cases
-		{testingUtils.NewDummyProto(), true},
+		{testingutils.NewDummyProto(), true},
 	}
 
 	for _, tc := range tests {
@@ -28,7 +28,7 @@ func TestRender(t *testing.T) {
 
 		// plain want error, in != out verification is not in scope for 'Render'
 		if err == nil && !tc.ok {
-			rndrOut := testingUtils.ReaderToString(o)
+			rndrOut := testingutils.ReaderToString(o)
 			t.Errorf("\nRender(\n\t%#v\n) = %#v\nWant error\n(false positive)", tc.in, rndrOut)
 		}
 	}

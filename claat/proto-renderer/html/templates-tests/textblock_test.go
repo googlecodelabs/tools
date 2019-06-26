@@ -9,29 +9,29 @@ import (
 )
 
 func TestRenderTestBlockTemplate(t *testing.T) {
-	tests := []*testingUtils.RendererTestingBatch{
+	tests := []*testingutils.RendererTestingBatch{
 		{
 			InProto: &tutorial.TextBlock{},
 			Out:     "",
 			Ok:      false,
 		},
 		{
-			InProto: testingUtils.NewTextBlock(),
+			InProto: testingutils.NewTextBlock(),
 			Out:     "",
 			Ok:      false,
 		},
 		{
-			InProto: testingUtils.NewTextBlock(
-				testingUtils.NewInlineContentTextPlain(`hello, `),
-				testingUtils.NewInlineContentTextStrong(`world!`),
-				testingUtils.NewInlineContentTextEmphasized(` goodbye`),
-				testingUtils.NewInlineContentTextPlain(` `),
-				testingUtils.NewInlineContentTextStrongAndEmphasized(`cruel `),
-				testingUtils.NewInlineContentCode(`world!`),
+			InProto: testingutils.NewTextBlock(
+				testingutils.NewInlineContentTextPlain(`hello, `),
+				testingutils.NewInlineContentTextStrong(`world!`),
+				testingutils.NewInlineContentTextEmphasized(` goodbye`),
+				testingutils.NewInlineContentTextPlain(` `),
+				testingutils.NewInlineContentTextStrongAndEmphasized(`cruel `),
+				testingutils.NewInlineContentCode(`world!`),
 			),
 			Out: "hello, <strong>world!</strong><em> goodbye</em> <strong><em>cruel </em></strong><code>world!</code>",
 			Ok:  true,
 		},
 	}
-	testingUtils.CanonicalRenderingTestBatch(html.Render, tests, t)
+	testingutils.CanonicalRenderingTestBatch(html.Render, tests, t)
 }
