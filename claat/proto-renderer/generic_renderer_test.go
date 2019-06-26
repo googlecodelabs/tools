@@ -25,7 +25,7 @@ var (
 	invalidCases = []encapsulatedTest{
 		{3, nil, false},
 		{nil, nil, false},
-		{testingUtils.UnsupportedType{}, nil, false},
+		{UnsupportedType{}, nil, false},
 	}
 )
 
