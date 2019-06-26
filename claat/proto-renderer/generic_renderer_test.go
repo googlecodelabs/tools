@@ -59,8 +59,8 @@ func runEncapsulatedTestSet(tcs []encapsulatedTest, tmpl *template.Template, t *
 	}
 }
 
-// runEncapsulatedTest constrains the scope of panics, else we cannot iterate
-// through consecutive panic-causing test-cases
+// runEncapsulatedTest constrains the scope of panics for all tests in this file,
+// otherwise we cannot iterate through consecutive panic-causing test-cases
 func runEncapsulatedTest(tc encapsulatedTest, tmpl *template.Template, t *testing.T) (tmplOut string) {
 	// Check whether template failed to render by checking for panic
 	defer func(tc encapsulatedTest) {

@@ -35,6 +35,8 @@ func AssertRepeated(el interface{}) (guaranteedProtoSlice []interface{}) {
 	if guaranteedProtoSlice != nil {
 		panic(TypeNotSupported("AssertRepeated", el))
 	}
+
+	return guaranteedProtoSlice
 }
 
 // interfaceSlice turns an interface{} into []interface{}.

@@ -39,3 +39,57 @@ func NewInlineCode(txt string) *tutorial.InlineCode {
 		Code: txt,
 	}
 }
+
+func NewInlineContentCode(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Code{
+			&tutorial.InlineCode{
+				Code: txt,
+			},
+		},
+	}
+}
+
+func NewInlineContentPlain(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			&tutorial.StylizedText{
+				Text: txt,
+			},
+		},
+	}
+}
+
+func NewInlineContentStrong(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			&tutorial.StylizedText{
+				Text:     txt,
+				IsStrong: true,
+			},
+		},
+	}
+}
+
+func NewInlineContentEmphazied(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			&tutorial.StylizedText{
+				Text:         txt,
+				IsEmphasized: true,
+			},
+		},
+	}
+}
+
+func NewInlineContentStrongAndEmphazied(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			&tutorial.StylizedText{
+				Text:         txt,
+				IsStrong:     true,
+				IsEmphasized: true,
+			},
+		},
+	}
+}

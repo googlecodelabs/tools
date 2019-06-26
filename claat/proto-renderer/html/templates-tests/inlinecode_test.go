@@ -5,10 +5,16 @@ import (
 
 	"github.com/googlecodelabs/tools/claat/proto-renderer/html"
 	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
+	"github.com/googlecodelabs/tools/third_party"
 )
 
 func TestRenderInlineCodeTemplateEscaping(t *testing.T) {
 	tests := []*testingUtils.RendererTestingBatch{
+		{
+			tutorial.InlineCode{},
+			"<code></code>",
+			true,
+		},
 		{
 			testingUtils.NewInlineCode("< less-than"),
 			"<code>&lt; less-than</code>",

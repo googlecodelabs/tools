@@ -15,6 +15,8 @@ func templateName(el interface{}) string {
 		return "StylizedText"
 	case *tutorial.InlineCode, tutorial.InlineCode:
 		return "InlineCode"
+	case *tutorial.InlineContent, tutorial.InlineContent:
+		return "InlineContent"
 	case *tutorial.TextBlock, tutorial.TextBlock:
 		return "TextBlock"
 	}
