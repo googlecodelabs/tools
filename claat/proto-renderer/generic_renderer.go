@@ -11,7 +11,7 @@ import (
 // Maps protos to their type string name
 func templateName(el interface{}) string {
 	switch el.(type) {
-	case *devrel_tutorial.StylizedText:
+	case *tutorial.StylizedText:
 		return "StylizedText"
 	}
 	// This will cause a debug-friendly panic

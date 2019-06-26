@@ -9,8 +9,8 @@ import (
 type UnsupportedType struct{}
 
 // Simple proto constructor
-func NewDummyProto(in string) *devrel_tutorial.StylizedText {
-	return &devrel_tutorial.StylizedText{
+func NewDummyProto(in string) *tutorial.StylizedText {
+	return &tutorial.StylizedText{
 		Text: in,
 	}
 }
