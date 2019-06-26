@@ -2,6 +2,7 @@ package genrenderer
 
 import (
 	"errors"
+	"fmt"
 )
 
 // AssertError handles type-assertions of panic-recovery messages.
@@ -14,4 +15,9 @@ func AssertError(el interface{}) error {
 		return x
 	}
 	return nil
+}
+
+// TypeNotSupported allows for debug-friendly nested-error panic messages
+func TypeNotSupported(funcName string, el interface{}) string {
+	return fmt.Sprintf("%s: type not supported: %T %#v", funcName, el, el)
 }

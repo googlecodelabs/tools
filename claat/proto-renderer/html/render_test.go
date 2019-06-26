@@ -1,11 +1,9 @@
 package html
 
 import (
-	"bytes"
-	"io"
 	"testing"
 
-	"github.com/googlecodelabs/tools/claat/proto-renderer"
+	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
 )
 
 func TestRender(t *testing.T) {
@@ -16,9 +14,9 @@ func TestRender(t *testing.T) {
 		// invalid cases
 		{nil, false},
 		{"invalid input type", false},
-		{genrenderer.UnsupportedType{}, false},
+		{testingUtils.UnsupportedType{}, false},
 		// valid cases
-		{genrenderer.NewDummyProto("3"), true},
+		{testingUtils.NewDummyProto("3"), true},
 	}
 
 	for _, tc := range tests {
@@ -30,15 +28,8 @@ func TestRender(t *testing.T) {
 
 		// plain want error, in != out verification is not in scope for 'Render'
 		if err == nil && !tc.ok {
-			rndrOut := readerToString(o)
+			rndrOut := testingUtils.ReaderToString(o)
 			t.Errorf("\nRender(\n\t%#v\n) = %#v\nWant error\n(false positive)", tc.in, rndrOut)
 		}
 	}
-}
-
-// readerToString Making io.Reader more readable for errors
-func readerToString(i io.Reader) string {
-	var b bytes.Buffer
-	b.ReadFrom(i)
-	return b.String()
 }
