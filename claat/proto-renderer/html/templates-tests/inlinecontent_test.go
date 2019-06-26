@@ -16,22 +16,22 @@ func TestRenderInlineContentTemplate(t *testing.T) {
 			false,
 		},
 		{
-			testingUtils.NewInlineContentPlain(""),
+			testingUtils.NewInlineContentTextPlain(""),
 			"",
 			true,
 		},
 		{
-			testingUtils.NewInlineContentStrong("strong"),
+			testingUtils.NewInlineContentTextStrong("strong"),
 			"<strong>strong</strong>",
 			true,
 		},
 		{
-			testingUtils.NewInlineContentEmphazied("emphasized"),
+			testingUtils.NewInlineContentTextEmphazied("emphasized"),
 			"<em>emphasized</em>",
 			true,
 		},
 		{
-			testingUtils.NewInlineContentStrongAndEmphazied("strong & emphasized"),
+			testingUtils.NewInlineContentTextStrongAndEmphazied("strong & emphasized"),
 			"<strong><em>strong &amp; emphasized</em></strong>",
 			true,
 		},
@@ -47,7 +47,7 @@ func TestRenderInlineContentTemplate(t *testing.T) {
 func TestRenderInlineContentTemplateIdentiy(t *testing.T) {
 	tests := []*testingUtils.RendererTestingIdendityBatch{
 		{
-			testingUtils.NewInlineContentPlain(`<script>alert("you've been hacked!");</script>!`),
+			testingUtils.NewInlineContentTextPlain(`<script>alert("you've been hacked!");</script>!`),
 			testingUtils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
 			`&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!`,
 			true,

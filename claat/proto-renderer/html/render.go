@@ -14,8 +14,11 @@ const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/h
 
 var (
 	tmplNmspc   *template.Template
-	funcMap     = template.FuncMap{"renderOneof": renderOneof}
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
+	funcMap     = template.FuncMap{
+		"renderOneof":    renderOneof,
+		"renderRepeated": renderRepeated,
+	}
 )
 
 func init() {

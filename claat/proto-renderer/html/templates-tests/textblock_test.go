@@ -8,18 +8,28 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
-func TestRenderStylizedTextTemplate(t *testing.T) {
+func TestRenderTestBlockTemplate(t *testing.T) {
 	tests := []*testingUtils.RendererTestingBatch{
 		{
-			{
-				testingUtils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
-			},
-
-			// testingUtils.NewStylizedTextStrong
-			// testingUtils.NewStylizedTextEmphazied
-			// testingUtils.NewStylizedTextStrongAndEmphazied
-			// testingUtils.NewInlineCode
+			&tutorial.TextBlock{},
 			"",
+			false,
+		},
+		{
+			testingUtils.NewTextBlock(),
+			"",
+			false,
+		},
+		{
+			testingUtils.NewTextBlock(
+				testingUtils.NewInlineContentTextPlain(`hello, `),
+				testingUtils.NewInlineContentTextStrong(`world!`),
+				testingUtils.NewInlineContentTextEmphazied(` goodbye`),
+				testingUtils.NewInlineContentTextPlain(` `),
+				testingUtils.NewInlineContentTextStrongAndEmphazied(`cruel `),
+				testingUtils.NewInlineContentCode(`world!`),
+			),
+			"hello, <strong>world!</strong><em> goodbye</em> <strong><em>cruel </em></strong><code>world!</code>",
 			true,
 		},
 	}

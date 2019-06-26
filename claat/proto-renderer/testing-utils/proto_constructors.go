@@ -50,7 +50,7 @@ func NewInlineContentCode(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewInlineContentPlain(txt string) *tutorial.InlineContent {
+func NewInlineContentTextPlain(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
@@ -60,7 +60,7 @@ func NewInlineContentPlain(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewInlineContentStrong(txt string) *tutorial.InlineContent {
+func NewInlineContentTextStrong(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
@@ -71,7 +71,7 @@ func NewInlineContentStrong(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewInlineContentEmphazied(txt string) *tutorial.InlineContent {
+func NewInlineContentTextEmphazied(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
@@ -82,7 +82,7 @@ func NewInlineContentEmphazied(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewInlineContentStrongAndEmphazied(txt string) *tutorial.InlineContent {
+func NewInlineContentTextStrongAndEmphazied(txt string) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
@@ -91,5 +91,11 @@ func NewInlineContentStrongAndEmphazied(txt string) *tutorial.InlineContent {
 				IsEmphasized: true,
 			},
 		},
+	}
+}
+
+func NewTextBlock(contentSlice ...*tutorial.InlineContent) *tutorial.TextBlock {
+	return &tutorial.TextBlock{
+		Content: contentSlice,
 	}
 }
