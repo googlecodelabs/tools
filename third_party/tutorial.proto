@@ -60,8 +60,8 @@ message Link {
 message InlineContent {
   oneof content {
     StylizedText text = 1;
-    InlineCode code = 6;
     Link link = 5;
+    InlineCode code = 6;
   }
 
   reserved 2, 3, 4; 
