@@ -52,12 +52,12 @@ func TestRenderStylizedTextTemplate(t *testing.T) {
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewStylizedTextEmphazied("hello!"),
+			InProto: testingUtils.NewStylizedTextEmphasized("hello!"),
 			Out:     "<em>hello!</em>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewStylizedTextStrongAndEmphazied("hello!"),
+			InProto: testingUtils.NewStylizedTextStrongAndEmphasized("hello!"),
 			Out:     "<strong><em>hello!</em></strong>",
 			Ok:      true,
 		},

@@ -26,12 +26,12 @@ func TestRenderInlineContentTemplate(t *testing.T) {
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineContentTextEmphazied("emphasized"),
+			InProto: testingUtils.NewInlineContentTextEmphasized("emphasized"),
 			Out:     "<em>emphasized</em>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineContentTextStrongAndEmphazied("strong & emphasized"),
+			InProto: testingUtils.NewInlineContentTextStrongAndEmphasized("strong & emphasized"),
 			Out:     "<strong><em>strong &amp; emphasized</em></strong>",
 			Ok:      true,
 		},
