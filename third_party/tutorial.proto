@@ -15,3 +15,107 @@
 syntax = "proto3";
 
 package tutorial;
+
+message Tutorial {
+  Title title = 1;
+  map<string, string> metadata = 2;
+  repeated Step steps = 3;
+};
+
+message Step {
+  Title title = 1;
+  map<string, string> metadata = 2;
+  repeated Content content = 3;
+};
+
+message Title {
+  repeated InlineContent inline_contents = 1;
+};
+
+message Content {
+  oneof content {
+    InlineContent inline_content = 1;
+    BlockContent block_content = 2;
+  }
+};
+
+message BlockContent {
+  oneof content {
+    Heading heading = 1;
+    Image image = 2;
+    InfoBox info_box = 3;
+    CodeBlock code_block = 4;
+    Table table = 6;
+  }
+
+  reserved 5; 
+  reserved "horizontal_rule";
+};
+
+message Link {
+  string text = 1;
+  string location = 2;
+};
+
+message InlineContent {
+  oneof content {
+    string text = 1;
+    string strong_text = 2;
+    string emphasized_text = 3;
+    string inline_code_text = 4;
+    Link link = 5;
+  }
+};
+
+message Heading {
+  repeated InlineContent inline_contents = 1;
+  int32 level = 2;
+};
+
+message Image {
+  // TODO
+};
+
+message InfoBox {
+  repeated InlineContent inline_contents = 1;
+
+  enum Disposition {
+    UNKNOWN_DISPOSITION = 0;
+    POSITIVE = 1;
+    NEGATIVE = 2;
+  };
+  Disposition disposition = 2;
+};
+
+message CodeBlock {
+  repeated InlineContent inline_contents = 1;
+  string code_location = 2;
+  string language_hint = 3;
+};
+
+message ListStep {
+  repeated Content contents = 1;
+};
+
+message List {
+  repeated ListStep list_steps = 1;
+
+  enum ListVariety {
+    UNKNOWN_VARIETY = 0;
+    ORDERED = 1;
+    UNORDERED = 2;
+  }
+  ListVariety list_variety = 2;
+};
+
+message Table {
+  repeated TableRow table_rows = 1;
+};
+
+message TableRow {
+  repeated TableCell table_cells = 1;
+};
+
+message TableCell {
+  repeated InlineContent inline_contents = 1;
+};
