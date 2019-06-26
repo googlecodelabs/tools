@@ -36,7 +36,7 @@ func TestExecuteTemplateInvalidNamespace(t *testing.T) {
 
 	// These cases are only valid for namepace-compliant templates
 	validYetNonCompliantCases := []encapsulatedTest{
-		{testingUtils.NewDummyProto("hello"), "hello", false},
+		{testingUtils.NewDummyProto(), "dummy", false},
 	}
 	runEncapsulatedTestSet(validYetNonCompliantCases, tmpl, t)
 }
@@ -47,7 +47,7 @@ func TestExecuteTemplateValidNamespace(t *testing.T) {
 	runEncapsulatedTestSet(invalidCases, tmpl, t)
 
 	validCases := []encapsulatedTest{
-		{testingUtils.NewDummyProto("hello"), "hello", true},
+		{testingUtils.NewDummyProto(), "dummy", true},
 	}
 	runEncapsulatedTestSet(validCases, tmpl, t)
 }

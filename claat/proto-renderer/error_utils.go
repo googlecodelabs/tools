@@ -10,7 +10,7 @@ import (
 func AssertError(el interface{}) error {
 	switch x := el.(type) {
 	case string:
-		return errors.New(x)
+		return errors.New(el.(string))
 	case error:
 		return x
 	}

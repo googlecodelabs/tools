@@ -2,13 +2,13 @@ package testingUtils
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
 	"runtime"
 	"testing"
 
-	"github.com/googlecodelabs/tools/claat/proto-renderer"
 	"github.com/googlecodelabs/tools/third_party"
 )
 
@@ -17,9 +17,9 @@ import (
 type UnsupportedType struct{}
 
 // NewDummyProto is a simple proto constructor
-func NewDummyProto(in string) *tutorial.StylizedText {
+func NewDummyProto() *tutorial.StylizedText {
 	return &tutorial.StylizedText{
-		Text: in,
+		Text: "dummy",
 	}
 }
 
@@ -115,7 +115,13 @@ func runEncapsulatedRendering(el interface{}, renderer renderingFunc, t *testing
 		r := recover()
 		if r != nil {
 			output = ""
-			err = genrenderer.AssertError(r)
+			// not reusing genrenderer.AssertError due to import cycle
+			switch r.(type) {
+			case string:
+				err = errors.New(r.(string))
+			case error:
+				err = r.(error)
+			}
 		}
 	}()
 
