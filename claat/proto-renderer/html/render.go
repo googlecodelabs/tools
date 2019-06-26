@@ -19,7 +19,7 @@ var (
 )
 
 func init() {
-	// Defining namespace after initial build to avoid initialization loop
+	// Defining namespace after initial compilation to avoid initialization loop
 	tmplNmspc = template.Must(template.New("html-pkg").Funcs(funcMap).ParseGlob(tmplsAbsDir))
 }
 
