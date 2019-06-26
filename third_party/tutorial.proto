@@ -105,22 +105,31 @@ message CodeBlock {
 };
 
 message List {
-  repeated TextBlock steps = 1;
+  repeated TextBlock steps = 3;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
     ORDERED = 1;
     UNORDERED = 2;
   }
-  ListVariety variety = 2;
+  ListVariety variety = 4;
+
+  reserved 1, 2;
+  reserved "list_steps", "list_variety";
 };
 
 message Table {
   repeated TableRow rows = 1;
+
+  reserved 1;
+  reserved "table_rows";
 };
 
 message TableRow {
   repeated TextBlock cells = 1;
+
+  reserved 1;
+  reserved "table_cells";
 };
 
 message TextBlock {
