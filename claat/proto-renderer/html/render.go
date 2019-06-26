@@ -14,10 +14,10 @@ const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/h
 
 var (
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
-	t           = template.Must(template.New("html").ParseGlob(tmplsAbsDir))
+	tmplNmspc   = template.Must(template.New("html-pkg").ParseGlob(tmplsAbsDir))
 )
 
-// Render returns the rendered HTML representation of a devrel_tutorial proto,
+// Render returns the rendered HTML representation of a tutorial proto,
 // or the first error encountered rendering templates depth-first, if any
 func Render(el interface{}) (out io.Reader, err error) {
 	// "Catches" first nested panic and delegates handling to caller
@@ -29,6 +29,6 @@ func Render(el interface{}) (out io.Reader, err error) {
 		}
 	}()
 
-	out = strings.NewReader(genrenderer.ExecuteTemplate(el, t))
+	out = strings.NewReader(genrenderer.ExecuteTemplate(el, tmplNmspc))
 	return out, err
 }
