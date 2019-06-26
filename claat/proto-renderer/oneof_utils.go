@@ -6,14 +6,14 @@ import (
   "github.com/googlecodelabs/tools/third_party"
 )
 
-// RenderOneof Returns the underyling, rendered, passed oneof element
+// RenderOneof returns the underyling, rendered, passed oneof element
 func RenderOneof(el interface{}, t *template.Template) string {
   // Recursive redering happens here
-  return ExecuteTemplate(AssertAndExtractOneof(el), t)
+  return ExecuteTemplate(AssertOneof(el), t)
 }
 
-// AssertAndExtractOneof ...
-func AssertAndExtractOneof(el interface{}) (underlyingType interface{}) {
+// AssertOneof turns a generic oneof proto into its underlying typed-proto
+func AssertOneof(el interface{}) (underlyingType interface{}) {
   // Pure Oneof protos
   switch el.(type) {
   case *tutorial.InlineContent:
@@ -22,7 +22,7 @@ func AssertAndExtractOneof(el interface{}) (underlyingType interface{}) {
 
   // debug-friendly panic
   if underlyingType == nil {
-    panic(TypeNotSupported("AssertAndExtractOneof", el))
+    panic(TypeNotSupported("AssertOneof", el))
   }
 
   return underlyingType
