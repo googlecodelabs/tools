@@ -41,8 +41,8 @@ func NewInlineCode(txt string) *tutorial.InlineCode {
 }
 
 func NewInlineContentCode(txt string) *tutorial.InlineContent {
-	return &devrel_tutorial.InlineContent{
-		Content: &devrel_tutorial.InlineContent_Code{
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Code{
 			&tutorial.InlineCode{
 				Code: txt,
 			},
@@ -50,9 +50,9 @@ func NewInlineContentCode(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewStylizedTextPlain(txt string) *tutorial.InlineContent {
-	return &devrel_tutorial.InlineContent{
-		Content: &devrel_tutorial.InlineContent_Text{
+func NewInlineContentPlain(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
 				Text: txt,
 			},
@@ -60,9 +60,9 @@ func NewStylizedTextPlain(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewStylizedTextStrong(txt string) *tutorial.InlineContent {
-	return &devrel_tutorial.InlineContent{
-		Content: &devrel_tutorial.InlineContent_Text{
+func NewInlineContentStrong(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
 				Text:     txt,
 				IsStrong: true,
@@ -71,9 +71,9 @@ func NewStylizedTextStrong(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewStylizedTextEmphazied(txt string) *tutorial.InlineContent {
-	return &devrel_tutorial.InlineContent{
-		Content: &devrel_tutorial.InlineContent_Text{
+func NewInlineContentEmphazied(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
 				Text:         txt,
 				IsEmphasized: true,
@@ -82,9 +82,9 @@ func NewStylizedTextEmphazied(txt string) *tutorial.InlineContent {
 	}
 }
 
-func NewStylizedTextStrongAndEmphazied(txt string) *tutorial.InlineContent {
-	return &devrel_tutorial.InlineContent{
-		Content: &devrel_tutorial.InlineContent_Text{
+func NewInlineContentStrongAndEmphazied(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
 			&tutorial.StylizedText{
 				Text:         txt,
 				IsStrong:     true,
