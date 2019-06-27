@@ -17,7 +17,7 @@ func TestRenderLinkTemplate(t *testing.T) {
 	weatherLinkBytes, err := ioutil.ReadFile(linkFileAbsDir)
 	if err != nil {
 		t.Errorf("Reading %#v outputted %#v", linkFileAbsDir, err)
-		return
+		continue
 	}
 	weatherLinkOutput := string(weatherLinkBytes[:])
 
