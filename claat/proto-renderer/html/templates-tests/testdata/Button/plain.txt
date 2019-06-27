@@ -1,0 +1,4 @@
+<paper-button class="colored">
+  
+  <a target="_blank" href="www.cloud.io">hosting</a>
+</paper-button>

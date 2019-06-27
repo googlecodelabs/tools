@@ -36,7 +36,7 @@ func TestRenderLinkTemplate(t *testing.T) {
 			Ok:      false,
 		},
 		{
-			InProto: testingutils.NewLink("only://link.does.not/work?#ok"),
+			InProto: testingutils.NewLink("only://link.does.not/work?#ok=false"),
 			Out:     "",
 			Ok:      false,
 		},

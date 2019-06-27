@@ -34,13 +34,6 @@ func NewStylizedTextStrongAndEmphasized(txt string) *tutorial.StylizedText {
 	}
 }
 
-func NewLink(href string, contentSlice ...*tutorial.StylizedText) *tutorial.Link {
-	return &tutorial.Link{
-		Href:    href,
-		Content: contentSlice,
-	}
-}
-
 func NewInlineCode(txt string) *tutorial.InlineCode {
 	return &tutorial.InlineCode{
 		Code: txt,
@@ -57,10 +50,39 @@ func NewInlineContentCode(txt string) *tutorial.InlineContent {
 	}
 }
 
+func NewLink(href string, contentSlice ...*tutorial.StylizedText) *tutorial.Link {
+	return &tutorial.Link{
+		Href:    href,
+		Content: contentSlice,
+	}
+}
+
 func NewInlineContentLink(link *tutorial.Link) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Link{
 			Link: link,
+		},
+	}
+}
+
+func NewButtonPlain(link *tutorial.Link) *tutorial.Button {
+	return &tutorial.Button{
+		Link: link,
+	}
+}
+
+func NewButtonDownload(link *tutorial.Link) *tutorial.Button {
+	return &tutorial.Button{
+		Link:           link,
+		IsDownloadable: true,
+	}
+}
+
+// TODO: Add this to InlineContent tests
+func NewInlineContentButton(button *tutorial.Button) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Button{
+			Button: button,
 		},
 	}
 }
