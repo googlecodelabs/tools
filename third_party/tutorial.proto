@@ -105,7 +105,7 @@ message CodeBlock {
 };
 
 message List {
-  repeated TextBlock steps = 3;
+  repeated Paragraph steps = 3;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
@@ -126,12 +126,12 @@ message Table {
 };
 
 message TableRow {
-  repeated TextBlock cells = 1;
+  repeated Paragraph cells = 1;
 
   reserved 1;
   reserved "table_cells";
 };
 
-message TextBlock {
+message Paragraph {
   repeated InlineContent content = 1;
 };
