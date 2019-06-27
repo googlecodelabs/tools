@@ -26,15 +26,15 @@ func NewDummyProto() *tutorial.StylizedText {
 // renderingFunc is the tunction signature for output-format agnositic 'Render'
 type renderingFunc func(interface{}) (io.Reader, error)
 
-// RendererTestingBatch type for canonical i != o and !ok rendering template tests
-type RendererTestingBatch struct {
+// CanonicalRenderingBatch type for canonical i != o and !ok rendering template tests
+type CanonicalRenderingBatch struct {
 	InProto interface{}
 	Out     string
 	Ok      bool
 }
 
-// CanonicalRenderingTestBatch helper for canonical i != o and !ok tests
-func CanonicalRenderingTestBatch(renderer renderingFunc, tests []*RendererTestingBatch, t *testing.T) {
+// CanonicalRenderTestBatch helper for canonical i != o and !ok tests
+func CanonicalRenderTestBatch(renderer renderingFunc, tests []*CanonicalRenderingBatch, t *testing.T) {
 	for _, tc := range tests {
 		funcName := runtime.FuncForPC(reflect.ValueOf(renderer).Pointer()).Name()
 		reader, err := renderer(tc.InProto)
@@ -66,17 +66,17 @@ func ReaderToString(i io.Reader) string {
 	return b.String()
 }
 
-// RendererTestingIdendityBatch type for i != o and !ok rendering tests or oneof and their underlying proto
-type RendererTestingIdendityBatch struct {
+// RendererIdendityBatch type for i != o and !ok rendering tests or oneof and their underlying proto
+type RendererIdendityBatch struct {
 	InProto  interface{}
 	OutProto interface{}
 	Out      string
 	Ok       bool
 }
 
-// RenderingTestIdendityBatch is a wrapper on 'CanonicalRenderingTestBatch' to prove that oneof types
+// RenderingIdendityTestBatch is a wrapper on 'CanonicalRenderTestBatch' to prove that oneof types
 // are equal to their underlying type rendering
-func RenderingTestIdendityBatch(renderer renderingFunc, tests []*RendererTestingIdendityBatch, t *testing.T) {
+func RenderingIdendityTestBatch(renderer renderingFunc, tests []*RendererIdendityBatch, t *testing.T) {
 	for _, tc := range tests {
 		rndrout, underlyingTypeErr := runEncapsulatedRendering(tc.OutProto, renderer, t)
 
@@ -97,18 +97,18 @@ func RenderingTestIdendityBatch(renderer renderingFunc, tests []*RendererTesting
 		}
 
 		// Create cannonical test from the output from the underlying type
-		newTc := []*RendererTestingBatch{
+		newTc := []*CanonicalRenderingBatch{
 			{
 				tc.InProto,
 				tc.Out,
 				tc.Ok,
 			},
 		}
-		CanonicalRenderingTestBatch(renderer, newTc, t)
+		CanonicalRenderTestBatch(renderer, newTc, t)
 	}
 }
 
-// runEncapsulatedRendering constrains the scope of panics for 'RenderingTestIdendityBatch'
+// runEncapsulatedRendering constrains the scope of panics for 'RenderingIdendityTestBatch'
 // otherwise we cannot iterate through consecutive panic-causing test-cases
 func runEncapsulatedRendering(el interface{}, renderer renderingFunc, t *testing.T) (output interface{}, err error) {
 	defer func() {

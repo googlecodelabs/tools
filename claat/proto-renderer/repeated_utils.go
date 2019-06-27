@@ -43,6 +43,14 @@ func AssertRepeated(el interface{}) (guaranteedProtoSlice []interface{}) {
 		for i := 0; i < sz; i++ {
 			guaranteedProtoSlice[i] = tempSlice[i]
 		}
+	case []*tutorial.StylizedText:
+		tempSlice := el.([]*tutorial.StylizedText)
+		sz := len(tempSlice)
+
+		guaranteedProtoSlice = make([]interface{}, sz)
+		for i := 0; i < sz; i++ {
+			guaranteedProtoSlice[i] = tempSlice[i]
+		}
 	}
 
 	// debug-friendly panic

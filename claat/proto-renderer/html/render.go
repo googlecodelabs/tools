@@ -27,7 +27,8 @@ func init() {
 }
 
 // Render returns the rendered HTML representation of a tutorial proto,
-// or the first error encountered rendering templates depth-first, if any
+// or the first error encountered rendering templates depth-first, if any.
+// Possible recursive desent follows proto definitions
 func Render(el interface{}) (out io.Reader, err error) {
 	// "Catches" first nested panic and delegates handling to caller
 	defer func() {

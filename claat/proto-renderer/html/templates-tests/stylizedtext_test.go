@@ -9,7 +9,7 @@ import (
 )
 
 func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
-	tests := []*testingutils.RendererTestingBatch{
+	tests := []*testingutils.CanonicalRenderingBatch{
 		{
 			InProto: testingutils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
 			Out:     "&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!",
@@ -26,11 +26,11 @@ func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
 			Ok:      true,
 		},
 	}
-	testingutils.CanonicalRenderingTestBatch(html.Render, tests, t)
+	testingutils.CanonicalRenderTestBatch(html.Render, tests, t)
 }
 
 func TestRenderStylizedTextTemplate(t *testing.T) {
-	tests := []*testingutils.RendererTestingBatch{
+	tests := []*testingutils.CanonicalRenderingBatch{
 		{
 			InProto: &tutorial.StylizedText{},
 			Out:     "",
@@ -62,5 +62,5 @@ func TestRenderStylizedTextTemplate(t *testing.T) {
 			Ok:      true,
 		},
 	}
-	testingutils.CanonicalRenderingTestBatch(html.Render, tests, t)
+	testingutils.CanonicalRenderTestBatch(html.Render, tests, t)
 }

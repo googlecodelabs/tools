@@ -9,7 +9,7 @@ import (
 )
 
 func TestRenderInlineCodeTemplateEscaping(t *testing.T) {
-	tests := []*testingutils.RendererTestingBatch{
+	tests := []*testingutils.CanonicalRenderingBatch{
 		{
 			InProto: tutorial.InlineCode{},
 			Out:     "<code></code>",
@@ -56,5 +56,5 @@ func TestRenderInlineCodeTemplateEscaping(t *testing.T) {
 			Ok:      true,
 		},
 	}
-	testingutils.CanonicalRenderingTestBatch(html.Render, tests, t)
+	testingutils.CanonicalRenderTestBatch(html.Render, tests, t)
 }

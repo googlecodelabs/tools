@@ -53,9 +53,12 @@ message BlockContent {
 };
 
 message Link {
-  string text = 1;
-  string location = 2;
-};
+  repeated StylizedText content = 3;
+  string href = 4;
+
+  reserved 1, 2;
+  reserved "text", "location";
+}
 
 message InlineContent {
   oneof content {
@@ -119,14 +122,14 @@ message List {
 };
 
 message Table {
-  repeated TableRow rows = 1;
+  repeated TableRow rows = 2;
 
   reserved 1;
   reserved "table_rows";
 };
 
 message TableRow {
-  repeated Paragraph cells = 1;
+  repeated Paragraph cells = 2;
 
   reserved 1;
   reserved "table_cells";
