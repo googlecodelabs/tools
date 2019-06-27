@@ -11,17 +11,17 @@ import (
 func TestRenderTestBlockTemplate(t *testing.T) {
 	tests := []*testingutils.RendererTestingBatch{
 		{
-			InProto: &tutorial.TextBlock{},
+			InProto: &tutorial.Paragraph{},
 			Out:     "",
 			Ok:      false,
 		},
 		{
-			InProto: testingutils.NewTextBlock(),
+			InProto: testingutils.NewParagraph(),
 			Out:     "",
 			Ok:      false,
 		},
 		{
-			InProto: testingutils.NewTextBlock(
+			InProto: testingutils.NewParagraph(
 				testingutils.NewInlineContentTextPlain(`hello, `),
 				testingutils.NewInlineContentTextStrong(`world!`),
 				testingutils.NewInlineContentTextEmphasized(` goodbye`),
@@ -29,7 +29,7 @@ func TestRenderTestBlockTemplate(t *testing.T) {
 				testingutils.NewInlineContentTextStrongAndEmphasized(`cruel `),
 				testingutils.NewInlineContentCode(`world!`),
 			),
-			Out: "hello, <strong>world!</strong><em> goodbye</em> <strong><em>cruel </em></strong><code>world!</code>",
+			Out: "<p>hello, <strong>world!</strong><em> goodbye</em> <strong><em>cruel </em></strong><code>world!</code></p>",
 			Ok:  true,
 		},
 	}

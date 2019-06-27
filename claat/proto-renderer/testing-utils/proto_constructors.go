@@ -94,8 +94,8 @@ func NewInlineContentTextStrongAndEmphasized(txt string) *tutorial.InlineContent
 	}
 }
 
-func NewTextBlock(contentSlice ...*tutorial.InlineContent) *tutorial.TextBlock {
-	return &tutorial.TextBlock{
+func NewParagraph(contentSlice ...*tutorial.InlineContent) *tutorial.Paragraph {
+	return &tutorial.Paragraph{
 		Content: contentSlice,
 	}
 }
