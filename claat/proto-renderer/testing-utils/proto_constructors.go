@@ -1,4 +1,4 @@
-package testingUtils
+package testingutils
 
 import (
 	"github.com/googlecodelabs/tools/third_party"
@@ -37,5 +37,59 @@ func NewStylizedTextStrongAndEmphasized(txt string) *tutorial.StylizedText {
 func NewInlineCode(txt string) *tutorial.InlineCode {
 	return &tutorial.InlineCode{
 		Code: txt,
+	}
+}
+
+func NewInlineContentCode(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Code{
+			Code: &tutorial.InlineCode{
+				Code: txt,
+			},
+		},
+	}
+}
+
+func NewInlineContentTextPlain(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			Text: &tutorial.StylizedText{
+				Text: txt,
+			},
+		},
+	}
+}
+
+func NewInlineContentTextStrong(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			Text: &tutorial.StylizedText{
+				Text:     txt,
+				IsStrong: true,
+			},
+		},
+	}
+}
+
+func NewInlineContentTextEmphasized(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			Text: &tutorial.StylizedText{
+				Text:         txt,
+				IsEmphasized: true,
+			},
+		},
+	}
+}
+
+func NewInlineContentTextStrongAndEmphasized(txt string) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			Text: &tutorial.StylizedText{
+				Text:         txt,
+				IsStrong:     true,
+				IsEmphasized: true,
+			},
+		},
 	}
 }

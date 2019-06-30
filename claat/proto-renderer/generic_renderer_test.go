@@ -25,7 +25,7 @@ var (
 	invalidCases = []encapsulatedTest{
 		{3, nil, false},
 		{nil, nil, false},
-		{UnsupportedType{}, nil, false},
+		{testingutils.UnsupportedType{}, nil, false},
 	}
 )
 
@@ -36,7 +36,7 @@ func TestExecuteTemplateInvalidNamespace(t *testing.T) {
 
 	// These cases are only valid for namepace-compliant templates
 	validYetNonCompliantCases := []encapsulatedTest{
-		{testingUtils.NewDummyProto("hello"), "hello", false},
+		{testingutils.NewDummyProto(), "dummy", false},
 	}
 	runEncapsulatedTestSet(validYetNonCompliantCases, tmpl, t)
 }
@@ -47,7 +47,7 @@ func TestExecuteTemplateValidNamespace(t *testing.T) {
 	runEncapsulatedTestSet(invalidCases, tmpl, t)
 
 	validCases := []encapsulatedTest{
-		{testingUtils.NewDummyProto("hello"), "hello", true},
+		{testingutils.NewDummyProto(), "dummy", true},
 	}
 	runEncapsulatedTestSet(validCases, tmpl, t)
 }
@@ -59,8 +59,8 @@ func runEncapsulatedTestSet(tcs []encapsulatedTest, tmpl *template.Template, t *
 	}
 }
 
-// runEncapsulatedTest constrains the scope of panics, else we cannot iterate
-// through consecutive panic-causing test-cases
+// runEncapsulatedTest constrains the scope of panics for all tests in this file,
+// otherwise we cannot iterate through consecutive panic-causing test-cases
 func runEncapsulatedTest(tc encapsulatedTest, tmpl *template.Template, t *testing.T) (tmplOut string) {
 	// Check whether template failed to render by checking for panic
 	defer func(tc encapsulatedTest) {

@@ -9,52 +9,52 @@ import (
 )
 
 func TestRenderInlineCodeTemplateEscaping(t *testing.T) {
-	tests := []*testingUtils.RendererTestingBatch{
+	tests := []*testingutils.RendererTestingBatch{
 		{
 			InProto: tutorial.InlineCode{},
 			Out:     "<code></code>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineCode("< less-than"),
+			InProto: testingutils.NewInlineCode("< less-than"),
 			Out:     "<code>&lt; less-than</code>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineCode("> greater-than"),
+			InProto: testingutils.NewInlineCode("> greater-than"),
 			Out:     "<code>&gt; greater-than</code>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineCode("/ backslash"),
+			InProto: testingutils.NewInlineCode("/ backslash"),
 			Out:     "<code>/ backslash</code>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineCode(`\ forwardslash`),
+			InProto: testingutils.NewInlineCode(`\ forwardslash`),
 			Out:     `<code>\\ forwardslash</code>`,
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineCode("& ampersand"),
+			InProto: testingutils.NewInlineCode("& ampersand"),
 			Out:     "<code>&amp; ampersand</code>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineCode(`" quotation`),
+			InProto: testingutils.NewInlineCode(`" quotation`),
 			Out:     "<code>&#34; quotation</code>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineCode("' apostrophe"),
+			InProto: testingutils.NewInlineCode("' apostrophe"),
 			Out:     "<code>&#39; apostrophe</code>",
 			Ok:      true,
 		},
 		{
-			InProto: testingUtils.NewInlineCode("{ Αα Ββ Γγ Δδ Εε Ϝϝ Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσς Ττ Υυ Φφ Χχ Ψψ Ωω }"),
+			InProto: testingutils.NewInlineCode("{ Αα Ββ Γγ Δδ Εε Ϝϝ Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσς Ττ Υυ Φφ Χχ Ψψ Ωω }"),
 			Out:     "<code>{ Αα Ββ Γγ Δδ Εε Ϝϝ Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσς Ττ Υυ Φφ Χχ Ψψ Ωω }</code>",
 			Ok:      true,
 		},
 	}
-	testingUtils.CanonicalRenderingTestBatch(html.Render, tests, t)
+	testingutils.CanonicalRenderingTestBatch(html.Render, tests, t)
 }
