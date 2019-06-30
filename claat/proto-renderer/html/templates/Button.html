@@ -1,0 +1,4 @@
+<paper-button class="colored">
+  {{ if .IsDownloadable -}} <iron-icon icon="cloud_download"></iron-icon> {{- end }}
+  {{ template "Link.html" .Link }}
+</paper-button>
