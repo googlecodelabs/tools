@@ -30,33 +30,50 @@ func RenderRepeated(elSlice interface{}, t *template.Template) []string {
 // AssertRepeated turns a generic proto slice into typed-slice that can be
 // interated over without reflection. Panics if the passed type is not
 // explicitly defined
-func AssertRepeated(el interface{}) (guaranteedProtoSlice []interface{}) {
+func AssertRepeated(el interface{}) []interface{} {
+	var protoSlice []interface{}
+
 	// Below we convert turn all protos used as repeated fields
 	// from interface{} into []interface{}.
 	// Generalizable convertion approach that doesn't rely on reflection not found
 	switch el.(type) {
 	case []*tutorial.InlineContent:
-		tempSlice := el.([]*tutorial.InlineContent)
-		sz := len(tempSlice)
-
-		guaranteedProtoSlice = make([]interface{}, sz)
-		for i := 0; i < sz; i++ {
-			guaranteedProtoSlice[i] = tempSlice[i]
-		}
+		protoSlice = interfaceSliceInlineContent(el)
 	case []*tutorial.StylizedText:
-		tempSlice := el.([]*tutorial.StylizedText)
-		sz := len(tempSlice)
-
-		guaranteedProtoSlice = make([]interface{}, sz)
-		for i := 0; i < sz; i++ {
-			guaranteedProtoSlice[i] = tempSlice[i]
-		}
+		protoSlice = interfaceSliceStylizedText(el)
 	}
 
 	// debug-friendly panic
-	if guaranteedProtoSlice == nil {
+	if protoSlice == nil {
 		panic(TypeNotSupported("AssertRepeated", el))
 	}
 
-	return guaranteedProtoSlice
+	return protoSlice
+}
+
+// []*tutorial.repeatedFields to []interface{} conversion helpers.
+// Lack of reflection use ovehead. Only the first line of each is different.
+
+func interfaceSliceInlineContent(elSliceInterface interface{}) []interface{} {
+	elSlice := elSliceInterface.([]*tutorial.InlineContent)
+
+	sz := len(elSlice)
+	interfaceSlice := make([]interface{}, sz)
+
+	for i := 0; i < sz; i++ {
+		interfaceSlice[i] = elSlice[i]
+	}
+	return interfaceSlice
+}
+
+func interfaceSliceStylizedText(elSliceInterface interface{}) []interface{} {
+	elSlice := elSliceInterface.([]*tutorial.StylizedText)
+
+	sz := len(elSlice)
+	interfaceSlice := make([]interface{}, sz)
+
+	for i := 0; i < sz; i++ {
+		interfaceSlice[i] = elSlice[i]
+	}
+	return interfaceSlice
 }
