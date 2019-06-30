@@ -3,7 +3,7 @@ package html
 import (
 	"testing"
 
-	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
+	"github.com/googlecodelabs/tools/claat/proto/renderer/testing-utils"
 )
 
 func TestRender(t *testing.T) {
@@ -16,7 +16,7 @@ func TestRender(t *testing.T) {
 		{"invalid input type", false},
 		{testingutils.UnsupportedType{}, false},
 		// valid cases
-		{testingutils.NewDummyProto(), true},
+		{protoconstructors.NewDummyProto(), true},
 	}
 
 	for _, tc := range tests {

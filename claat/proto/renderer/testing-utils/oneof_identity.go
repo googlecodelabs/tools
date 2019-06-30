@@ -1,70 +1,15 @@
 package testingutils
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io"
+	// "go/build"
+	// "io/ioutil"
+	// "path/filepath"
 	"reflect"
 	"runtime"
 	"testing"
-
-	"github.com/googlecodelabs/tools/third_party"
 )
-
-// UnsupportedType is a dummy type used to showcase the failures of rendering
-// non-proto custom types since we take in "any" type as rendering input.
-type UnsupportedType struct{}
-
-// NewDummyProto is a simple proto constructor
-func NewDummyProto() *tutorial.StylizedText {
-	return &tutorial.StylizedText{
-		Text: "dummy",
-	}
-}
-
-// renderingFunc is the tunction signature for output-format agnositic 'Render'
-type renderingFunc func(interface{}) (io.Reader, error)
-
-// CanonicalRenderingBatch type for canonical i != o and !ok rendering template tests
-type CanonicalRenderingBatch struct {
-	InProto interface{}
-	Out     string
-	Ok      bool
-}
-
-// CanonicalRenderTestBatch helper for canonical i != o and !ok tests
-func CanonicalRenderTestBatch(renderer renderingFunc, tests []*CanonicalRenderingBatch, t *testing.T) {
-	for _, tc := range tests {
-		funcName := runtime.FuncForPC(reflect.ValueOf(renderer).Pointer()).Name()
-		reader, err := renderer(tc.InProto)
-
-		cmd := fmt.Sprintf("\n%s(\n\t%#v\n)", funcName, tc.InProto)
-
-		if err != nil && tc.Ok {
-			t.Errorf("%s\nError: %v(false negative)\nWant: %#v", cmd, err, tc.Out)
-		}
-
-		if err == nil && !tc.Ok {
-			t.Errorf("%s\n = %#v\nWant Error\n(false positive)", cmd, reader)
-		}
-
-		rndrout := ReaderToString(reader)
-		if tc.Out != rndrout {
-			t.Errorf("%s = %#v\nBut want: \n%#v", cmd, rndrout, tc.Out)
-		}
-	}
-}
-
-// ReaderToString makes io.Reader more readable for errors
-func ReaderToString(i io.Reader) string {
-	if i == nil {
-		return ""
-	}
-	var b bytes.Buffer
-	b.ReadFrom(i)
-	return b.String()
-}
 
 // RendererIdendityBatch type for i != o and !ok rendering tests or oneof and their underlying proto
 type RendererIdendityBatch struct {
@@ -74,7 +19,7 @@ type RendererIdendityBatch struct {
 	Ok       bool
 }
 
-// RenderingIdendityTestBatch is a wrapper on 'CanonicalRenderTestBatch' to prove that oneof types
+// RenderingIdendityTestBatch is a wrapper on 'TestCanonicalRendererBatch' to prove that oneof types
 // are equal to their underlying type rendering
 func RenderingIdendityTestBatch(renderer renderingFunc, tests []*RendererIdendityBatch, t *testing.T) {
 	for _, tc := range tests {
@@ -99,12 +44,12 @@ func RenderingIdendityTestBatch(renderer renderingFunc, tests []*RendererIdendit
 		// Create cannonical test from the output from the underlying type
 		newTc := []*CanonicalRenderingBatch{
 			{
-				tc.InProto,
-				tc.Out,
-				tc.Ok,
+				InProto: tc.InProto,
+				Out:     tc.Out,
+				Ok:      tc.Ok,
 			},
 		}
-		CanonicalRenderTestBatch(renderer, newTc, t)
+		TestCanonicalRendererBatch(renderer, newTc, t)
 	}
 }
 

@@ -7,10 +7,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/googlecodelabs/tools/claat/proto-renderer"
+	"github.com/googlecodelabs/tools/claat/proto/renderer"
 )
 
-const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates/*"
+const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto/renderer/html/templates/*"
 
 var (
 	tmplNmspc   *template.Template

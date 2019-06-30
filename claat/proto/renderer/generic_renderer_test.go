@@ -6,7 +6,7 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
+	"github.com/googlecodelabs/tools/claat/proto/renderer/testing-utils"
 )
 
 type encapsulatedTest struct {
@@ -17,7 +17,7 @@ type encapsulatedTest struct {
 
 // Setup variables
 var (
-	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/testdata/*"
+	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto/renderer/testdata/*"
 	tmplsAbsDir  = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
 	funcMap      = template.FuncMap{
 		"returnString": func(i string) string { return i },
@@ -36,7 +36,7 @@ func TestExecuteTemplateInvalidNamespace(t *testing.T) {
 
 	// These cases are only valid for namepace-compliant templates
 	validYetNonCompliantCases := []encapsulatedTest{
-		{testingutils.NewDummyProto(), "dummy", false},
+		{protoconstructors.NewDummyProto(), "dummy", false},
 	}
 	runEncapsulatedTestSet(validYetNonCompliantCases, tmpl, t)
 }
@@ -47,7 +47,7 @@ func TestExecuteTemplateValidNamespace(t *testing.T) {
 	runEncapsulatedTestSet(invalidCases, tmpl, t)
 
 	validCases := []encapsulatedTest{
-		{testingutils.NewDummyProto(), "dummy", true},
+		{protoconstructors.NewDummyProto(), "dummy", true},
 	}
 	runEncapsulatedTestSet(validCases, tmpl, t)
 }

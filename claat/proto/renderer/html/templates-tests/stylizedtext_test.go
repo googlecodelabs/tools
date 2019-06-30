@@ -3,30 +3,31 @@ package htmltests
 import (
 	"testing"
 
-	"github.com/googlecodelabs/tools/claat/proto-renderer/html"
-	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
+	"github.com/googlecodelabs/tools/claat/proto/constructors"
+	"github.com/googlecodelabs/tools/claat/proto/renderer/html"
+	"github.com/googlecodelabs/tools/claat/proto/renderer/testing-utils"
 	"github.com/googlecodelabs/tools/third_party"
 )
 
 func TestRenderStylizedTextTemplateEscaping(t *testing.T) {
 	tests := []*testingutils.CanonicalRenderingBatch{
 		{
-			InProto: testingutils.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
+			InProto: protoconstructors.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
 			Out:     "&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!",
 			Ok:      true,
 		},
 		{
-			InProto: testingutils.NewStylizedTextPlain("D@ ?òü ǝ$çâpæ? ^>^ '>__<' {&]"),
+			InProto: protoconstructors.NewStylizedTextPlain("D@ ?òü ǝ$çâpæ? ^>^ '>__<' {&]"),
 			Out:     "D@ ?òü ǝ$çâpæ? ^&gt;^ &#39;&gt;__&lt;&#39; {&amp;]",
 			Ok:      true,
 		},
 		{
-			InProto: testingutils.NewStylizedTextPlain("<h3>**__Markdown not ![esca](ped)__**</h3>"),
+			InProto: protoconstructors.NewStylizedTextPlain("<h3>**__Markdown not ![esca](ped)__**</h3>"),
 			Out:     "&lt;h3&gt;**__Markdown not ![esca](ped)__**&lt;/h3&gt;",
 			Ok:      true,
 		},
 	}
-	testingutils.CanonicalRenderTestBatch(html.Render, tests, t)
+	testingutils.TestCanonicalRendererBatch(html.Render, tests, t)
 }
 
 func TestRenderStylizedTextTemplate(t *testing.T) {
@@ -37,30 +38,30 @@ func TestRenderStylizedTextTemplate(t *testing.T) {
 			Ok:      true,
 		},
 		{
-			InProto: testingutils.NewStylizedTextPlain(""),
+			InProto: protoconstructors.NewStylizedTextPlain(""),
 			Out:     "",
 			Ok:      true,
 		},
 		{
-			InProto: testingutils.NewStylizedTextPlain("hello!"),
+			InProto: protoconstructors.NewStylizedTextPlain("hello!"),
 			Out:     "hello!",
 			Ok:      true,
 		},
 		{
-			InProto: testingutils.NewStylizedTextStrong("hello!"),
+			InProto: protoconstructors.NewStylizedTextStrong("hello!"),
 			Out:     "<strong>hello!</strong>",
 			Ok:      true,
 		},
 		{
-			InProto: testingutils.NewStylizedTextEmphasized("hello!"),
+			InProto: protoconstructors.NewStylizedTextEmphasized("hello!"),
 			Out:     "<em>hello!</em>",
 			Ok:      true,
 		},
 		{
-			InProto: testingutils.NewStylizedTextStrongAndEmphasized("hello!"),
+			InProto: protoconstructors.NewStylizedTextStrongAndEmphasized("hello!"),
 			Out:     "<strong><em>hello!</em></strong>",
 			Ok:      true,
 		},
 	}
-	testingutils.CanonicalRenderTestBatch(html.Render, tests, t)
+	testingutils.TestCanonicalRendererBatch(html.Render, tests, t)
 }

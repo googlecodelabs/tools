@@ -1,4 +1,4 @@
-package testingutils
+package protoconstructors
 
 import (
 	"github.com/googlecodelabs/tools/third_party"
