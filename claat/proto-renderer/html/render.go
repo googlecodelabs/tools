@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/googlecodelabs/tools/claat/proto-renderer"
+	"github.com/googlecodelabs/tools/third_party"
 )
 
 const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates/*"
@@ -58,7 +59,7 @@ func renderRepeated(contents interface{}) []string {
 }
 
 // listVariertyToTag maps 'ListVariety' enums to their HTML tags
-func listVariertyToTag(v List_ListVariety) string {
+func listVariertyToTag(v tutorial.List_ListVariety) string {
 	switch v.String() {
 	case "UNORDERED":
 		return "ul"
@@ -70,8 +71,8 @@ func listVariertyToTag(v List_ListVariety) string {
 }
 
 // listFormattingClass maps 'ListStyle' enums to their CSS classes
-func listFormattingClass(f List_SpecialFormatting) string {
-	switch f.String() {
+func listFormattingClass(s tutorial.List_ListStyle) string {
+	switch s.String() {
 	case "CHECKLIST":
 		return "checklist"
 	case "FAQ":
