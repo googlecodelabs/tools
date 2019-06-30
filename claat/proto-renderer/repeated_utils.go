@@ -10,7 +10,7 @@ import (
 // RenderRepeated returns iterator-friend string outputs of the passed
 // repeated proto by recursively rendering their contents.
 func RenderRepeated(elSlice interface{}, t *template.Template) []string {
-	contents := AssertRepeated(elSlice)
+	contents := typeAssertInterfaceSlice(elSlice)
 	sz := len(contents)
 	renderedEls := make([]string, sz)
 
@@ -27,10 +27,10 @@ func RenderRepeated(elSlice interface{}, t *template.Template) []string {
 	return renderedEls
 }
 
-// AssertRepeated turns a generic proto slice into typed-slice that can be
+// typeAssertInterfaceSlice turns a generic proto slice into typed-slice that can be
 // interated over without reflection. Panics if the passed type is not
 // explicitly defined
-func AssertRepeated(el interface{}) []interface{} {
+func typeAssertInterfaceSlice(el interface{}) []interface{} {
 	var protoSlice []interface{}
 
 	// Below we convert turn all protos used as repeated fields
@@ -45,7 +45,7 @@ func AssertRepeated(el interface{}) []interface{} {
 
 	// debug-friendly panic
 	if protoSlice == nil {
-		panic(TypeNotSupported("AssertRepeated", el))
+		panic(TypeNotSupported("typeAssertInterfaceSlice", el))
 	}
 
 	return protoSlice

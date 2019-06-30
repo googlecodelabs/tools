@@ -23,7 +23,7 @@ var (
 
 func init() {
 	// Defining namespace after initial compilation to avoid initialization loop
-	tmplNmspc = template.Must(template.New("html-pkg").Funcs(funcMap).ParseGlob(tmplsAbsDir))
+	tmplNmspc = template.Must(template.New("html").Funcs(funcMap).ParseGlob(tmplsAbsDir))
 }
 
 // Render returns the rendered HTML representation of a tutorial proto,
