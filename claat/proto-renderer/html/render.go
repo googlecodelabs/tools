@@ -14,8 +14,11 @@ const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/h
 
 var (
 	tmplNmspc   *template.Template
-	funcMap     = template.FuncMap{"renderOneof": renderOneof}
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
+	funcMap     = template.FuncMap{
+		"renderOneof":    renderOneof,
+		"renderRepeated": renderRepeated,
+	}
 )
 
 func init() {
@@ -43,4 +46,10 @@ func Render(el interface{}) (out io.Reader, err error) {
 // in all templates of protos with oneof fields
 func renderOneof(contents interface{}) string {
 	return genrenderer.RenderOneof(contents, tmplNmspc)
+}
+
+// renderRepeated is a self-referential template function used
+// in all templates of protos with repeated fields
+func renderRepeated(contents interface{}) []string {
+	return genrenderer.RenderRepeated(contents, tmplNmspc)
 }

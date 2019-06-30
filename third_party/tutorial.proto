@@ -104,29 +104,34 @@ message CodeBlock {
   string language_hint = 3;
 };
 
-message ListStep {
-  repeated Content contents = 1;
-};
-
 message List {
-  repeated ListStep list_steps = 1;
+  repeated Paragraph steps = 3;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
     ORDERED = 1;
     UNORDERED = 2;
   }
-  ListVariety list_variety = 2;
+  ListVariety variety = 4;
+
+  reserved 1, 2;
+  reserved "list_steps", "list_variety";
 };
 
 message Table {
-  repeated TableRow table_rows = 1;
+  repeated TableRow rows = 2;
+
+  reserved 1;
+  reserved "table_rows";
 };
 
 message TableRow {
-  repeated TableCell table_cells = 1;
+  repeated Paragraph cells = 2;
+
+  reserved 1;
+  reserved "table_cells";
 };
 
-message TableCell {
-  repeated InlineContent inline_contents = 1;
+message Paragraph {
+  repeated InlineContent content = 1;
 };
