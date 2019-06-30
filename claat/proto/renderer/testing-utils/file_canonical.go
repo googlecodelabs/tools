@@ -7,6 +7,8 @@ import (
 	"testing"
 )
 
+// CanonicalFileRenderingBatch type for canonical i != o and !ok rendering tests
+// of file-based outputs
 type CanonicalFileRenderingBatch struct {
 	InProto interface{}
 	OutPath string
