@@ -11,8 +11,9 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
+const linkFileRelDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates-tests/testdata/InlineContent/google_weather.txt"
+
 func TestRenderLinkTemplate(t *testing.T) {
-	linkFileRelDir := "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates-tests/testdata/InlineContent/google_weather.txt"
 	linkFileAbsDir := filepath.Join(build.Default.GOPATH, linkFileRelDir)
 	weatherLinkBytes, err := ioutil.ReadFile(linkFileAbsDir)
 	if err != nil {
