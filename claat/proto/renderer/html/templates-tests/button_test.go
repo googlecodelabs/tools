@@ -3,7 +3,7 @@ package htmltests
 import (
 	"testing"
 
-	"github.com/googlecodelabs/tools/claat/proto/constructors"
+	"github.com/googlecodelabs/tools/claat/proto/constructor"
 	"github.com/googlecodelabs/tools/claat/proto/renderer/html"
 	"github.com/googlecodelabs/tools/claat/proto/renderer/testing-utils"
 	"github.com/googlecodelabs/tools/third_party"
@@ -18,7 +18,7 @@ func TestRenderButtonTemplate(t *testing.T) {
 					protoconstructors.NewStylizedTextPlain("hosting"),
 				),
 			),
-			OutPath: "Button/plain.txt",
+			OutPath: "Button/plain.html",
 			Ok:      true,
 		},
 		{
@@ -28,7 +28,7 @@ func TestRenderButtonTemplate(t *testing.T) {
 					protoconstructors.NewStylizedTextPlain("FizzBuzz"),
 				),
 			),
-			OutPath: "Button/download.txt",
+			OutPath: "Button/download.html",
 			Ok:      true,
 		},
 	}

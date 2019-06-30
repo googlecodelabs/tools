@@ -3,7 +3,7 @@ package htmltests
 import (
 	"testing"
 
-	"github.com/googlecodelabs/tools/claat/proto/constructors"
+	"github.com/googlecodelabs/tools/claat/proto/constructor"
 	"github.com/googlecodelabs/tools/claat/proto/renderer/html"
 	"github.com/googlecodelabs/tools/claat/proto/renderer/testing-utils"
 	"github.com/googlecodelabs/tools/third_party"
