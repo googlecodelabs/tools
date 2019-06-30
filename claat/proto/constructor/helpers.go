@@ -136,11 +136,3 @@ func NewParagraph(contentSlice ...*tutorial.InlineContent) *tutorial.Paragraph {
 		Content: contentSlice,
 	}
 }
-
-func NewList(contentSlice ...*tutorial.Paragraph) *tutorial.List {
-	return &tutorial.Paragraph{
-		Content: contentSlice,
-		Variety: "",
-		Style:   "",
-	}
-}
