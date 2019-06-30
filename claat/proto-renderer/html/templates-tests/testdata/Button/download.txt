@@ -1,0 +1,4 @@
+<paper-button class="colored">
+  <iron-icon icon="cloud_download"></iron-icon>
+  <a target="_blank" href="www.random.org">FizzBuzz</a>
+</paper-button>
