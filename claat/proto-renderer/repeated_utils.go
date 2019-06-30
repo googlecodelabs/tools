@@ -30,9 +30,7 @@ func RenderRepeated(elSlice interface{}, t *template.Template) []string {
 // typeAssertInterfaceSlice turns a generic proto slice into typed-slice that can be
 // interated over without reflection. Panics if the passed type is not
 // explicitly defined
-func typeAssertInterfaceSlice(el interface{}) []interface{} {
-	var protoSlice []interface{}
-
+func typeAssertInterfaceSlice(el interface{}) (protoSlice []interface{}) {
 	// Below we convert turn all protos used as repeated fields
 	// from interface{} into []interface{}.
 	// Generalizable convertion approach that doesn't rely on reflection not found
@@ -41,6 +39,8 @@ func typeAssertInterfaceSlice(el interface{}) []interface{} {
 		protoSlice = interfaceSliceInlineContent(el)
 	case []*tutorial.StylizedText:
 		protoSlice = interfaceSliceStylizedText(el)
+	case []*tutorial.Paragraph:
+		protoSlice = interfaceSliceParagraph(el)
 	}
 
 	// debug-friendly panic
@@ -68,6 +68,18 @@ func interfaceSliceInlineContent(elSliceInterface interface{}) []interface{} {
 
 func interfaceSliceStylizedText(elSliceInterface interface{}) []interface{} {
 	elSlice := elSliceInterface.([]*tutorial.StylizedText)
+
+	sz := len(elSlice)
+	interfaceSlice := make([]interface{}, sz)
+
+	for i := 0; i < sz; i++ {
+		interfaceSlice[i] = elSlice[i]
+	}
+	return interfaceSlice
+}
+
+func interfaceSliceParagraph(elSliceInterface interface{}) []interface{} {
+	elSlice := elSliceInterface.([]*tutorial.Paragraph)
 
 	sz := len(elSlice)
 	interfaceSlice := make([]interface{}, sz)

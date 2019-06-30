@@ -16,8 +16,10 @@ var (
 	tmplNmspc   *template.Template
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
 	funcMap     = template.FuncMap{
-		"renderOneof":    renderOneof,
-		"renderRepeated": renderRepeated,
+		"renderOneof":         renderOneof,
+		"renderRepeated":      renderRepeated,
+		"listVariertyToTag":   listVariertyToTag,
+		"listFormattingClass": listFormattingClass,
 	}
 )
 
@@ -53,4 +55,28 @@ func renderOneof(contents interface{}) string {
 // in all templates of protos with repeated fields
 func renderRepeated(contents interface{}) []string {
 	return genrenderer.RenderRepeated(contents, tmplNmspc)
+}
+
+// listVariertyToTag maps 'ListVariety' enums to their HTML tags
+func listVariertyToTag(v List_ListVariety) string {
+	switch v.String() {
+	case "UNORDERED":
+		return "ul"
+	case "ORDERED":
+		return "ol"
+	default:
+		return "unknown-list-variety"
+	}
+}
+
+// listFormattingClass maps 'ListStyle' enums to their CSS classes
+func listFormattingClass(f List_SpecialFormatting) string {
+	switch f.String() {
+	case "CHECKLIST":
+		return "checklist"
+	case "FAQ":
+		return "faq"
+	default:
+		return ""
+	}
 }

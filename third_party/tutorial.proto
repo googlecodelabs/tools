@@ -114,7 +114,7 @@ message CodeBlock {
 };
 
 message List {
-  repeated Paragraph steps = 3;
+  repeated Paragraph items = 3;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
@@ -122,6 +122,13 @@ message List {
     UNORDERED = 2;
   }
   ListVariety variety = 4;
+
+  enum ListStyle {
+    UNKNOWN_STYLE = 0;
+    CHECKLIST = 1;
+    FAQ = 2;
+  }
+  ListStyle style = 5;
 
   reserved 1, 2;
   reserved "list_steps", "list_variety";
