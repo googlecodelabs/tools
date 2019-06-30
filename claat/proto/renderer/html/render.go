@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/googlecodelabs/tools/claat/proto/renderer"
+	"github.com/googlecodelabs/tools/third_party"
 )
 
 const tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto/renderer/html/templates/*"
@@ -16,14 +17,16 @@ var (
 	tmplNmspc   *template.Template
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
 	funcMap     = template.FuncMap{
-		"renderOneof":    renderOneof,
-		"renderRepeated": renderRepeated,
+		"renderOneof":         renderOneof,
+		"renderRepeated":      renderRepeated,
+		"listVariertyToTag":   listVariertyToTag,
+		"listFormattingClass": listFormattingClass,
 	}
 )
 
 func init() {
 	// Defining namespace after initial compilation to avoid initialization loop
-	tmplNmspc = template.Must(template.New("html-pkg").Funcs(funcMap).ParseGlob(tmplsAbsDir))
+	tmplNmspc = template.Must(template.New("html").Funcs(funcMap).ParseGlob(tmplsAbsDir))
 }
 
 // Render returns the rendered HTML representation of a tutorial proto,
@@ -53,4 +56,28 @@ func renderOneof(contents interface{}) string {
 // in all templates of protos with repeated fields
 func renderRepeated(contents interface{}) []string {
 	return genrenderer.RenderRepeated(contents, tmplNmspc)
+}
+
+// listVariertyToTag maps 'ListVariety' enums to their HTML tags
+func listVariertyToTag(v tutorial.List_ListVariety) string {
+	switch v.String() {
+	case "UNORDERED":
+		return "ul"
+	case "ORDERED":
+		return "ol"
+	default:
+		return "unknown-list-variety"
+	}
+}
+
+// listFormattingClass maps 'ListStyle' enums to their CSS classes
+func listFormattingClass(s tutorial.List_ListStyle) string {
+	switch s.String() {
+	case "CHECKLIST":
+		return "checklist"
+	case "FAQ":
+		return "faq"
+	default:
+		return ""
+	}
 }

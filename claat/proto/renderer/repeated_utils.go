@@ -10,7 +10,7 @@ import (
 // RenderRepeated returns iterator-friend string outputs of the passed
 // repeated proto by recursively rendering their contents.
 func RenderRepeated(elSlice interface{}, t *template.Template) []string {
-	contents := AssertRepeated(elSlice)
+	contents := typeAssertInterfaceSlice(elSlice)
 	sz := len(contents)
 	renderedEls := make([]string, sz)
 
@@ -27,36 +27,65 @@ func RenderRepeated(elSlice interface{}, t *template.Template) []string {
 	return renderedEls
 }
 
-// AssertRepeated turns a generic proto slice into typed-slice that can be
+// typeAssertInterfaceSlice turns a generic proto slice into typed-slice that can be
 // interated over without reflection. Panics if the passed type is not
 // explicitly defined
-func AssertRepeated(el interface{}) (guaranteedProtoSlice []interface{}) {
+func typeAssertInterfaceSlice(el interface{}) (protoSlice []interface{}) {
 	// Below we convert turn all protos used as repeated fields
 	// from interface{} into []interface{}.
 	// Generalizable convertion approach that doesn't rely on reflection not found
 	switch el.(type) {
 	case []*tutorial.InlineContent:
-		tempSlice := el.([]*tutorial.InlineContent)
-		sz := len(tempSlice)
-
-		guaranteedProtoSlice = make([]interface{}, sz)
-		for i := 0; i < sz; i++ {
-			guaranteedProtoSlice[i] = tempSlice[i]
-		}
+		protoSlice = interfaceSliceInlineContent(el)
 	case []*tutorial.StylizedText:
-		tempSlice := el.([]*tutorial.StylizedText)
-		sz := len(tempSlice)
-
-		guaranteedProtoSlice = make([]interface{}, sz)
-		for i := 0; i < sz; i++ {
-			guaranteedProtoSlice[i] = tempSlice[i]
-		}
+		protoSlice = interfaceSliceStylizedText(el)
+	case []*tutorial.Paragraph:
+		protoSlice = interfaceSliceParagraph(el)
 	}
 
 	// debug-friendly panic
-	if guaranteedProtoSlice == nil {
-		panic(TypeNotSupported("AssertRepeated", el))
+	if protoSlice == nil {
+		panic(TypeNotSupported("typeAssertInterfaceSlice", el))
 	}
 
-	return guaranteedProtoSlice
+	return protoSlice
+}
+
+// []*tutorial.repeatedFields to []interface{} conversion helpers.
+// Lack of reflection use ovehead. Only the first line of each is different.
+
+func interfaceSliceInlineContent(elSliceInterface interface{}) []interface{} {
+	elSlice := elSliceInterface.([]*tutorial.InlineContent)
+
+	sz := len(elSlice)
+	interfaceSlice := make([]interface{}, sz)
+
+	for i := 0; i < sz; i++ {
+		interfaceSlice[i] = elSlice[i]
+	}
+	return interfaceSlice
+}
+
+func interfaceSliceStylizedText(elSliceInterface interface{}) []interface{} {
+	elSlice := elSliceInterface.([]*tutorial.StylizedText)
+
+	sz := len(elSlice)
+	interfaceSlice := make([]interface{}, sz)
+
+	for i := 0; i < sz; i++ {
+		interfaceSlice[i] = elSlice[i]
+	}
+	return interfaceSlice
+}
+
+func interfaceSliceParagraph(elSliceInterface interface{}) []interface{} {
+	elSlice := elSliceInterface.([]*tutorial.Paragraph)
+
+	sz := len(elSlice)
+	interfaceSlice := make([]interface{}, sz)
+
+	for i := 0; i < sz; i++ {
+		interfaceSlice[i] = elSlice[i]
+	}
+	return interfaceSlice
 }

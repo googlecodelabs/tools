@@ -23,16 +23,24 @@ func templateName(el interface{}) string {
 		return "Link"
 	case *tutorial.Button, tutorial.Button:
 		return "Button"
+	case *tutorial.List, tutorial.List:
+		return "List"
 	}
 	// This will cause a debug-friendly panic
 	return TypeNotSupported("genrenderer.templateName", el)
+}
+
+// outputFormatTemplateName concatenates the template name mapping of the passed proto
+// with its output package extension
+func outputFormatTemplateName(el interface{}, t *template.Template) string {
+	return templateName(el) + "." + t.Name()
 }
 
 // ExecuteTemplate returns the evaluated template per passed templating
 // namespace, based on the passed tutorial proto type string name
 func ExecuteTemplate(el interface{}, t *template.Template) string {
 	var w bytes.Buffer
-	e := t.ExecuteTemplate(&w, templateName(el), el)
+	e := t.ExecuteTemplate(&w, outputFormatTemplateName(el, t), el)
 	if e != nil {
 		// This method outputs directly to templates. Panicking to surfance errors
 		// since we should not handle multiple returns in templates.
