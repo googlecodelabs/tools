@@ -114,7 +114,7 @@ message CodeBlock {
 };
 
 message List {
-  repeated Paragraph items = 3;
+  repeated Paragraph content = 3;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
