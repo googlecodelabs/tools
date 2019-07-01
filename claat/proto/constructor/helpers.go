@@ -148,3 +148,4 @@ func NewParagraph(contentSlice ...*tutorial.InlineContent) *tutorial.Paragraph {
 
 // TODO: Implement NewList and its tests
 // TODO: Implement NewImage and its tests
+// TODO: Implement NewImageBlock and its tests

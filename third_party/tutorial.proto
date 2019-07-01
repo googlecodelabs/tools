@@ -16,6 +16,8 @@ syntax = "proto3";
 
 package tutorial;
 
+// TODO: Arrage based on newly declared types, depth-first
+
 message Tutorial {
   Title title = 1;
   map<string, string> metadata = 2;
@@ -42,16 +44,19 @@ message Content {
 message BlockContent {
   oneof content {
     Heading heading = 1;
-    // TODO: replace with ImageBlock
-    // Image image = 2;
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
     Table table = 6;
+    ImageBlock image = 7;
   }
 
   reserved 5; 
   reserved "horizontal_rule";
 };
+
+message ImageBlock {
+  Image image = 1;
+}
 
 message Link {
   repeated StylizedText content = 3;
