@@ -10,17 +10,15 @@ import (
 )
 
 func TestRenderLinkTemplate(t *testing.T) {
-	linkProto := protoconstructors.NewLink(
-		"https://www.google.com/search?q=weather+in+nyc",
-		protoconstructors.NewStylizedTextPlain("hey google,"),
-		protoconstructors.NewStylizedTextStrong(" how's the"),
-		protoconstructors.NewStylizedTextEmphasized(" weather in "),
-		protoconstructors.NewStylizedTextStrongAndEmphasized("NYC today?"),
-	)
-
 	tests := []*testingutils.CanonicalFileRenderingBatch{
 		{
-			InProto: linkProto,
+			InProto: protoconstructors.NewLink(
+				"https://www.google.com/search?q=weather+in+nyc",
+				protoconstructors.NewStylizedTextPlain("hey google,"),
+				protoconstructors.NewStylizedTextStrong(" how's the"),
+				protoconstructors.NewStylizedTextEmphasized(" weather in "),
+				protoconstructors.NewStylizedTextStrongAndEmphasized("NYC today?"),
+			),
 			OutPath: "Link/google_weather.html",
 			Ok:      true,
 		},
