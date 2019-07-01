@@ -8,6 +8,8 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
+// TODO: Flip order of functions
+
 // templateName Maps protos to their type string name
 func templateName(el interface{}) string {
 	switch el.(type) {
@@ -27,6 +29,8 @@ func templateName(el interface{}) string {
 		return "List"
 	case *tutorial.Image, tutorial.Image:
 		return "Image"
+	case *tutorial.ImageBlock, tutorial.ImageBlock:
+		return "ImageBlock"
 	}
 	// This will cause a debug-friendly panic
 	return TypeNotSupported("genrenderer.templateName", el)
