@@ -22,7 +22,7 @@ func TestRenderYoutubeVideoTemplateFromFile(t *testing.T) {
 			Ok:      true,
 		},
 		{
-			InProto: protoconstructors.NewYTVideo("PWL7uUWh-xcw"),
+			InProto: protoconstructors.NewYTVideo("PWL7uUWh-xc"),
 			OutPath: "YoutubeVideo/valid.html",
 			Ok:      true,
 		},

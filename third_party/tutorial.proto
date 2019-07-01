@@ -48,7 +48,7 @@ message BlockContent {
     CodeBlock code_block = 4;
     Table table = 6;
     ImageBlock image = 7;
-    YoutubeVideo vide = 8;
+    YoutubeVideo video = 8;
   }
 
   reserved 5; 
