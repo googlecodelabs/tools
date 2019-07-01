@@ -48,6 +48,7 @@ message BlockContent {
     CodeBlock code_block = 4;
     Table table = 6;
     ImageBlock image = 7;
+    YoutubeVideo vide = 8;
   }
 
   reserved 5; 
@@ -56,6 +57,10 @@ message BlockContent {
 
 message ImageBlock {
   Image image = 1;
+}
+
+message YoutubeVideo {
+  string id = 1;
 }
 
 message Link {
