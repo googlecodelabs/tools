@@ -46,7 +46,7 @@ func TestRenderInlineContentTemplateIdentity(t *testing.T) {
 	testingutils.RenderingIdendityTestBatch(html.Render, tests, t)
 }
 
-func TestRenderInlineContentTemplate(t *testing.T) {
+func TestRenderInlineContentStylizedTextTemplate(t *testing.T) {
 	tests := []*testingutils.CanonicalRenderingBatch{
 		{
 			InProto: &tutorial.InlineContent{},
