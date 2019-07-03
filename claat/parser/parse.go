@@ -32,7 +32,10 @@ type Parser interface {
 	ParseFragment(r io.Reader) ([]types.Node, error)
 }
 
-type Options struct{}
+// Container for parsing options.
+type Options struct {
+	PassMetadata map[string]bool
+}
 
 var (
 	parsersMu sync.Mutex // guards parsers
