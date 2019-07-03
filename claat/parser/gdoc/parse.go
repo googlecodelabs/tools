@@ -42,7 +42,7 @@ type Parser struct {
 }
 
 // Parse parses a codelab exported in HTML from Google Docs.
-func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
+func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error) {
 	// TODO: use html.Tokenizer instead
 	doc, err := html.Parse(r)
 	if err != nil {

@@ -91,7 +91,7 @@ type Parser struct {
 }
 
 // Parse parses a codelab written in Markdown.
-func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
+func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error) {
 	// Convert Markdown to HTML for easy parsing.
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -639,26 +639,26 @@ func list(ds *docState) types.Node {
 // It returns nil if src is empty.
 // It may also return a YouTubeNode if alt property contains specific substring.
 func image(ds *docState) types.Node {
-        alt := nodeAttr(ds.cur, "alt")
-        if strings.Contains(alt, "youtube.com/watch") {
-                return youtube(ds)
-        } else if strings.Contains(alt, "https://") {
-                u, err := url.Parse(nodeAttr(ds.cur, "alt"))
-                if err != nil {
-                        return nil
-                }
-                // For iframe, make sure URL ends in whitelisted domain.
-                ok := false
-                for _, domain := range types.IframeWhitelist {
-                        if strings.HasSuffix(u.Hostname(), domain) {
-                                ok = true
-                                break
-                        }
-                }
-                if ok {
-                        return iframe(ds)
-                }
-        }
+	alt := nodeAttr(ds.cur, "alt")
+	if strings.Contains(alt, "youtube.com/watch") {
+		return youtube(ds)
+	} else if strings.Contains(alt, "https://") {
+		u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+		if err != nil {
+			return nil
+		}
+		// For iframe, make sure URL ends in whitelisted domain.
+		ok := false
+		for _, domain := range types.IframeWhitelist {
+			if strings.HasSuffix(u.Hostname(), domain) {
+				ok = true
+				break
+			}
+		}
+		if ok {
+			return iframe(ds)
+		}
+	}
 	s := nodeAttr(ds.cur, "src")
 	if s == "" {
 		return nil
@@ -701,17 +701,17 @@ func youtube(ds *docState) types.Node {
 }
 
 func iframe(ds *docState) types.Node {
-        u, err := url.Parse(nodeAttr(ds.cur, "alt"))
-        if err != nil {
-                return nil
-        }
-        // Allow only https.
-        if u.Scheme != "https" {
-                return nil
-        }
-        n := types.NewIframeNode(u.String())
-        n.MutateBlock(true)
-        return n
+	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+	if err != nil {
+		return nil
+	}
+	// Allow only https.
+	if u.Scheme != "https" {
+		return nil
+	}
+	n := types.NewIframeNode(u.String())
+	n.MutateBlock(true)
+	return n
 }
 
 // button returns either a text node, if no <a> child element is present,
