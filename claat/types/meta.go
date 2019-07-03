@@ -66,6 +66,12 @@ type Codelab struct {
 	Steps []*Step
 }
 
+func NewCodelab() *Codelab {
+	clab := new(Codelab)
+	clab.Extra = make(map[string]string)
+	return clab
+}
+
 // NewStep creates a new codelab step, adding it to c.Steps slice.
 func (c *Codelab) NewStep(title string) *Step {
 	s := &Step{Title: title, Content: NewListNode()}
