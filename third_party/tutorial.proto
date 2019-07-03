@@ -60,11 +60,17 @@ message Link {
   reserved "text", "location";
 }
 
+message Button {
+  Link link = 1;
+  bool is_downloadable = 2;
+}
+
 message InlineContent {
   oneof content {
     StylizedText text = 1;
     Link link = 5;
     InlineCode code = 6;
+    Button button = 7;
   }
 
   reserved 2, 3, 4; 
