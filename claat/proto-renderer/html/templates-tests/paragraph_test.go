@@ -9,7 +9,7 @@ import (
 )
 
 func TestRenderTestBlockTemplate(t *testing.T) {
-	tests := []*testingutils.RendererTestingBatch{
+	tests := []*testingutils.CanonicalRenderingBatch{
 		{
 			InProto: &tutorial.Paragraph{},
 			Out:     "",
@@ -33,5 +33,5 @@ func TestRenderTestBlockTemplate(t *testing.T) {
 			Ok:  true,
 		},
 	}
-	testingutils.CanonicalRenderingTestBatch(html.Render, tests, t)
+	testingutils.CanonicalRenderTestBatch(html.Render, tests, t)
 }

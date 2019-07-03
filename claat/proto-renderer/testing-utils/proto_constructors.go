@@ -34,6 +34,13 @@ func NewStylizedTextStrongAndEmphasized(txt string) *tutorial.StylizedText {
 	}
 }
 
+func NewLink(href string, contentSlice ...*tutorial.StylizedText) *tutorial.Link {
+	return &tutorial.Link{
+		Href:    href,
+		Content: contentSlice,
+	}
+}
+
 func NewInlineCode(txt string) *tutorial.InlineCode {
 	return &tutorial.InlineCode{
 		Code: txt,
@@ -46,6 +53,14 @@ func NewInlineContentCode(txt string) *tutorial.InlineContent {
 			Code: &tutorial.InlineCode{
 				Code: txt,
 			},
+		},
+	}
+}
+
+func NewInlineContentLink(link *tutorial.Link) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Link{
+			Link: link,
 		},
 	}
 }

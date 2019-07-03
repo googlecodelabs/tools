@@ -17,7 +17,7 @@ func AssertOneof(el interface{}) (underlyingType interface{}) {
   // Pure Oneof protos
   switch el.(type) {
   case *tutorial.InlineContent:
-    underlyingType = InnerContentsInline(el.(*tutorial.InlineContent))
+    underlyingType = UnderlyingInlineContentType(el.(*tutorial.InlineContent))
   }
 
   // debug-friendly panic
@@ -28,8 +28,8 @@ func AssertOneof(el interface{}) (underlyingType interface{}) {
   return underlyingType
 }
 
-// InnerContentsInline asserts the underlying type of tutorial.InlineContent
-func InnerContentsInline(el *tutorial.InlineContent) (underlyingType interface{}) {
+// UnderlyingInlineContentType asserts the underlying type of tutorial.InlineContent
+func UnderlyingInlineContentType(el *tutorial.InlineContent) (underlyingType interface{}) {
   switch x := el.Content.(type) {
   case *tutorial.InlineContent_Text:
     // StylizedText
@@ -37,11 +37,14 @@ func InnerContentsInline(el *tutorial.InlineContent) (underlyingType interface{}
   case *tutorial.InlineContent_Code:
     // InlineCode
     underlyingType = x.Code
+  case *tutorial.InlineContent_Link:
+    // Link
+    underlyingType = x.Link
   }
 
   // debug-friendly panic
   if underlyingType == nil {
-    panic(TypeNotSupported("InnerContentsInline", el))
+    panic(TypeNotSupported("InnerInline", el))
   }
 
   return underlyingType

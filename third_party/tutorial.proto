@@ -53,9 +53,12 @@ message BlockContent {
 };
 
 message Link {
-  string text = 1;
-  string location = 2;
-};
+  repeated StylizedText content = 3;
+  string href = 4;
+
+  reserved 1, 2;
+  reserved "text", "location";
+}
 
 message InlineContent {
   oneof content {
