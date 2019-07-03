@@ -40,15 +40,15 @@ var (
 	version string // set by linker -X
 
 	// Flags.
-	addr          = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
-	authToken     = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
-	expenv        = flag.String("e", "web", "codelab environment")
-	extra         = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
-	globalGA      = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
-	output        = flag.String("o", ".", "output directory or '-' for stdout")
-	pass_metadata = flag.String("pass_metadata", "", "Metadata fields to pass through to the output. Comma-delimited list of field names.")
-	prefix        = flag.String("prefix", "https://storage.googleapis.com", "URL prefix for html format")
-	tmplout       = flag.String("f", "html", "output format")
+	addr         = flag.String("addr", "localhost:9090", "hostname and port to bind web server to")
+	authToken    = flag.String("auth", "", "OAuth2 Bearer token; alternative credentials override.")
+	expenv       = flag.String("e", "web", "codelab environment")
+	extra        = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
+	globalGA     = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
+	output       = flag.String("o", ".", "output directory or '-' for stdout")
+	passMetadata = flag.String("pass_metadata", "", "Metadata fields to pass through to the output. Comma-delimited list of field names.")
+	prefix       = flag.String("prefix", "https://storage.googleapis.com", "URL prefix for html format")
+	tmplout      = flag.String("f", "html", "output format")
 )
 
 func main() {
@@ -70,9 +70,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	passMetadata := make(map[string]bool)
-	for _, v := range strings.Split(*pass_metadata, ",") {
-		passMetadata[v] = true
+	pm := make(map[string]bool)
+	for _, v := range strings.Split(*passMetadata, ",") {
+		pm[v] = true
 	}
 
 	exitCode := 0
@@ -84,7 +84,7 @@ func main() {
 			ExtraVars:    extraVars,
 			GlobalGA:     *globalGA,
 			Output:       *output,
-			PassMetadata: passMetadata,
+			PassMetadata: pm,
 			Prefix:       *prefix,
 			Srcs:         flag.Args(),
 			Tmplout:      *tmplout,
@@ -96,7 +96,7 @@ func main() {
 			AuthToken:    *authToken,
 			ExtraVars:    extraVars,
 			GlobalGA:     *globalGA,
-			PassMetadata: passMetadata,
+			PassMetadata: pm,
 			Prefix:       *prefix,
 		})
 	case "help":
