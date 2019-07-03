@@ -23,6 +23,8 @@ func templateName(el interface{}) string {
 		return "Link"
 	case *tutorial.Button, tutorial.Button:
 		return "Button"
+	case *tutorial.List, tutorial.List:
+		return "List"
 	}
 	// This will cause a debug-friendly panic
 	return TypeNotSupported("genrenderer.templateName", el)

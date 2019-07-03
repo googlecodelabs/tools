@@ -39,6 +39,8 @@ func typeAssertInterfaceSlice(el interface{}) (protoSlice []interface{}) {
 		protoSlice = interfaceSliceInlineContent(el)
 	case []*tutorial.StylizedText:
 		protoSlice = interfaceSliceStylizedText(el)
+	case []*tutorial.Paragraph:
+		protoSlice = interfaceSliceParagraph(el)
 	}
 
 	// debug-friendly panic
@@ -66,6 +68,18 @@ func interfaceSliceInlineContent(elSliceInterface interface{}) []interface{} {
 
 func interfaceSliceStylizedText(elSliceInterface interface{}) []interface{} {
 	elSlice := elSliceInterface.([]*tutorial.StylizedText)
+
+	sz := len(elSlice)
+	interfaceSlice := make([]interface{}, sz)
+
+	for i := 0; i < sz; i++ {
+		interfaceSlice[i] = elSlice[i]
+	}
+	return interfaceSlice
+}
+
+func interfaceSliceParagraph(elSliceInterface interface{}) []interface{} {
+	elSlice := elSliceInterface.([]*tutorial.Paragraph)
 
 	sz := len(elSlice)
 	interfaceSlice := make([]interface{}, sz)
