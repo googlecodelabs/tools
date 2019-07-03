@@ -15,8 +15,8 @@ func TestRenderButtonTemplate(t *testing.T) {
 	// TODO: Generalize file reading logic
 	var fOuts []string
 	files := []string{
-		"plain.txt",
-		"download.txt",
+		"plain.html",
+		"download.html",
 	}
 	for _, f := range files {
 		linkFileRelDir := "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates-tests/testdata/Button"

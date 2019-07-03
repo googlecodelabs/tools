@@ -12,8 +12,6 @@ import (
 )
 
 func TestRenderInlineContentTemplateLinkFromFile(t *testing.T) {
-	// TODO: Generalize file reading logic
-	linkFileRelDir := "src/github.com/googlecodelabs/tools/claat/proto-renderer/html/templates-tests/testdata/InlineContent/google_weather.txt"
 	linkFileAbsDir := filepath.Join(build.Default.GOPATH, linkFileRelDir)
 	weatherLinkBytes, err := ioutil.ReadFile(linkFileAbsDir)
 	if err != nil {
