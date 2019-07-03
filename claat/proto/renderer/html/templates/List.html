@@ -1,5 +1,5 @@
-<{{ listVariertyToTag .Variety }} class="{{ .listFormattingClass .Style }}">
+<{{ listVarietyToTag .Variety }} class="{{ .listFormattingClass .Style }}">
 {{ range $el := renderRepeated .Content }}
 <li>{{ template "Paragraph.html" $el }}</li>
 {{ end }}
-</{{ listVariertyToTag .Variety }}>
+</{{ listVarietyToTag .Variety }}>
