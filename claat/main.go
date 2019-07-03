@@ -70,9 +70,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	passMeta := make(map[string]bool)
+	passMetadata := make(map[string]bool)
 	for _, v := range strings.Split(*pass_metadata, ",") {
-		passMeta[v] = true
+		passMetadata[v] = true
 	}
 
 	exitCode := 0
@@ -84,7 +84,7 @@ func main() {
 			ExtraVars:    extraVars,
 			GlobalGA:     *globalGA,
 			Output:       *output,
-			PassMetadata: passMeta,
+			PassMetadata: passMetadata,
 			Prefix:       *prefix,
 			Srcs:         flag.Args(),
 			Tmplout:      *tmplout,
@@ -96,7 +96,7 @@ func main() {
 			AuthToken:    *authToken,
 			ExtraVars:    extraVars,
 			GlobalGA:     *globalGA,
-			PassMetadata: passMeta,
+			PassMetadata: passMetadata,
 			Prefix:       *prefix,
 		})
 	case "help":
