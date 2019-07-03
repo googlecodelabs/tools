@@ -72,7 +72,7 @@ func main() {
 
 	pm := make(map[string]bool)
 	for _, v := range strings.Split(*passMetadata, ",") {
-		pm[v] = true
+		pm[strings.ToLower(v)] = true
 	}
 
 	exitCode := 0
