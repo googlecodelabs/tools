@@ -25,19 +25,20 @@ import (
 
 // Meta contains a single codelab metadata.
 type Meta struct {
-	ID         string        `json:"id"`                 // ID is also part of codelab URL
-	Duration   int           `json:"duration"`           // Codelab duration in minutes
-	Title      string        `json:"title"`              // Codelab title
-	Authors    string        `json:"authors,omitempty"`  // Arbitrary authorship text
-	BadgeID    string        `json:"badge_id,omitempty"` // ID of the BAdge to grant on codelab completion on devsite
-	Summary    string        `json:"summary"`            // Short summary
-	Source     string        `json:"source"`             // Codelab source doc
-	Theme      string        `json:"theme"`              // Usually first item of Categories
-	Status     *LegacyStatus `json:"status"`             // Draft, Published, Hidden, etc.
-	Categories []string      `json:"category"`           // Categories from the meta table
-	Tags       []string      `json:"tags"`               // All environments supported by the codelab
-	Feedback   string        `json:"feedback,omitempty"` // Issues and bugs are sent here
-	GA         string        `json:"ga,omitempty"`       // Codelab-specific GA tracking ID
+	ID         string            `json:"id"`                 // ID is also part of codelab URL
+	Duration   int               `json:"duration"`           // Codelab duration in minutes
+	Title      string            `json:"title"`              // Codelab title
+	Authors    string            `json:"authors,omitempty"`  // Arbitrary authorship text
+	BadgeID    string            `json:"badge_id,omitempty"` // ID of the BAdge to grant on codelab completion on devsite
+	Summary    string            `json:"summary"`            // Short summary
+	Source     string            `json:"source"`             // Codelab source doc
+	Theme      string            `json:"theme"`              // Usually first item of Categories
+	Status     *LegacyStatus     `json:"status"`             // Draft, Published, Hidden, etc.
+	Categories []string          `json:"category"`           // Categories from the meta table
+	Tags       []string          `json:"tags"`               // All environments supported by the codelab
+	Feedback   string            `json:"feedback,omitempty"` // Issues and bugs are sent here
+	GA         string            `json:"ga,omitempty"`       // Codelab-specific GA tracking ID
+	Extra      map[string]string `json:"extra"`              // Extra metadata specified in pass_metadata
 
 	URL string `json:"url"` // Legacy ID; TODO: remove
 }
@@ -45,11 +46,12 @@ type Meta struct {
 // Context is an export context.
 // It is defined in this package so that it can be used by both cli and a server.
 type Context struct {
-	Env     string       `json:"environment"`       // Current export environment
-	Format  string       `json:"format"`            // Output format, e.g. "html"
-	Prefix  string       `json:"prefix,omitempty"`  // Assets URL prefix for HTML-based formats
-	MainGA  string       `json:"mainga,omitempty"`  // Global Google Analytics ID
-	Updated *ContextTime `json:"updated,omitempty"` // Last update timestamp
+	Env          string          `json:"environment"` // Current export environment
+	Format       string          `json:"format"`      // Output format, e.g. "html"
+	PassMetadata map[string]bool // PassMetadata are the extra metadata fields to pass along.
+	Prefix       string          `json:"prefix,omitempty"`  // Assets URL prefix for HTML-based formats
+	MainGA       string          `json:"mainga,omitempty"`  // Global Google Analytics ID
+	Updated      *ContextTime    `json:"updated,omitempty"` // Last update timestamp
 }
 
 // ContextMeta is a composition of export context and meta data.

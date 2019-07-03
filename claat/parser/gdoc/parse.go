@@ -110,16 +110,17 @@ const (
 )
 
 type docState struct {
-	clab     *types.Codelab // codelab and its metadata
-	totdur   time.Duration  // total codelab duration
-	survey   int            // last used survey ID
-	css      cssStyle       // styles of the doc
-	step     *types.Step    // current codelab step
-	lastNode types.Node     // last appended node
-	env      []string       // current enviornment
-	cur      *html.Node     // current HTML node
-	flags    stateFlag      // current flags
-	stack    []*stackItem   // cur and flags stack
+	clab     *types.Codelab  // codelab and its metadata
+	totdur   time.Duration   // total codelab duration
+	survey   int             // last used survey ID
+	css      cssStyle        // styles of the doc
+	step     *types.Step     // current codelab step
+	lastNode types.Node      // last appended node
+	env      []string        // current enviornment
+	cur      *html.Node      // current HTML node
+	flags    stateFlag       // current flags
+	stack    []*stackItem    // cur and flags stack
+	passMeta map[string]bool // set of metadata fields to pass along.
 }
 
 type stackItem struct {
@@ -378,7 +379,8 @@ func metaTable(ds *docState) {
 			continue
 		}
 		s := stringifyNode(tr.FirstChild.NextSibling, true, false)
-		switch strings.ToLower(stringifyNode(tr.FirstChild, true, false)) {
+		fieldName := strings.ToLower(stringifyNode(tr.FirstChild, true, false))
+		switch fieldName {
 		case "id", "url":
 			ds.clab.ID = s
 		case "author", "authors":
@@ -401,6 +403,10 @@ func metaTable(ds *docState) {
 			ds.clab.Feedback = s
 		case "analytics", "analytics account", "google analytics":
 			ds.clab.GA = s
+		default:
+			if _, ok := ds.passMeta[fieldName]; ok {
+				ds.clab.Extra[fieldName] = s
+			}
 		}
 	}
 	if len(ds.clab.Categories) > 0 {

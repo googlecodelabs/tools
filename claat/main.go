@@ -26,6 +26,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/cmd"
@@ -69,27 +70,34 @@ func main() {
 		os.Exit(1)
 	}
 
+	passMeta := make(map[string]bool)
+	for _, v := range strings.Split(*pass_metadata, ",") {
+		passMeta[v] = true
+	}
+
 	exitCode := 0
 	switch os.Args[1] {
 	case "export":
 		exitCode = cmd.CmdExport(cmd.CmdExportOptions{
-			AuthToken: *authToken,
-			Expenv:    *expenv,
-			ExtraVars: extraVars,
-			GlobalGA:  *globalGA,
-			Output:    *output,
-			Prefix:    *prefix,
-			Srcs:      flag.Args(),
-			Tmplout:   *tmplout,
+			AuthToken:    *authToken,
+			Expenv:       *expenv,
+			ExtraVars:    extraVars,
+			GlobalGA:     *globalGA,
+			Output:       *output,
+			PassMetadata: passMeta,
+			Prefix:       *prefix,
+			Srcs:         flag.Args(),
+			Tmplout:      *tmplout,
 		})
 	case "serve":
 		exitCode = cmd.CmdServe(*addr)
 	case "update":
 		exitCode = cmd.CmdUpdate(cmd.CmdUpdateOptions{
-			AuthToken: *authToken,
-			ExtraVars: extraVars,
-			GlobalGA:  *globalGA,
-			Prefix:    *prefix,
+			AuthToken:    *authToken,
+			ExtraVars:    extraVars,
+			GlobalGA:     *globalGA,
+			PassMetadata: passMeta,
+			Prefix:       *prefix,
 		})
 	case "help":
 		usage()
