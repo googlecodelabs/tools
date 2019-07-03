@@ -46,12 +46,11 @@ type Meta struct {
 // Context is an export context.
 // It is defined in this package so that it can be used by both cli and a server.
 type Context struct {
-	Env          string          `json:"environment"` // Current export environment
-	Format       string          `json:"format"`      // Output format, e.g. "html"
-	PassMetadata map[string]bool // PassMetadata are the extra metadata fields to pass along.
-	Prefix       string          `json:"prefix,omitempty"`  // Assets URL prefix for HTML-based formats
-	MainGA       string          `json:"mainga,omitempty"`  // Global Google Analytics ID
-	Updated      *ContextTime    `json:"updated,omitempty"` // Last update timestamp
+	Env     string       `json:"environment"`       // Current export environment
+	Format  string       `json:"format"`            // Output format, e.g. "html"
+	Prefix  string       `json:"prefix,omitempty"`  // Assets URL prefix for HTML-based formats
+	MainGA  string       `json:"mainga,omitempty"`  // Global Google Analytics ID
+	Updated *ContextTime `json:"updated,omitempty"` // Last update timestamp
 }
 
 // ContextMeta is a composition of export context and meta data.
