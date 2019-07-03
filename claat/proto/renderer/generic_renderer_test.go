@@ -6,7 +6,7 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/googlecodelabs/tools/claat/proto-renderer/testing-utils"
+	"github.com/googlecodelabs/tools/claat/proto/renderer/testing-utils"
 )
 
 type encapsulatedTest struct {
@@ -17,7 +17,7 @@ type encapsulatedTest struct {
 
 // Setup variables
 var (
-	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto-renderer/testdata/*"
+	tmplsRltvDir = "src/github.com/googlecodelabs/tools/claat/proto/renderer/testdata/*"
 	tmplsAbsDir  = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
 	funcMap      = template.FuncMap{
 		"returnString": func(i string) string { return i },

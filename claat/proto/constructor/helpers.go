@@ -1,4 +1,4 @@
-package testingutils
+package protoconstructors
 
 import (
 	"github.com/googlecodelabs/tools/third_party"
@@ -78,11 +78,20 @@ func NewButtonDownload(link *tutorial.Link) *tutorial.Button {
 	}
 }
 
-// TODO: Add this to InlineContent tests
+// TODO: Add to InlineContent tests
 func NewInlineContentButton(button *tutorial.Button) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Button{
 			Button: button,
+		},
+	}
+}
+
+// TODO: Add to InlineContent tests
+func NewInlineContentImage(image *tutorial.Image) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Image{
+			Image: image,
 		},
 	}
 }
@@ -136,3 +145,6 @@ func NewParagraph(contentSlice ...*tutorial.InlineContent) *tutorial.Paragraph {
 		Content: contentSlice,
 	}
 }
+
+// TODO: Implement NewList and its tests
+// TODO: Implement NewImage and its tests
