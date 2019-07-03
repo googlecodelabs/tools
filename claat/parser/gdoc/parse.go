@@ -128,6 +128,13 @@ type stackItem struct {
 	flags stateFlag
 }
 
+func newDocState() *docState {
+	ds := new(docState)
+	ds.clab = types.NewCodelab()
+
+	return ds
+}
+
 func (ds *docState) push(cur *html.Node, flags stateFlag) {
 	if cur == nil {
 		cur = ds.cur
@@ -170,10 +177,9 @@ func parseFragment(doc *html.Node) ([]types.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	ds := &docState{
-		clab: &types.Codelab{},
-		css:  style,
-	}
+
+	ds := newDocState()
+	ds.css = style
 	ds.step = ds.clab.NewStep("fragment")
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		if isComment(ds.css, ds.cur) {
@@ -198,10 +204,9 @@ func parseDoc(doc *html.Node) (*types.Codelab, error) {
 		return nil, err
 	}
 
-	ds := &docState{
-		clab: &types.Codelab{},
-		css:  style,
-	}
+	ds := newDocState()
+	ds.css = style
+
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		if isComment(ds.css, ds.cur) {
 			// docs export comments at the end of the body
