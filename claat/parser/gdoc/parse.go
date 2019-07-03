@@ -48,7 +48,7 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	if err != nil {
 		return nil, err
 	}
-	return parseDoc(doc)
+	return parseDoc(doc, opts)
 }
 
 // ParseFragment parses a codelab fragment exported in HTML from Google Docs.
@@ -194,7 +194,7 @@ func parseFragment(doc *html.Node) ([]types.Node, error) {
 
 // parseDoc parses codelab doc exported as text/html.
 // The doc must contain CSS styles and <body> as exported from Google Doc.
-func parseDoc(doc *html.Node) (*types.Codelab, error) {
+func parseDoc(doc *html.Node, opts parser.Options) (*types.Codelab, error) {
 	body := findAtom(doc, atom.Body)
 	if body == nil {
 		return nil, fmt.Errorf("document without a body")
