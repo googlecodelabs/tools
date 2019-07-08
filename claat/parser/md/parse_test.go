@@ -21,6 +21,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 )
 
@@ -47,7 +48,7 @@ func parseCodelab(markup string) (*types.Codelab, error) {
 	r := strings.NewReader(markup)
 	p := &Parser{}
 
-	return p.Parse(r)
+	return p.Parse(r, parser.Options{})
 }
 
 func TestHandleCodelabTitle(t *testing.T) {
@@ -137,6 +138,7 @@ func TestParseMetadata(t *testing.T) {
 		Tags:       []string{"kiosk", "web"},
 		Feedback:   "https://www.google.com",
 		GA:         "12345",
+		Extra:      map[string]string{},
 	}
 
 	content := `---

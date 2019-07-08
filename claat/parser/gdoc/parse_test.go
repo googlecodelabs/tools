@@ -24,6 +24,7 @@ import (
 
 	"golang.org/x/net/html"
 
+	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
 )
@@ -174,7 +175,7 @@ func TestMetaTable(t *testing.T) {
 	`
 
 	p := &Parser{}
-	clab, err := p.Parse(markupReader(markup))
+	clab, err := p.Parse(markupReader(markup), parser.Options{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -188,7 +189,8 @@ func TestMetaTable(t *testing.T) {
 		GA:         "GA-12345",
 		// Tags are always sorted.
 		// TODO: move sorting to Parse of the parser package
-		Tags: []string{"kiosk", "web"},
+		Tags:  []string{"kiosk", "web"},
+		Extra: map[string]string{},
 	}
 	if !reflect.DeepEqual(clab.Meta, meta) {
 		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
@@ -293,7 +295,7 @@ func TestParseDoc(t *testing.T) {
 	`
 
 	p := &Parser{}
-	c, err := p.Parse(markupReader(markup))
+	c, err := p.Parse(markupReader(markup), parser.Options{})
 	if err != nil {
 		t.Fatal(err)
 	}
