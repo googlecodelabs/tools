@@ -38,7 +38,7 @@ type Meta struct {
 	Tags       []string          `json:"tags"`               // All environments supported by the codelab
 	Feedback   string            `json:"feedback,omitempty"` // Issues and bugs are sent here
 	GA         string            `json:"ga,omitempty"`       // Codelab-specific GA tracking ID
-	Extra      map[string]string `json:"extra"`              // Extra metadata specified in pass_metadata
+	Extra      map[string]string `json:"extra,omitempty"`    // Extra metadata specified in pass_metadata
 
 	URL string `json:"url"` // Legacy ID; TODO: remove
 }
