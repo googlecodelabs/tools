@@ -72,7 +72,7 @@ func main() {
 
 	pm := make(map[string]bool)
 	for _, v := range strings.Split(*passMetadata, ",") {
-		pm[strings.ToLower(v)] = true
+		pm[strings.ToLower(strings.TrimSpace(v))] = true
 	}
 
 	exitCode := 0
