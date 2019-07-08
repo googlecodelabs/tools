@@ -35,8 +35,8 @@ const stdHeader = stdMeta + `
 # Codelab Title
 `
 
-func mustParseCodelab(markup string) *types.Codelab {
-	c, err := parseCodelab(markup)
+func mustParseCodelab(markup string, opts parser.Options) *types.Codelab {
+	c, err := parseCodelab(markup, opts)
 	if err != nil {
 		log.Fatalf("Error parsing markup %v: %v", markup, err)
 	}
@@ -44,17 +44,17 @@ func mustParseCodelab(markup string) *types.Codelab {
 	return c
 }
 
-func parseCodelab(markup string) (*types.Codelab, error) {
+func parseCodelab(markup string, opts parser.Options) (*types.Codelab, error) {
 	r := strings.NewReader(markup)
 	p := &Parser{}
 
-	return p.Parse(r, parser.Options{})
+	return p.Parse(r, opts)
 }
 
 func TestHandleCodelabTitle(t *testing.T) {
 	// Set up.
 	title := "Egret"
-	c := mustParseCodelab(fmt.Sprintf("# %s", title))
+	c := mustParseCodelab(fmt.Sprintf("# %s", title), parser.Options{})
 
 	if c.Title != title {
 		t.Errorf("[%q] got %v, want %v", title, c.Title, title)
@@ -90,7 +90,7 @@ func TestProcessDuration(t *testing.T) {
 
 	for i, tc := range tests {
 		content := fmt.Sprintf(stdHeader+"\n## Step Title\nDuration: %v\n", tc.in)
-		c := mustParseCodelab(content)
+		c := mustParseCodelab(content, parser.Options{})
 		out := time.Duration(c.Duration) * time.Minute
 
 		if out != tc.out {
@@ -120,7 +120,7 @@ Duration: %v
 			content += fmt.Sprintf(tmp, dur)
 		}
 
-		c := mustParseCodelab(content)
+		c := mustParseCodelab(content, parser.Options{})
 		if c.Duration != tc.out {
 			t.Errorf("%d: wanted duration %d but got %d", i, c.Duration, tc.out)
 		}
@@ -154,7 +154,48 @@ feedback link: https://www.google.com
 `
 	content += ("# " + title)
 
-	c := mustParseCodelab(content)
+	c := mustParseCodelab(content, parser.Options{})
+	if !reflect.DeepEqual(c.Meta, wantMeta) {
+		t.Errorf("\ngot:\n%+v\nwant:\n%+v", c.Meta, wantMeta)
+	}
+}
+
+func TestParseMetadataPassMetadata(t *testing.T) {
+	title := "Codelab Title"
+	wantMeta := types.Meta{
+		Title:      title,
+		ID:         "zyxwvut",
+		Authors:    "john smith",
+		Summary:    "abcdefghij",
+		Categories: []string{"not", "really"},
+		Tags:       []string{"kiosk", "web"},
+		Feedback:   "https://www.google.com",
+		GA:         "12345",
+		Extra: map[string]string{
+			"extrafieldtwo": "bbbbb",
+		},
+	}
+
+	content := `---
+id: zyxwvut
+authors: john smith
+summary: abcdefghij
+categories: not, really
+environments: kiosk, web
+analytics account: 12345
+feedback link: https://www.google.com
+extrafieldone: aaaaa
+extrafieldtwo: bbbbb
+
+---
+`
+	content += ("# " + title)
+
+	c := mustParseCodelab(content, parser.Options{
+		PassMetadata: map[string]bool{
+			"extrafieldtwo": true,
+		},
+	})
 	if !reflect.DeepEqual(c.Meta, wantMeta) {
 		t.Errorf("\ngot:\n%+v\nwant:\n%+v", c.Meta, wantMeta)
 	}
