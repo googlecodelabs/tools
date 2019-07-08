@@ -206,7 +206,7 @@ func parseDoc(doc *html.Node, opts parser.Options) (*types.Codelab, error) {
 
 	ds := newDocState()
 	ds.css = style
-	ds.passMetadata = opts.passMetadata
+	ds.passMetadata = opts.PassMetadata
 
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		if isComment(ds.css, ds.cur) {
