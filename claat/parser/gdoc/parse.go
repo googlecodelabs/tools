@@ -129,8 +129,9 @@ type stackItem struct {
 }
 
 func newDocState() *docState {
-	ds := new(docState)
-	ds.clab = types.NewCodelab()
+	ds := &docState{
+		clab: types.NewCodelab(),
+	}
 
 	return ds
 }
