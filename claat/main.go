@@ -70,10 +70,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	pm := make(map[string]bool)
-	for _, v := range strings.Split(*passMetadata, ",") {
-		pm[strings.ToLower(strings.TrimSpace(v))] = true
-	}
+	pm := parsePassMetadata(*passMetadata)
 
 	exitCode := 0
 	switch os.Args[1] {
@@ -108,6 +105,16 @@ func main() {
 	}
 
 	os.Exit(exitCode)
+}
+
+// parsePassMetadata parses metadata fields to parse that are not explicitly handled elsewhere.
+// It expects the fields to be passed in as a comma separated list (extraneous spaces are autoremoved), and returns a set of strings.
+func parsePassMetadata(passMeta string) map[string]bool {
+	fields := make(map[string]bool)
+	for _, v := range strings.Split(passMeta, ",") {
+		fields[strings.ToLower(strings.TrimSpace(v))] = true
+	}
+	return fields
 }
 
 // ParseExtraVars parses extra template variables from command line.
