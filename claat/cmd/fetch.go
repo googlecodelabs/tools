@@ -70,7 +70,6 @@ type codelab struct {
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
 func slurpCodelab(src, authToken string, passMetadata map[string]bool) (*codelab, error) {
-	// TODO use passMetadata
 	res, err := fetch(src, authToken)
 	if err != nil {
 		return nil, err
