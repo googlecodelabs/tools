@@ -49,6 +49,7 @@ message BlockContent {
     Table table = 6;
     ImageBlock image = 7;
     YoutubeVideo video = 8;
+    Survey survey = 9;
   }
 
   reserved 5; 
@@ -173,3 +174,14 @@ message TableRow {
 message Paragraph {
   repeated InlineContent content = 1;
 };
+
+message Survey {
+  // Google Analytics ID
+  string id = 1;
+  repeated SurveyQuestion content = 2;
+}
+
+message SurveyQuestion {
+  string name = 1;
+  repeated string options = 2;
+}

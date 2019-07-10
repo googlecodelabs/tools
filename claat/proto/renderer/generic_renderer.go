@@ -8,7 +8,25 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
-// TODO: Flip order of functions
+// ExecuteTemplate returns the evaluated template per passed templating
+// namespace, based on the passed tutorial proto type string name
+func ExecuteTemplate(el interface{}, t *template.Template) string {
+	var w bytes.Buffer
+	e := t.ExecuteTemplate(&w, outputFormatTemplateName(el, t), el)
+	if e != nil {
+		// This method outputs directly to templates. Panicking to surfance errors
+		// since we should not handle multiple returns in templates.
+		// Errors will be more gracefully handled in output-format packages
+		panic(fmt.Sprintf("Templating panic: %s\n", e))
+	}
+	return w.String()
+}
+
+// outputFormatTemplateName concatenates the template name mapping of the passed proto
+// with its output package extension
+func outputFormatTemplateName(el interface{}, t *template.Template) string {
+	return templateName(el) + "." + t.Name()
+}
 
 // templateName Maps protos to their type string name
 func templateName(el interface{}) string {
@@ -37,27 +55,11 @@ func templateName(el interface{}) string {
 		return "YoutubeVideo"
 	case *tutorial.CodeBlock, tutorial.CodeBlock:
 		return "CodeBlock"
+	case *tutorial.SurveyQuestion, tutorial.SurveyQuestion:
+		return "SurveyQuestion"
+	case *tutorial.Survey, tutorial.Survey:
+		return "Survey"
 	}
 	// This will cause a debug-friendly panic
 	return TypeNotSupported("genrenderer.templateName", el)
-}
-
-// outputFormatTemplateName concatenates the template name mapping of the passed proto
-// with its output package extension
-func outputFormatTemplateName(el interface{}, t *template.Template) string {
-	return templateName(el) + "." + t.Name()
-}
-
-// ExecuteTemplate returns the evaluated template per passed templating
-// namespace, based on the passed tutorial proto type string name
-func ExecuteTemplate(el interface{}, t *template.Template) string {
-	var w bytes.Buffer
-	e := t.ExecuteTemplate(&w, outputFormatTemplateName(el, t), el)
-	if e != nil {
-		// This method outputs directly to templates. Panicking to surfance errors
-		// since we should not handle multiple returns in templates.
-		// Errors will be more gracefully handled in output-format packages
-		panic(fmt.Sprintf("Templating panic: %s\n", e))
-	}
-	return w.String()
 }

@@ -24,6 +24,7 @@ func TestRenderHeadingFailuresTemplate(t *testing.T) {
 	}
 	testingutils.TestCanonicalRendererBatch(html.Render, tests, t)
 }
+
 func TestRenderHeadingTemplateFromFile(t *testing.T) {
 	tests := []*testingutils.CanonicalFileRenderingBatch{
 		{
