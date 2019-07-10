@@ -17,6 +17,7 @@ var (
 	tmplNmspc   *template.Template
 	tmplsAbsDir = filepath.Join(build.Default.GOPATH, tmplsRltvDir)
 	funcMap     = template.FuncMap{
+		"asString":            asString,
 		"renderOneof":         renderOneof,
 		"renderRepeated":      renderRepeated,
 		"listVariertyToTag":   listVariertyToTag,
@@ -56,6 +57,15 @@ func renderOneof(contents interface{}) string {
 // in all templates of protos with repeated fields
 func renderRepeated(contents interface{}) []string {
 	return genrenderer.RenderRepeated(contents, tmplNmspc)
+}
+
+// asString concatenates the output of renderRepeated into a string.
+// Used in protos with non-custom repeated field rendering
+// Similar to Nested templates/proto usage.
+// Avoids the use of an extra, single-use grouping proto, yet shortens
+// and simplifies templates.
+func asString(contents []string) string {
+	return strings.Join(contents, "")
 }
 
 // listVariertyToTag maps 'ListVariety' enums to their HTML tags

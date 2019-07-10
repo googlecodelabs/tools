@@ -1,3 +1,1 @@
-<p>{{ range $el := renderRepeated .Content -}}
-  {{ $el }}
-{{- end }}</p>
+<p>{{ asString (renderRepeated .Content) }}</p>

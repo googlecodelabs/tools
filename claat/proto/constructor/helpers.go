@@ -140,6 +140,13 @@ func NewInlineContentTextStrongAndEmphasized(txt string) *tutorial.InlineContent
 	}
 }
 
+func NewHeading(level int32, contentSlice ...*tutorial.InlineContent) *tutorial.Heading {
+	return &tutorial.Heading{
+		Level:   level,
+		Content: contentSlice,
+	}
+}
+
 func NewParagraph(contentSlice ...*tutorial.InlineContent) *tutorial.Paragraph {
 	return &tutorial.Paragraph{
 		Content: contentSlice,
