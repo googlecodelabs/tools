@@ -479,6 +479,7 @@ var IframeWhitelist = []string{
 	"web.dev",
 	"observablehq.com",
 	"repl.it",
+	"codepen.io",
 }
 
 // NewIframeNode creates a new embedded iframe.
