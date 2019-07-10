@@ -110,7 +110,7 @@ func main() {
 // parsePassMetadata parses metadata fields to parse that are not explicitly handled elsewhere.
 // It expects the fields to be passed in as a comma separated list (extraneous spaces are autoremoved), and returns a set of strings.
 func parsePassMetadata(passMeta string) map[string]bool {
-	fields := make(map[string]bool)
+	fields := map[string]bool{}
 	for _, v := range strings.Split(passMeta, ",") {
 		fields[strings.ToLower(strings.TrimSpace(v))] = true
 	}
