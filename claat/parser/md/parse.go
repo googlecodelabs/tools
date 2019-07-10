@@ -128,11 +128,9 @@ type stackItem struct {
 }
 
 func newDocState() *docState {
-	ds := &docState{
+	return &docState{
 		clab: types.NewCodelab(),
 	}
-
-	return ds
 }
 
 func (ds *docState) push(cur *html.Node) {
