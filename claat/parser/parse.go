@@ -37,6 +37,12 @@ type Options struct {
 	PassMetadata map[string]bool
 }
 
+func NewOptions() *Options {
+	return &Options{
+		PassMetadata: map[string]bool{},
+	}
+}
+
 var (
 	parsersMu sync.Mutex // guards parsers
 	parsers   = make(map[string]Parser)

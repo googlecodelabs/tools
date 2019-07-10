@@ -75,9 +75,11 @@ func slurpCodelab(src, authToken string, passMetadata map[string]bool) (*codelab
 		return nil, err
 	}
 	defer res.body.Close()
-	clab, err := parser.Parse(string(res.typ), res.body, parser.Options{
-		PassMetadata: passMetadata,
-	})
+
+	opts := *parser.NewOptions()
+	opts.PassMetadata = passMetadata
+
+	clab, err := parser.Parse(string(res.typ), res.body, opts)
 	if err != nil {
 		return nil, err
 	}
