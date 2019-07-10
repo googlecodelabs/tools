@@ -67,7 +67,7 @@ type Codelab struct {
 
 func NewCodelab() *Codelab {
 	clab := &Codelab{}
-	clab.Extra = make(map[string]string)
+	clab.Extra = map[string]string{}
 
 	return clab
 }
