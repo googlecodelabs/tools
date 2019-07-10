@@ -54,7 +54,7 @@ func parseCodelab(markup string, opts parser.Options) (*types.Codelab, error) {
 func TestHandleCodelabTitle(t *testing.T) {
 	// Set up.
 	title := "Egret"
-	c := mustParseCodelab(fmt.Sprintf("# %s", title), parser.Options{})
+	c := mustParseCodelab(fmt.Sprintf("# %s", title), *parser.NewOptions())
 
 	if c.Title != title {
 		t.Errorf("[%q] got %v, want %v", title, c.Title, title)
@@ -90,7 +90,7 @@ func TestProcessDuration(t *testing.T) {
 
 	for i, tc := range tests {
 		content := fmt.Sprintf(stdHeader+"\n## Step Title\nDuration: %v\n", tc.in)
-		c := mustParseCodelab(content, parser.Options{})
+		c := mustParseCodelab(content, *parser.NewOptions())
 		out := time.Duration(c.Duration) * time.Minute
 
 		if out != tc.out {
@@ -120,7 +120,7 @@ Duration: %v
 			content += fmt.Sprintf(tmp, dur)
 		}
 
-		c := mustParseCodelab(content, parser.Options{})
+		c := mustParseCodelab(content, *parser.NewOptions())
 		if c.Duration != tc.out {
 			t.Errorf("%d: wanted duration %d but got %d", i, c.Duration, tc.out)
 		}
@@ -154,7 +154,7 @@ feedback link: https://www.google.com
 `
 	content += ("# " + title)
 
-	c := mustParseCodelab(content, parser.Options{})
+	c := mustParseCodelab(content, *parser.NewOptions())
 	if !reflect.DeepEqual(c.Meta, wantMeta) {
 		t.Errorf("\ngot:\n%+v\nwant:\n%+v", c.Meta, wantMeta)
 	}
@@ -191,11 +191,12 @@ extrafieldtwo: bbbbb
 `
 	content += ("# " + title)
 
-	c := mustParseCodelab(content, parser.Options{
-		PassMetadata: map[string]bool{
-			"extrafieldtwo": true,
-		},
-	})
+	opts := *parser.NewOptions()
+	opts.PassMetadata = map[string]bool{
+		"extrafieldtwo": true,
+	}
+
+	c := mustParseCodelab(content, opts)
 	if !reflect.DeepEqual(c.Meta, wantMeta) {
 		t.Errorf("\ngot:\n%+v\nwant:\n%+v", c.Meta, wantMeta)
 	}
