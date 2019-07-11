@@ -1,0 +1,10 @@
+{
+  "title": "Visual Studio Live",
+  "description": "Come learn about Google Cloud Platform by completing codelabs and coding challenges! The following codelabs will step you through using different parts of Google Cloud Platform. These challenges cover a range of topics such as Compute Engine, App Engine, Kubernetes, Cloud Shell. Go to https://g.co/codelabs/vslive to find more codelabs you can try at home.",
+  "logoUrl": "/vslive/vslive-logo.jpg",
+  "tags": ["vslive"],
+  "exclude": [
+    ".*-about$",
+    "^lang-.*"
+  ]
+}

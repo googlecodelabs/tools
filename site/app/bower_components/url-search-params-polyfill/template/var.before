@@ -1,0 +1,1 @@
+var URLSearchParams = URLSearchParams || (function () {

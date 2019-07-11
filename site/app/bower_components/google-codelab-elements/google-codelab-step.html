@@ -1,0 +1,157 @@
+<!--
+Copyright (c) 2015 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="shared-style.html">
+<link rel="import" href="step-style.html">
+
+<link rel="import" href="syntax-style.html">
+<script src="../google-prettify/src/prettify.js"></script>
+
+<!--
+A single codelab step for `<google-codelab>` element.
+It provides mostly styling, including snippets highlighting.
+
+Example:
+
+    <google-codelab-step label="Test" step="2" duration="5">
+      <p>Here's a codelab step</p>.
+      <pre><code>this snippet will be auto-highlighted</code></pre>
+      <p>And this is an <code>inline code</code>.
+    </google-codelab-step>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property                         | Description
+----------------------------------------|-------------
+`google-codelab-step-background`        | Inner background color
+`google-codelab-step-link-color`        | New and visited links foreground color
+`google-codelab-step-footer-text-color` | Footer foreground color, including links
+`google-codelab-step-note`              | Mixin applied to note/notice aside blocks
+`google-codelab-step-tip`               | Mixin applied to tip/special aside blocks
+`google-codelab-step-warn`              | Mixin applied to warning aside blocks
+`google-codelab-step-callout`           | Mixin applied to callout aside blocks
+`google-codelab-step-code`              | Mixin applied to code snippet blocks
+
+@demo demo/step.html
+-->
+<dom-module id="google-codelab-step">
+  <template strip-whitespace>
+    <style include="shared-style"></style>
+    <style include="step-style"></style>
+    <style include="syntax-style"></style>
+
+    <div class="instructions">
+      <div class="inner">
+        <h2 id="title"><span>{{step}}</span>. <span>{{label}}</span></h2>
+        <content></content>
+      </div>
+    </div>
+  </template>
+  <script>
+  (function() {
+
+    function encodeHTMLEntities_(htmlStr) {
+      return htmlStr.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    Polymer({
+      is: 'google-codelab-step',
+
+      /**
+       * Fired when user copies a snippet into the clipboard.
+       * Not all browsers are supported. See http://caniuse.com/#feat=clipboard.
+       * @event google-codelab-snippet-copy
+       * @detail {{snippet: String}}
+       */
+
+      properties: {
+        /**
+         * Step number, starting from 1.
+         * Normally set by the parent `<google-codelab>` element.
+         */
+        step: {
+          type: Number,
+          value: 1,
+          notify: true
+        },
+
+        /**
+         * Title of this step.
+         */
+        label: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * How long, on average, it takes to complete the step.
+         */
+        duration: {
+          type: Number,
+          value: 0,
+          notify: true
+        },
+
+        /**
+         * Indicates whether this step is currently showing.
+         * Normally set by the parent `<google-codelab>` element.
+         */
+        active: {
+          type: Boolean,
+          value: false,
+          observer: '_activeChanged'
+        }
+      },
+
+      _isHighlighted: false,
+
+      _activeChanged: function() {
+        var codelab = Polymer.dom(this).parentNode;
+
+        // Don't syntax highlight code if google-codelab requests it.
+        if (codelab.localName === 'google-codelab' && codelab.noHighlight) {
+          return;
+        }
+
+        if (this.active && !this._isHighlighted) {
+
+          // Minimize jank by waiting one click to do syntax highlighting.
+          this.async(function() {
+            var blocks = Polymer.dom(this).querySelectorAll('pre > code');
+            blocks.forEach(function(block) {
+              // TODO: consider pre-escaping markup on server.
+              Polymer.dom(block).innerHTML = prettyPrintOne(
+                  encodeHTMLEntities_(block.textContent));
+
+              block.addEventListener('copy', function() {
+                this.fire('google-codelab-snippet-copy', {
+                  snippet: block.textContent
+                });
+              }.bind(this));
+            }.bind(this));
+
+            this._isHighlighted = true;
+          });
+        }
+      }
+    });
+
+  })();
+  </script>
+</dom-module>

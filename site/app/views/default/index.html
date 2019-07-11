@@ -1,0 +1,284 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="{{view.description}}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="{{view.title}}">
+  <meta name="application-name" content="{{view.title}}">
+  <link rel="canonical" href="{{canonicalViewUrl(view)}}" />
+  <link rel="preconnect" href="https://www.google-analytics.com" />
+
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', '{{ga}}', 'auto');
+    ga('send', 'pageview');
+    {% if view.ga %}
+    ga('create', '{{view.ga}}', 'auto', { name: 'view' });
+    ga('view.send', 'pageview');
+    {% endif %}
+  </script>
+  <script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  <title>{{view.title}}</title>
+
+  <link rel="stylesheet" href="/styles/main.css">
+
+  {% if view.customStyle %}
+    <link rel="stylesheet" href="{{view.customStyle}}">
+  {%- endif %}
+
+  <link rel="import" href="/elements/elements.html">
+
+  <style is="custom-style">
+    :root {
+      --paper-tabs-selection-bar-color: currentcolor;
+      --paper-input-container-underline: {
+        display: none;
+      };
+      --paper-input-container-underline-focus: {
+        display: none;
+      };
+    }
+
+    .dropdown-filter {
+      --paper-input-container: {
+        padding: 8px;
+      }
+    }
+  </style>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#455a64">
+  <meta name="apple-mobile-web-app-title" content="{{view.title}}">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="194x194" href="/images/favicons/favicon-194x194.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/images/favicons/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicons/favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="mask-icon" href="/images/favicons/safari-pinned-tab.svg" color="#455a64">
+  <meta name="msapplication-TileColor" content="#455a64">
+  <meta name="msapplication-TileImage" content="/images/favicons/mstile-144x144.png">
+  <meta name="theme-color" content="#455a64">
+
+  <meta name="og:type" property="og:type" content="website" />
+  <meta name="og:title" property="og:title" content="{{view.title}}" />
+  <meta name="og:description" property="og:description" content="{{view.description}}" />
+  <meta name="og:url" property="og:url" content="{{canonicalViewUrl(view)}}" />
+  <meta name="og:site_name" property="og:site_name" content="Codelabs" />
+  <meta name="og:determiner" property="og:determiner" content="the" />
+  <meta name="og:locale" property="og:locale" content="en_US" />
+  <meta name="og:image" property="og:image" content="/images/og-image.png" />
+  <meta name="og:image:url" property="og:image:url" content="/images/og-image.png" />
+  <meta name="og:image:type" property="og:image:type" content="image/png" />
+  <meta name="og:image:width" property="og:image:width" content="1200" />
+  <meta name="og:image:height" property="og:image:height" content="1200" />
+  <meta name="og:image:alt" property="og:image:alt" content="Codelabs" />
+
+  <meta name="twitter:card" property="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" property="twitter:title" content="{{view.title}}" />
+  <meta name="twitter:description" property="twitter:description" content="{{view.description}}" />
+  <meta name="twitter:image" property="twitter:image" content="/images/og-image.png" />
+  <meta name="twitter:url" property="twitter:url" content="{{canonicalViewUrl(view)}}" />
+</head>
+
+<body id="app" is="body-bind" class="loading fullbleed {% if view.id != 'default' -%}view{%- endif -%}">
+  <paper-header-panel id="main" mode="standard" main>
+    {% raw %}
+    <div id="mainToolbar" class="paper-header">
+      <div class="site-width layout horizontal">
+        <a href="/">
+          <img src="/images/logo.png" class="logo-devs" alt="Codelabs Logo">
+        </a>
+        <div id="searchbar">
+          <paper-input-container no-label-float>
+            <paper-icon-button prefix icon="search"></paper-icon-button>
+            <label>Search</label>
+            <input is="iron-input" bind-value="{{searchVal}}" on-keydown="onSearchKeyDown">
+          </paper-input-container>
+        </div>
+      </div>
+    </div>
+    {% endraw %}
+
+    {# Event pages force down attribute. On homepage, it's applied dynamically. #}
+    <header id="banner" {% if view.id != 'default' -%}down{%- else %}down$="[[_toBoolean(selectedFilter)]]"{%- endif %}>
+      <div class="site-width">
+        {% if view.id == 'default' %}
+        <h2 class="banner-title">Welcome to Codelabs!</h2>
+        <div class="banner-description"
+             data-filter-selected$="{% raw %}[[_toBoolean(selectedFilter)]]{% endraw %}">
+          <p class="banner-info">
+            Codelabs provide a guided, tutorial, hands-on
+            coding experience. Most codelabs will step you through the process
+            of building a small application, or adding a new feature to an
+            existing application.
+            <br>
+            <a href="https://github.com/googlecodelabs/tools">Codelab tools on GitHub</a>
+          </p>
+        {%- else -%}
+          <div class="banner-description">
+            <img id="logo" src="{{view.logoUrl}}" alt="Event logo">
+            <div class="banner-meta">
+              <h3>{{view.title}}</h3>
+              {% if view.description -%}
+                <p>{{view.description}}</p>
+              {%- endif %}
+            </div>
+        {%- endif %}
+          </div>
+      </div>
+    </header>
+
+    <main>
+      <div id="filters" class="site-width layout horizontal center justified">
+        <div id="sortby">
+          <paper-tabs selected="0" noink on-iron-activate="sortBy">
+            <paper-tab>A-Z</paper-tab>
+            <paper-tab>Recent</paper-tab>
+            <paper-tab>Duration</paper-tab>
+          </paper-tabs>
+        </div>
+
+        {% if view.id == 'default' %}
+        <paper-dropdown-menu
+          label="Choose an event"
+          class="dropdown-filter"
+          no-label-float
+          noink no-animations
+        >
+          <paper-listbox
+            id="eventList"
+            slot="dropdown-content"
+            class="dropdown-content"
+          >
+            {%- for view in views -%}
+              {%- if view.id != 'default' && !view.hidden -%}
+                <a href="/{{view.url}}/" tabindex="-1">
+                  <paper-item>{{view.title}}</paper-item>
+                </a>
+              {%- endif -%}
+            {%- endfor %}
+          </paper-listbox>
+        </paper-dropdown-menu>
+        {% endif %}
+
+        {%- if showcats -%}
+        <paper-dropdown-menu
+          label="Filter by category"
+          class="dropdown-filter"
+          no-label-float
+          noink no-animations
+        >
+          <paper-listbox
+            id="categorylist"
+            slot="dropdown-content"
+            class="dropdown-content"
+            on-iron-activate="onCategoryActivate"
+            attr-for-selected="filter"
+          >
+              {% for category in categories -%}
+                {%- if categoryHasShowableCodelabs(category, codelabs) -%}
+                  <paper-item filter="{{category}}">{{category}}</paper-item>
+                {%- endif -%}
+              {%- endfor %}
+          </paper-listbox>
+        </paper-dropdown-menu>
+        {%- endif -%}
+      </div>
+
+      <card-sorter id="cards" class="site-width">
+        {% for codelab in codelabs -%}
+
+          {# Only filter hidden codelabs from the default view.
+             All other views are explicitly opt-in via metadata. #}
+          {% if codelab.status.indexOf('hidden') === -1 || view.id !== 'default' %}
+            {% set cat = levelledCategory(codelab, view.catLevel) %}
+            <a href="{{codelabUrl(view, codelab)}}" on-tap="navigate"
+               class="codelab-card category-{{categoryClass(codelab, cat.level)}}"
+               data-category="{{codelab.category}}"
+               data-title="{{codelab.title}}"
+               data-duration="{{codelab.duration}}"
+               data-updated="{{codelab.updated}}"
+               data-tags="{{codelab.tags}}"
+               data-pin="{{codelabPin(view, codelab)}}">
+              {%- if codelabPin(view, codelab) -%}
+                <div class="card-pin"></div>
+              {%- endif -%}
+              <div class="description">{{codelab.title}}</div>
+              <div class="card-duration">
+                <span>{%- if codelab.duration -%}{{codelab.duration}} min {%- endif -%}</span>
+                <span>{%- if codelab.updated -%}Updated {{codePrettyDate(codelab.updated)}}{%- endif -%}</span>
+              </div>
+              <div class="card-footer">
+                <div class="category-icon {{categoryClass(codelab, cat.level)}}-icon"></div>
+                <paper-button class="{{categoryClass(codelab, cat.level)}}-bg">Start</paper-button>
+              </div>
+            </a>
+          {%- endif %}
+        {%- endfor %}
+      </card-sorter>
+
+      <div id="loading-placeholder" class="site-width">
+        Loading Codelabs, please wait...
+      </div>
+    </main>
+
+    <footer id="footer">
+      <div class="footer-wrapper site-width">
+        <div class="link-list">
+          <label>Connect</label>
+          <ul>
+            <li><a href="https://www.example.com/">Example</a></li>
+          </ul>
+        </div>
+        <div class="link-list">
+          <label>Programs</label>
+          <ul>
+            <li><a href="https://www.example.com/">Example</a></li>
+          </ul>
+        </div>
+        <div class="link-list">
+          <label>Developer Consoles</label>
+          <ul>
+            <li><a href="https://www.example.com/">Example</a></li>
+          </ul>
+        </div>
+        <div class="link-list">
+          <label>Explore</label>
+           <ul>
+            <li><a href="https://www.example.com/">Example</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    <div class="footerbar">
+      <div class="site-width layout horizontal center justified">
+        <span>
+          <a href="https://example.com">Terms</a>
+          &nbsp; | &nbsp;
+          <a href="https://example.com">Privacy</a>
+        </span>
+      </div>
+    </div>
+
+  </paper-header-panel>
+
+  <!-- build:js /scripts/main.js -->
+  <script src="bower_components/url-search-params-polyfill/build/url-search-params.js"></script>
+  <script src="scripts/app.js"></script>
+  <!-- endbuild-->
+</body>
+</html>

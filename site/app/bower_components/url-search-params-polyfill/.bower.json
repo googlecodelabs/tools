@@ -1,0 +1,38 @@
+{
+  "name": "url-search-params",
+  "description": "Simple polyfill for URLSearchParams standard",
+  "main": "./build/url-search-params.node.js",
+  "authors": [
+    "Andrea Giammarchi"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "DOM",
+    "URLSearchParams",
+    "polyfill",
+    "shim"
+  ],
+  "homepage": "https://github.com/WebReflection/url-search-params",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "version": "0.5.0",
+  "_release": "0.5.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.5.0",
+    "commit": "b14d50f16880c5f5b3e99673ac3a4b40efbe8889"
+  },
+  "_source": "git://github.com/WebReflection/url-search-params.git",
+  "_target": "^0.5.0",
+  "_originalSource": "WebReflection/url-search-params"
+}

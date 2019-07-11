@@ -1,0 +1,153 @@
+/**
+ * Copyright 2015 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+$mobileKeyline: 16px;
+$tabletKeyline: 24px;
+$desktopKeyline: 32px;
+$desktopLargeKeyline: 40px;
+$largeKeyline: 72px;
+
+@mixin keyline-72l() {
+  padding-left: $largeKeyline;
+}
+
+@mixin keyline-24l() {
+  padding-left: $tabletKeyline;
+}
+
+@mixin keyline-16l() {
+  padding-left: $mobileKeyline;
+}
+
+@mixin keyline-72() {
+  padding: 0 $largeKeyline 0 $largeKeyline;
+}
+
+@mixin keyline-40() {
+  padding: 0 $desktopLargeKeyline 0 $desktopLargeKeyline;
+}
+
+@mixin keyline-32() {
+  padding: 0 $desktopKeyline 0 $desktopKeyline;
+}
+
+@mixin keyline-24() {
+  padding: 0 $tabletKeyline 0 $tabletKeyline;
+}
+
+@mixin keyline-16() {
+  padding: 0 $mobileKeyline 0 $mobileKeyline;
+}
+
+// Replicated from PolymerElements/iron-flex-layout
+
+/*******************************
+          Flex Layout
+*******************************/
+.layout.horizontal,
+.layout.horizontal-reverse,
+.layout.vertical,
+.layout.vertical-reverse {
+  display: flex;
+}
+.layout.horizontal {
+  flex-direction: row;
+}
+
+.layout.vertical {
+  flex-direction: column;
+}
+.layout.wrap {
+  flex-wrap: wrap;
+}
+.flex,
+.flex-1 {
+  -ms-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+/* alignment in cross axis */
+.layout.start {
+  align-items: flex-start;
+}
+.layout.center,
+.layout.center-center {
+  align-items: center;
+}
+.layout.end {
+  align-items: flex-end;
+}
+/* alignment in main axis */
+.layout.start-justified {
+  justify-content: flex-start;
+}
+.layout.center-justified,
+.layout.center-center {
+  justify-content: center;
+}
+.layout.end-justified {
+  justify-content: flex-end;
+}
+.layout.around-justified {
+  justify-content: space-around;
+}
+.layout.justified {
+  justify-content: space-between;
+}
+/* self alignment */
+.self-start {
+  align-self: flex-start;
+}
+.self-center {
+  align-self: center;
+}
+.self-end {
+  align-self: flex-end;
+}
+.self-stretch {
+  align-self: stretch;
+}
+/*******************************
+          Other Layout
+*******************************/
+.block {
+  display: block;
+}
+/* IE 10 support for HTML5 hidden attr */
+[hidden] {
+  display: none !important;
+}
+.invisible {
+  visibility: hidden !important;
+}
+.relative {
+  position: relative;
+}
+.fit {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+body.fullbleed {
+  margin: 0;
+  height: 100vh;
+}
+.scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow: auto;
+}
