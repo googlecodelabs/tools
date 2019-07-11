@@ -293,7 +293,7 @@ default value is "https://codelabs.developers.google.com".
 
 `--codelabs-dir` - absolute or relative path on disk where codelabs are stored.
 Any filters will be applied to these codelabs, and then the resulting selection
-is symlinked into the build folder. The default value is "../../content/web".
+is symlinked into the build folder. The default value is "." (the current directory).
 
 `--codelabs-filter` - regular expression by which to filter codelabs IDs for
 inclusion. If a filter is not specified, all codelabs are included.
