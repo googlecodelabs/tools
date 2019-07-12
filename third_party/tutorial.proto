@@ -49,9 +49,6 @@ message BlockContent {
     CodeBlock code_block = 4;
     Table table = 6;
     YoutubeVideo video = 8;
-    InfoBox info_box = 3;
-    CodeBlock code_block = 4;
-    Table table = 6;
   }
 
   reserved 5; 
@@ -133,10 +130,6 @@ message CodeBlock {
 
 message List {
   repeated Paragraph content = 3;
-};
-
-message List {
-  repeated ListStep list_steps = 1;
 
   enum ListVariety {
     UNKNOWN_VARIETY = 0;
