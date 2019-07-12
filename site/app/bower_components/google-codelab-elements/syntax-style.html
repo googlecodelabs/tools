@@ -1,0 +1,66 @@
+<!--
+Copyright (c) 2015 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+
+<link rel="import" href="font-source-code-pro.html">
+
+<dom-module id="syntax-style">
+  <template>
+    <style>
+      ::content pre, ::content code {
+        font-family: 'Source Code Pro', Helvetica, Arial;
+        font-size: inherit;
+        border-radius: 4px;
+        overflow-x: auto;
+        @apply(--google-codelab-step-code);
+      }
+
+      ::content code {
+        background-color: #E8EAEd;
+        padding: 0.1em 0.3em;
+      }
+
+      ::content pre {
+        display: block;
+        color: white;
+        background-color: #28323f;
+        padding: 14px;
+        -webkit-text-size-adjust: none;
+        line-height: 1.4;
+      }
+
+      ::content pre > code {
+        padding: 0;
+        background-color: transparent;
+      }
+
+      ::content code em {
+        color: #97C8F2;
+      }
+
+      ::content pre .str, ::content code .str { color: #34A853; } /* string  - green */
+      ::content pre .kwd, ::content code .kwd { color: #F538A0; } /* keyword - dark pink */
+      ::content pre .com, ::content code .com { color: #BDC1C6; font-style: italic; } /* comment - gray */
+      ::content pre .typ, ::content code .typ { color: #24C1E0; } /* type - light blue */
+      ::content pre .lit, ::content code .lit { color: #4285F4; } /* literal - blue */
+      ::content pre .pun, ::content code .pun { color: #F8F9FA; } /* punctuation - white */
+      ::content pre .pln, ::content code .pln { color: #F8F9FA; } /* plaintext - white */
+      ::content pre .tag, ::content code .tag { color: #24C1E0; } /* html/xml tag    - light blue */
+      ::content pre .atn, ::content code .atn { color: #EDA912; } /* html/xml attribute name  - khaki */
+      ::content pre .atv, ::content code .atv { color: #34A853; } /* html/xml attribute value - green */
+      ::content pre .dec, ::content code .dec { color: #5195EA; } /* decimal - blue */
+    </style>
+  </template>
+</dom-module>

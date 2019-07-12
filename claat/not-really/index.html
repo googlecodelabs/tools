@@ -1,0 +1,259 @@
+f
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Master Sample GDoc Codelab</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid="UA-000111222-1=3"
+                  id="not-really"
+                  title="Master Sample GDoc Codelab"
+                  environment="web"
+                  feedback-link="https://groups.google.com/a/google.com/forum/#!forum/codelab-authors">
+    
+      <google-codelab-step label="Introductory Step" duration="4">
+        <h2 class="checklist" is-upgraded>What you&#39;ll learn</h2>
+<ul class="checklist">
+<li>How to create awesome looking Codelabs</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Text" duration="0">
+        <p>Normal, <strong>Bold, </strong><em>Italics, </em><strong><em>Italics+bold</em></strong></p>
+<p>Links: <a href="http://google.com" target="_blank">Normal</a>, <a href="http://google.com" target="_blank"><strong>Bold</strong></a><strong>, </strong><a href="http://google.com" target="_blank"><em>Italics</em></a><em>, </em><a href="http://google.com" target="_blank"><strong><em>Italics+bold</em></strong></a>, <img style="width: 26.36px" src="img/11b8f07e52fce1ed.png"></p>
+<p>Link with logos: </p>
+<ul>
+<li><a href="http://stackoverflow.com" target="_blank">Stackoverflow</a></li>
+<li><a href="http://developer.android.com" target="_blank">Android</a></li>
+<li><a href="http://cloud.google.com" target="_blank">Google Cloud</a></li>
+<li><h3 is-upgraded><a href="https://github.com/google/search-samples/blob/master/app-indexing/app/src/main/AndroidManifest.xml" target="_blank">GitHub</a></h3>
+</li>
+<li>Erer</li>
+<li><img style="width: 26.36px" src="img/11b8f07e52fce1ed.png"></li>
+</ul>
+<table>
+<tr><td colspan="1" rowspan="1"><p>erer</p>
+</td><td colspan="1" rowspan="1"><p>erere</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>erer</p>
+</td><td colspan="1" rowspan="1"><p>erer</p>
+</td></tr>
+</table>
+<ul>
+<li>erer</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Lists" duration="4">
+        <h2 is-upgraded><strong><em>Subheading</em></strong></h2>
+<ol type="1" start="1">
+<li>Ordered</li>
+<li>List</li>
+</ol>
+<ul>
+<li>Unordered</li>
+<li>List</li>
+<li>Nested Lists are not supported as they are bad practice, use an infobox</li>
+</ul>
+<h3 is-upgraded>More subheadings? Probably deserves another step :D</h3>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Code" duration="3">
+        <p><code>Inline Code</code></p>
+<p>Unhighlighted block text - <code>Consolas</code> Text on a single-cell table. Non-font styling ignored. Good for console outputs and command usages.</p>
+<pre>$ adb devices          # list to see your device
+$ adb root             # switch to root user
+$ adb shell            # enter adb shell</pre>
+<pre>kubectl get pods
+
+NAME                  READY   STATUS     RESTARTS   AGE
+Example-build-2vj4r   0/1     Init:2/3   0          15s</pre>
+<p>Infoboxes (Asides/Callouts)</p>
+<aside class="special"><p><strong>NOTE: </strong>This is a note</p>
+</aside>
+<aside class="warning"><p><strong>Important: </strong>This is a higher attention-worthy note</p>
+<ul>
+<li>Lists?</li>
+</ul>
+<p class="image-container"><img style="width: 26.36px" src="img/11b8f07e52fce1ed.png"></p>
+<p><strong>NOTE: </strong>This is a note</p>
+<p><code>http://google.com</code></p>
+<p>Why...</p>
+<p><a href="https://github.com/google/search-samples/archive/master.zip" target="_blank"><paper-button class="colored" raised><iron-icon icon="cloud_download"></iron-icon>Download Zip</paper-button></a></p>
+<p><a href="https://github.com/google/search-samples/blob/master/app-indexing/app/src/main/AndroidManifest.xml" target="_blank">AndroidManifest.xml</a></p>
+<h3 is-upgraded><a href="https://github.com/google/search-samples/blob/master/app-indexing/app/src/main/AndroidManifest.xml" target="_blank">AndroidManifest.xml</a></h3>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/PWL7uUWh-xc?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</aside>
+<p>Highlighted Code Snippet - <code>Courier New</code> text on a single-cell table. Non-font styling ignored. Language agnostic <em>per table</em>.</p>
+<pre>
+  <code>
+    &lt;activity android:name=&#34;com.recipe_app.client.RecipeActivity&#34;
+         android:label=&#34;@string/title_gizmos&#34; &gt;
+   &lt;intent-filter android:label=&#34;@string/filter_title_viewrecipe&#34;&gt;
+       &lt;action android:name=&#34;android.intent.action.VIEW&#34; /&gt;
+       &lt;!-- URIs that begin with &#34;http://recipe-app.com/recipe&#34; --&gt;
+       &lt;data android:scheme=&#34;http&#34;
+             android:host=&#34;recipe-app.com&#34;
+             android:pathPrefix=&#34;/recipe&#34; /&gt;
+       &lt;category android:name=&#34;android.intent.category.DEFAULT&#34; /&gt;
+       &lt;category android:name=&#34;android.intent.category.BROWSABLE&#34; /&gt;
+   &lt;/intent-filter&gt;
+&lt;/activity&gt;
+  </code>
+</pre>
+<pre><code>def main(Mapping[Any] unused_args):
+  print(&#34;{}&#34;.format(&#34;&#34;.join([&#34;e&#34;, &#34;t&#34;])))</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Buttons" duration="0">
+        <p>Links highlighted with <strong>dark green 1 </strong>will show as buttons. If the links start with ‘Download&#39; a download icon (<img style="width: 26.36px" src="img/11b8f07e52fce1ed.png">) will be shown at the beginning of the button. <a href="https://google.dev/playlists" target="_blank"><paper-button class="colored" raised>Check out Google.dev!</paper-button></a> sdfsd</p>
+<p><a href="https://google.dev/playlists" target="_blank"><paper-button class="colored" raised>Check out Google.dev!</paper-button></a></p>
+<p><a href="https://github.com/google/search-samples/archive/master.zip" target="_blank"><paper-button class="colored" raised><iron-icon icon="cloud_download"></iron-icon>Download Zip</paper-button></a></p>
+<h2 is-upgraded>GitHub Code Links</h2>
+<p><strong>Heading 3</strong> with a link to GitHub gets stylized. The below example will be shown as<img style="width: 155.66px" src="img/c4adb5fdf140f903.png"></p>
+<p><a href="https://github.com/google/search-samples/blob/master/app-indexing/app/src/main/AndroidManifest.xml" target="_blank">AndroidManifest.xml</a></p>
+<h3 is-upgraded><a href="https://github.com/google/search-samples/blob/master/app-indexing/app/src/main/AndroidManifest.xml" target="_blank">AndroidManifest.xml</a></h3>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Fragments" duration="2">
+        <p>Dynamic Content Fragment.</p>
+<p><code>[[</code><strong><code>import</code></strong><code> </code><a href="https://docs.google.com/document/d/1VkJopEKiqitwFgqFOEU6rpB1VE-R-uYWq4erNHP2TQ4/edit" target="_blank"><code>link to another doc</code></a><code>]]</code> in a font that&#39;s not Consolas nor Courier New.</p>
+<p>This is a shared <strong>block </strong>for a <em>number</em> of codelabs. You should see a funny dog below.</p>
+<p class="image-container"><img alt="File:Toddy Dog.jpg" style="width: 601.70px" src="https://lh5.googleusercontent.com/SghexhTVXY2Zo3CZZYLeA38bGsHej_OjZ2WS5hRHyqZhIN8MI6Ibtj_w-RaWRXp8plQbLfYvMLoYuxBMMK7z8ajsue83NEiG9f8QkAYXG9CRaQoU0qpWiZhcXjXzVtie0DD2g250"></p>
+
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Images" duration="1">
+        <h2 is-upgraded>Inline</h2>
+<p class="image-container"><img style="width: 26.36px" src="img/11b8f07e52fce1ed.png"></p>
+<h2 is-upgraded>Size-persistent and Centered</h2>
+<p class="image-container"><img style="width: 300.00px" src="img/8f1357fc2031e6d6.png"></p>
+<p class="image-container"><img style="width: 197.50px" src="img/649d3ab0ff8f7df5.png"></p>
+<p class="image-container"><img alt="testing" title="Not really a tenant" style="width: 101.50px" src="img/aed4b47df6d1fd3e.png"></p>
+<p class="image-container"><img style="width: 191.50px" src="img/dd1aeb0416078f95.png"></p>
+<p class="image-container"><img style="width: 300.00px" src="img/653746bd2ea9c6fa.png"></p>
+<p>Images &#34;Alt Text&#34;: ⌘+Opt+Y or Right click &gt; &#34;Alt Text...&#34;</p>
+<p>The <em>Title </em>field will be displayed as the alt-text</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Youtube Videos" duration="488">
+        <p>A picture with a video source in the format <code>https://www.youtube.com/watch?v=[video_ID]</code> as alt-text <em>Description</em></p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/PWL7uUWh-xc?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Tables?!" duration="0">
+        <table>
+<tr><td colspan="1" rowspan="1"><p>Apprently</p>
+</td><td colspan="1" rowspan="1"><p>these</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>are</p>
+</td><td colspan="1" rowspan="1"><p>Parsed into normal HTML tables, serererewqw but what&#39;s the line limit??????? DNE??? Apparently soooooooooooooooo</p>
+</td></tr>
+</table>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="TODOs" duration="7">
+        <ol type="1" start="1">
+<li>Resume codelab?</li>
+<li>Deprecated Surveys?</li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Minor Bugs" duration="683">
+        <ul>
+<li>When duration disappears due to non-existent or wrongly formatted duration section, it doesn&#39;t appear retroactively when browsing BACK to sections with correct duration. WAS?</li>
+<li><code>class=&#34;codelab-time-container&#34;</code> doesn&#39;t <strong>toggle </strong><code>style=&#34;display: none&#34;</code> on &#34;Back&#34; navigations, although total time <strong>is </strong>correctly updated</li>
+<li>Negatives are parsed, [too nit/no need] to fix imo</li>
+<li>Only Cloud FAQ Links show as blue. Removing <code>color: inherit</code> from <code>google-codelab:not([theme=&#34;minimal&#34;]) .instructions .faq a</code> fixes it as per Chrome DevTools</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Missing g3 MD =&gt; HTML features" duration="0">
+        <ul>
+<li>Surveys</li>
+<li>Download Buttons</li>
+<li>Infoboxes</li>
+<li>YT videos</li>
+<li><strong>Bold </strong>sometimes renders with an extra space after the word (like **this **)</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="-987">
+        <h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ul class="checklist">
+<li>How to create awesome looking Codelabs</li>
+</ul>
+<google-codelab-survey survey-id="not-really-1">
+<h4>Survey</h4>
+<paper-radio-group>
+<paper-radio-button>Only read through it</paper-radio-button>
+<paper-radio-button>Read it and complete the exercises</paper-radio-button>
+</paper-radio-group>
+</google-codelab-survey>
+<h2 class="faq" is-upgraded>Frequently Asked Questions</h2>
+<ul class="faq">
+<li><a href="http://stackoverflow.com" target="_blank">StackOverflow</a></li>
+<li><a href="http://developer.android.com" target="_blank">Android Developers</a></li>
+<li><a href="http://cloud.google.com" target="_blank">Google Cloud</a></li>
+<li><a href="https://support.google.com/webmasters/#topic=4581229" target="_blank">Google Support</a></li>
+</ul>
+<p>Rendered <a href="https://codelabs-preview.appspot.com/?file_id=1hLgBuyWTqwNBaZjHDuGR7_3jPLfEuJNISyL_znLU5k8" target="_blank">Preview</a> as Codelab</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Other tools" duration="0">
+        <p><a href="https://chrome.google.com/webstore/a/google.com/detail/codelab-palette/ekmbfpgnahdnkakkjaakhioakbmmencj?utm_source=permalink" target="_blank">Codelab Pallete GDoc Add-on</a></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

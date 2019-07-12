@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-07-01T03:56:41Z",
+  "id": "not-really",
+  "duration": 205,
+  "title": "Master Sample GDoc Codelab",
+  "summary": "All features of DevSite's Codelab/CLaaT",
+  "source": "1hLgBuyWTqwNBaZjHDuGR7_3jPLfEuJNISyL_znLU5k8",
+  "theme": "general",
+  "status": null,
+  "category": [
+    "General"
+  ],
+  "tags": [
+    "web"
+  ],
+  "feedback": "https://groups.google.com/a/google.com/forum/#!forum/codelab-authors",
+  "ga": "UA-000111222-1=3",
+  "url": "not-really"
+}

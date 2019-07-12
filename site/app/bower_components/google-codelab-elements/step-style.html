@@ -1,0 +1,300 @@
+<!--
+Copyright (c) 2016 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+
+<dom-module id="step-style">
+  <template>
+    <style>
+      :host {
+        --google-codelab-step-note: {};
+        --google-codelab-step-tip: {};
+        --google-codelab-step-warn: {};
+        --google-codelab-step-callout: {};
+        --google-codelab-step-code: {};
+      }
+
+      :host {
+        line-height: 24px;
+        display: block;
+      }
+
+      #title {
+        font-family: 'Google Sans', Arial, sans-serif;
+        font-size: 28px;
+        font-weight: 400;
+        line-height: 1em;
+        margin: 0 0 30px;
+      }
+
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions {
+        box-shadow: 0px 1px 2px 0px rgba(60, 64, 67, 0.3), 0px 2px 6px 2px rgba(60, 64, 67, 0.15);
+        background: var(--google-codelab-step-background, #fff);
+        max-width: 800px;
+        font-size: 14px;
+        margin: 0 auto;
+        margin-bottom: 32px;
+        border-radius: 4px;
+      }
+
+      .instructions .inner {
+        padding: 24px;
+      }
+
+      :host-context(google-codelab[theme="minimal"]) .instructions .inner {
+        padding: 0 24px;
+      }
+
+      @media (max-width: 800px) {
+        .instructions {
+          margin: 0 0 16px 0;
+        }
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content a,
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content a:visited {
+        color: var(--google-codelab-step-link-color, --google-material-blue-600);
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content h2,
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content h3,
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content h4 {
+        font-weight: 400;
+        margin: 0;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content h2 {
+        font-weight: 300;
+        line-height: 1em;
+        font-size: 22px;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content {
+        line-height: 24px;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content li {
+        margin: 0.5em 0;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content h2 {
+        font-weight: 500;
+        margin: 1.5em 0 0 0;
+        font-size: 20px;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content h3 {
+        font-weight: 500;
+        margin: 20px 0 0 0;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content aside {
+        padding: 0.5em 1em;
+        margin: 2em 0;
+        border-left: 4px solid;
+        border-radius: 4px;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"]))  :host-context(google-codelab:not([theme="minimal"])) .instructions ::content aside p {
+        margin: 0.5em 0;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content aside.note,
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content aside.notice {
+        border-color: #EA8600;
+        background: #FEF7E0;
+        color: var(--google-material-grey-900);
+        @apply(--google-codelab-step-note);
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content aside.tip,
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content aside.special {
+        border-color: #137333;
+        background: #E6F4EA;
+        color: var(--google-material-grey-900);
+        @apply(--google-codelab-step-tip);
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content aside.warning {
+        border-color: #EA8600;
+        background: #FEF7E0;
+        color: var(--google-material-grey-900);
+        @apply(--google-codelab-step-warn);
+      }
+
+      .instructions ::content aside.callout {
+        background-color: #E8F0FE;
+        margin: 20px 0;
+        padding: 15px;
+        border-left: 3px solid var(--google-material-blue-800);
+        border-radius: 4px;
+        color: var(--google-material-grey-900);
+        font-size: 14px;
+        line-height: 1.5;
+        @apply(--google-codelab-step-callout);
+      }
+
+      .instructions ::content aside.callout b {
+        color: var(--google-material-blue-800);
+      }
+
+      .instructions ::content ul.checklist {
+        list-style: none;
+        padding: 0 0 0 1em;
+      }
+
+      .instructions ::content ul.checklist li {
+        padding-left: 24px;
+        background-size: 20px;
+        background-repeat: no-repeat;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAWlBMVEUAAAAxokwwoks1pFAxokwxokwxokwxokwxokwnnkQnnkQnnkRou3y84cTS69cxokwonkQxokwnnkRqvH1VsmtluXlVsmsnnkRdtnLw+PIxokwqn0YinEAfmj3goh/UAAAAGnRSTlMA2CcEo+6AQT7+2IOBJxPl27alhoBnX15SCCe258UAAAB+SURBVEjH7dA5EoAgEERR3BcQ923Q+1/T0SqKlNbMouP3gxkRFvZpyQb64VSQT4mOcYc8mU5DnqIG8zXoozj4d34tML+YrET8XBFx4e2F4oAL4N7J3EUB/EfSUwD/zG3hvFdROu9XtL31vgXguQA9F6DnAvM8WbOHpkXYD3cBBCcPjtASYjwAAAAASUVORK5CYII=');
+      }
+
+      .instructions ::content table code,
+      .instructions ::content h2 code {
+        background: white;
+      }
+
+      .instructions ::content .indented {
+        margin-left: 40px;
+      }
+
+      .instructions ::content strong {
+        font-weight: 600;
+      }
+
+      .instructions ::content paper-button {
+        border-radius: 4px;
+        color: #FFFFFF;
+        font-family: 'Google Sans', Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: .6px;
+        padding-bottom: 6px;
+        padding-left: 12px;
+        padding-right: 16px;
+        padding-top: 6px;
+        text-transform: none;
+      }
+
+      .instructions ::content paper-button a {
+        text-decoration: none;
+        color: inherit !important;
+      }
+
+      .instructions ::content a paper-button {
+        /* text-decoration doesn't apply to inline blocks. */
+        display: inline-block;
+      }
+
+      .instructions ::content paper-button.colored {
+        background-color: var(--google-material-green-600);
+      }
+
+
+      .instructions ::content paper-button.red {
+        background-color: #D93025;
+      }
+
+      .instructions ::content iron-icon {
+        padding-right: 8px;
+        max-height: 16px;
+        max-width: 16px;
+      }
+
+      .instructions ::content img {
+        max-width: 100%;
+        width: 100%;
+        vertical-align: bottom;
+      }
+
+      .instructions ::content table {
+        border-spacing: 0;
+      }
+
+      .instructions ::content td {
+        vertical-align: top;
+        border-bottom: 1px solid #CCC;
+        padding: 8px;
+      }
+
+      .instructions ::content table p {
+        margin: 0;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content h3.faq {
+        border-bottom: 1px solid #ddd;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content ul.faq {
+        list-style: none;
+        padding-left: 1em;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content .faq li {
+        font-size: 1.1em;
+        margin-bottom: 0.8em;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content .faq a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      :host-context(google-codelab:not([theme="minimal"])) .instructions ::content .faq a:hover {
+        text-decoration: underline;
+      }
+
+      .instructions ::content .faq a[href*="cloud.google.com"] {
+        padding-left: 22px;
+        background-size: 20px;
+        background-repeat: no-repeat;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAC9FBMVEX////u7u7v7+/ZRDf/zEH/zkPbRTlJifT/z0XYRDhRj/XWRDdPjvVOjfX/zkH/z0fXQzdGiPXUQzdMi/VKi/Xr6+3t7e1SkPXbRDdLjPW70fPaQjVOjPXx8PD9/f1nnff19fXRQzdHifVJhOxEh/Tu7/JLifH9y0DUQjVtofhOi/NKh+9HgelGf+b+7saaWXX/zDz+yTrZRzrRQjT7+/vxx8PeqkTsuj32uzrOQzdqn/j39/fr6Oj9yT/3vjvaQDPUPTBJivVKifPq7O/z0Mz968T4wj7zwD3NPTHGPDD0+P9Bifrv8/Xx8vJJhu5EfOPo3Nv/0Ez8y0rxvT3ZPjBDi/tBhPT55ePkysj+3Hr/0VLHVErcpkPcTUH7xD35wTzztznpsTjKRTjo8P3U4/z6+vr//PmQt/mBrff//fayy/ZUkfZjmfSXufP78/L18+//+Oj66Of+9eBCdt3t59f/89TvxcPsurXasKztqKL+4Y7jjIT0033ShH3hc2ngaV7/1F3/0ljjv1fbWU37xkDaoEDCSj/xujvptjvutjrxtjn8xDflrDb5vjXJQjX2tzP4+v+bwf3I3Pyiw/t0pvhel/VZlPW90fP/+/DV3/Cdu+/e4uv33Nk+btP+8Mz+8Mniwb7+7L3u371Vdrv+6bDusq3+56j+5aTx2Z+Gjpj+4pbolI3RjYehnIT+2XPedW370mbHaGDMZl3bY1jQVUvbU0f/00PYTkLKSj/tsjjwpjfeXjfnfjbEQjbXPjTSPS/w9vu50vs7hfr5+flypPf89vb89fTF1fHM2vBsnfB3ou/67+6swOpekert6uNdi+M5deLq4OA/dt83bt80a9xmjdby19VKc8jx5cf12cP/7r/gwr+pnr/v4b7xwLtffbf+6rHx3KnorKjYqKTXpqHXo57aop3ZkovTwIboh3+jX3f30XDgenCWUm3Kc2zIsGnMcGj4y1zgYFXgX1TfrEXWlz7mhjfsrTbkljbabDbcVTbsmTBDSJ02AAAFFklEQVRYw+2WV1jTUABGkyZpi6W0tKUWC0hBsAporbMWrCgqKA6WCooK7r333nvvvffee++99957b33x3uTetIEGnnzx83y89Tunf25SWuI/f4Oqk6cU4ijLkr9sfp5Ckyfk6h8o5JkH4umpVPr5+fnqdLro6GiZTBYkk3l71z5SNbdA8zyt8wLYhKefUunr66vV6WQsMDExF3/StLytka/0VPopfbUgoEWBoCBv76lNcj6AFnnQ+6MB0BcsKNA8x2M4iPbjAThQgVsAA545TWg8RQlc5MMBflrg8wHgg3NsIX6OAa10Lr6SDQgHgAXetSeJD5iqRTrytfAKdHwgiAu0EZ3QvEBhYLLAu6+LDoIOtCApKSnVUqoBDondyiahoTggazt9ej4hd94Wxbya4z5wskZoYVgA0/NXlGSlVr3iJpOpOMsbt36r4BphsACQHSezBfSP4zQQs8Zs3n7P3QmeDQ8OAwVwdkEt0ADhhI3jFCxms7lfu+yBthHhwcFhoaCgnXZC4obqPYbZPABqgHVpNj/yak1QABdRQatriwcIiXy312alrBRFqff175jFb9lrZecIVGgz09+NTurjbw/LNFmtUqnVw8PRM0AY6JowaHFN7iIKz2rvtCIjfbBPkvF992aapABKakzvKByQymxbO5e7iDb8BfjoA5uWsPv7kJxPSi4Oy7RpgA/+kl8KArdolUq1uDMshLXCA8jD6NXqpEQPAmDCszibTSFlccS4+DMGMCrVtvdzO0eEh59CPulfgsDYoQ/Rb4q1mbiCsX8zZ2AVrQLIV16uGRGMTxD6PIEkh2TBOPA4og09nSeYJoe+fND1SxdmSRCBgg+6PypE9o01mTRq6Bs+1yEQqcCHJK69cn62xDnA3YS6W4qD51kBA9LV6MX5aXKuIB90/wyJnztCQFMJKuif2zQANfANn9CnchlYzyWYF7OFV8ATgAPV624BAzQKCgTSSxIsDxIYOQR00m7kFgjpsQP6CgUlNWxFd7LDAEaOoPvoc74ESa1NsUBXK9QelLHfafTqclZmKwXvsjpJihyi/mkc9j3Su/P7BngxeMJHPXoru9vbCP4vYZ9aT/DMpxkAW7CsCCFZ3D5I5BowAPnp1wgnqRaGQ84kduEKemchwC5BJ1jX6Tt6Ey50SvBiMH1AgCvYA1i9BP8UkRtjsW8c3E5wjcstfCBxUQgW/APt9sBAfxIR/2ScBvnS5O6EgA4baL7w+hzpRELyhNSqZ1Jgf/0xQsgSuXPCQzxBSPwaG/YpawyRhRnrvBh0DvSGLkITn2A9M/Kljt5HiawsTGAwxVbohS7+JGPfOBgNEJDK3wg60d2EBTvM2KdWE27opPLCWPqEZP9W+BCLfIoa3JFwxyoLX4haVNFHSMUecQrsGx8RbmmZxgfoIV9KIeoDhg4d+jXTzPubCREWWmhOB0SV5hgxYkRGxpgxY36i+2cEgRixQLN1FpqnYJWkKklJScNLjxy5MyPjhwf0Kegn9yZEmZdAuxQqVwEkDR8+auTO77uhD3XKsbWOeKBZL4ugULlyuXJlyjQaNeqbFfhG6BuSwdeqOF0H0q6FBmyhUaNdu6FPQd/RHw4Qpxfj4heMatCwIZywh1JTLAYD+mkhSoeBLoGoqCENYGDXL943oB834iyhLdjHgfF79mHfsb0bkRvLBhZDjB49euzYsePH/96/vzyHeXN3Inc6zSuCqcRys1tJjm4xdYj//JP8AXE5S/JuAn7MAAAAAElFTkSuQmCC');
+      }
+
+      .instructions ::content .faq a[href*="stackoverflow.com"] {
+        padding-left: 22px;
+        background-size: 24px;
+        background-repeat: no-repeat;
+        background-image: url('data:image/png;base64,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');
+      }
+
+      .instructions ::content .faq a[href*="support.google.com/webmasters/"] {
+        padding-left: 24px;
+        background-size: 24px;
+        background-repeat: no-repeat;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAolBMVEUAAADW1tbW1tZ6enrQ0dJ6enrMzMzq6+zq6+x6enru7+/m5+ju7+/m5+j////S09REi/XW1tbm5+ju7+9PT0/Q0dK8vLxGjfVZWVlNTU16enrMzMzIyMj09PS/0uuSkpJpaWmbm5tim/e0tLSEhIStx+3e3+GsrKxwcHBZk/dPk/R1p/KPtu/U3eqmpqZlZWVfmO5woeqHreWvwN6nu9qLi4vZSE73AAAADnRSTlMAEcxmzO7MzDMz7u6IiHn/rpYAAALMSURBVHja7dXpjtowFIZhUkqZlSV1ncQdEsK+zD7T+7+1xjTiwxVOAmeORyP5+2UspPchEtDy8/Pz8/Pz8/M7cZeduHKdyxbL0FfVAMUraHdUHUB12i22tZWqBRSDgKFfC4CApV8PgIClXw/gE6hyTd/lAR7gAV8fEHwbWtc/ul/WfQ8IfQKAIECfCoCA3sdq+nQB+nQABIQ+CQABtY9Z+lQB+gwACBj6AFAE6DM9AL0fAalPB/yGgNAfntwHAAJKnwCAwNLneQAAVAvM/ttzVLlB4z2/A6AFVoDRf43IfewVgGKNAG/Uvrl39BsCXqh9cy8nA/51tmk63+jDZp6m9wTA4DzANiyW6lOqTxAMHAD22XASReuwpKDvELCNookBGJwx9E8B3OvsQp8e9GmOviNANA/Dh4k+TApBukHfFSBa7/I7whqf3xWA/gOAoU8DDJwBCHk+wIAw9CsAPw/W++CFB/MAD/hCgL59PXPS8toRYKHEndkTauEQIIUQ0hToG2eAXOicKdBXmSPAo9CTpkDo5U4Ad6IEGILy0gFgFJctCACIh/yATABwIChvVyE3IBR7AAQAiOmIGZADAMEBQMkRL+AJAAgOALGUI07AQgBgCPb3uRbwAaYAGAIAZlIL2AA5AIYAgJXUAjaAAsAQADCWO4EjAAQGQAvYAUsDsDQAeuwAMZvu89PZ/jZhBmQCi2dl60+MPiMAf8UgZEUpK/LoJ4oX0C9LIIyF0U8yXkBPVCzRWzIDZjX9sWQG9Kv7ScYN6KnKfizZAf2qfpLzA3p5RV9JboDeytp/kk4Ao5WtP+UFQKCO9sdTSQQ03+OR/kxKdgAWZv/11VI6AWBmP5HSNQD5zwQknwxIqIBu468hBgDqNYCuFXBDASSNAbdWQHB1PiBpDLgOWtZdXPEDri/QswjYAOjbF9x0OQHd26Dl5+fn5+fn5+dn7i/3LEaKJNV/0wAAAABJRU5ErkJggg==');
+      }
+
+      .instructions ::content .faq a[href*="developer.android.com"],
+      .instructions ::content .faq a[href*="android-developer"] {
+        padding-left: 20px;
+        background-repeat: no-repeat;
+        background-size: 20px;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAMAAADVRocKAAAAq1BMVEX///+lyjmfxyGhyCqkyjakyTP+/vuiyS7z+OWlyjKgxyTX57ChyCfa6bTx9uLy9+Sz0l6szk/D24Tt9NrN4ZnK4JSiyCyexh34+/D6/PTp8dPh7cjf7L7k78vc6rnW5qzU5ajS5KPP4p+21GWnzD3F3Yi813Kx0ViqzUWexhr8/vjv9d7Z6LKy0lyZxADh7cLA2n2rzkr1+erJ35C61m6uz1KcxRHn8M6/2XgEePWtAAACr0lEQVRo3u3Z2XKiQBiG4Y9ebNO2aCCyzOC+7zH7/V/ZRJZQZaJpWnKS4TlJUItXbX4pFJXK71DTusvccI6z5oMSAutdhDP2uzpK4CxwxsRBGYJdA19qLAOU4s4LkyUN7G4Ude2glmzuRihHKDqAPZhNuJRKSckms37rvctrKMnG728l5cxKMU7JuCF7KEvf87h1gnu0iXK4B2p9Sc3dUgZNMusMLvu42r20LiBXT8JMWRepN1xlGu+fK8/6xFPxwsvH697/eP/j7uDTOvB+dxwX/AaM2SQ+6icrYHDyGmgfWE3irNeCqTaPAwcArydroboAbuMAb8NQRNJn20SYtHK8HaKZzoffhZl5tlNxsD5PsnUQ2b9jwwnO35WvRo3lN/o2TDwKS5M3gokF0w2wZxgIlpY2FpgsgdQPkLXJQar0A/LVIDB6Idp2GxQQrJI/rbq2Voijlc5S9LZs8uYCqBVyXLTZhLW/fSn3hDMmZAQ05I020gT2PmeM+w4uGpLksFs+oEEtbaqJVnpUkz4uyebf6xQK0CY6XjoSC1xQ9/PPr4KB52zuvTrOa5EssC0auM0C0tYKtI0DqgpUgSpQBapAFfifAj90Tn5YZoGnooH8eutB56KDDosGhlTrYiTyk0epVdFAKJLn9rLHRSNfcE4tF0UDcAXlXPhDfGPtjGejEMUDCEdPY8eFHoOADvPAxiDQLBBQkUHAJfoB34UBS/9CfAETe6lZYKZft/QIFe94vicRy7tcvKOkB0PhYOo4zlNWYNvjpjOdZwU+O24OQlynK62EGCF2J9IbpIsy/P0I3CHW+Qj8qQJVoAr8VOCx3EB+YvDSwIDmXzaW4oZZseU6Lfr5aaAUPT8uyPuT33VeIpRkI5RHyRQfHEKFUj2UJuh1GjaQsxudKECl8jv8A6GtQkKSkMLrAAAAAElFTkSuQmCC');
+      }
+
+      .instructions ::content h3 > a[href*="github"],
+      .instructions ::content h3 > a[href*="github"]:visited {
+        color: black;
+        text-decoration: none;
+        padding-left: 24px;
+        background-repeat: no-repeat;
+        background-size: 18px;
+        background-image: url('data:image/png;base64,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');
+      }
+    </style>
+  </template>
+</dom-module>
