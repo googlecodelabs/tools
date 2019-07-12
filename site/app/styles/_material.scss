@@ -1,0 +1,89 @@
+/**
+ * Copyright 2015 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@mixin md-font-base() {
+  font-family: 'Roboto', 'Noto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@mixin md-font-body1() {
+  @include md-font-base();
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+@mixin md-font-headline() {
+  @include md-font-base();
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -.012em;
+  line-height: 32px;
+}
+
+@mixin md-font-subhead() {
+  @include md-font-base();
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@mixin md-font-display4() {
+  @include md-font-base();
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 112px;
+  font-weight: 300;
+  letter-spacing: -.044em;
+  line-height: 120px;
+}
+
+@mixin md-font-display3() {
+  @include md-font-base();
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 56px;
+  font-weight: 400;
+  letter-spacing: -.026em;
+  line-height: 60px;
+}
+
+@mixin md-font-display2() {
+  @include md-font-base();
+  font-size: 45px;
+  font-weight: 400;
+  letter-spacing: -.018em;
+  line-height: 48px;
+}
+
+@mixin md-font-display1() {
+  @include md-font-base();
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -.01em;
+  line-height: 40px;
+}
+
+@mixin md-font-button() {
+  @include md-font-base();
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}

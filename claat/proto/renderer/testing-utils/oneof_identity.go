@@ -3,9 +3,6 @@ package testingutils
 import (
 	"errors"
 	"fmt"
-	// "go/build"
-	// "io/ioutil"
-	// "path/filepath"
 	"reflect"
 	"runtime"
 	"testing"

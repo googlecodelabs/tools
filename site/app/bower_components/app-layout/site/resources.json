@@ -1,0 +1,76 @@
+{
+  "templates": [
+    {
+      "name": "GETTING STARTED",
+      "thumbnail": "site/images/getting-started.png",
+      "demoUrl": "templates/getting-started/",
+      "sourceUrl": "https://github.com/PolymerElements/app-layout/tree/master/templates/getting-started"
+    },
+    {
+      "name": "ZUPERKÜLBLOG",
+      "thumbnail": "site/images/publishing.png",
+      "demoUrl": "templates/publishing/",
+      "sourceUrl": "https://github.com/PolymerElements/app-layout/tree/master/templates/publishing"
+    },
+    {
+      "name": "PESTO",
+      "thumbnail": "site/images/pesto.png",
+      "demoUrl": "templates/pesto/",
+      "sourceUrl": "https://github.com/PolymerElements/app-layout/tree/master/templates/pesto"
+    },
+    {
+      "name": "SHRINE",
+      "thumbnail": "site/images/shrine.png",
+      "demoUrl": "templates/shrine/",
+      "sourceUrl": "https://github.com/PolymerElements/app-layout/tree/master/templates/shrine"
+    },
+    {
+      "name": "TEST DRIVE",
+      "thumbnail": "site/images/test-drive.png",
+      "demoUrl": "templates/test-drive/",
+      "sourceUrl": "https://github.com/PolymerElements/app-layout/tree/master/templates/test-drive"
+    },
+    {
+      "name": "LANDING PAGE",
+      "thumbnail": "site/images/landing-page.png",
+      "demoUrl": "templates/landing-page/",
+      "sourceUrl": "https://github.com/PolymerElements/app-layout/tree/master/templates/landing-page"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Transform Navigation",
+      "desc": "As more screen space is available, side navigation can transform into tabs.",
+      "demoUrl": "patterns/transform-navigation/",
+      "sourceUrl": "https://github.com/PolymerElements/app-layout/tree/master/patterns/transform-navigation/x-app.html"
+    },
+    {
+      "name": "Expand Card",
+      "desc": "Content cards may expand to take up more horizontal space.",
+      "demoUrl": "patterns/expand-card/",
+      "sourceUrl": "https://github.com/PolymerElements/app-layout/tree/master/patterns/expand-card/index.html"
+    }
+  ],
+  "apps": [
+    {
+      "name": "Google I/O 2016",
+      "thumbnail": "site/images/io2016.png",
+      "demoUrl": "https://events.google.com/io2016/"
+    },
+    {
+      "name": "Polymer Summit 2015",
+      "thumbnail": "site/images/polymer-summit.png",
+      "demoUrl": "https://www.polymer-project.org/summit"
+    },
+    {
+      "name": "Chrome Dev Summit 2015",
+      "thumbnail": "site/images/cds2015.png",
+      "demoUrl": "https://developer.chrome.com/devsummit"
+    },
+    {
+      "name": "PICA",
+      "thumbnail": "site/images/pica.png",
+      "demoUrl": "https://frankiefu.github.io/pica/"
+    }
+  ]
+}

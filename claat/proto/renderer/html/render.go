@@ -20,7 +20,7 @@ var (
 		"asString":            asString,
 		"renderOneof":         renderOneof,
 		"renderRepeated":      renderRepeated,
-		"listVariertyToTag":   listVariertyToTag,
+		"listVarietyToTag":    listVarietyToTag,
 		"listFormattingClass": listFormattingClass,
 	}
 )
@@ -68,8 +68,8 @@ func asString(contents []string) string {
 	return strings.Join(contents, "")
 }
 
-// listVariertyToTag maps 'ListVariety' enums to their HTML tags
-func listVariertyToTag(v tutorial.List_ListVariety) string {
+// listVarietyToTag maps 'ListVariety' enums to their HTML tags
+func listVarietyToTag(v tutorial.List_ListVariety) string {
 	switch v.String() {
 	case "UNORDERED":
 		return "ul"
@@ -82,12 +82,10 @@ func listVariertyToTag(v tutorial.List_ListVariety) string {
 
 // listFormattingClass maps 'ListStyle' enums to their CSS classes
 func listFormattingClass(s tutorial.List_ListStyle) string {
-	switch s.String() {
-	case "CHECKLIST":
-		return "checklist"
-	case "FAQ":
-		return "faq"
-	default:
+	v := s.String()
+
+	if strings.HasPrefix(v, "UNKNOWN") {
 		return ""
 	}
+	return strings.ToLower(v)
 }

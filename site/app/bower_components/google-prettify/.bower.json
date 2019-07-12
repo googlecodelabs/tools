@@ -1,0 +1,49 @@
+{
+  "name": "code-prettify",
+  "description": "Google Code Prettify",
+  "authors": [
+    "Google"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/google/code-prettify",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/google/code-prettify.git"
+  },
+  "keywords": [
+    "syntax",
+    "highlight",
+    "highlighting",
+    "source",
+    "code",
+    "prettify",
+    "google"
+  ],
+  "main": [
+    "src/prettify.js",
+    "src/prettify.css"
+  ],
+  "moduleType": [
+    "globals",
+    "amd"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "distrib",
+    "js-modules",
+    "tasks",
+    "tests",
+    "tools"
+  ],
+  "_release": "760e6e7312",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "760e6e7312ff9f6f6d2c0e02447186092b429feb"
+  },
+  "_source": "https://github.com/google/code-prettify.git",
+  "_target": "*",
+  "_originalSource": "google/code-prettify"
+}
