@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  font-family: sans-serif;
+  padding: 8px;
+  font-size: 1em;
+}
+h1, h2, h3 {
+  border-bottom: 1px solid #ccc;
+  padding: 4px;
+}
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-bottom: 2px dashed #ddd;
+  margin: 8px;
+}
+pre {
+  background-color: #f8f8f8;
+  color: #555;
+  border: 1px solid #ccc;
+  font-size: .9em;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>

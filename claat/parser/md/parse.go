@@ -36,7 +36,7 @@ import (
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
-	"github.com/russross/blackfriday"
+	"gopkg.in/russross/blackfriday.v2"
 )
 
 // Metadata constants for the YAML header
@@ -161,21 +161,22 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 // claatMarkdown calls the Blackfriday Markdown parser with some special addons selected. It takes a byte slice as a parameter,
 // and returns its result as a byte slice.
 func claatMarkdown(b []byte) []byte {
-	htmlFlags := blackfriday.HTML_USE_XHTML |
-		blackfriday.HTML_USE_SMARTYPANTS |
-		blackfriday.HTML_SMARTYPANTS_FRACTIONS |
-		blackfriday.HTML_SMARTYPANTS_DASHES |
-		blackfriday.HTML_SMARTYPANTS_LATEX_DASHES
-	extns := blackfriday.EXTENSION_FENCED_CODE |
-		blackfriday.EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK |
-		blackfriday.EXTENSION_NO_INTRA_EMPHASIS |
-		blackfriday.EXTENSION_DEFINITION_LISTS |
-		blackfriday.EXTENSION_TABLES
-	o := blackfriday.Options{
-		Extensions: extns,
-	}
-	r := blackfriday.HtmlRenderer(htmlFlags, "", "")
-	return blackfriday.MarkdownOptions(b, r, o)
+	htmlFlags := blackfriday.UseXHTML |
+		blackfriday.Smartypants |
+		blackfriday.SmartypantsFractions |
+		blackfriday.SmartypantsDashes |
+		blackfriday.SmartypantsLatexDashes
+
+	params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
+	r := blackfriday.NewHTMLRenderer(params)
+
+	extns := blackfriday.FencedCode |
+		blackfriday.NoEmptyLineBeforeBlock |
+		blackfriday.NoIntraEmphasis |
+		blackfriday.DefinitionLists |
+		blackfriday.Tables
+
+	return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r))
 }
 
 // parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
@@ -638,9 +639,26 @@ func list(ds *docState) types.Node {
 // It returns nil if src is empty.
 // It may also return a YouTubeNode if alt property contains specific substring.
 func image(ds *docState) types.Node {
-	if strings.Contains(nodeAttr(ds.cur, "alt"), "youtube.com/watch") {
-		return youtube(ds)
-	}
+        alt := nodeAttr(ds.cur, "alt")
+        if strings.Contains(alt, "youtube.com/watch") {
+                return youtube(ds)
+        } else if strings.Contains(alt, "https://") {
+                u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+                if err != nil {
+                        return nil
+                }
+                // For iframe, make sure URL ends in whitelisted domain.
+                ok := false
+                for _, domain := range types.IframeWhitelist {
+                        if strings.HasSuffix(u.Hostname(), domain) {
+                                ok = true
+                                break
+                        }
+                }
+                if ok {
+                        return iframe(ds)
+                }
+        }
 	s := nodeAttr(ds.cur, "src")
 	if s == "" {
 		return nil
@@ -680,6 +698,20 @@ func youtube(ds *docState) types.Node {
 	n := types.NewYouTubeNode(v)
 	n.MutateBlock(true)
 	return n
+}
+
+func iframe(ds *docState) types.Node {
+        u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+        if err != nil {
+                return nil
+        }
+        // Allow only https.
+        if u.Scheme != "https" {
+                return nil
+        }
+        n := types.NewIframeNode(u.String())
+        n.MutateBlock(true)
+        return n
 }
 
 // button returns either a text node, if no <a> child element is present,
