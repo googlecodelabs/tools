@@ -133,11 +133,7 @@ message CodeBlock {
 
   reserved 1, 2;
   reserved "code_location", "inline_contents";
-<<<<<<< HEAD
 }
-=======
-};
->>>>>>> dev
 
 message List {
   repeated Paragraph content = 3;
