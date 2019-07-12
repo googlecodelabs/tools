@@ -100,7 +100,7 @@ message InlineCode {
 }
 
 message Heading {
-  repeated InlineContent inline_contents = 1;
+  repeated InlineContent content = 1;
   int32 level = 2;
 };
 

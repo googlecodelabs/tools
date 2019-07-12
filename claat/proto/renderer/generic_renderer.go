@@ -19,6 +19,8 @@ func templateName(el interface{}) string {
 		return "InlineCode"
 	case *tutorial.InlineContent, tutorial.InlineContent:
 		return "InlineContent"
+	case *tutorial.Heading, tutorial.Heading:
+		return "Heading"
 	case *tutorial.Paragraph, tutorial.Paragraph:
 		return "Paragraph"
 	case *tutorial.Link, tutorial.Link:
