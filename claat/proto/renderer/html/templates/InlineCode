@@ -1,1 +1,0 @@
-<code>{{ .Code | html | js }}</code>
