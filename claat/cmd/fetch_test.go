@@ -135,7 +135,7 @@ func TestSlurpWithFragment(t *testing.T) {
 	}}
 	clients[providerGoogle] = &http.Client{Transport: rt}
 
-	clab, err := slurpCodelab("doc-123", "")
+	clab, err := slurpCodelab("doc-123", "", map[string]bool{})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -24,6 +24,7 @@ import (
 
 	"golang.org/x/net/html"
 
+	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
 )
@@ -174,7 +175,88 @@ func TestMetaTable(t *testing.T) {
 	`
 
 	p := &Parser{}
-	clab, err := p.Parse(markupReader(markup))
+	clab, err := p.Parse(markupReader(markup), *parser.NewOptions())
+	if err != nil {
+		t.Fatal(err)
+	}
+	meta := types.Meta{
+		Summary:    "Test summary",
+		Authors:    "John Smith <user@example.com>",
+		Categories: []string{"Foo", "Bar"},
+		Theme:      "foo",
+		Status:     clab.Meta.Status, // verified separately
+		Feedback:   "https://example.com/issues",
+		GA:         "GA-12345",
+		// Tags are always sorted.
+		// TODO: move sorting to Parse of the parser package
+		Tags:  []string{"kiosk", "web"},
+		Extra: map[string]string{},
+	}
+	if !reflect.DeepEqual(clab.Meta, meta) {
+		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
+	}
+	status := types.LegacyStatus([]string{"final"})
+	if clab.Meta.Status == nil {
+		t.Fatalf("Meta.Status is nil; want %q", status)
+	}
+	if !reflect.DeepEqual(clab.Meta.Status, &status) {
+		t.Errorf("Meta.Status: %q; want %q", *clab.Meta.Status, status)
+	}
+}
+
+func TestMetaTablePassMetadata(t *testing.T) {
+	const markup = `
+	<html>
+	<body>
+		<table>
+			<tr>
+				<td>Summary</td>
+				<td>Test summary</td>
+			</tr>
+			<tr>
+				<td>Authors</td>
+				<td>John Smith &lt;user@example.com&gt;</td>
+			</tr>
+			<tr>
+				<td>Category</td>
+				<td>Foo, Bar</td>
+			</tr>
+			<tr>
+				<td>Environment</td>
+				<td>Web, Kiosk</td>
+			</tr>
+			<tr>
+				<td>Status</td>
+				<td>Final</td>
+			</tr>
+			<tr>
+				<td>Feedback</td>
+				<td>https://example.com/issues</td>
+			</tr>
+			<tr>
+				<td>Analytics</td>
+				<td>GA-12345</td>
+			</tr>
+			<tr>
+				<td>ExtraFieldOne</td>
+				<td>11111</td>
+			</tr>
+			<tr>
+				<td>ExtraFieldTwo</td>
+				<td>22222</td>
+			</tr>
+		</table>
+	</body>
+	</html>
+	`
+
+	p := &Parser{}
+	opts := *parser.NewOptions()
+	opts.PassMetadata = map[string]bool{
+		"extrafieldone": true,
+	}
+
+	clab, err := p.Parse(markupReader(markup), opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,6 +271,9 @@ func TestMetaTable(t *testing.T) {
 		// Tags are always sorted.
 		// TODO: move sorting to Parse of the parser package
 		Tags: []string{"kiosk", "web"},
+		Extra: map[string]string{
+			"extrafieldone": "11111",
+		},
 	}
 	if !reflect.DeepEqual(clab.Meta, meta) {
 		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
@@ -293,7 +378,7 @@ func TestParseDoc(t *testing.T) {
 	`
 
 	p := &Parser{}
-	c, err := p.Parse(markupReader(markup))
+	c, err := p.Parse(markupReader(markup), *parser.NewOptions())
 	if err != nil {
 		t.Fatal(err)
 	}

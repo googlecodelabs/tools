@@ -41,6 +41,8 @@ type CmdExportOptions struct {
 	GlobalGA string
 	// Output is the output directory, or "-" for stdout.
 	Output string
+	// PassMetadata are the extra metadata fields to pass along.
+	PassMetadata map[string]bool
 	// Prefix is a URL prefix to prepend when using HTML format.
 	Prefix string
 	// Srcs is the sources to export codelabs from.
@@ -91,7 +93,7 @@ func CmdExport(opts CmdExportOptions) int {
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
 func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
-	clab, err := slurpCodelab(src, opts.AuthToken)
+	clab, err := slurpCodelab(src, opts.AuthToken, opts.PassMetadata)
 	if err != nil {
 		return nil, err
 	}

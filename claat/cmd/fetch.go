@@ -64,17 +64,22 @@ type codelab struct {
 }
 
 // slurpCodelab retrieves and parses codelab source.
+// It takes the source, plus an auth token and a set of extra metadata to pass along.
 // It returns parsed codelab and its source type.
 //
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
-func slurpCodelab(src, authToken string) (*codelab, error) {
+func slurpCodelab(src, authToken string, passMetadata map[string]bool) (*codelab, error) {
 	res, err := fetch(src, authToken)
 	if err != nil {
 		return nil, err
 	}
 	defer res.body.Close()
-	clab, err := parser.Parse(string(res.typ), res.body)
+
+	opts := *parser.NewOptions()
+	opts.PassMetadata = passMetadata
+
+	clab, err := parser.Parse(string(res.typ), res.body, opts)
 	if err != nil {
 		return nil, err
 	}
