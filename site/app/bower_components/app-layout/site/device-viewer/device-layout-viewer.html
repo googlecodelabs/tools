@@ -1,0 +1,196 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../iron-selector/iron-selector.html">
+
+<link rel="import" href="device-view.html">
+
+<!--
+Displays a page on different device layouts.
+
+    <device-layout-viewer device="all" src="https://www.polymer-project.org/"></device-layout-viewer>
+
+-->
+<dom-module id="device-layout-viewer">
+
+  <template>
+
+    <style>
+
+      :host {
+        @apply(--layout-horizontal);
+        overflow: hidden;
+      }
+
+      .canvas {
+        @apply(--layout-flex);
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        position: relative;
+        overflow: auto;
+      }
+
+      .canvas[device=laptop] {
+        overflow: hidden;
+      }
+
+      #views:not([device=all]) {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        margin: auto 0;
+      }
+
+      #views:not([device=all]) device-view:not(.iron-selected) {
+        display: none;
+      }
+
+      #views[device=all] {
+        display: block;
+        width: 1000px;
+        height: 600px;
+        margin-left: 32px;
+      }
+
+      #views[device=all] device-view {
+        position: absolute;
+        -webkit-transform-origin: left top;
+        transform-origin: left top;
+      }
+
+      #views:not([device=all]) device-view[device=laptop] {
+        @apply(--layout-fit);
+        width: auto;
+        height: auto;
+      }
+
+      #views[device=all] device-view[device=laptop] {
+        -webkit-transform: translate3d(0px, 40px, 0) scale(0.5);
+        transform: translate3d(0px, 40px, 0) scale(0.5);
+      }
+
+      #views[device=all] device-view[device=tablet] {
+        -webkit-transform: translate3d(380px, 130px, 0) scale(0.5);
+        transform: translate3d(380px, 130px, 0) scale(0.5);
+      }
+
+      #views[device=all] device-view[device=phone] {
+        -webkit-transform: translate3d(800px, 110px, 0) scale(0.5);
+        transform: translate3d(800px, 110px, 0) scale(0.5);
+      }
+
+      @media (max-width: 1024px) {
+
+        #views:not([device=all]):not([device=laptop]) {
+          width: 1400px;
+          height: 800px;
+          -webkit-transform: scale(0.5);
+          transform: scale(0.5);
+          @apply(--layout-flex-none);
+        }
+
+        #views[device=all] {
+          width: 500px;
+          height: 300px;
+          margin-left: -64px;
+          -webkit-transform-origin: 0 0;
+          transform-origin: 0 0;
+          -webkit-transform: scale(0.6);
+          transform: scale(0.6);
+        }
+
+      }
+
+      @media (max-width: 600px) {
+
+        #views:not([device=all]):not([device=laptop]) {
+          width: 1400px;
+          height: 800px;
+          -webkit-transform: scale(0.5);
+          transform: scale(0.5);
+          @apply(--layout-flex-none);
+        }
+
+        #views[device=all] {
+          width: 250px;
+          height: 150px;
+          margin-left: -80px;
+          -webkit-transform-origin: 0 0;
+          transform-origin: 0 0;
+          -webkit-transform: scale(0.35);
+          transform: scale(0.35);
+        }
+
+      }
+
+    </style>
+
+    <div class="canvas" device$="{{device}}">
+
+      <iron-selector id="views" selected="{{device}}" attr-for-selected="device"
+          selected-item="{{selectedView}}" device$="{{device}}" activate-event="">
+
+        <device-view device="laptop" src="{{src}}"></device-view>
+        <device-view device="tablet" src="{{src}}" landscape></device-view>
+        <device-view device="phone" src="{{src}}"></device-view>
+
+      </iron-selector>
+
+    </div>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'device-layout-viewer',
+
+      properties: {
+
+        /**
+         * The url of the page to display.
+         */
+        src: String,
+
+        /**
+         * The device layout to show. Possible values are `phone`, `tablet`, `laptop` and `all`.
+         */
+        device: {
+          type: String,
+          value: 'all',
+          observer: '_deviceChanged'
+        }
+
+      },
+
+      _defaultLandscapes: {
+        laptop: false,
+        tablet: true,
+        phone: false
+      },
+
+      toggleLandscape: function() {
+        this.selectedView && this.selectedView.toggleLandscape();
+      },
+
+      _deviceChanged: function(device) {
+        if (device === 'all') {
+          this.$.views.items.forEach(function(view) {
+            view.landscape = this._defaultLandscapes[view.device];
+          }, this);
+        }
+      }
+
+    });
+
+  </script>
+
+</dom-module>
