@@ -123,9 +123,15 @@ message InfoBox {
 };
 
 message CodeBlock {
-  repeated InlineContent inline_contents = 1;
-  string code_location = 2;
-  string language_hint = 3;
+  // TODO: Use this instead of static syntax highlighting
+  string language = 3;
+
+  string code = 4;
+  // TODO: scrap this field once `language` TODO is resolved
+  bool is_highlighted = 5;
+
+  reserved 1, 2;
+  reserved "code_location", "inline_contents";
 };
 
 message List {

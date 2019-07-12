@@ -81,3 +81,21 @@ func TestRenderInlineContentStylizedTextTemplate(t *testing.T) {
 	}
 	testingutils.TestCanonicalRendererBatch(html.Render, tests, t)
 }
+
+func TestRenderInlineContentTemplateIdentiy(t *testing.T) {
+	tests := []*testingutils.RendererIdendityBatch{
+		{
+			InProto:  protoconstructors.NewInlineContentTextPlain(`<script>alert("you've been hacked!");</script>!`),
+			OutProto: protoconstructors.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
+			Out:      `&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!`,
+			Ok:       true,
+		},
+		{
+			InProto:  protoconstructors.NewInlineContentCode(`<script>alert("you've been hacked!");</script>!`),
+			OutProto: protoconstructors.NewInlineCode(`<script>alert("you've been hacked!");</script>!`),
+			Out:      `<code>&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!</code>`,
+			Ok:       true,
+		},
+	}
+	testingutils.RenderingIdendityTestBatch(html.Render, tests, t)
+}

@@ -155,3 +155,16 @@ func NewYTVideo(id string) *tutorial.YoutubeVideo {
 		Id: id,
 	}
 }
+
+func NewCodeBlockPlain(code string) *tutorial.CodeBlock {
+	return &tutorial.CodeBlock{
+		Code: code,
+	}
+}
+
+func NewCodeBlockHighlighted(code string) *tutorial.CodeBlock {
+	return &tutorial.CodeBlock{
+		Code:          code,
+		IsHighlighted: true,
+	}
+}
