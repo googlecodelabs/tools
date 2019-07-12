@@ -9,44 +9,7 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
-func TestRenderInlineContentTemplateLinkFromFile(t *testing.T) {
-	linkProto := protoconstructors.NewLink(
-		"https://www.google.com/search?q=weather+in+nyc",
-		protoconstructors.NewStylizedTextPlain("hey google,"),
-		protoconstructors.NewStylizedTextStrong(" how's the"),
-		protoconstructors.NewStylizedTextEmphasized(" weather in "),
-		protoconstructors.NewStylizedTextStrongAndEmphasized("NYC today?"),
-	)
-
-	tests := []*testingutils.CanonicalFileRenderingBatch{
-		{
-			InProto: linkProto,
-			OutPath: "Link/google_weather.html",
-			Ok:      true,
-		},
-	}
-	testingutils.TestCanonicalFileRenderBatch("html", html.Render, tests, t)
-}
-
-func TestRenderInlineContentTemplateIdentity(t *testing.T) {
-	tests := []*testingutils.RendererIdendityBatch{
-		{
-			InProto:  protoconstructors.NewInlineContentTextPlain(`<script>alert("you've been hacked!");</script>!`),
-			OutProto: protoconstructors.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
-			Out:      `&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!`,
-			Ok:       true,
-		},
-		{
-			InProto:  protoconstructors.NewInlineContentCode(`<script>alert("you've been hacked!");</script>!`),
-			OutProto: protoconstructors.NewInlineCode(`<script>alert("you've been hacked!");</script>!`),
-			Out:      `<code>&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!</code>`,
-			Ok:       true,
-		},
-	}
-	testingutils.RenderingIdendityTestBatch(html.Render, tests, t)
-}
-
-func TestRenderInlineContentStylizedTextTemplate(t *testing.T) {
+func TestRenderInlineContentTemplate(t *testing.T) {
 	tests := []*testingutils.CanonicalRenderingBatch{
 		{
 			InProto: &tutorial.InlineContent{},
@@ -80,4 +43,22 @@ func TestRenderInlineContentStylizedTextTemplate(t *testing.T) {
 		},
 	}
 	testingutils.TestCanonicalRendererBatch(html.Render, tests, t)
+}
+
+func TestRenderInlineContentTemplateIdentiy(t *testing.T) {
+	tests := []*testingutils.RendererIdendityBatch{
+		{
+			InProto:  protoconstructors.NewInlineContentTextPlain(`<script>alert("you've been hacked!");</script>!`),
+			OutProto: protoconstructors.NewStylizedTextPlain(`<script>alert("you've been hacked!");</script>!`),
+			Out:      `&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!`,
+			Ok:       true,
+		},
+		{
+			InProto:  protoconstructors.NewInlineContentCode(`<script>alert("you've been hacked!");</script>!`),
+			OutProto: protoconstructors.NewInlineCode(`<script>alert("you've been hacked!");</script>!`),
+			Out:      `<code>&lt;script&gt;alert(&#34;you&#39;ve been hacked!&#34;);&lt;/script&gt;!</code>`,
+			Ok:       true,
+		},
+	}
+	testingutils.RenderingIdendityTestBatch(html.Render, tests, t)
 }

@@ -9,27 +9,27 @@ import (
 // RenderOneof returns the underyling, rendered, passed oneof element
 func RenderOneof(el interface{}, t *template.Template) string {
   // Recursive redering happens here
-  return ExecuteTemplate(typeAssertUnderlingOneofType(el), t)
+  return ExecuteTemplate(AssertOneof(el), t)
 }
 
-// typeAssertUnderlingOneofType turns a generic oneof proto into its underlying typed-proto
-func typeAssertUnderlingOneofType(el interface{}) (underlyingType interface{}) {
+// AssertOneof turns a generic oneof proto into its underlying typed-proto
+func AssertOneof(el interface{}) (underlyingType interface{}) {
   // Pure Oneof protos
   switch el.(type) {
   case *tutorial.InlineContent:
-    underlyingType = underlyingInlineContentType(el.(*tutorial.InlineContent))
+    underlyingType = InnerContentsInline(el.(*tutorial.InlineContent))
   }
 
   // debug-friendly panic
   if underlyingType == nil {
-    panic(TypeNotSupported("typeAssertUnderlingOneofType", el))
+    panic(TypeNotSupported("AssertOneof", el))
   }
 
   return underlyingType
 }
 
-// underlyingInlineContentType asserts the underlying type of tutorial.InlineContent
-func underlyingInlineContentType(el *tutorial.InlineContent) (underlyingType interface{}) {
+// InnerContentsInline asserts the underlying type of tutorial.InlineContent
+func InnerContentsInline(el *tutorial.InlineContent) (underlyingType interface{}) {
   switch x := el.Content.(type) {
   case *tutorial.InlineContent_Text:
     // StylizedText
@@ -37,14 +37,11 @@ func underlyingInlineContentType(el *tutorial.InlineContent) (underlyingType int
   case *tutorial.InlineContent_Code:
     // InlineCode
     underlyingType = x.Code
-  case *tutorial.InlineContent_Link:
-    // Link
-    underlyingType = x.Link
   }
 
   // debug-friendly panic
   if underlyingType == nil {
-    panic(TypeNotSupported("InnerInline", el))
+    panic(TypeNotSupported("InnerContentsInline", el))
   }
 
   return underlyingType
