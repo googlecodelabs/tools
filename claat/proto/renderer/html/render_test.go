@@ -16,7 +16,7 @@ func TestRender(t *testing.T) {
 		{"invalid input type", false},
 		{testingutils.UnsupportedType{}, false},
 		// valid cases
-		{protoconstructors.NewDummyProto(), true},
+		{testingutils.NewDummyProto(), true},
 	}
 
 	for _, tc := range tests {
