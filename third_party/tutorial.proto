@@ -123,8 +123,7 @@ message InfoBox {
 };
 
 message CodeBlock {
-  // TODO: Use this instead of static highlighting
-  // currently being used to determine
+  // TODO: Use this instead of static syntax highlighting
   string language = 3;
 
   string code = 4;
