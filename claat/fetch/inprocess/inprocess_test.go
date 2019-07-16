@@ -18,18 +18,18 @@ import (
 	"testing"
 )
 
-func TestNewInProcessFetcher(t *testing.T) {
+func TestNew(t *testing.T) {
 	r := strings.NewReader("this is a string")
-	ipf := NewInProcessFetcher(r)
+	ipf := New(r)
 
 	if ipf.source != r {
-		t.Errorf("NewInProcessFetcher(%v).source = %v, want %v", r, ipf.source, r)
+		t.Errorf("New(%v).source = %v, want %v", r, ipf.source, r)
 	}
 }
 
 func TestFetch(t *testing.T) {
 	r := strings.NewReader("this is also a string")
-	ipf := NewInProcessFetcher(r)
+	ipf := New(r)
 
 	out, err := ipf.Fetch()
 	if err != nil {

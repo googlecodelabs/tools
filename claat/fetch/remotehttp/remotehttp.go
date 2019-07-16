@@ -27,10 +27,10 @@ type RemoteHTTPFetcher struct {
 	c   *http.Client
 }
 
-// NewRemoteHTTPFetcher returns a new, initialized RemoteHTTPFetcher.
+// New returns a new, initialized RemoteHTTPFetcher.
 // The input string is the URL to read the resource from.
 // If given, the http.Client will be used to make the request. Otherwise, the default client will be used.
-func NewRemoteHTTPFetcher(url string, c *http.Client) RemoteHTTPFetcher {
+func New(url string, c *http.Client) *RemoteHTTPFetcher {
 	rhf := RemoteHTTPFetcher{
 		url: url,
 		c:   c,
@@ -39,11 +39,11 @@ func NewRemoteHTTPFetcher(url string, c *http.Client) RemoteHTTPFetcher {
 		rhf.c = http.DefaultClient
 	}
 
-	return rhf
+	return &rhf
 }
 
 // Fetch fetches the resource.
-func (rhf RemoteHTTPFetcher) Fetch() (io.Reader, error) {
+func (rhf *RemoteHTTPFetcher) Fetch() (io.Reader, error) {
 	res, err := rhf.c.Get(rhf.url)
 	if err != nil || res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("error making HTTP request: status code %v and err %s", res.StatusCode, err)

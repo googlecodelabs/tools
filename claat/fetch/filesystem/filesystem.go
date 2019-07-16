@@ -26,17 +26,17 @@ type FileSystemFetcher struct {
 	resPath string
 }
 
-// NewFileSystemFetcher returns a new, initialized FileSystemFetcher.
+// New returns a new, initialized FileSystemFetcher.
 // The input string is the path to the file to read the resource from.
-func NewFileSystemFetcher(resPath string) FileSystemFetcher {
-	return FileSystemFetcher{
+func New(resPath string) *FileSystemFetcher {
+	return &FileSystemFetcher{
 		resPath: resPath,
 	}
 }
 
 // Fetch fetches the resource.
 // Instead of holding a file descriptor, the entire file is eagerly read into memory.
-func (fsf FileSystemFetcher) Fetch() (io.Reader, error) {
+func (fsf *FileSystemFetcher) Fetch() (io.Reader, error) {
 	f, err := os.Open(fsf.resPath)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't open file: %s", err)

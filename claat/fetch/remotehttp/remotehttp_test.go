@@ -55,7 +55,7 @@ func TestFetch(t *testing.T) {
 		}))
 		// Don't defer Close() here because this runs in a loop.
 
-		rhf := NewRemoteHTTPFetcher(server.URL, nil)
+		rhf := New(server.URL, nil)
 		res, err := rhf.Fetch()
 		server.Close()
 
