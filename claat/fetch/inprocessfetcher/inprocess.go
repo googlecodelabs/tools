@@ -11,31 +11,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package inprocess
+package inprocessfetcher
 
-import (
-	"strings"
-	"testing"
-)
+import "io"
 
-func TestNew(t *testing.T) {
-	r := strings.NewReader("this is a string")
-	ipf := New(r)
+// InProcessFetcher implements fetch.Fetcher. It retrieves resources from an in-process source via io.Reader.
+type InProcessFetcher struct {
+	source io.Reader
+}
 
-	if ipf.source != r {
-		t.Errorf("New(%v).source = %v, want %v", r, ipf.source, r)
+// New returns a new, initialized InProcessFetcher.
+// The input io.Reader is a reader over the resource bytes.
+func New(source io.Reader) *InProcessFetcher {
+	return &InProcessFetcher{
+		source: source,
 	}
 }
 
-func TestFetch(t *testing.T) {
-	r := strings.NewReader("this is also a string")
-	ipf := New(r)
-
-	out, err := ipf.Fetch()
-	if err != nil {
-		t.Errorf("Fetch() got err %v, want nil", err)
-	}
-	if out != r {
-		t.Errorf("Fetch() = %v, want %v", out, r)
-	}
+// Fetch fetches the resource.
+// This doesn't really do anything.
+func (ipf *InProcessFetcher) Fetch() (io.Reader, error) {
+	return ipf.source, nil
 }
