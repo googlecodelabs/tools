@@ -1,0 +1,3 @@
+<google-codelab-survey survey-id="{{.Id}}">{{ range $el := .Content }}
+  {{ template "SurveyQuestion.Html" $el }}
+{{ end }}</google-codelab-survey>

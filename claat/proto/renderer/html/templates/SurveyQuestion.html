@@ -1,0 +1,4 @@
+<h4>{{.Name}}</h4>
+<paper-radio-group>{{ range $el := .Options }}
+  <paper-radio-button>{{$el}}</paper-radio-button>
+{{ end }}</paper-radio-group>

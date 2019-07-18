@@ -175,3 +175,17 @@ func NewCodeBlockHighlighted(code string) *tutorial.CodeBlock {
 		IsHighlighted: true,
 	}
 }
+
+func NewSurvey(id string, contentSlice ...*tutorial.SurveyQuestion) *tutorial.Survey {
+	return &tutorial.Survey{
+		Id:      id,
+		Content: contentSlice,
+	}
+}
+
+func NewSurveyQuestion(question string, contentSlice ...string) *tutorial.SurveyQuestion {
+	return &tutorial.SurveyQuestion{
+		Name:    question,
+		Options: contentSlice,
+	}
+}

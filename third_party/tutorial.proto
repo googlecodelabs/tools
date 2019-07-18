@@ -22,24 +22,24 @@ message Tutorial {
   Title title = 1;
   map<string, string> metadata = 2;
   repeated Step steps = 3;
-};
+}
 
 message Step {
   Title title = 1;
   map<string, string> metadata = 2;
   repeated Content content = 3;
-};
+}
 
 message Title {
   repeated InlineContent inline_contents = 1;
-};
+}
 
 message Content {
   oneof content {
     InlineContent inline_content = 1;
     BlockContent block_content = 2;
   }
-};
+}
 
 message BlockContent {
   oneof content {
@@ -49,11 +49,12 @@ message BlockContent {
     CodeBlock code_block = 4;
     Table table = 6;
     YoutubeVideo video = 8;
+    Survey survey = 9;
   }
 
   reserved 5; 
   reserved "horizontal_rule";
-};
+}
 
 message ImageBlock {
   Image image = 1;
@@ -87,7 +88,7 @@ message InlineContent {
 
   reserved 2, 3, 4; 
   reserved "strong_text" "emphasized_text", "inline_code_text";
-};
+}
 
 message StylizedText {
   string text = 1;
@@ -102,14 +103,14 @@ message InlineCode {
 message Heading {
   repeated InlineContent content = 1;
   int32 level = 2;
-};
+}
 
 message Image {
   string source = 1;
   string alt = 2;
   int32 height = 3;
   int32 width = 4;
-};
+}
 
 message InfoBox {
   repeated InlineContent inline_contents = 1;
@@ -118,9 +119,9 @@ message InfoBox {
     UNKNOWN_DISPOSITION = 0;
     POSITIVE = 1;
     NEGATIVE = 2;
-  };
+  }
   Disposition disposition = 2;
-};
+}
 
 message CodeBlock {
   // TODO: Use this instead of static syntax highlighting
@@ -132,7 +133,7 @@ message CodeBlock {
 
   reserved 1, 2;
   reserved "code_location", "inline_contents";
-};
+}
 
 message List {
   repeated Paragraph content = 3;
@@ -153,22 +154,33 @@ message List {
 
   reserved 1, 2;
   reserved "list_steps", "list_variety";
-};
+}
 
 message Table {
   repeated TableRow rows = 2;
 
   reserved 1;
   reserved "table_rows";
-};
+}
 
 message TableRow {
   repeated Paragraph cells = 2;
 
   reserved 1;
   reserved "table_cells";
-};
+}
 
 message Paragraph {
   repeated InlineContent content = 1;
-};
+}
+
+message Survey {
+  // Google Analytics ID
+  string id = 1;
+  repeated SurveyQuestion content = 2;
+}
+
+message SurveyQuestion {
+  string name = 1;
+  repeated string options = 2;
+}
