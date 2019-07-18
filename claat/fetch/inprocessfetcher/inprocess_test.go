@@ -11,25 +11,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package inprocess
+package inprocessfetcher
 
 import (
 	"strings"
 	"testing"
 )
 
-func TestNewInProcessFetcher(t *testing.T) {
+func TestNew(t *testing.T) {
 	r := strings.NewReader("this is a string")
-	ipf := NewInProcessFetcher(r)
+	ipf := New(r)
 
 	if ipf.source != r {
-		t.Errorf("NewInProcessFetcher(%v).source = %v, want %v", r, ipf.source, r)
+		t.Errorf("New(%v).source = %v, want %v", r, ipf.source, r)
 	}
 }
 
 func TestFetch(t *testing.T) {
 	r := strings.NewReader("this is also a string")
-	ipf := NewInProcessFetcher(r)
+	ipf := New(r)
 
 	out, err := ipf.Fetch()
 	if err != nil {

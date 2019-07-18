@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package filesystem
+package filesystemfetcher
 
 import (
 	"io/ioutil"
@@ -20,12 +20,12 @@ import (
 	"testing"
 )
 
-func TestNewFileSystemFetcher(t *testing.T) {
+func TestNew(t *testing.T) {
 	p := "this/is/a/file/path"
-	fsf := NewFileSystemFetcher(p)
+	fsf := New(p)
 
 	if fsf.resPath != p {
-		t.Errorf("NewFileSystemFetcher(%v).resPath = %v, want %v", p, fsf.resPath, p)
+		t.Errorf("New(%v).resPath = %v, want %v", p, fsf.resPath, p)
 	}
 }
 
@@ -46,7 +46,7 @@ func TestFetch(t *testing.T) {
 		t.Errorf("error writing to temp file: %s", err)
 	}
 
-	fsf := NewFileSystemFetcher(fname)
+	fsf := New(fname)
 	r, err := fsf.Fetch()
 	if err != nil {
 		t.Errorf("Fetch() = got err %v, want nil", err)
