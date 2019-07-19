@@ -72,6 +72,17 @@ func DriveClient(authToken string) (*http.Client, error) {
 	if hc, ok := clients[provider]; ok {
 		return hc, nil
 	}
+
+	hc, err := produceDriveClient(authToken)
+	if err != nil {
+		return nil, err
+	}
+
+	clients[provider] = hc
+	return hc, nil
+}
+
+func produceDriveClient(authToken string) (*http.Client, error) {
 	ts, err := tokenSource(providerGoogle, authToken)
 	if err != nil {
 		return nil, err
@@ -80,9 +91,7 @@ func DriveClient(authToken string) (*http.Client, error) {
 		Source: ts,
 		Base:   http.DefaultTransport,
 	}
-	hc := &http.Client{Transport: t}
-	clients[provider] = hc
-	return hc, nil
+	return &http.Client{Transport: t}, nil
 }
 
 // tokenSource creates a new oauth2.TokenSource backed by tokenRefresher,
