@@ -72,7 +72,7 @@ func CmdUpdate(opts CmdUpdateOptions) int {
 			// random sleep up to 1 sec
 			// to reduce number of rate limit errors
 			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
-			meta, err := updateCodelab(d, opts)
+			meta, err := UpdateCodelab(d, nil, opts)
 			ch <- &result{d, meta, err}
 		}(d)
 	}
@@ -90,10 +90,10 @@ func CmdUpdate(opts CmdUpdateOptions) int {
 	return exitCode
 }
 
-// updateCodelab reads metadata from a dir/codelab.json file,
+// UpdateCodelab reads metadata from a dir/codelab.json file,
 // re-exports the codelab just like it normally would in exportCodelab,
 // and removes assets (images) which are not longer in use.
-func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
+func UpdateCodelab(dir string, txport *http.Transport, opts CmdUpdateOptions) (*types.Meta, error) {
 	// get stored codelab metadata and fail early if we can't
 	meta, err := readMeta(filepath.Join(dir, metaFilename))
 	if err != nil {
@@ -120,13 +120,16 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	imgdir := filepath.Join(newdir, imgDirname)
 
 	// slurp codelab assets to disk and rewrite image URLs
-	var client *http.Client
+	client := http.DefaultClient
 	if clab.Typ == fetch.SrcGoogleDoc {
 		client, err = fetch.DriveClient(opts.AuthToken, nil)
 		if err != nil {
 			return nil, err
 		}
+	} else if txport != nil {
+		client = &http.Client{Transport: txport}
 	}
+
 	imgmap, err := slurpImages(client, meta.Source, imgdir, clab.Steps)
 	if err != nil {
 		return nil, err
