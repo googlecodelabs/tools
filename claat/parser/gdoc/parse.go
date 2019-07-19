@@ -42,13 +42,13 @@ type Parser struct {
 }
 
 // Parse parses a codelab exported in HTML from Google Docs.
-func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
+func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error) {
 	// TODO: use html.Tokenizer instead
 	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, err
 	}
-	return parseDoc(doc)
+	return parseDoc(doc, opts)
 }
 
 // ParseFragment parses a codelab fragment exported in HTML from Google Docs.
@@ -110,21 +110,30 @@ const (
 )
 
 type docState struct {
-	clab     *types.Codelab // codelab and its metadata
-	totdur   time.Duration  // total codelab duration
-	survey   int            // last used survey ID
-	css      cssStyle       // styles of the doc
-	step     *types.Step    // current codelab step
-	lastNode types.Node     // last appended node
-	env      []string       // current enviornment
-	cur      *html.Node     // current HTML node
-	flags    stateFlag      // current flags
-	stack    []*stackItem   // cur and flags stack
+	clab         *types.Codelab  // codelab and its metadata
+	totdur       time.Duration   // total codelab duration
+	survey       int             // last used survey ID
+	css          cssStyle        // styles of the doc
+	step         *types.Step     // current codelab step
+	lastNode     types.Node      // last appended node
+	env          []string        // current enviornment
+	cur          *html.Node      // current HTML node
+	flags        stateFlag       // current flags
+	stack        []*stackItem    // cur and flags stack
+	passMetadata map[string]bool // set of metadata fields to pass along.
 }
 
 type stackItem struct {
 	cur   *html.Node
 	flags stateFlag
+}
+
+func newDocState() *docState {
+	ds := &docState{
+		clab: types.NewCodelab(),
+	}
+
+	return ds
 }
 
 func (ds *docState) push(cur *html.Node, flags stateFlag) {
@@ -169,10 +178,9 @@ func parseFragment(doc *html.Node) ([]types.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	ds := &docState{
-		clab: &types.Codelab{},
-		css:  style,
-	}
+
+	ds := newDocState()
+	ds.css = style
 	ds.step = ds.clab.NewStep("fragment")
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		if isComment(ds.css, ds.cur) {
@@ -187,7 +195,7 @@ func parseFragment(doc *html.Node) ([]types.Node, error) {
 
 // parseDoc parses codelab doc exported as text/html.
 // The doc must contain CSS styles and <body> as exported from Google Doc.
-func parseDoc(doc *html.Node) (*types.Codelab, error) {
+func parseDoc(doc *html.Node, opts parser.Options) (*types.Codelab, error) {
 	body := findAtom(doc, atom.Body)
 	if body == nil {
 		return nil, fmt.Errorf("document without a body")
@@ -197,10 +205,10 @@ func parseDoc(doc *html.Node) (*types.Codelab, error) {
 		return nil, err
 	}
 
-	ds := &docState{
-		clab: &types.Codelab{},
-		css:  style,
-	}
+	ds := newDocState()
+	ds.css = style
+	ds.passMetadata = opts.PassMetadata
+
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		if isComment(ds.css, ds.cur) {
 			// docs export comments at the end of the body
@@ -378,7 +386,8 @@ func metaTable(ds *docState) {
 			continue
 		}
 		s := stringifyNode(tr.FirstChild.NextSibling, true, false)
-		switch strings.ToLower(stringifyNode(tr.FirstChild, true, false)) {
+		fieldName := strings.ToLower(stringifyNode(tr.FirstChild, true, false))
+		switch fieldName {
 		case "id", "url":
 			ds.clab.ID = s
 		case "author", "authors":
@@ -401,6 +410,11 @@ func metaTable(ds *docState) {
 			ds.clab.Feedback = s
 		case "analytics", "analytics account", "google analytics":
 			ds.clab.GA = s
+		default:
+			// If not explicitly parsed, it might be a pass_metadata value.
+			if _, ok := ds.passMetadata[fieldName]; ok {
+				ds.clab.Extra[fieldName] = s
+			}
 		}
 	}
 	if len(ds.clab.Categories) > 0 {
