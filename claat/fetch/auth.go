@@ -63,9 +63,11 @@ func init() {
 	clients = make(map[string]*http.Client)
 }
 
-// DriveClient returns an HTTP client which knows how to perform authenticated
-// requests to Google Drive API.
-func DriveClient(authToken string) (*http.Client, error) {
+// DriveClient returns an HTTP client for using the Google Drive API.
+// It takes a Drive API auth token as a string, and optionally, an http.Transport to use
+// internally as the base for the client. If a base transport is not specified, a default
+// will be used.
+func DriveClient(authToken string, transportBase *http.Transport) (*http.Client, error) {
 	clientsMu.Lock()
 	defer clientsMu.Unlock()
 	provider := providerGoogle + authToken
@@ -76,10 +78,16 @@ func DriveClient(authToken string) (*http.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	t := &oauth2.Transport{
 		Source: ts,
-		Base:   http.DefaultTransport,
+		Base:   transportBase,
 	}
+	// If no transport specified, use the default.
+	if t.Base == nil {
+		t.Base = http.DefaultTransport
+	}
+
 	hc := &http.Client{Transport: t}
 	clients[provider] = hc
 	return hc, nil

@@ -100,7 +100,7 @@ func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
 	}
 	var client *http.Client // need for downloadImages
 	if clab.Typ == fetch.SrcGoogleDoc {
-		client, err = fetch.DriveClient(opts.AuthToken)
+		client, err = fetch.DriveClient(opts.AuthToken, nil)
 		if err != nil {
 			return nil, err
 		}

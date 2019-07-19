@@ -188,7 +188,7 @@ func fetchRemoteFile(url string) (*resource, error) {
 func fetchDriveFile(id, authToken string, nometa bool) (*resource, error) {
 	id = gdocID(id)
 	exportURL := gdocExportURL(id)
-	client, err := DriveClient(authToken)
+	client, err := DriveClient(authToken, nil)
 	if err != nil {
 		return nil, err
 	}

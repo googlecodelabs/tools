@@ -122,7 +122,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	// slurp codelab assets to disk and rewrite image URLs
 	var client *http.Client
 	if clab.Typ == fetch.SrcGoogleDoc {
-		client, err = fetch.DriveClient(opts.AuthToken)
+		client, err = fetch.DriveClient(opts.AuthToken, nil)
 		if err != nil {
 			return nil, err
 		}
