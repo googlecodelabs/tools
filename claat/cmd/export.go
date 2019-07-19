@@ -68,7 +68,7 @@ func CmdExport(opts CmdExportOptions) int {
 	ch := make(chan *result, len(srcs))
 	for _, src := range srcs {
 		go func(src string) {
-			meta, err := exportCodelab(src, opts)
+			meta, err := exportCodelab(src, nil, opts)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -93,14 +93,14 @@ func CmdExport(opts CmdExportOptions) int {
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
+func exportCodelab(src string, txport *http.Transport, opts CmdExportOptions) (*types.Meta, error) {
 	clab, err := fetch.SlurpCodelab(src, opts.AuthToken, opts.PassMetadata)
 	if err != nil {
 		return nil, err
 	}
 	var client *http.Client // need for downloadImages
 	if clab.Typ == fetch.SrcGoogleDoc {
-		client, err = fetch.DriveClient(opts.AuthToken, nil)
+		client, err = fetch.DriveClient(opts.AuthToken, txport)
 		if err != nil {
 			return nil, err
 		}
