@@ -98,12 +98,15 @@ func ExportCodelab(src string, txport *http.Transport, opts CmdExportOptions) (*
 	if err != nil {
 		return nil, err
 	}
-	var client *http.Client // need for downloadImages
+
+	client := http.DefaultClient
 	if clab.Typ == fetch.SrcGoogleDoc {
 		client, err = fetch.DriveClient(opts.AuthToken, txport)
 		if err != nil {
 			return nil, err
 		}
+	} else if txport != nil {
+		client = &http.Client{Transport: txport}
 	}
 
 	// codelab export context
