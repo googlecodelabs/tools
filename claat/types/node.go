@@ -181,6 +181,28 @@ func (in *ImportNode) MutateBlock(v interface{}) {
 	in.Content.MutateBlock(v)
 }
 
+// ImportNodes filters out everything except NodeImport nodes, recursively.
+func ImportNodes(nodes []Node) []*ImportNode {
+	var imps []*ImportNode
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *ImportNode:
+			imps = append(imps, n)
+		case *ListNode:
+			imps = append(imps, ImportNodes(n.Nodes)...)
+		case *InfoboxNode:
+			imps = append(imps, ImportNodes(n.Content.Nodes)...)
+		case *GridNode:
+			for _, r := range n.Rows {
+				for _, c := range r {
+					imps = append(imps, ImportNodes(c.Content.Nodes)...)
+				}
+			}
+		}
+	}
+	return imps
+}
+
 // NewGridNode creates a new grid with optional content.
 func NewGridNode(rows ...[]*GridCell) *GridNode {
 	return &GridNode{
