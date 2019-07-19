@@ -1,0 +1,5 @@
+<{{ listVarietyToTag .Variety }} class="{{ .listFormattingClass .Style }}">
+{{ range $el := renderRepeated .Content }}
+<li>{{ template "Paragraph.html" $el }}</li>
+{{ end }}
+</{{ listVarietyToTag .Variety }}>

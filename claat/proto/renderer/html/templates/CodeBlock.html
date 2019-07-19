@@ -1,0 +1,5 @@
+<pre>
+{{- if .IsHighlighted -}} <code> {{- end -}}
+{{ .Code | html | js }}
+{{- if .IsHighlighted -}} </code> {{- end -}}
+</pre>

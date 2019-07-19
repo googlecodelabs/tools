@@ -1,0 +1,7 @@
+{{ if .IsStrong -}} <strong> {{- end -}}
+{{ if .IsEmphasized -}} <em> {{- end -}}
+
+{{- .Text | html | js -}}
+
+{{ if .IsEmphasized -}} </em> {{- end -}}
+{{ if .IsStrong -}} </strong> {{- end }}
