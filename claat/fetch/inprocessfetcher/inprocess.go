@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package inprocess
+package inprocessfetcher
 
 import "io"
 
@@ -20,16 +20,16 @@ type InProcessFetcher struct {
 	source io.Reader
 }
 
-// NewInProcessFetcher returns a new, initialized InProcessFetcher.
+// New returns a new, initialized InProcessFetcher.
 // The input io.Reader is a reader over the resource bytes.
-func NewInProcessFetcher(source io.Reader) InProcessFetcher {
-	return InProcessFetcher{
+func New(source io.Reader) *InProcessFetcher {
+	return &InProcessFetcher{
 		source: source,
 	}
 }
 
 // Fetch fetches the resource.
 // This doesn't really do anything.
-func (ipf InProcessFetcher) Fetch() (io.Reader, error) {
+func (ipf *InProcessFetcher) Fetch() (io.Reader, error) {
 	return ipf.source, nil
 }

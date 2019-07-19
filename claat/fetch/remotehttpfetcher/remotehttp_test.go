@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package remotehttp
+package remotehttpfetcher
 
 import (
 	"fmt"
@@ -55,7 +55,7 @@ func TestFetch(t *testing.T) {
 		}))
 		// Don't defer Close() here because this runs in a loop.
 
-		rhf := NewRemoteHTTPFetcher(server.URL, nil)
+		rhf := New(server.URL, nil)
 		res, err := rhf.Fetch()
 		server.Close()
 

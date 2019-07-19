@@ -26,10 +26,21 @@ import (
 // Each parser needs to call Register to become a known parser.
 type Parser interface {
 	// Parse parses source r into a Codelab for the specified environment env.
-	Parse(r io.Reader) (*types.Codelab, error)
+	Parse(r io.Reader, opts Options) (*types.Codelab, error)
 
 	// ParseFragment is similar to Parse except it doesn't parse codelab metadata.
 	ParseFragment(r io.Reader) ([]types.Node, error)
+}
+
+// Container for parsing options.
+type Options struct {
+	PassMetadata map[string]bool
+}
+
+func NewOptions() *Options {
+	return &Options{
+		PassMetadata: map[string]bool{},
+	}
 }
 
 var (
@@ -61,14 +72,14 @@ func Parsers() []string {
 
 // Parse parses source r into a Codelab using a parser registered with
 // the specified name.
-func Parse(name string, r io.Reader) (*types.Codelab, error) {
+func Parse(name string, r io.Reader, opts Options) (*types.Codelab, error) {
 	parsersMu.Lock()
 	p, ok := parsers[name]
 	parsersMu.Unlock()
 	if !ok {
 		return nil, fmt.Errorf("no parser named %q", name)
 	}
-	c, err := p.Parse(r)
+	c, err := p.Parse(r, opts)
 	if err != nil {
 		return nil, err
 	}
