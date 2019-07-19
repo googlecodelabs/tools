@@ -386,6 +386,38 @@ func (in *ImageNode) Empty() bool {
 	return strings.TrimSpace(in.Src) == ""
 }
 
+// ImageNodes filters out everything except NodeImage nodes, recursively.
+func ImageNodes(nodes []Node) []*ImageNode {
+	var imgs []*ImageNode
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *ImageNode:
+			imgs = append(imgs, n)
+		case *ListNode:
+			imgs = append(imgs, ImageNodes(n.Nodes)...)
+		case *ItemsListNode:
+			for _, i := range n.Items {
+				imgs = append(imgs, ImageNodes(i.Nodes)...)
+			}
+		case *HeaderNode:
+			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
+		case *URLNode:
+			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
+		case *ButtonNode:
+			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
+		case *InfoboxNode:
+			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
+		case *GridNode:
+			for _, r := range n.Rows {
+				for _, c := range r {
+					imgs = append(imgs, ImageNodes(c.Content.Nodes)...)
+				}
+			}
+		}
+	}
+	return imgs
+}
+
 // NewButtonNode creates a new button with optional content nodes n.
 func NewButtonNode(raised, colored, download bool, n ...Node) *ButtonNode {
 	return &ButtonNode{

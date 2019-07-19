@@ -220,7 +220,7 @@ func slurpImages(client *http.Client, src, dir string, steps []*types.Step) (map
 	defer close(ch)
 	var count int
 	for _, st := range steps {
-		nodes := imageNodes(st.Content.Nodes)
+		nodes := types.ImageNodes(st.Content.Nodes)
 		count += len(nodes)
 		for _, n := range nodes {
 			go func(n *types.ImageNode) {
@@ -246,38 +246,6 @@ func slurpImages(client *http.Client, src, dir string, steps []*types.Step) (map
 	}
 
 	return imap, err
-}
-
-// imageNodes filters out everything except types.NodeImage nodes, recursively.
-func imageNodes(nodes []types.Node) []*types.ImageNode {
-	var imgs []*types.ImageNode
-	for _, n := range nodes {
-		switch n := n.(type) {
-		case *types.ImageNode:
-			imgs = append(imgs, n)
-		case *types.ListNode:
-			imgs = append(imgs, imageNodes(n.Nodes)...)
-		case *types.ItemsListNode:
-			for _, i := range n.Items {
-				imgs = append(imgs, imageNodes(i.Nodes)...)
-			}
-		case *types.HeaderNode:
-			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
-		case *types.URLNode:
-			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
-		case *types.ButtonNode:
-			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
-		case *types.InfoboxNode:
-			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
-		case *types.GridNode:
-			for _, r := range n.Rows {
-				for _, c := range r {
-					imgs = append(imgs, imageNodes(c.Content.Nodes)...)
-				}
-			}
-		}
-	}
-	return imgs
 }
 
 // writeMeta writes codelab metadata to a local disk location
