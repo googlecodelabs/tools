@@ -30,6 +30,7 @@ import (
 
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
 const (
@@ -334,6 +335,49 @@ func retryGet(client *http.Client, url string, n int) (*http.Response, error) {
 		}
 	}
 	return nil, fmt.Errorf("%s: failed after %d retries", url, n)
+}
+
+func SlurpImages(client *http.Client, src, dir string, steps []*types.Step) (map[string]string, error) {
+	// make sure img dir exists
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return nil, err
+	}
+
+	type res struct {
+		url, file string
+		err       error
+	}
+
+	ch := make(chan *res, 100)
+	defer close(ch)
+	var count int
+	for _, st := range steps {
+		nodes := types.ImageNodes(st.Content.Nodes)
+		count += len(nodes)
+		for _, n := range nodes {
+			go func(n *types.ImageNode) {
+				url := n.Src
+				file, err := SlurpBytes(client, src, dir, url)
+				if err == nil {
+					n.Src = filepath.Join(util.ImgDirname, file)
+				}
+				ch <- &res{url, file, err}
+			}(n)
+		}
+	}
+
+	var err error
+	imap := make(map[string]string, count)
+	for i := 0; i < count; i++ {
+		r := <-ch
+		imap[r.file] = r.url
+		if r.err != nil && err == nil {
+			// record first error
+			err = fmt.Errorf("%s => %s: %v", r.url, r.file, r.err)
+		}
+	}
+
+	return imap, err
 }
 
 func gdocID(url string) string {

@@ -117,7 +117,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 
 	basedir := filepath.Join(dir, "..")
 	newdir := codelabDir(basedir, &clab.Meta)
-	imgdir := filepath.Join(newdir, imgDirname)
+	imgdir := filepath.Join(newdir, util.ImgDirname)
 
 	// slurp codelab assets to disk and rewrite image URLs
 	var client *http.Client
@@ -127,7 +127,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 			return nil, err
 		}
 	}
-	imgmap, err := slurpImages(client, meta.Source, imgdir, clab.Steps)
+	imgmap, err := fetch.SlurpImages(client, meta.Source, imgdir, clab.Steps)
 	if err != nil {
 		return nil, err
 	}

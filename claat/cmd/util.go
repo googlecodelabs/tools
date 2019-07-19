@@ -27,9 +27,6 @@ import (
 )
 
 const (
-	// imgDirname is where a codelab images are stored,
-	// relative to the codelab dir.
-	imgDirname = "img"
 	// metaFilename is codelab metadata file.
 	metaFilename = "codelab.json"
 	// stdout is a special value for -o cli arg to identify stdout writer.
