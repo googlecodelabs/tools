@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/googlecodelabs/tools/claat/fetch"
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
@@ -93,20 +94,20 @@ func CmdExport(opts CmdExportOptions) int {
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
 func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
-	clab, err := slurpCodelab(src, opts.AuthToken, opts.PassMetadata)
+	clab, err := fetch.SlurpCodelab(src, opts.AuthToken, opts.PassMetadata)
 	if err != nil {
 		return nil, err
 	}
 	var client *http.Client // need for downloadImages
-	if clab.typ == srcGoogleDoc {
-		client, err = driveClient(opts.AuthToken)
+	if clab.Typ == fetch.SrcGoogleDoc {
+		client, err = fetch.DriveClient(opts.AuthToken)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// codelab export context
-	lastmod := types.ContextTime(clab.mod)
+	lastmod := types.ContextTime(clab.Mod)
 	clab.Meta.Source = src
 	meta := &clab.Meta
 	ctx := &types.Context{
@@ -225,7 +226,7 @@ func slurpImages(client *http.Client, src, dir string, steps []*types.Step) (map
 		for _, n := range nodes {
 			go func(n *types.ImageNode) {
 				url := n.Src
-				file, err := slurpBytes(client, src, dir, url)
+				file, err := fetch.SlurpBytes(client, src, dir, url)
 				if err == nil {
 					n.Src = filepath.Join(imgDirname, file)
 				}

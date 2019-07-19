@@ -11,8 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-package cmd
+package fetch
 
 import (
 	"bytes"
@@ -27,6 +26,8 @@ import (
 
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
+
+	_ "github.com/googlecodelabs/tools/claat/parser/gdoc" // Explicitly register gdoc parser
 )
 
 type testTransport struct {
@@ -55,8 +56,8 @@ func TestFetchRemote(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer res.body.Close()
-	if res.typ != srcMarkdown {
-		t.Errorf("typ = %q; want %q", res.typ, srcMarkdown)
+	if res.typ != SrcMarkdown {
+		t.Errorf("typ = %q; want %q", res.typ, SrcMarkdown)
 	}
 	b, _ := ioutil.ReadAll(res.body)
 	if s := string(b); s != "test" {
@@ -94,8 +95,8 @@ func TestFetchRemoteDrive(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer res.body.Close()
-	if res.typ != srcGoogleDoc {
-		t.Errorf("typ = %q; want %q", res.typ, srcGoogleDoc)
+	if res.typ != SrcGoogleDoc {
+		t.Errorf("typ = %q; want %q", res.typ, SrcGoogleDoc)
 	}
 	b, _ := ioutil.ReadAll(res.body)
 	if s := string(b); s != "test" {
@@ -135,7 +136,7 @@ func TestSlurpWithFragment(t *testing.T) {
 	}}
 	clients[providerGoogle] = &http.Client{Transport: rt}
 
-	clab, err := slurpCodelab("doc-123", "", map[string]bool{})
+	clab, err := SlurpCodelab("doc-123", "", map[string]bool{})
 	if err != nil {
 		t.Fatal(err)
 	}

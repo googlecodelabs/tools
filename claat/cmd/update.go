@@ -27,6 +27,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/googlecodelabs/tools/claat/fetch"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
 )
@@ -107,11 +108,11 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	}
 
 	// fetch and parse codelab source
-	clab, err := slurpCodelab(meta.Source, opts.AuthToken, opts.PassMetadata)
+	clab, err := fetch.SlurpCodelab(meta.Source, opts.AuthToken, opts.PassMetadata)
 	if err != nil {
 		return nil, err
 	}
-	updated := types.ContextTime(clab.mod)
+	updated := types.ContextTime(clab.Mod)
 	meta.Context.Updated = &updated
 
 	basedir := filepath.Join(dir, "..")
@@ -120,8 +121,8 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 
 	// slurp codelab assets to disk and rewrite image URLs
 	var client *http.Client
-	if clab.typ == srcGoogleDoc {
-		client, err = driveClient(opts.AuthToken)
+	if clab.Typ == fetch.SrcGoogleDoc {
+		client, err = fetch.DriveClient(opts.AuthToken)
 		if err != nil {
 			return nil, err
 		}

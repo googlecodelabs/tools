@@ -11,8 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-package cmd
+package fetch
 
 import (
 	"encoding/json"
@@ -36,9 +35,9 @@ import (
 const (
 	// supported codelab source types must be registered parsers
 	// TODO: define these in claat/parser/..., e.g. in parser/gdoc
-	srcInvalid   srcType = ""
-	srcGoogleDoc srcType = "gdoc" // Google Docs doc
-	srcMarkdown  srcType = "md"   // Markdown text
+	SrcInvalid   srcType = ""
+	SrcGoogleDoc srcType = "gdoc" // Google Docs doc
+	SrcMarkdown  srcType = "md"   // Markdown text
 
 	// driveAPI is a base URL for Drive API
 	driveAPI = "https://www.googleapis.com/drive/v3"
@@ -59,17 +58,17 @@ type resource struct {
 // and modified timestamp fields.
 type codelab struct {
 	*types.Codelab
-	typ srcType   //  source type
-	mod time.Time // last modified timestamp
+	Typ srcType   //  source type
+	Mod time.Time // last modified timestamp
 }
 
-// slurpCodelab retrieves and parses codelab source.
+// SlurpCodelab retrieves and parses codelab source.
 // It takes the source, plus an auth token and a set of extra metadata to pass along.
 // It returns parsed codelab and its source type.
 //
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
-func slurpCodelab(src, authToken string, passMetadata map[string]bool) (*codelab, error) {
+func SlurpCodelab(src, authToken string, passMetadata map[string]bool) (*codelab, error) {
 	res, err := fetch(src, authToken)
 	if err != nil {
 		return nil, err
@@ -110,8 +109,8 @@ func slurpCodelab(src, authToken string, passMetadata map[string]bool) (*codelab
 
 	v := &codelab{
 		Codelab: clab,
-		typ:     res.typ,
-		mod:     res.mod,
+		Typ:     res.typ,
+		Mod:     res.mod,
 	}
 	return v, nil
 }
@@ -139,7 +138,7 @@ func fetch(name, authToken string) (*resource, error) {
 	}
 	return &resource{
 		body: r,
-		typ:  srcMarkdown,
+		typ:  SrcMarkdown,
 		mod:  fi.ModTime(),
 	}, nil
 }
@@ -177,7 +176,7 @@ func fetchRemoteFile(url string) (*resource, error) {
 	return &resource{
 		body: res.Body,
 		mod:  t,
-		typ:  srcMarkdown,
+		typ:  SrcMarkdown,
 	}, nil
 }
 
@@ -189,7 +188,7 @@ func fetchRemoteFile(url string) (*resource, error) {
 func fetchDriveFile(id, authToken string, nometa bool) (*resource, error) {
 	id = gdocID(id)
 	exportURL := gdocExportURL(id)
-	client, err := driveClient(authToken)
+	client, err := DriveClient(authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +198,7 @@ func fetchDriveFile(id, authToken string, nometa bool) (*resource, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &resource{body: res.Body, typ: srcGoogleDoc}, nil
+		return &resource{body: res.Body, typ: SrcGoogleDoc}, nil
 	}
 
 	q := url.Values{
@@ -230,13 +229,13 @@ func fetchDriveFile(id, authToken string, nometa bool) (*resource, error) {
 	return &resource{
 		body: res.Body,
 		mod:  meta.Modified,
-		typ:  srcGoogleDoc,
+		typ:  SrcGoogleDoc,
 	}, nil
 }
 
 var crcTable = crc64.MakeTable(crc64.ECMA)
 
-func slurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, error) {
+func SlurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, error) {
 	// images can be local in Markdown cases or remote.
 	// Only proceed a simple copy on local reference.
 	var b []byte

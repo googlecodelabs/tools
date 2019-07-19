@@ -11,8 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-package cmd
+package fetch
 
 import (
 	"encoding/json"
@@ -64,12 +63,12 @@ func init() {
 	clients = make(map[string]*http.Client)
 }
 
-// driveClient returns an HTTP client which knows how to perform authenticated
+// DriveClient returns an HTTP client which knows how to perform authenticated
 // requests to Google Drive API.
-func driveClient(authToken string) (*http.Client, error) {
+func DriveClient(authToken string) (*http.Client, error) {
 	clientsMu.Lock()
 	defer clientsMu.Unlock()
-	provider := providerGoogle + authToken;
+	provider := providerGoogle + authToken
 	if hc, ok := clients[provider]; ok {
 		return hc, nil
 	}
