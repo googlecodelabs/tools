@@ -44,31 +44,17 @@ message Content {
 message BlockContent {
   oneof content {
     Heading heading = 1;
-<<<<<<< HEAD
-    InfoBox info_box = 3;
-    CodeBlock code_block = 4;
-    Table table = 6;
-    ImageBlock image = 7;
-=======
     ImageBlock image = 2;
     InfoBox info_box = 3;
     CodeBlock code_block = 4;
     Table table = 6;
->>>>>>> renderer-headers
+    Paragraph paragraph = 7;
     YoutubeVideo video = 8;
     Survey survey = 9;
   }
 
   reserved 5; 
   reserved "horizontal_rule";
-}
-
-message ImageBlock {
-  Image image = 1;
-}
-
-message YoutubeVideo {
-  string id = 1;
 }
 
 message ImageBlock {
@@ -148,11 +134,7 @@ message CodeBlock {
 
   reserved 1, 2;
   reserved "code_location", "inline_contents";
-<<<<<<< HEAD
-};
-=======
 }
->>>>>>> renderer-headers
 
 message List {
   repeated Paragraph content = 3;
@@ -191,11 +173,7 @@ message TableRow {
 
 message Paragraph {
   repeated InlineContent content = 1;
-<<<<<<< HEAD
-};
-=======
 }
->>>>>>> renderer-headers
 
 message Survey {
   // Google Analytics ID
