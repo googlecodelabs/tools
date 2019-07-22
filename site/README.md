@@ -170,6 +170,9 @@ Note this filter takes a regular expression. By default, all views are built.
 
 ## Deployment
 
+Once you build, serve, and verify your labs, you're on your own for publishing the artifacts. There are so many ways to publish a static web site that I don't think we could solve that in a universally satisfactory way in the gulpfile so the publish targets are not supported.
+
+<!--
 ### Deploy to staging
 
 The following commands perform a "copy" operation, uploading all local files to
@@ -284,6 +287,7 @@ To build and publish a set of codelabs to staging:
 $ gulp dist --codelabs-filter=^my-codelab
 $ gulp publish:staging:codelabs
 ```
+-->
 
 ## Options
 
