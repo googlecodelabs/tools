@@ -1,0 +1,107 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-scroll-target-behavior/iron-scroll-target-behavior.html">
+
+<!--
+app-scrollpos-control is a manager for saving and restoring the scroll position when multiple
+pages are sharing the same document scroller.
+
+Example:
+
+```html
+<app-scrollpos-control selected="{{page}}"></app-scrollpos-control>
+
+<app-drawer-layout>
+
+  <app-drawer>
+    <paper-menu selected="{{page}}">
+      <paper-item>Home</paper-item>
+      <paper-item>About</paper-item>
+      <paper-item>Schedule</paper-item>
+      <paper-item>Account</paper-item>
+    </paper-menu>
+  </app-drawer>
+
+  <div>
+    <app-toolbar>
+      <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+    </app-toolbar>
+    <iron-pages selected="{{page}}">
+      <sample-content size="100"></sample-content>
+      <sample-content size="100"></sample-content>
+      <sample-content size="100"></sample-content>
+      <sample-content size="100"></sample-content>
+    </iron-pages>
+  </div>
+
+</app-drawer-layout>
+```
+
+@group App Elements
+@element app-scrollpos-control
+@demo app-scrollpos-control/demo/index.html
+-->
+
+<dom-module id="app-scrollpos-control">
+  <script>
+    Polymer({
+      is: 'app-scrollpos-control',
+
+      behaviors: [
+        Polymer.IronScrollTargetBehavior
+      ],
+
+      properties: {
+        /**
+         * The selected page.
+         */
+        selected: {
+          type: String,
+          observer: '_selectedChanged'
+        },
+
+        /**
+         * Reset the scroll position to 0.
+         */
+        reset: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      observers: [
+        '_updateScrollPos(selected, reset)'
+      ],
+
+      created: function() {
+        this._scrollposMap = {};
+      },
+
+      _selectedChanged: function(selected, old) {
+        if (old != null) {
+          this._scrollposMap[old] = {x: this._scrollLeft, y: this._scrollTop};
+        }
+      },
+
+      _updateScrollPos: function(selected, reset) {
+        this.debounce('_updateScrollPos', function() {
+          var pos = this._scrollposMap[this.selected];
+          if (pos != null && !this.reset) {
+            this.scroll(pos.x, pos.y);
+          } else {
+            this.scroll(0, 0);
+          }
+        });
+      }
+    });
+  </script>
+</dom-module>
