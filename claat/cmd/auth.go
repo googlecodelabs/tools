@@ -57,19 +57,15 @@ var (
 
 	// reusable HTTP clients
 	clientsMu sync.Mutex // guards clients
-	clients   map[string]*http.Client
+	clients   = map[string]*http.Client{}
 )
-
-func init() {
-	clients = make(map[string]*http.Client)
-}
 
 // driveClient returns an HTTP client which knows how to perform authenticated
 // requests to Google Drive API.
 func driveClient(authToken string) (*http.Client, error) {
 	clientsMu.Lock()
 	defer clientsMu.Unlock()
-	provider := providerGoogle + authToken;
+	provider := providerGoogle + authToken
 	if hc, ok := clients[provider]; ok {
 		return hc, nil
 	}

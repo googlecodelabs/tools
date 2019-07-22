@@ -71,7 +71,7 @@ func parseStyle(doc *html.Node) (cssStyle, error) {
 			}
 			sel = append(sel, item.Val)
 			if _, ok := style[item.Val]; !ok {
-				style[item.Val] = make(map[string]string)
+				style[item.Val] = map[string]string{}
 			}
 		case csslex.ItemDecl:
 			if skip || len(sel) == 0 {
