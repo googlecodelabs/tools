@@ -45,7 +45,7 @@ func NewOptions() *Options {
 
 var (
 	parsersMu sync.Mutex // guards parsers
-	parsers   = make(map[string]Parser)
+	parsers   = map[string]Parser{}
 )
 
 // Register registers a new parser f under specified name.

@@ -120,7 +120,7 @@ func parsePassMetadata(passMeta string) map[string]bool {
 // ParseExtraVars parses extra template variables from command line.
 // extra is any additional arguments to pass to format templates. Should be formatted as JSON objects of string:string KV pairs.
 func ParseExtraVars(extra string) (map[string]string, error) {
-	vars := make(map[string]string)
+	vars := map[string]string{}
 	if extra == "" {
 		return vars, nil
 	}
