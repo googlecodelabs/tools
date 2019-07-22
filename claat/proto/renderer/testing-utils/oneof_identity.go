@@ -21,42 +21,33 @@ import (
 	"testing"
 )
 
-// RendererIdendityBatch type for i != o and !ok rendering tests or oneof and their underlying proto
+// RendererIdendityBatch type for i != o rendering tests or oneof and their
+// underlying proto, since rendered oneof types == rendered underlying proto
 type RendererIdendityBatch struct {
-	InProto  interface{}
-	OutProto interface{}
-	Out      string
-	Ok       bool
+	InFunc  func(interface{}) interface{}
+	InProto interface{}
 }
 
 // RenderingIdendityTestBatch is a wrapper on 'TestCanonicalRendererBatch' to prove that oneof types
 // are equal to their underlying type rendering
 func RenderingIdendityTestBatch(renderer renderingFunc, tests []*RendererIdendityBatch, t *testing.T) {
 	for _, tc := range tests {
-		rndrout, underlyingTypeErr := runEncapsulatedRendering(tc.OutProto, renderer, t)
+		rndroutput, underlyingTypeRenderErr := runEncapsulatedRendering(tc.InProto, renderer, t)
 
 		// ignore the normal set of error checks if the underlying rendering panicked
-		if underlyingTypeErr != nil {
+		if underlyingTypeRenderErr != nil {
 			funcName := runtime.FuncForPC(reflect.ValueOf(renderer).Pointer()).Name()
-			cmd := fmt.Sprintf("\n%s(\n\t%#v\n)", funcName, tc.OutProto)
-			t.Errorf("%s\nUnderlying rendering error: %v(false negative)\nWant: %#v", cmd, underlyingTypeErr, tc.Out)
-			continue
-		}
-
-		// ignore the normal set of error checks if rendered OutProto != Out
-		if tc.Out != rndrout {
-			funcName := runtime.FuncForPC(reflect.ValueOf(renderer).Pointer()).Name()
-			cmd := fmt.Sprintf("\n%s(\n\t%#v\n)", funcName, tc.OutProto)
-			t.Errorf("%s = %#v\nBut want: \n%#v", cmd, rndrout, tc.Out)
+			cmd := fmt.Sprintf("\n%s(\n\t%#v\n)", funcName, tc.InProto)
+			t.Errorf("%s\nUnderlying rendering error: %v(false negative)", cmd, underlyingTypeRenderErr)
 			continue
 		}
 
 		// Create cannonical test from the output from the underlying type
 		newTc := []*CanonicalRenderingBatch{
 			{
-				InProto: tc.InProto,
-				Out:     tc.Out,
-				Ok:      tc.Ok,
+				InProto: tc.InFunc(tc.InProto),
+				Out:     rndroutput,
+				Ok:      true,
 			},
 		}
 		TestCanonicalRendererBatch(renderer, newTc, t)

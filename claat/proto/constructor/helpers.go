@@ -53,28 +53,10 @@ func NewInlineCode(txt string) *tutorial.InlineCode {
 	}
 }
 
-func NewInlineContentCode(txt string) *tutorial.InlineContent {
-	return &tutorial.InlineContent{
-		Content: &tutorial.InlineContent_Code{
-			Code: &tutorial.InlineCode{
-				Code: txt,
-			},
-		},
-	}
-}
-
 func NewLink(href string, contentSlice ...*tutorial.StylizedText) *tutorial.Link {
 	return &tutorial.Link{
 		Href:    href,
 		Content: contentSlice,
-	}
-}
-
-func NewInlineContentLink(link *tutorial.Link) *tutorial.InlineContent {
-	return &tutorial.InlineContent{
-		Content: &tutorial.InlineContent_Link{
-			Link: link,
-		},
 	}
 }
 
@@ -91,7 +73,64 @@ func NewButtonDownload(link *tutorial.Link) *tutorial.Button {
 	}
 }
 
-// TODO: Add to InlineContent tests
+func NewInlineImage(
+	source string, alt string, height int32, width int32) *tutorial.InlineImage {
+	return &tutorial.InlineImage{
+		Source: source,
+		Alt:    alt,
+		Height: height,
+		Width:  width,
+	}
+}
+
+func NewInlineContentTextPlain(txt *tutorial.StylizedText) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			Text: txt,
+		},
+	}
+}
+
+func NewInlineContentTextStrong(txt *tutorial.StylizedText) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			Text: txt,
+		},
+	}
+}
+
+func NewInlineContentTextEmphasized(txt *tutorial.StylizedText) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			Text: txt,
+		},
+	}
+}
+
+func NewInlineContentTextStrongAndEmphasized(txt *tutorial.StylizedText) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Text{
+			Text: txt
+		},
+	}
+}
+
+func NewInlineContentCode(code *tutorial.InlineCode) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Code{
+			Code: code,
+		},
+	}
+}
+
+func NewInlineContentLink(link *tutorial.Link) *tutorial.InlineContent {
+	return &tutorial.InlineContent{
+		Content: &tutorial.InlineContent_Link{
+			Link: link,
+		},
+	}
+}
+
 func NewInlineContentButton(button *tutorial.Button) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Button{
@@ -100,55 +139,10 @@ func NewInlineContentButton(button *tutorial.Button) *tutorial.InlineContent {
 	}
 }
 
-// TODO: Add to InlineContent tests
-func NewInlineContentImage(image *tutorial.Image) *tutorial.InlineContent {
+func NewInlineContentInlineImage(image *tutorial.InlineImage) *tutorial.InlineContent {
 	return &tutorial.InlineContent{
 		Content: &tutorial.InlineContent_Image{
 			Image: image,
-		},
-	}
-}
-
-func NewInlineContentTextPlain(txt string) *tutorial.InlineContent {
-	return &tutorial.InlineContent{
-		Content: &tutorial.InlineContent_Text{
-			Text: &tutorial.StylizedText{
-				Text: txt,
-			},
-		},
-	}
-}
-
-func NewInlineContentTextStrong(txt string) *tutorial.InlineContent {
-	return &tutorial.InlineContent{
-		Content: &tutorial.InlineContent_Text{
-			Text: &tutorial.StylizedText{
-				Text:     txt,
-				IsStrong: true,
-			},
-		},
-	}
-}
-
-func NewInlineContentTextEmphasized(txt string) *tutorial.InlineContent {
-	return &tutorial.InlineContent{
-		Content: &tutorial.InlineContent_Text{
-			Text: &tutorial.StylizedText{
-				Text:         txt,
-				IsEmphasized: true,
-			},
-		},
-	}
-}
-
-func NewInlineContentTextStrongAndEmphasized(txt string) *tutorial.InlineContent {
-	return &tutorial.InlineContent{
-		Content: &tutorial.InlineContent_Text{
-			Text: &tutorial.StylizedText{
-				Text:         txt,
-				IsStrong:     true,
-				IsEmphasized: true,
-			},
 		},
 	}
 }
@@ -160,15 +154,17 @@ func NewHeading(level int32, contentSlice ...*tutorial.InlineContent) *tutorial.
 	}
 }
 
+func NewImageBlock(image *tutorial.InlineImage) *tutorial.ImageBlock {
+	return &tutorial.ImageBlock{
+		Image: image,
+	}
+}
+
 func NewParagraph(contentSlice ...*tutorial.InlineContent) *tutorial.Paragraph {
 	return &tutorial.Paragraph{
 		Content: contentSlice,
 	}
 }
-
-// TODO: Implement NewList and its tests
-// TODO: Implement NewImage and its tests
-// TODO: Implement NewImageBlock and its tests
 
 func NewYTVideo(id string) *tutorial.YoutubeVideo {
 	return &tutorial.YoutubeVideo{
@@ -200,5 +196,15 @@ func NewSurveyQuestion(question string, contentSlice ...string) *tutorial.Survey
 	return &tutorial.SurveyQuestion{
 		Name:    question,
 		Options: contentSlice,
+	}
+}
+
+func NewList(
+	variety tutorial.List_ListVariety, style tutorial.List_ListStyle,
+	contentSlice ...*tutorial.Paragraph) *tutorial.List {
+	return &tutorial.List{
+		Variety: variety,
+		Style:   style,
+		Content: contentSlice,
 	}
 }

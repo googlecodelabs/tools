@@ -34,18 +34,26 @@ func TestRenderTestBlockTemplate(t *testing.T) {
 			Out:     "",
 			Ok:      false,
 		},
-		{
-			InProto: protoconstructors.NewParagraph(
-				protoconstructors.NewInlineContentTextPlain(`hello, `),
-				protoconstructors.NewInlineContentTextStrong(`world!`),
-				protoconstructors.NewInlineContentTextEmphasized(` goodbye`),
-				protoconstructors.NewInlineContentTextPlain(` `),
-				protoconstructors.NewInlineContentTextStrongAndEmphasized(`cruel `),
-				protoconstructors.NewInlineContentCode(`world!`),
-			),
-			Out: "<p>hello, <strong>world!</strong><em> goodbye</em> <strong><em>cruel </em></strong><code>world!</code></p>",
-			Ok:  true,
-		},
 	}
 	testingutils.TestCanonicalRendererBatch(html.Render, tests, t)
+}
+
+func TestRenderTestBlockTemplateFromFile(t *testing.T) {
+	paragraphProto := protoconstructors.NewParagraph(
+		protoconstructors.NewInlineContentTextPlain(`hello, `),
+		protoconstructors.NewInlineContentTextStrong(`world!`),
+		protoconstructors.NewInlineContentTextEmphasized(` goodbye`),
+		protoconstructors.NewInlineContentTextPlain(` `),
+		protoconstructors.NewInlineContentTextStrongAndEmphasized(`cruel `),
+		protoconstructors.NewInlineContentCode(`world!`),
+	)
+
+	tests := []*testingutils.CanonicalFileRenderingBatch{
+		{
+			InProto: paragraphProto,
+			OutPath: "google_weather.txt",
+			Ok:      true,
+		},
+	}
+	testingutils.TestCanonicalFileRenderBatch(html.Render, tests, t)
 }

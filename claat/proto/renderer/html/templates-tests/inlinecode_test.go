@@ -65,8 +65,8 @@ func TestRenderInlineCodeTemplateEscaping(t *testing.T) {
 			Ok:      true,
 		},
 		{
-			InProto: protoconstructors.NewInlineCode("{ Αα Ββ Γγ Δδ Εε Ϝϝ Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσς Ττ Υυ Φφ Χχ Ψψ Ωω }"),
-			Out:     "<code>{ Αα Ββ Γγ Δδ Εε Ϝϝ Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσς Ττ Υυ Φφ Χχ Ψψ Ωω }</code>",
+			InProto: protoconstructors.NewInlineCode("TODO"),
+			Out:     "<code>TODO</code>",
 			Ok:      true,
 		},
 	}

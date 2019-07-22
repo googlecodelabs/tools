@@ -60,8 +60,8 @@ func templateName(el interface{}) string {
 		return "Button"
 	case *tutorial.List, tutorial.List:
 		return "List"
-	case *tutorial.Image, tutorial.Image:
-		return "Image"
+	case *tutorial.InlineImage, tutorial.InlineImage:
+		return "InlineImage"
 	case *tutorial.ImageBlock, tutorial.ImageBlock:
 		return "ImageBlock"
 	case *tutorial.YoutubeVideo, tutorial.YoutubeVideo:

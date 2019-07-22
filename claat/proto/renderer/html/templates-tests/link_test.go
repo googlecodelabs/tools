@@ -25,26 +25,8 @@ import (
 	"github.com/googlecodelabs/tools/third_party"
 )
 
-const linkFileRelDir = "src/github.com/googlecodelabs/tools/claat/proto/renderer/html/templates-tests/testdata/InlineContent/google_weather.txt"
-
 func TestRenderLinkTemplate(t *testing.T) {
-	linkFileAbsDir := filepath.Join(build.Default.GOPATH, linkFileRelDir)
-	weatherLinkBytes, err := ioutil.ReadFile(linkFileAbsDir)
-	if err != nil {
-		t.Errorf("Reading %#v outputted %#v", linkFileAbsDir, err)
-		return
-	}
-	weatherLinkOutput := string(weatherLinkBytes[:])
-
-	linkProto := protoconstructors.NewLink(
-		"https://www.google.com/search?q=weather+in+nyc",
-		protoconstructors.NewStylizedTextPlain("hey google,"),
-		protoconstructors.NewStylizedTextStrong(" how's the"),
-		protoconstructors.NewStylizedTextEmphasized(" weather in "),
-		protoconstructors.NewStylizedTextStrongAndEmphasized("NYC today?"),
-	)
-
-	canonicalTests := []*testingutils.CanonicalRenderingBatch{
+	tests := []*testingutils.CanonicalRenderingBatch{
 		{
 			InProto: &tutorial.Link{},
 			Out:     "",
@@ -55,11 +37,25 @@ func TestRenderLinkTemplate(t *testing.T) {
 			Out:     "",
 			Ok:      false,
 		},
+	}
+	testingutils.TestCanonicalRendererBatch(html.Render, tests, t)
+}
+
+func TestRenderLinkTemplateFromFile(t *testing.T) {
+	linkProto := protoconstructors.NewLink(
+		"https://www.google.com/search?q=weather+in+nyc",
+		protoconstructors.NewStylizedTextPlain("hey google,"),
+		protoconstructors.NewStylizedTextStrong(" how's the"),
+		protoconstructors.NewStylizedTextEmphasized(" weather in "),
+		protoconstructors.NewStylizedTextStrongAndEmphasized("NYC today?"),
+	)
+
+	tests := []*testingutils.CanonicalFileRenderingBatch{
 		{
 			InProto: linkProto,
-			Out:     weatherLinkOutput,
+			OutPath: "google_weather.txt",
 			Ok:      true,
 		},
 	}
-	testingutils.TestCanonicalRendererBatch(html.Render, canonicalTests, t)
+	testingutils.TestCanonicalFileRenderBatch(html.Render, tests, t)
 }

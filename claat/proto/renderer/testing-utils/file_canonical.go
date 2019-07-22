@@ -20,6 +20,11 @@ import (
 	"testing"
 )
 
+const (
+	filesTestDataDir = "src/github.com/googlecodelabs/tools/claat/proto/renderer/"
+	outPkgDataDir    = "templates-tests/testdata"
+)
+
 // CanonicalFileRenderingBatch type for canonical i != o and !ok rendering tests
 // of file-based outputs
 type CanonicalFileRenderingBatch struct {
@@ -27,11 +32,6 @@ type CanonicalFileRenderingBatch struct {
 	OutPath string
 	Ok      bool
 }
-
-const (
-	filesTestDataDir = "src/github.com/googlecodelabs/tools/claat/proto/renderer/"
-	outPkgDataDir    = "templates-tests/testdata"
-)
 
 // TestCanonicalFileRenderBatch is the helper for canonical i != o and !ok rendering tests
 // of file-based outputs

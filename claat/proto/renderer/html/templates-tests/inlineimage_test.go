@@ -24,7 +24,7 @@ import (
 func TestRenderImageTemplate(t *testing.T) {
 	tests := []*testingutils.CanonicalRenderingBatch{
 		{
-			InProto: &tutorial.Image{},
+			InProto: &tutorial.InlineImage{},
 			Out:     `<img src="" alt="" style="height: 0px; width: 0px">`,
 			Ok:      true,
 		},

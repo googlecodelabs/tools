@@ -28,5 +28,5 @@ func ReaderToString(i io.Reader) string {
 	return b.String()
 }
 
-// renderingFunc is the tunction signature for output-format agnositic 'Render'
+// renderingFunc is the function signature for output-format agnositic 'Render'
 type renderingFunc func(interface{}) (io.Reader, error)
