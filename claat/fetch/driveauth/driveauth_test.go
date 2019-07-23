@@ -43,7 +43,9 @@ func TestNewHelperWithoutAccessToken(t *testing.T) {
 	provider := "pvdr"
 
 	// Test the private version so we can sub in our fake auth handler.
-	h, err := newHelper("", provider, nil, fakeAuthorizationHandler)
+	h, err := newHelper("", provider, nil, internalOptions{
+		authHandler: fakeAuthorizationHandler,
+	})
 
 	if err != nil {
 		t.Fatalf("NewHelper(\"\", %q, nil) = err, want Helper", provider)

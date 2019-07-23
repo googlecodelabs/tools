@@ -54,22 +54,28 @@ var (
 
 type authorizationHandler func(conf *oauth2.Config) (*oauth2.Token, error)
 
-type Helper struct {
-	authToken   string
-	provider    string
-	client      *http.Client
+type internalOptions struct {
 	authHandler authorizationHandler
 }
 
-func NewHelper(at, p string, txp *http.Transport) (*Helper, error) {
-	return newHelper(at, p, txp, authorize)
+type Helper struct {
+	authToken string
+	provider  string
+	client    *http.Client
+	opts      internalOptions
 }
 
-func newHelper(at, p string, txp *http.Transport, ah authorizationHandler) (*Helper, error) {
+func NewHelper(at, p string, txp *http.Transport) (*Helper, error) {
+	return newHelper(at, p, txp, internalOptions{
+		authHandler: authorize,
+	})
+}
+
+func newHelper(at, p string, txp *http.Transport, io internalOptions) (*Helper, error) {
 	h := Helper{
-		authToken:   at,
-		provider:    p,
-		authHandler: ah,
+		authToken: at,
+		provider:  p,
+		opts:      io,
 	}
 
 	var err error
@@ -123,7 +129,7 @@ func (h *Helper) tokenSource() (oauth2.TokenSource, error) {
 	// Otherwise, use the Google provider.
 	t, err := readToken(h.provider)
 	if err != nil {
-		t, err = h.authHandler(&googleAuthConfig)
+		t, err = h.opts.authHandler(&googleAuthConfig)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("unable to obtain access token for %q", h.provider)
