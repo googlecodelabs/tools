@@ -207,13 +207,13 @@ local copy), specify `--delete-missing` on the publish command.
 1. Deploy views to the staging bucket:
 
     ```text
-    $ gulp publish:staging:views
+    $ gulp publish:staging:views --staging-bucket=$STAGING_BUCKET
     ```
 
 1. Deploy codelabs to the staging bucket:
 
     ```text
-    $ gulp publish:staging:codelabs
+    $ gulp publish:staging:codelabs --staging-bucket=$STAGING_BUCKET
     ```
 
 1. Visit the [staging site](https://storage.googleapis.com/mco-codelabs-staging) (modify link to match your staging bucket name).
@@ -234,13 +234,13 @@ specify `--delete-missing` on the publish command.
 1. Deploy views from the staging bucket to the production bucket:
 
     ```text
-    $ gulp publish:prod:views
+    $ gulp publish:prod:views --staging-bucket=$STAGING_BUCKET --prod_bucket=$PROD_BUCKET
     ```
 
 1. Deploy codelabs from the staging bucket to the production bucket:
 
     ```text
-    $ gulp publish:prod:codelabs
+    $ gulp publish:prod:codelabs --staging-bucket=$STAGING_BUCKET --prod_bucket=$PROD_BUCKET
     ```
 
 1. Visit the [production site](https://storage.googleapis.com/mco-codelabs-prod)  (modify link to match your production bucket name).
