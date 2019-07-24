@@ -183,6 +183,19 @@ Creating gs://mco-codelabs-staging/...
 Creating gs://mco-codelabs-prod/...
 ```
 
+#### Setup permissions and web access to your buckets
+
+1. Make newly uploaded files world-readable and ensure user@ has owner
+permissions:
+
+    ```text
+    $ gsutil defacl ch -g all:R -u you@your-domain.com:O $STAGING_BUCKET $PROD_BUCKET
+    $ gsutil iam ch allUsers:objectViewer $STAGING_BUCKET $PROD_BUCKET
+    ```
+
+    Add as many `-u user@` as you require. This ensures the users will remain
+    owners no matter who updates your bucket.
+
 #### Set corresponding environment variables like this (use your own names):
 
 ```
