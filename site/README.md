@@ -315,7 +315,6 @@ To build and publish a set of codelabs to staging:
 $ gulp dist --codelabs-filter=^my-codelab
 $ gulp publish:staging:codelabs
 ```
--->
 
 ## Options
 
