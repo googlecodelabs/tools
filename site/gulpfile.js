@@ -81,6 +81,12 @@ const DELETE_MISSING = !!args.deleteMissing || false;
 // DRY_RUN indicates if dry should be used.
 const DRY_RUN = !!args.dry;
 
+// PROD_BUCKET is the default bucket for prod.
+const PROD_BUCKET = gcs.bucketName(args.prodBucket || 'DEFAULT_PROD_BUCKET');
+
+// STAGING_BUCKET is the default bucket for staging.
+const STAGING_BUCKET = gcs.bucketName(args.stagingBucket || 'DEFAULT_STAGING_BUCKET');
+
 // VIEWS_FILTER is the filter to use for view inclusion.
 const VIEWS_FILTER = args.viewsFilter || '*';
 
@@ -902,3 +908,35 @@ const collectCodelabs = () => {
 
   return codelabs;
 }
+
+// publish:staging:codelabs uploads the dist folder codelabs to a staging
+// bucket. This only uploads the codelabs, the views remain unchanged.
+gulp.task('publish:staging:codelabs', (callback) => {
+  const opts = { dry: DRY_RUN, deleteMissing: DELETE_MISSING };
+  const src = path.join('dist', CODELABS_NAMESPACE, '/');
+  const dest = gcs.bucketFolderPath(STAGING_BUCKET, CODELABS_NAMESPACE);
+  gcs.rsync(src, dest, opts, callback);
+});
+
+// publish:staging:views uploads the dist folder views and associated assets to
+// a staging bucket. This does not upload any of the codelabs.
+gulp.task('publish:staging:views', (callback) => {
+  const opts = { exclude: CODELABS_NAMESPACE, dry: DRY_RUN, deleteMissing: DELETE_MISSING };
+  gcs.rsync('dist', STAGING_BUCKET, opts, callback);
+});
+
+// publish:prod:codelabs syncs codelabs from the staging to the production
+// bucket.
+gulp.task('publish:prod:codelabs', (callback) => {
+  const opts = { dry: DRY_RUN, deleteMissing: DELETE_MISSING };
+  const src = gcs.bucketFolderPath(STAGING_BUCKET, CODELABS_NAMESPACE);
+  const dest = gcs.bucketFolderPath(PROD_BUCKET, CODELABS_NAMESPACE);
+  gcs.rsync(src, dest, opts, callback);
+});
+
+// publish:prod:views syncs views and associated assets from the staging to the
+// production bucket.
+gulp.task('publish:prod:views', (callback) => {
+  const opts = { exclude: CODELABS_NAMESPACE, dry: DRY_RUN, deleteMissing: DELETE_MISSING };
+  gcs.rsync(STAGING_BUCKET, PROD_BUCKET, opts, callback);
+});

@@ -170,9 +170,39 @@ Note this filter takes a regular expression. By default, all views are built.
 
 ## Deployment
 
-Once you build, serve, and verify your labs, you're on your own for publishing the artifacts. There are so many ways to publish a static web site that I don't think we could solve that in a universally satisfactory way in the gulpfile so the publish targets are not supported.
+Once you build, serve, and verify your labs, you're on your own for publishing the artifacts. There are many ways to publish a static web site and we won't try to cover them all, however, we have included support for deploying your landing pages and codelabs to Google Cloud Storage (GCS).
 
-<!--
+### Setup for GCS Support
+
+#### Set  environment variables like this (use your own names):
+
+```
+export STAGING_BUCKET=gs://mco-codelabs-staging
+export PROD_BUCKET=gs://mco-codelabs-prod
+```
+
+#### Create staging and production buckets like this (use your own names):
+
+```
+18:42:32 site$ gsutil mb is $STAGING_BUCKET
+Creating gs://mco-codelabs-staging/...
+18:42:47 site$ gsutil mb $PROD_BUCKET
+Creating gs://mco-codelabs-prod/...
+```
+
+#### Setup permissions and web access to your buckets
+
+1. Make newly uploaded files world-readable and ensure user@ has owner
+permissions:
+
+    ```text
+    $ gsutil defacl ch -g all:R -u you@your-domain.com:O $STAGING_BUCKET $PROD_BUCKET
+    $ gsutil iam ch allUsers:objectViewer $STAGING_BUCKET $PROD_BUCKET
+    ```
+
+    Add as many `-u user@` as you require. This ensures the users will remain
+    owners no matter who updates your bucket.
+
 ### Deploy to staging
 
 The following commands perform a "copy" operation, uploading all local files to
@@ -190,19 +220,18 @@ local copy), specify `--delete-missing` on the publish command.
 1. Deploy views to the staging bucket:
 
     ```text
-    $ gulp publish:staging:views
+    $ gulp publish:staging:views --staging-bucket=$STAGING_BUCKET
     ```
 
 1. Deploy codelabs to the staging bucket:
 
     ```text
-    $ gulp publish:staging:codelabs
+    $ gulp publish:staging:codelabs --staging-bucket=$STAGING_BUCKET
     ```
 
-1. Visit the [staging site](go/codelabs-staging)
+1. Visit the [staging site](https://mco-codelabs-staging.storage.googleapis.com/index.html) (modify link to match your staging bucket name).
 
 See [#options](#options) for information on how to customize the staging bucket.
-
 
 ### Deploy to prod
 
@@ -218,20 +247,19 @@ specify `--delete-missing` on the publish command.
 1. Deploy views from the staging bucket to the production bucket:
 
     ```text
-    $ gulp publish:prod:views
+    $ gulp publish:prod:views --staging-bucket=$STAGING_BUCKET --prod-bucket=$PROD_BUCKET
     ```
 
 1. Deploy codelabs from the staging bucket to the production bucket:
 
     ```text
-    $ gulp publish:prod:codelabs
+    $ gulp publish:prod:codelabs --staging-bucket=$STAGING_BUCKET --prod-bucket=$PROD_BUCKET
     ```
 
-1. Visit the [production site](https://codelabs.developers.google.com/).
+1. Visit the [production site](https://mco-codelabs-prod.storage.googleapis.com/index.html)  (modify link to match your production bucket name).
 
 See [#options](#options) for information on how to customize the staging and
 prod bucket.
-
 
 ### Deploy to custom bucket
 
@@ -287,7 +315,6 @@ To build and publish a set of codelabs to staging:
 $ gulp dist --codelabs-filter=^my-codelab
 $ gulp publish:staging:codelabs
 ```
--->
 
 ## Options
 
@@ -313,10 +340,10 @@ publish operations.
 at the source (rsync-style behavior).
 
 `--prod-bucket` - name of the GCS bucket to use for production resources. This
-is only used for publishing. The default value is "www.code-labs.io".
+is only used for publishing.
 
 `--staging-bucket` - name of the GCS bucket to use for staging resources. This
-is only used for publishing. The default value is "codelabs-staging".
+is only used for publishing.
 
 `--views-filter` - regular expression by which to filter included views
 (events). If a filter is not specified, all views are included.
