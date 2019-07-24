@@ -326,10 +326,10 @@ publish operations.
 at the source (rsync-style behavior).
 
 `--prod-bucket` - name of the GCS bucket to use for production resources. This
-is only used for publishing. The default value is "www.code-labs.io".
+is only used for publishing.
 
 `--staging-bucket` - name of the GCS bucket to use for staging resources. This
-is only used for publishing. The default value is "codelabs-staging".
+is only used for publishing.
 
 `--views-filter` - regular expression by which to filter included views
 (events). If a filter is not specified, all views are included.
