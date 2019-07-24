@@ -216,7 +216,7 @@ local copy), specify `--delete-missing` on the publish command.
     $ gulp publish:staging:codelabs
     ```
 
-1. Visit the staging site at https://storage.googleapis.com/$STAGING_BUCKET.
+1. Visit the [staging site](https://storage.googleapis.com/mco-codelabs-staging) (modify link to match your staging bucket name).
 
 See [#options](#options) for information on how to customize the staging bucket.
 
@@ -243,7 +243,7 @@ specify `--delete-missing` on the publish command.
     $ gulp publish:prod:codelabs
     ```
 
-1. Visit the production site at https://storage.googleapis.com/$PROD_BUCKET.
+1. Visit the [production site](https://storage.googleapis.com/mco-codelabs-prod)  (modify link to match your production bucket name).
 
 See [#options](#options) for information on how to customize the staging and
 prod bucket.
