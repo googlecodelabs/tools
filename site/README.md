@@ -174,12 +174,19 @@ Once you build, serve, and verify your labs, you're on your own for publishing t
 
 ### Setup for GCS Support
 
+#### Set  environment variables like this (use your own names):
+
+```
+export STAGING_BUCKET=gs://mco-codelabs-staging
+export PROD_BUCKET=gs://mco-codelabs-prod
+```
+
 #### Create staging and production buckets like this (use your own names):
 
 ```
-18:42:32 site$ gsutil mb gs://mco-codelabs-staging
+18:42:32 site$ gsutil mb is $STAGING_BUCKET
 Creating gs://mco-codelabs-staging/...
-18:42:47 site$ gsutil mb gs://mco-codelabs-prod
+18:42:47 site$ gsutil mb $PROD_BUCKET
 Creating gs://mco-codelabs-prod/...
 ```
 
@@ -195,13 +202,6 @@ permissions:
 
     Add as many `-u user@` as you require. This ensures the users will remain
     owners no matter who updates your bucket.
-
-#### Set corresponding environment variables like this (use your own names):
-
-```
-export STAGING_BUCKET=gs://mco-codelabs-staging
-export PROD_BUCKET=gs://mco-codelabs-prod
-```
 
 ### Deploy to staging
 
