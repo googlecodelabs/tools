@@ -170,9 +170,24 @@ Note this filter takes a regular expression. By default, all views are built.
 
 ## Deployment
 
-Once you build, serve, and verify your labs, you're on your own for publishing the artifacts. There are so many ways to publish a static web site that I don't think we could solve that in a universally satisfactory way in the gulpfile so the publish targets are not supported.
+Once you build, serve, and verify your labs, you're on your own for publishing the artifacts. There are many ways to publish a static web site and we won't try to cover them all, however, we have included support for deploying your landing pages and codelabs to Google Cloud Storage (GCS).
 
-<!--
+### Setup for GCS Support
+
+#### Create staging and production buckets like this (use your own names):
+
+```
+gsutil mb gs://mco-codelabs-staging
+gsutil mb gs://mco-codelabs-prod
+```
+
+#### Set corresponding environment variables like this (use your own names):
+
+```
+export STAGING_BUCKET=gs://mco-codelabs-staging
+export PROD_BUCKET=gs://mco-codelabs-prod
+```
+
 ### Deploy to staging
 
 The following commands perform a "copy" operation, uploading all local files to
@@ -199,10 +214,9 @@ local copy), specify `--delete-missing` on the publish command.
     $ gulp publish:staging:codelabs
     ```
 
-1. Visit the [staging site](go/codelabs-staging)
+1. Visit the staging site at https://storage.googleapis.com/$STAGING_BUCKET.
 
 See [#options](#options) for information on how to customize the staging bucket.
-
 
 ### Deploy to prod
 
@@ -227,11 +241,10 @@ specify `--delete-missing` on the publish command.
     $ gulp publish:prod:codelabs
     ```
 
-1. Visit the [production site](https://codelabs.developers.google.com/).
+1. Visit the production site at https://storage.googleapis.com/$PROD_BUCKET.
 
 See [#options](#options) for information on how to customize the staging and
 prod bucket.
-
 
 ### Deploy to custom bucket
 
