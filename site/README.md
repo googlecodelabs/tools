@@ -177,8 +177,10 @@ Once you build, serve, and verify your labs, you're on your own for publishing t
 #### Create staging and production buckets like this (use your own names):
 
 ```
-gsutil mb gs://mco-codelabs-staging
-gsutil mb gs://mco-codelabs-prod
+18:42:32 site$ gsutil mb gs://mco-codelabs-staging
+Creating gs://mco-codelabs-staging/...
+18:42:47 site$ gsutil mb gs://mco-codelabs-prod
+Creating gs://mco-codelabs-prod/...
 ```
 
 #### Set corresponding environment variables like this (use your own names):
