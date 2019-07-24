@@ -174,19 +174,34 @@ Once you build, serve, and verify your labs, you're on your own for publishing t
 
 ### Setup for GCS Support
 
-#### Create staging and production buckets like this (use your own names):
-
-```
-gsutil mb gs://mco-codelabs-staging
-gsutil mb gs://mco-codelabs-prod
-```
-
-#### Set corresponding environment variables like this (use your own names):
+#### Set  environment variables like this (use your own names):
 
 ```
 export STAGING_BUCKET=gs://mco-codelabs-staging
 export PROD_BUCKET=gs://mco-codelabs-prod
 ```
+
+#### Create staging and production buckets like this (use your own names):
+
+```
+18:42:32 site$ gsutil mb is $STAGING_BUCKET
+Creating gs://mco-codelabs-staging/...
+18:42:47 site$ gsutil mb $PROD_BUCKET
+Creating gs://mco-codelabs-prod/...
+```
+
+#### Setup permissions and web access to your buckets
+
+1. Make newly uploaded files world-readable and ensure user@ has owner
+permissions:
+
+    ```text
+    $ gsutil defacl ch -g all:R -u you@your-domain.com:O $STAGING_BUCKET $PROD_BUCKET
+    $ gsutil iam ch allUsers:objectViewer $STAGING_BUCKET $PROD_BUCKET
+    ```
+
+    Add as many `-u user@` as you require. This ensures the users will remain
+    owners no matter who updates your bucket.
 
 ### Deploy to staging
 
@@ -205,16 +220,16 @@ local copy), specify `--delete-missing` on the publish command.
 1. Deploy views to the staging bucket:
 
     ```text
-    $ gulp publish:staging:views
+    $ gulp publish:staging:views --staging-bucket=$STAGING_BUCKET
     ```
 
 1. Deploy codelabs to the staging bucket:
 
     ```text
-    $ gulp publish:staging:codelabs
+    $ gulp publish:staging:codelabs --staging-bucket=$STAGING_BUCKET
     ```
 
-1. Visit the staging site at https://storage.googleapis.com/$STAGING_BUCKET.
+1. Visit the [staging site](https://mco-codelabs-staging.storage.googleapis.com/index.html) (modify link to match your staging bucket name).
 
 See [#options](#options) for information on how to customize the staging bucket.
 
@@ -232,16 +247,16 @@ specify `--delete-missing` on the publish command.
 1. Deploy views from the staging bucket to the production bucket:
 
     ```text
-    $ gulp publish:prod:views
+    $ gulp publish:prod:views --staging-bucket=$STAGING_BUCKET --prod-bucket=$PROD_BUCKET
     ```
 
 1. Deploy codelabs from the staging bucket to the production bucket:
 
     ```text
-    $ gulp publish:prod:codelabs
+    $ gulp publish:prod:codelabs --staging-bucket=$STAGING_BUCKET --prod-bucket=$PROD_BUCKET
     ```
 
-1. Visit the production site at https://storage.googleapis.com/$PROD_BUCKET.
+1. Visit the [production site](https://mco-codelabs-prod.storage.googleapis.com/index.html)  (modify link to match your production bucket name).
 
 See [#options](#options) for information on how to customize the staging and
 prod bucket.
