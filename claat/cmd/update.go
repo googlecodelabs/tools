@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2016-2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/fetch"
+	"github.com/googlecodelabs/tools/claat/fetch/drive/auth"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
 )
@@ -122,10 +123,11 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	// slurp codelab assets to disk and rewrite image URLs
 	var client *http.Client
 	if clab.Typ == fetch.SrcGoogleDoc {
-		client, err = fetch.DriveClient(opts.AuthToken)
+		h, err := auth.NewHelper(opts.AuthToken, auth.ProviderGoogle, nil)
 		if err != nil {
 			return nil, err
 		}
+		client = h.DriveClient()
 	}
 	imgmap, err := fetch.SlurpImages(client, meta.Source, imgdir, clab.Steps)
 	if err != nil {

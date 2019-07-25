@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2016-2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/googlecodelabs/tools/claat/fetch/drive/auth"
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
@@ -189,10 +190,11 @@ func fetchRemoteFile(url string) (*resource, error) {
 func fetchDriveFile(id, authToken string, nometa bool) (*resource, error) {
 	id = gdocID(id)
 	exportURL := gdocExportURL(id)
-	client, err := DriveClient(authToken)
+	h, err := auth.NewHelper(authToken, auth.ProviderGoogle, nil)
 	if err != nil {
 		return nil, err
 	}
+	client := h.DriveClient()
 
 	if nometa {
 		res, err := retryGet(client, exportURL, 7)

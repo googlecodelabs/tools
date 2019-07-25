@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2016-2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/fetch"
+	"github.com/googlecodelabs/tools/claat/fetch/drive/auth"
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
@@ -100,10 +101,11 @@ func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
 	}
 	var client *http.Client // need for downloadImages
 	if clab.Typ == fetch.SrcGoogleDoc {
-		client, err = fetch.DriveClient(opts.AuthToken)
+		h, err := auth.NewHelper(opts.AuthToken, auth.ProviderGoogle, nil)
 		if err != nil {
 			return nil, err
 		}
+		client = h.DriveClient()
 	}
 
 	// codelab export context
