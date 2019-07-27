@@ -19,13 +19,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/fetch"
-	"github.com/googlecodelabs/tools/claat/fetch/drive/auth"
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
@@ -99,14 +97,6 @@ func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
 	if err != nil {
 		return nil, err
 	}
-	var client *http.Client // need for downloadImages
-	if clab.Typ == fetch.SrcGoogleDoc {
-		h, err := auth.NewHelper(opts.AuthToken, auth.ProviderGoogle, nil)
-		if err != nil {
-			return nil, err
-		}
-		client = h.DriveClient()
-	}
 
 	// codelab export context
 	lastmod := types.ContextTime(clab.Mod)
@@ -125,7 +115,7 @@ func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
 		dir = codelabDir(dir, meta)
 		// download or copy codelab assets to disk, and rewrite image URLs
 		mdir := filepath.Join(dir, util.ImgDirname)
-		if _, err := fetch.SlurpImages(client, src, mdir, clab.Steps); err != nil {
+		if _, err := fetch.SlurpImages(opts.AuthToken, src, mdir, clab.Steps); err != nil {
 			return nil, err
 		}
 	}

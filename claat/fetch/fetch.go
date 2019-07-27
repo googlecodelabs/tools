@@ -339,7 +339,7 @@ func retryGet(client *http.Client, url string, n int) (*http.Response, error) {
 	return nil, fmt.Errorf("%s: failed after %d retries", url, n)
 }
 
-func SlurpImages(client *http.Client, src, dir string, steps []*types.Step) (map[string]string, error) {
+func SlurpImages(authToken, src, dir string, steps []*types.Step) (map[string]string, error) {
 	// make sure img dir exists
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return nil, err
@@ -348,6 +348,11 @@ func SlurpImages(client *http.Client, src, dir string, steps []*types.Step) (map
 	type res struct {
 		url, file string
 		err       error
+	}
+
+	h, err := auth.NewHelper(authToken, auth.ProviderGoogle, nil)
+	if err != nil {
+		return nil, err
 	}
 
 	ch := make(chan *res, 100)
@@ -359,7 +364,7 @@ func SlurpImages(client *http.Client, src, dir string, steps []*types.Step) (map
 		for _, n := range nodes {
 			go func(n *types.ImageNode) {
 				url := n.Src
-				file, err := SlurpBytes(client, src, dir, url)
+				file, err := SlurpBytes(h.DriveClient(), src, dir, url)
 				if err == nil {
 					n.Src = filepath.Join(util.ImgDirname, file)
 				}
@@ -368,7 +373,6 @@ func SlurpImages(client *http.Client, src, dir string, steps []*types.Step) (map
 		}
 	}
 
-	var err error
 	imap := make(map[string]string, count)
 	for i := 0; i < count; i++ {
 		r := <-ch

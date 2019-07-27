@@ -21,14 +21,12 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/fetch"
-	"github.com/googlecodelabs/tools/claat/fetch/drive/auth"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
 )
@@ -121,15 +119,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	imgdir := filepath.Join(newdir, util.ImgDirname)
 
 	// slurp codelab assets to disk and rewrite image URLs
-	var client *http.Client
-	if clab.Typ == fetch.SrcGoogleDoc {
-		h, err := auth.NewHelper(opts.AuthToken, auth.ProviderGoogle, nil)
-		if err != nil {
-			return nil, err
-		}
-		client = h.DriveClient()
-	}
-	imgmap, err := fetch.SlurpImages(client, meta.Source, imgdir, clab.Steps)
+	imgmap, err := fetch.SlurpImages(opts.AuthToken, meta.Source, imgdir, clab.Steps)
 	if err != nil {
 		return nil, err
 	}
