@@ -266,7 +266,7 @@ func (f *Fetcher) fetchRemote(urlStr string, nometa bool) (*resource, error) {
 		return nil, err
 	}
 	if u.Host == "" || u.Host == "docs.google.com" {
-		return fetchDriveFile(urlStr, f.authToken, nometa)
+		return f.fetchDriveFile(urlStr, nometa)
 	}
 	return fetchRemoteFile(urlStr)
 }
@@ -294,10 +294,10 @@ func fetchRemoteFile(url string) (*resource, error) {
 // for more details.
 //
 // If nometa is true, resource.mod will have zero value.
-func fetchDriveFile(id, authToken string, nometa bool) (*resource, error) {
+func (f *Fetcher) fetchDriveFile(id string, nometa bool) (*resource, error) {
 	id = gdocID(id)
 	exportURL := gdocExportURL(id)
-	h, err := auth.NewHelper(authToken, auth.ProviderGoogle, nil)
+	h, err := auth.NewHelper(f.authToken, auth.ProviderGoogle, nil)
 	if err != nil {
 		return nil, err
 	}
