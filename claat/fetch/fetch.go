@@ -92,7 +92,7 @@ func NewFetcher(at string, pm map[string]bool) (*Fetcher, error) {
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
 func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
-	res, err := fetch(src, f.authToken)
+	res, err := f.fetch(src)
 	if err != nil {
 		return nil, err
 	}
@@ -236,10 +236,10 @@ func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
 // fetch retrieves codelab doc either from local disk
 // or a remote location.
 // The caller is responsible for closing returned stream.
-func fetch(name, authToken string) (*resource, error) {
+func (f *Fetcher) fetch(name string) (*resource, error) {
 	fi, err := os.Stat(name)
 	if os.IsNotExist(err) {
-		return fetchRemote(name, authToken, false)
+		return fetchRemote(name, f.authToken, false)
 	}
 	r, err := os.Open(name)
 	if err != nil {
