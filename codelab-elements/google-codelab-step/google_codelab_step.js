@@ -17,11 +17,11 @@
 
 goog.module('googlecodelabs.CodelabStep');
 
-const safe = goog.require('goog.dom.safe');
 const EventHandler = goog.require('goog.events.EventHandler');
 const HtmlSanitizer = goog.require('goog.html.sanitizer.HtmlSanitizer');
 const Templates = goog.require('googlecodelabs.CodelabStep.Templates');
 const dom = goog.require('goog.dom');
+const safe = goog.require('goog.dom.safe');
 const soy = goog.require('goog.soy');
 const {identity} = goog.require('goog.functions');
 
