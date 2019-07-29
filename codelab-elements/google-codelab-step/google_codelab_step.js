@@ -177,7 +177,7 @@ class CodelabStep extends HTMLElement {
     // Add prettyprint to code blocks.
     const codeElements = this.inner_.querySelectorAll('pre code');
     codeElements.forEach((el) => {
-      if (window.prettyPrintOne instanceof Function) {
+      if (window['prettyPrintOne'] instanceof Function) {
         const code = window['prettyPrintOne'](el.innerHTML);
         el.innerHTML = code;
       }
