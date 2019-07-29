@@ -17,10 +17,13 @@
 
 goog.module('googlecodelabs.CodelabStep');
 
+const safe = goog.require('goog.dom.safe');
 const EventHandler = goog.require('goog.events.EventHandler');
+const HtmlSanitizer = goog.require('goog.html.sanitizer.HtmlSanitizer');
 const Templates = goog.require('googlecodelabs.CodelabStep.Templates');
 const dom = goog.require('goog.dom');
 const soy = goog.require('goog.soy');
+const {identity} = goog.require('goog.functions');
 
 /** @const {string} */
 const LABEL_ATTR = 'label';
@@ -179,7 +182,10 @@ class CodelabStep extends HTMLElement {
     codeElements.forEach((el) => {
       if (window['prettyPrintOne'] instanceof Function) {
         const code = window['prettyPrintOne'](el.innerHTML);
-        el.innerHTML = code;
+        // Sanitizer that preserves class names for syntax highlighting.
+        const sanitizer =
+            new HtmlSanitizer.Builder().withCustomTokenPolicy(identity).build();
+        safe.setInnerHtml(el, sanitizer.sanitize(code));
       }
       this.eventHandler_.listen(
         el, 'copy', () => this.handleSnippetCopy_(el));
