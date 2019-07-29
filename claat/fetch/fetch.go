@@ -64,14 +64,24 @@ type codelab struct {
 	Mod time.Time // last modified timestamp
 }
 
+type Fetcher struct {
+	authToken string
+}
+
+func NewFetcher(at string) *Fetcher {
+	return &Fetcher{
+		authToken: at,
+	}
+}
+
 // SlurpCodelab retrieves and parses codelab source.
 // It takes the source, plus an auth token and a set of extra metadata to pass along.
 // It returns parsed codelab and its source type.
 //
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
-func SlurpCodelab(src, authToken string, passMetadata map[string]bool) (*codelab, error) {
-	res, err := fetch(src, authToken)
+func (f *Fetcher) SlurpCodelab(src string, passMetadata map[string]bool) (*codelab, error) {
+	res, err := fetch(src, f.authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +104,7 @@ func SlurpCodelab(src, authToken string, passMetadata map[string]bool) (*codelab
 	defer close(ch)
 	for _, imp := range imports {
 		go func(n *types.ImportNode) {
-			frag, err := slurpFragment(n.URL, authToken)
+			frag, err := slurpFragment(n.URL, f.authToken)
 			if err != nil {
 				ch <- fmt.Errorf("%s: %v", n.URL, err)
 				return

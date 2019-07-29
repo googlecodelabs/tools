@@ -93,7 +93,8 @@ func CmdExport(opts CmdExportOptions) int {
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
 func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
-	clab, err := fetch.SlurpCodelab(src, opts.AuthToken, opts.PassMetadata)
+	f := fetch.NewFetcher(opts.AuthToken)
+	clab, err := f.SlurpCodelab(src, opts.PassMetadata)
 	if err != nil {
 		return nil, err
 	}

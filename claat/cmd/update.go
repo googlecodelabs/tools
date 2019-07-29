@@ -107,7 +107,8 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	}
 
 	// fetch and parse codelab source
-	clab, err := fetch.SlurpCodelab(meta.Source, opts.AuthToken, opts.PassMetadata)
+	f := fetch.NewFetcher(opts.AuthToken)
+	clab, err := f.SlurpCodelab(meta.Source, opts.PassMetadata)
 	if err != nil {
 		return nil, err
 	}
