@@ -37,6 +37,7 @@ import (
 const (
 	// supported codelab source types must be registered parsers
 	// TODO: define these in claat/parser/..., e.g. in parser/gdoc
+	// alternate TODO: make this an iota-based enum?
 	SrcInvalid   srcType = ""
 	SrcGoogleDoc srcType = "gdoc" // Google Docs doc
 	SrcMarkdown  srcType = "md"   // Markdown text
@@ -44,6 +45,8 @@ const (
 	// driveAPI is a base URL for Drive API
 	driveAPI = "https://www.googleapis.com/drive/v3"
 )
+
+// TODO: create an enum for use with "nometa" for readability's sake
 
 // srcType is codelab source type
 type srcType string
