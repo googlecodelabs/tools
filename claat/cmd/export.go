@@ -94,9 +94,9 @@ func CmdExport(opts CmdExportOptions) int {
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
 //
-// An alternate http.Transport may be specified if desired. Leave null for default.
-func ExportCodelab(src string, txp *http.Transport, opts CmdExportOptions) (*types.Meta, error) {
-	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, txp)
+// An alternate http.RoundTripper may be specified if desired. Leave null for default.
+func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*types.Meta, error) {
+	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, rt)
 	if err != nil {
 		return nil, err
 	}

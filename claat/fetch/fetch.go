@@ -74,8 +74,8 @@ type Fetcher struct {
 	passMetadata map[string]bool
 }
 
-func NewFetcher(at string, pm map[string]bool, txp *http.Transport) (*Fetcher, error) {
-	h, err := auth.NewHelper(at, auth.ProviderGoogle, txp)
+func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper) (*Fetcher, error) {
+	h, err := auth.NewHelper(at, auth.ProviderGoogle, rt)
 	if err != nil {
 		return nil, err
 	}

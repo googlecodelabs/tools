@@ -15,7 +15,6 @@ package auth
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -65,13 +64,13 @@ type Helper struct {
 	opts      internalOptions
 }
 
-func NewHelper(at, p string, txp *http.Transport) (*Helper, error) {
-	return newHelper(at, p, txp, internalOptions{
+func NewHelper(at, p string, rt http.RoundTripper) (*Helper, error) {
+	return newHelper(at, p, rt, internalOptions{
 		authHandler: authorize,
 	})
 }
 
-func newHelper(at, p string, txp *http.Transport, io internalOptions) (*Helper, error) {
+func newHelper(at, p string, rt http.RoundTripper, io internalOptions) (*Helper, error) {
 	h := Helper{
 		authToken: at,
 		provider:  p,
@@ -79,7 +78,7 @@ func newHelper(at, p string, txp *http.Transport, io internalOptions) (*Helper, 
 	}
 
 	var err error
-	h.client, err = h.produceDriveClient(txp)
+	h.client, err = h.produceDriveClient(rt)
 	if err != nil {
 		return nil, err
 	}
@@ -91,25 +90,20 @@ func (h *Helper) DriveClient() *http.Client {
 	return h.client
 }
 
-func (h *Helper) produceDriveClient(txp *http.Transport) (*http.Client, error) {
+func (h *Helper) produceDriveClient(rt http.RoundTripper) (*http.Client, error) {
 	ts, err := h.tokenSource()
 	if err != nil {
 		return nil, err
 	}
 
-	if txp == nil {
-		var ok bool
-		txp, ok = http.DefaultTransport.(*http.Transport)
-		if !ok {
-			// Should never happen per http://go/godoc/net/http/#RoundTripper.
-			return nil, errors.New("could not convert http.DefaultTransport to http.Transport")
-		}
+	if rt == nil {
+		rt = http.DefaultTransport
 	}
 
 	return &http.Client{
 		Transport: &oauth2.Transport{
 			Source: ts,
-			Base:   txp,
+			Base:   rt,
 		},
 	}, nil
 }
