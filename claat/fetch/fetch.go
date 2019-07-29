@@ -65,14 +65,16 @@ type codelab struct {
 }
 
 type Fetcher struct {
-	authToken string
-	crcTable  *crc64.Table
+	authToken    string
+	crcTable     *crc64.Table
+	passMetadata map[string]bool
 }
 
-func NewFetcher(at string) *Fetcher {
+func NewFetcher(at string, pm map[string]bool) *Fetcher {
 	return &Fetcher{
-		authToken: at,
-		crcTable:  crc64.MakeTable(crc64.ECMA),
+		authToken:    at,
+		crcTable:     crc64.MakeTable(crc64.ECMA),
+		passMetadata: pm,
 	}
 }
 
@@ -82,7 +84,7 @@ func NewFetcher(at string) *Fetcher {
 //
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
-func (f *Fetcher) SlurpCodelab(src string, passMetadata map[string]bool) (*codelab, error) {
+func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
 	res, err := fetch(src, f.authToken)
 	if err != nil {
 		return nil, err
@@ -90,7 +92,7 @@ func (f *Fetcher) SlurpCodelab(src string, passMetadata map[string]bool) (*codel
 	defer res.body.Close()
 
 	opts := *parser.NewOptions()
-	opts.PassMetadata = passMetadata
+	opts.PassMetadata = f.passMetadata
 
 	clab, err := parser.Parse(string(res.typ), res.body, opts)
 	if err != nil {
