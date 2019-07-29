@@ -156,7 +156,7 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 		for _, n := range nodes {
 			go func(n *types.ImageNode) {
 				url := n.Src
-				file, err := f.SlurpBytes(h.DriveClient(), src, dir, url)
+				file, err := f.slurpBytes(h.DriveClient(), src, dir, url)
 				if err == nil {
 					n.Src = filepath.Join(util.ImgDirname, file)
 				}
@@ -178,7 +178,7 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 	return imap, err
 }
 
-func (f *Fetcher) SlurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, error) {
+func (f *Fetcher) slurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, error) {
 	// images can be local in Markdown cases or remote.
 	// Only proceed a simple copy on local reference.
 	var b []byte
