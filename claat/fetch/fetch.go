@@ -115,7 +115,7 @@ func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
 	defer close(ch)
 	for _, imp := range imports {
 		go func(n *types.ImportNode) {
-			frag, err := slurpFragment(n.URL, f.authToken)
+			frag, err := f.slurpFragment(n.URL)
 			if err != nil {
 				ch <- fmt.Errorf("%s: %v", n.URL, err)
 				return
@@ -224,8 +224,8 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 	return file, ioutil.WriteFile(dst, b, 0644)
 }
 
-func slurpFragment(url, authToken string) ([]types.Node, error) {
-	res, err := fetchRemote(url, authToken, true)
+func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
+	res, err := fetchRemote(url, f.authToken, true)
 	if err != nil {
 		return nil, err
 	}
