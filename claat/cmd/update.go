@@ -107,7 +107,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	}
 
 	// fetch and parse codelab source
-	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata)
+	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, nil)
 	if err != nil {
 		return nil, err
 	}
