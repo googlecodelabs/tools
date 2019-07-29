@@ -65,17 +65,24 @@ type codelab struct {
 }
 
 type Fetcher struct {
+	authHelper   *auth.Helper
 	authToken    string
 	crcTable     *crc64.Table
 	passMetadata map[string]bool
 }
 
-func NewFetcher(at string, pm map[string]bool) *Fetcher {
+func NewFetcher(at string, pm map[string]bool) (*Fetcher, error) {
+	h, err := auth.NewHelper(at, auth.ProviderGoogle, nil)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Fetcher{
+		authHelper:   h,
 		authToken:    at,
 		crcTable:     crc64.MakeTable(crc64.ECMA),
 		passMetadata: pm,
-	}
+	}, nil
 }
 
 // SlurpCodelab retrieves and parses codelab source.
@@ -142,11 +149,6 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 		err       error
 	}
 
-	h, err := auth.NewHelper(f.authToken, auth.ProviderGoogle, nil)
-	if err != nil {
-		return nil, err
-	}
-
 	ch := make(chan *res, 100)
 	defer close(ch)
 	var count int
@@ -156,7 +158,7 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 		for _, n := range nodes {
 			go func(n *types.ImageNode) {
 				url := n.Src
-				file, err := f.slurpBytes(h.DriveClient(), src, dir, url)
+				file, err := f.slurpBytes(src, dir, url)
 				if err == nil {
 					n.Src = filepath.Join(util.ImgDirname, file)
 				}
@@ -166,6 +168,7 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 	}
 
 	imap := make(map[string]string, count)
+	var err error
 	for i := 0; i < count; i++ {
 		r := <-ch
 		imap[r.file] = r.url
@@ -178,7 +181,7 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 	return imap, err
 }
 
-func (f *Fetcher) slurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, error) {
+func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 	// images can be local in Markdown cases or remote.
 	// Only proceed a simple copy on local reference.
 	var b []byte
@@ -202,7 +205,7 @@ func (f *Fetcher) slurpBytes(client *http.Client, codelabSrc, dir, imgURL string
 		b, err = ioutil.ReadFile(imgURL)
 		ext = filepath.Ext(imgURL)
 	} else {
-		b, err = slurpRemoteBytes(client, u.String(), 5)
+		b, err = slurpRemoteBytes(f.authHelper.DriveClient(), u.String(), 5)
 		if string(b[6:10]) == "JFIF" {
 			ext = ".jpeg"
 		} else if string(b[0:3]) == "GIF" {
