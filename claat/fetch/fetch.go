@@ -225,7 +225,7 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 }
 
 func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
-	res, err := fetchRemote(url, f.authToken, true)
+	res, err := f.fetchRemote(url, true)
 	if err != nil {
 		return nil, err
 	}
@@ -239,7 +239,7 @@ func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
 func (f *Fetcher) fetch(name string) (*resource, error) {
 	fi, err := os.Stat(name)
 	if os.IsNotExist(err) {
-		return fetchRemote(name, f.authToken, false)
+		return f.fetchRemote(name, false)
 	}
 	r, err := os.Open(name)
 	if err != nil {
@@ -260,13 +260,13 @@ func (f *Fetcher) fetch(name string) (*resource, error) {
 //
 // The caller is responsible for closing returned stream.
 // If nometa is true, resource.mod may have zero value.
-func fetchRemote(urlStr, authToken string, nometa bool) (*resource, error) {
+func (f *Fetcher) fetchRemote(urlStr string, nometa bool) (*resource, error) {
 	u, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
 	}
 	if u.Host == "" || u.Host == "docs.google.com" {
-		return fetchDriveFile(urlStr, authToken, nometa)
+		return fetchDriveFile(urlStr, f.authToken, nometa)
 	}
 	return fetchRemoteFile(urlStr)
 }
