@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -67,7 +68,7 @@ func CmdExport(opts CmdExportOptions) int {
 	ch := make(chan *result, len(srcs))
 	for _, src := range srcs {
 		go func(src string) {
-			meta, err := exportCodelab(src, opts)
+			meta, err := ExportCodelab(src, nil, opts)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -83,7 +84,7 @@ func CmdExport(opts CmdExportOptions) int {
 	return exitCode
 }
 
-// exportCodelab fetches codelab src from either local disk or remote,
+// ExportCodelab fetches codelab src from either local disk or remote,
 // parses and stores the results on disk, in a dir ancestored by output.
 //
 // Stored results include codelab content formatted in tmplout, its assets
@@ -92,8 +93,10 @@ func CmdExport(opts CmdExportOptions) int {
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
-	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, nil)
+//
+// An alternate http.Transport may be specified if desired. Leave null for default.
+func ExportCodelab(src string, txp *http.Transport, opts CmdExportOptions) (*types.Meta, error) {
+	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, txp)
 	if err != nil {
 		return nil, err
 	}
