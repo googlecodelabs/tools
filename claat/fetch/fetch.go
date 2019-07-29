@@ -205,7 +205,7 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 		b, err = ioutil.ReadFile(imgURL)
 		ext = filepath.Ext(imgURL)
 	} else {
-		b, err = slurpRemoteBytes(f.authHelper.DriveClient(), u.String(), 5)
+		b, err = f.slurpRemoteBytes(u.String(), 5)
 		if string(b[6:10]) == "JFIF" {
 			ext = ".jpeg"
 		} else if string(b[0:3]) == "GIF" {
@@ -343,8 +343,8 @@ func (f *Fetcher) fetchDriveFile(id string, nometa bool) (*resource, error) {
 	}, nil
 }
 
-func slurpRemoteBytes(client *http.Client, url string, n int) ([]byte, error) {
-	res, err := retryGet(client, url, n)
+func (f *Fetcher) slurpRemoteBytes(url string, n int) ([]byte, error) {
+	res, err := retryGet(f.authHelper.DriveClient(), url, n)
 	if err != nil {
 		return nil, err
 	}
