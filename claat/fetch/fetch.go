@@ -66,11 +66,13 @@ type codelab struct {
 
 type Fetcher struct {
 	authToken string
+	crcTable  *crc64.Table
 }
 
 func NewFetcher(at string) *Fetcher {
 	return &Fetcher{
 		authToken: at,
+		crcTable:  crc64.MakeTable(crc64.ECMA),
 	}
 }
 
@@ -125,6 +127,96 @@ func (f *Fetcher) SlurpCodelab(src string, passMetadata map[string]bool) (*codel
 		Mod:     res.mod,
 	}
 	return v, nil
+}
+
+func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]string, error) {
+	// make sure img dir exists
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return nil, err
+	}
+
+	type res struct {
+		url, file string
+		err       error
+	}
+
+	h, err := auth.NewHelper(f.authToken, auth.ProviderGoogle, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	ch := make(chan *res, 100)
+	defer close(ch)
+	var count int
+	for _, st := range steps {
+		nodes := types.ImageNodes(st.Content.Nodes)
+		count += len(nodes)
+		for _, n := range nodes {
+			go func(n *types.ImageNode) {
+				url := n.Src
+				file, err := f.SlurpBytes(h.DriveClient(), src, dir, url)
+				if err == nil {
+					n.Src = filepath.Join(util.ImgDirname, file)
+				}
+				ch <- &res{url, file, err}
+			}(n)
+		}
+	}
+
+	imap := make(map[string]string, count)
+	for i := 0; i < count; i++ {
+		r := <-ch
+		imap[r.file] = r.url
+		if r.err != nil && err == nil {
+			// record first error
+			err = fmt.Errorf("%s => %s: %v", r.url, r.file, r.err)
+		}
+	}
+
+	return imap, err
+}
+
+func (f *Fetcher) SlurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, error) {
+	// images can be local in Markdown cases or remote.
+	// Only proceed a simple copy on local reference.
+	var b []byte
+	var ext string
+	u, err := url.Parse(imgURL)
+	if err != nil {
+		return "", err
+	}
+
+	// If the codelab source is being downloaded from the network, then we should interpret
+	// the image URL in the same way.
+	srcUrl, err := url.Parse(codelabSrc)
+	if err == nil && srcUrl.Host != "" {
+		u = srcUrl.ResolveReference(u)
+	}
+
+	if u.Host == "" {
+		if imgURL, err = restrictPathToParent(imgURL, filepath.Dir(codelabSrc)); err != nil {
+			return "", err
+		}
+		b, err = ioutil.ReadFile(imgURL)
+		ext = filepath.Ext(imgURL)
+	} else {
+		b, err = slurpRemoteBytes(client, u.String(), 5)
+		if string(b[6:10]) == "JFIF" {
+			ext = ".jpeg"
+		} else if string(b[0:3]) == "GIF" {
+			ext = ".gif"
+		} else {
+			ext = ".png"
+		}
+	}
+	if err != nil {
+		return "", err
+	}
+
+	crc := crc64.Checksum(b, f.crcTable)
+	file := fmt.Sprintf("%x%s", crc, ext)
+	dst := filepath.Join(dir, file)
+	return file, ioutil.WriteFile(dst, b, 0644)
 }
 
 func slurpFragment(url, authToken string) ([]types.Node, error) {
@@ -246,51 +338,6 @@ func fetchDriveFile(id, authToken string, nometa bool) (*resource, error) {
 	}, nil
 }
 
-var crcTable = crc64.MakeTable(crc64.ECMA)
-
-func SlurpBytes(client *http.Client, codelabSrc, dir, imgURL string) (string, error) {
-	// images can be local in Markdown cases or remote.
-	// Only proceed a simple copy on local reference.
-	var b []byte
-	var ext string
-	u, err := url.Parse(imgURL)
-	if err != nil {
-		return "", err
-	}
-
-	// If the codelab source is being downloaded from the network, then we should interpret
-	// the image URL in the same way.
-	srcUrl, err := url.Parse(codelabSrc)
-	if err == nil && srcUrl.Host != "" {
-		u = srcUrl.ResolveReference(u)
-	}
-
-	if u.Host == "" {
-		if imgURL, err = restrictPathToParent(imgURL, filepath.Dir(codelabSrc)); err != nil {
-			return "", err
-		}
-		b, err = ioutil.ReadFile(imgURL)
-		ext = filepath.Ext(imgURL)
-	} else {
-		b, err = slurpRemoteBytes(client, u.String(), 5)
-		if string(b[6:10]) == "JFIF" {
-			ext = ".jpeg"
-		} else if string(b[0:3]) == "GIF" {
-			ext = ".gif"
-		} else {
-			ext = ".png"
-		}
-	}
-	if err != nil {
-		return "", err
-	}
-
-	crc := crc64.Checksum(b, crcTable)
-	file := fmt.Sprintf("%x%s", crc, ext)
-	dst := filepath.Join(dir, file)
-	return file, ioutil.WriteFile(dst, b, 0644)
-}
-
 func slurpRemoteBytes(client *http.Client, url string, n int) ([]byte, error) {
 	res, err := retryGet(client, url, n)
 	if err != nil {
@@ -347,53 +394,6 @@ func retryGet(client *http.Client, url string, n int) (*http.Response, error) {
 		}
 	}
 	return nil, fmt.Errorf("%s: failed after %d retries", url, n)
-}
-
-func SlurpImages(authToken, src, dir string, steps []*types.Step) (map[string]string, error) {
-	// make sure img dir exists
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return nil, err
-	}
-
-	type res struct {
-		url, file string
-		err       error
-	}
-
-	h, err := auth.NewHelper(authToken, auth.ProviderGoogle, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	ch := make(chan *res, 100)
-	defer close(ch)
-	var count int
-	for _, st := range steps {
-		nodes := types.ImageNodes(st.Content.Nodes)
-		count += len(nodes)
-		for _, n := range nodes {
-			go func(n *types.ImageNode) {
-				url := n.Src
-				file, err := SlurpBytes(h.DriveClient(), src, dir, url)
-				if err == nil {
-					n.Src = filepath.Join(util.ImgDirname, file)
-				}
-				ch <- &res{url, file, err}
-			}(n)
-		}
-	}
-
-	imap := make(map[string]string, count)
-	for i := 0; i < count; i++ {
-		r := <-ch
-		imap[r.file] = r.url
-		if r.err != nil && err == nil {
-			// record first error
-			err = fmt.Errorf("%s => %s: %v", r.url, r.file, r.err)
-		}
-	}
-
-	return imap, err
 }
 
 func gdocID(url string) string {

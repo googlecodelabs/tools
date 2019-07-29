@@ -116,7 +116,7 @@ func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
 		dir = codelabDir(dir, meta)
 		// download or copy codelab assets to disk, and rewrite image URLs
 		mdir := filepath.Join(dir, util.ImgDirname)
-		if _, err := fetch.SlurpImages(opts.AuthToken, src, mdir, clab.Steps); err != nil {
+		if _, err := f.SlurpImages(src, mdir, clab.Steps); err != nil {
 			return nil, err
 		}
 	}
