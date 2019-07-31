@@ -271,12 +271,12 @@ func (f *Fetcher) fetchRemote(urlStr string, nometa bool) (*resource, error) {
 	if u.Host == "" || u.Host == "docs.google.com" {
 		return f.fetchDriveFile(urlStr, nometa)
 	}
-	return fetchRemoteFile(urlStr)
+	return f.fetchRemoteFile(urlStr)
 }
 
 // fetchRemoteFile retrieves codelab resource from url.
 // It is a special case of fetchRemote function.
-func fetchRemoteFile(url string) (*resource, error) {
+func (f *Fetcher) fetchRemoteFile(url string) (*resource, error) {
 	res, err := retryGet(nil, url, 3)
 	if err != nil {
 		return nil, err
