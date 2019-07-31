@@ -277,7 +277,7 @@ func (f *Fetcher) fetchRemote(urlStr string, nometa bool) (*resource, error) {
 // fetchRemoteFile retrieves codelab resource from url.
 // It is a special case of fetchRemote function.
 func (f *Fetcher) fetchRemoteFile(url string) (*resource, error) {
-	res, err := retryGet(nil, url, 3)
+	res, err := retryGet(f.authHelper.DriveClient(), url, 3)
 	if err != nil {
 		return nil, err
 	}
@@ -300,14 +300,9 @@ func (f *Fetcher) fetchRemoteFile(url string) (*resource, error) {
 func (f *Fetcher) fetchDriveFile(id string, nometa bool) (*resource, error) {
 	id = gdocID(id)
 	exportURL := gdocExportURL(id)
-	h, err := auth.NewHelper(f.authToken, auth.ProviderGoogle, nil)
-	if err != nil {
-		return nil, err
-	}
-	client := h.DriveClient()
 
 	if nometa {
-		res, err := retryGet(client, exportURL, 7)
+		res, err := retryGet(f.authHelper.DriveClient(), exportURL, 7)
 		if err != nil {
 			return nil, err
 		}
@@ -319,7 +314,7 @@ func (f *Fetcher) fetchDriveFile(id string, nometa bool) (*resource, error) {
 		"supportsTeamDrives": {"true"},
 	}
 	u := fmt.Sprintf("%s/files/%s?%s", driveAPI, id, q.Encode())
-	res, err := retryGet(client, u, 7)
+	res, err := retryGet(f.authHelper.DriveClient(), u, 7)
 	if err != nil {
 		return nil, err
 	}
@@ -336,7 +331,7 @@ func (f *Fetcher) fetchDriveFile(id string, nometa bool) (*resource, error) {
 		return nil, fmt.Errorf("%s: invalid mime type: %s", id, meta.MimeType)
 	}
 
-	if res, err = retryGet(client, exportURL, 7); err != nil {
+	if res, err = retryGet(f.authHelper.DriveClient(), exportURL, 7); err != nil {
 		return nil, err
 	}
 	return &resource{
