@@ -351,6 +351,7 @@ func (f *Fetcher) slurpRemoteBytes(url string, n int) ([]byte, error) {
 }
 
 // retryGet tries to GET specified url up to n times.
+// Attempts are spaced out with exponential backoff.
 // Default client will be used if not provided.
 func retryGet(client *http.Client, url string, n int) (*http.Response, error) {
 	if client == nil {
