@@ -18,9 +18,12 @@
 goog.module('googlecodelabs.CodelabStep');
 
 const EventHandler = goog.require('goog.events.EventHandler');
+const HtmlSanitizer = goog.require('goog.html.sanitizer.HtmlSanitizer');
 const Templates = goog.require('googlecodelabs.CodelabStep.Templates');
 const dom = goog.require('goog.dom');
+const safe = goog.require('goog.dom.safe');
 const soy = goog.require('goog.soy');
+const {identity} = goog.require('goog.functions');
 
 /** @const {string} */
 const LABEL_ATTR = 'label';
@@ -177,8 +180,15 @@ class CodelabStep extends HTMLElement {
     // Add prettyprint to code blocks.
     const codeElements = this.inner_.querySelectorAll('pre code');
     codeElements.forEach((el) => {
-      const code = window['prettyPrintOne'](el.innerHTML);
-      el.innerHTML = code;
+      if (window['prettyPrintOne'] instanceof Function) {
+        const code = window['prettyPrintOne'](el.innerHTML);
+        // Sanitizer that preserves class names for syntax highlighting.
+        const sanitizer =
+            new HtmlSanitizer.Builder().withCustomTokenPolicy(identity).build();
+        safe.setInnerHtml(el, sanitizer.sanitize(code));
+      } else {
+        el.classList.add('prettyprint');
+      }
       this.eventHandler_.listen(
         el, 'copy', () => this.handleSnippetCopy_(el));
     });
