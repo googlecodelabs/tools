@@ -181,7 +181,7 @@ func (in *ImportNode) MutateBlock(v interface{}) {
 	in.Content.MutateBlock(v)
 }
 
-// ImportNodes filters out everything except NodeImport nodes, recursively.
+// ImportNodes extracts everything except NodeImport nodes, recursively.
 func ImportNodes(nodes []Node) []*ImportNode {
 	var imps []*ImportNode
 	for _, n := range nodes {
@@ -386,7 +386,7 @@ func (in *ImageNode) Empty() bool {
 	return strings.TrimSpace(in.Src) == ""
 }
 
-// ImageNodes filters out everything except NodeImage nodes, recursively.
+// ImageNodes extracts everything except NodeImage nodes, recursively.
 func ImageNodes(nodes []Node) []*ImageNode {
 	var imgs []*ImageNode
 	for _, n := range nodes {
