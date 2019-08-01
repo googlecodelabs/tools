@@ -11,18 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package util
+package fetch
 
-// Unique de-dupes a.
-// The argument a is not modified.
-func Unique(a []string) []string {
-	seen := make(map[string]struct{}, len(a))
-	res := make([]string, 0, len(a))
-	for _, s := range a {
-		if _, y := seen[s]; !y {
-			res = append(res, s)
-			seen[s] = struct{}{}
-		}
-	}
-	return res
+import "io"
+
+type Fetcher interface {
+	Fetch() (io.Reader, error)
 }

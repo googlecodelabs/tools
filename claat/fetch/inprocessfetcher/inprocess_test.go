@@ -11,18 +11,31 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package util
+package inprocessfetcher
 
-// Unique de-dupes a.
-// The argument a is not modified.
-func Unique(a []string) []string {
-	seen := make(map[string]struct{}, len(a))
-	res := make([]string, 0, len(a))
-	for _, s := range a {
-		if _, y := seen[s]; !y {
-			res = append(res, s)
-			seen[s] = struct{}{}
-		}
+import (
+	"strings"
+	"testing"
+)
+
+func TestNew(t *testing.T) {
+	r := strings.NewReader("this is a string")
+	ipf := New(r)
+
+	if ipf.source != r {
+		t.Errorf("New(%v).source = %v, want %v", r, ipf.source, r)
 	}
-	return res
+}
+
+func TestFetch(t *testing.T) {
+	r := strings.NewReader("this is also a string")
+	ipf := New(r)
+
+	out, err := ipf.Fetch()
+	if err != nil {
+		t.Errorf("Fetch() got err %v, want nil", err)
+	}
+	if out != r {
+		t.Errorf("Fetch() = %v, want %v", out, r)
+	}
 }

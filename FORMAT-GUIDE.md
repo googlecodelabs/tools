@@ -21,7 +21,7 @@ To preview a codelab:
 
     The table of contents disappears for smaller browsers but is still available from the hamburger menu.
 
-1. Codelab Metadata
+1. Codelab Metadata (Google Docs)
 
     There is some additional metadata that is required in order to properly publish a codelab. This metadata should be added as a **two-column table** anywhere before the first step of the codelab. For example:
 
@@ -38,6 +38,22 @@ You can also use this to target specific events, for instance:  \
     * **Status:** One or more of (Draft, Published, Deprecated, Hidden) to indicate the progress and whether the codelab is ready to be published. 'Hidden' implies the codelab is for restricted use, should be available only by direct URL, and should not appear on the main index page.
     * **Feedback Link:** The URL that the student should be sent to when they click on the feedback link to report a bug in the codelab.
     * **Analytics Account:** This allows you to specify a custom Google Analytics ID for your codelab. If no ID is specified, it defaults to a global codelabs analytics account. 
+
+1. Codelab Metadata (Markdown)
+
+    You are free to add your own metadata here if you'd like but certain key/value pairs are reserved for specific codelab publishing features. The current list of reserved metadata terms are:
+
+    * **summary:** A short summary of the codelab that will be shown in the codelab browser UI.
+    * **id:** The name of the folder that will be generated once you export the markdown file via claat. 
+    * **categories:** A single, top-level category that will be used to group codelabs by platform. Categories are normally curated by an organization (e.g. we have a set we use for the Google Codelabs site) but each publisher is free to use this value at their discretion.
+    * **environments**: A tag that allows use to output some codelabs for a specific environment. All codelabs default to the "Web" environment but given some hardware constraints we might only want to generate them for a "Kiosk" environment where we know people will have the right hardware. \
+You can also use this to target specific events, for instance:  \
+"Web, polymer-summit" (without quotes)
+    * **status:** One or more of (Draft, Published, Deprecated, Hidden) to indicate the progress and whether the codelab is ready to be published. 'Hidden' implies the codelab is for restricted use, should be available only by direct URL, and should not appear on the main index page.
+    * **feedback link:** The URL that the student should be sent to when they click on the feedback link to report a bug in the codelab.
+    * **analytics account:** This allows you to specify a custom Google Analytics ID for your codelab. If no ID is specified, it defaults to a global codelabs analytics account. 
+    * **tags:** Add relevant tags to make your codelab easily found.
+    * **authors:** Indicate the author(s) of this specific codelab. 
 
 1. Headers
 

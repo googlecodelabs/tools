@@ -91,7 +91,7 @@ type Parser struct {
 }
 
 // Parse parses a codelab written in Markdown.
-func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
+func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error) {
 	// Convert Markdown to HTML for easy parsing.
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -104,7 +104,7 @@ func (p *Parser) Parse(r io.Reader) (*types.Codelab, error) {
 		return nil, err
 	}
 	// Parse the markup.
-	return parseMarkup(doc)
+	return parseMarkup(doc, opts)
 }
 
 // ParseFragment parses a codelab fragment writtet in Markdown.
@@ -125,6 +125,12 @@ type docState struct {
 
 type stackItem struct {
 	cur *html.Node
+}
+
+func newDocState() *docState {
+	return &docState{
+		clab: types.NewCodelab(),
+	}
 }
 
 func (ds *docState) push(cur *html.Node) {
@@ -180,14 +186,13 @@ func claatMarkdown(b []byte) []byte {
 }
 
 // parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
-func parseMarkup(markup *html.Node) (*types.Codelab, error) {
+func parseMarkup(markup *html.Node, opts parser.Options) (*types.Codelab, error) {
 	body := findAtom(markup, atom.Body)
 	if body == nil {
 		return nil, fmt.Errorf("document without a body")
 	}
-	ds := &docState{
-		clab: &types.Codelab{},
-	}
+
+	ds := newDocState()
 
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		switch {
@@ -198,7 +203,7 @@ func parseMarkup(markup *html.Node) (*types.Codelab, error) {
 			}
 			continue
 		case ds.cur.DataAtom == atom.P && ds.clab.ID == "":
-			if err := parseMetadata(ds); err != nil {
+			if err := parseMetadata(ds, opts); err != nil {
 				return nil, err
 			}
 			continue
@@ -317,8 +322,8 @@ func newStep(ds *docState) {
 	ds.env = nil
 }
 
-// parseMetadata parses the first <p> of a codelab doc to populate metadata
-func parseMetadata(ds *docState) error {
+// parseMetadata parses the first <p> of a codelab doc to populate metadata.
+func parseMetadata(ds *docState, opts parser.Options) error {
 	m := map[string]string{}
 	// Split the keys from values.
 	d := ds.cur.FirstChild.Data
@@ -337,7 +342,7 @@ func parseMetadata(ds *docState) error {
 	if _, ok := m["id"]; !ok || m["id"] == "" {
 		return fmt.Errorf("invalid metadata format, missing at least id: %v", m)
 	}
-	return addMetadataToCodelab(m, ds.clab)
+	return addMetadataToCodelab(m, ds.clab, opts)
 }
 
 // standardSplit takes a string, splits it along a comma delimiter, then on each fragment, trims Unicode spaces
@@ -350,9 +355,9 @@ func standardSplit(s string) []string {
 	return strs
 }
 
-// addMetadataToCodelab takes a map of strings to strings, and a pointer to a Codelab. It reads the keys of the map,
+// addMetadataToCodelab takes a map of strings to strings, a pointer to a Codelab, and an options struct. It reads the keys of the map,
 // and assigns the values to any keys that match a codelab metadata field as defined by the meta* constants.
-func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
+func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Options) error {
 	for k, v := range m {
 		switch k {
 		case MetaAuthors:
@@ -396,6 +401,10 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab) error {
 			c.Tags = append(c.Tags, standardSplit(v)...)
 			break
 		default:
+			// If not explicitly parsed, it might be a pass_metadata value.
+			if _, ok := opts.PassMetadata[k]; ok {
+				c.Extra[k] = v
+			}
 			break
 		}
 	}
@@ -639,26 +648,26 @@ func list(ds *docState) types.Node {
 // It returns nil if src is empty.
 // It may also return a YouTubeNode if alt property contains specific substring.
 func image(ds *docState) types.Node {
-        alt := nodeAttr(ds.cur, "alt")
-        if strings.Contains(alt, "youtube.com/watch") {
-                return youtube(ds)
-        } else if strings.Contains(alt, "https://") {
-                u, err := url.Parse(nodeAttr(ds.cur, "alt"))
-                if err != nil {
-                        return nil
-                }
-                // For iframe, make sure URL ends in whitelisted domain.
-                ok := false
-                for _, domain := range types.IframeWhitelist {
-                        if strings.HasSuffix(u.Hostname(), domain) {
-                                ok = true
-                                break
-                        }
-                }
-                if ok {
-                        return iframe(ds)
-                }
-        }
+	alt := nodeAttr(ds.cur, "alt")
+	if strings.Contains(alt, "youtube.com/watch") {
+		return youtube(ds)
+	} else if strings.Contains(alt, "https://") {
+		u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+		if err != nil {
+			return nil
+		}
+		// For iframe, make sure URL ends in whitelisted domain.
+		ok := false
+		for _, domain := range types.IframeWhitelist {
+			if strings.HasSuffix(u.Hostname(), domain) {
+				ok = true
+				break
+			}
+		}
+		if ok {
+			return iframe(ds)
+		}
+	}
 	s := nodeAttr(ds.cur, "src")
 	if s == "" {
 		return nil
@@ -701,17 +710,17 @@ func youtube(ds *docState) types.Node {
 }
 
 func iframe(ds *docState) types.Node {
-        u, err := url.Parse(nodeAttr(ds.cur, "alt"))
-        if err != nil {
-                return nil
-        }
-        // Allow only https.
-        if u.Scheme != "https" {
-                return nil
-        }
-        n := types.NewIframeNode(u.String())
-        n.MutateBlock(true)
-        return n
+	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+	if err != nil {
+		return nil
+	}
+	// Allow only https.
+	if u.Scheme != "https" {
+		return nil
+	}
+	n := types.NewIframeNode(u.String())
+	n.MutateBlock(true)
+	return n
 }
 
 // button returns either a text node, if no <a> child element is present,

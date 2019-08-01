@@ -11,18 +11,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package util
+package inprocessfetcher
 
-// Unique de-dupes a.
-// The argument a is not modified.
-func Unique(a []string) []string {
-	seen := make(map[string]struct{}, len(a))
-	res := make([]string, 0, len(a))
-	for _, s := range a {
-		if _, y := seen[s]; !y {
-			res = append(res, s)
-			seen[s] = struct{}{}
-		}
+import "io"
+
+// InProcessFetcher implements fetch.Fetcher. It retrieves resources from an in-process source via io.Reader.
+type InProcessFetcher struct {
+	source io.Reader
+}
+
+// New returns a new, initialized InProcessFetcher.
+// The input io.Reader is a reader over the resource bytes.
+func New(source io.Reader) *InProcessFetcher {
+	return &InProcessFetcher{
+		source: source,
 	}
-	return res
+}
+
+// Fetch fetches the resource.
+// This doesn't really do anything.
+func (ipf *InProcessFetcher) Fetch() (io.Reader, error) {
+	return ipf.source, nil
 }
