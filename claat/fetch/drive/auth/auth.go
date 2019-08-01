@@ -110,7 +110,7 @@ func (h *Helper) produceDriveClient(rt http.RoundTripper) (*http.Client, error) 
 
 // tokenSource creates a new oauth2.TokenSource backed by tokenRefresher,
 // using previously stored user credentials if available.
-// If authToken is not given, we use the Google provider.
+// If authToken is not given at Helper init, we use the Google provider.
 // Otherwise, we use the auth config for the given provider.
 func (h *Helper) tokenSource() (oauth2.TokenSource, error) {
 	// Create a static token source if we have an auth token.
