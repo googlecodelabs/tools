@@ -15,6 +15,7 @@ package fetch
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hash/crc64"
 	"io"
@@ -171,17 +172,19 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 	}
 
 	imap := make(map[string]string, count)
-	var err error
+	errBuilder := strings.Builder{}
 	for i := 0; i < count; i++ {
 		r := <-ch
 		imap[r.file] = r.url
-		if r.err != nil && err == nil {
-			// record first error
-			err = fmt.Errorf("%s => %s: %v", r.url, r.file, r.err)
+		if r.err != nil {
+			errBuilder.WriteString(fmt.Sprintf("%s => %s: %v", r.url, r.file, r.err))
 		}
 	}
+	if errBuilder.Len() > 0 {
+		return nil, errors.New(errBuilder.String())
+	}
 
-	return imap, err
+	return imap, nil
 }
 
 func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
