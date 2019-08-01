@@ -186,6 +186,8 @@ class CodelabStep extends HTMLElement {
         const sanitizer =
             new HtmlSanitizer.Builder().withCustomTokenPolicy(identity).build();
         safe.setInnerHtml(el, sanitizer.sanitize(code));
+      } else {
+        el.classList.add('prettyprint');
       }
       this.eventHandler_.listen(
         el, 'copy', () => this.handleSnippetCopy_(el));
