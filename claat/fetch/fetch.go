@@ -177,7 +177,7 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 		r := <-ch
 		imap[r.file] = r.url
 		if r.err != nil {
-			errBuilder.WriteString(fmt.Sprintf("%s => %s: %v", r.url, r.file, r.err))
+			errBuilder.WriteString(fmt.Sprintf("%s => %s: %v\n", r.url, r.file, r.err))
 		}
 	}
 	if errBuilder.Len() > 0 {
