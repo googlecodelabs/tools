@@ -1,4 +1,4 @@
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018-2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,9 +27,6 @@ import (
 )
 
 const (
-	// imgDirname is where a codelab images are stored,
-	// relative to the codelab dir.
-	imgDirname = "img"
 	// metaFilename is codelab metadata file.
 	metaFilename = "codelab.json"
 	// stdout is a special value for -o cli arg to identify stdout writer.

@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2016-2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/googlecodelabs/tools/claat/fetch"
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
@@ -67,7 +68,7 @@ func CmdExport(opts CmdExportOptions) int {
 	ch := make(chan *result, len(srcs))
 	for _, src := range srcs {
 		go func(src string) {
-			meta, err := exportCodelab(src, opts)
+			meta, err := ExportCodelab(src, nil, opts)
 			ch <- &result{src, meta, err}
 		}(src)
 	}
@@ -83,7 +84,7 @@ func CmdExport(opts CmdExportOptions) int {
 	return exitCode
 }
 
-// exportCodelab fetches codelab src from either local disk or remote,
+// ExportCodelab fetches codelab src from either local disk or remote,
 // parses and stores the results on disk, in a dir ancestored by output.
 //
 // Stored results include codelab content formatted in tmplout, its assets
@@ -92,21 +93,20 @@ func CmdExport(opts CmdExportOptions) int {
 // There's a special case where basedir has a value of "-", in which
 // nothing is stored on disk and the only output, codelab formatted content,
 // is printed to stdout.
-func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
-	clab, err := slurpCodelab(src, opts.AuthToken, opts.PassMetadata)
+//
+// An alternate http.RoundTripper may be specified if desired. Leave null for default.
+func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*types.Meta, error) {
+	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, rt)
 	if err != nil {
 		return nil, err
 	}
-	var client *http.Client // need for downloadImages
-	if clab.typ == srcGoogleDoc {
-		client, err = driveClient(opts.AuthToken)
-		if err != nil {
-			return nil, err
-		}
+	clab, err := f.SlurpCodelab(src)
+	if err != nil {
+		return nil, err
 	}
 
 	// codelab export context
-	lastmod := types.ContextTime(clab.mod)
+	lastmod := types.ContextTime(clab.Mod)
 	clab.Meta.Source = src
 	meta := &clab.Meta
 	ctx := &types.Context{
@@ -121,8 +121,8 @@ func exportCodelab(src string, opts CmdExportOptions) (*types.Meta, error) {
 	if !isStdout(dir) {
 		dir = codelabDir(dir, meta)
 		// download or copy codelab assets to disk, and rewrite image URLs
-		mdir := filepath.Join(dir, imgDirname)
-		if _, err := slurpImages(client, src, mdir, clab.Steps); err != nil {
+		mdir := filepath.Join(dir, util.ImgDirname)
+		if _, err := f.SlurpImages(src, mdir, clab.Steps); err != nil {
 			return nil, err
 		}
 	}
@@ -203,103 +203,6 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 		}
 	}
 	return nil
-}
-
-func slurpImages(client *http.Client, src, dir string, steps []*types.Step) (map[string]string, error) {
-	// make sure img dir exists
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return nil, err
-	}
-
-	type res struct {
-		url, file string
-		err       error
-	}
-
-	ch := make(chan *res, 100)
-	defer close(ch)
-	var count int
-	for _, st := range steps {
-		nodes := imageNodes(st.Content.Nodes)
-		count += len(nodes)
-		for _, n := range nodes {
-			go func(n *types.ImageNode) {
-				url := n.Src
-				file, err := slurpBytes(client, src, dir, url)
-				if err == nil {
-					n.Src = filepath.Join(imgDirname, file)
-				}
-				ch <- &res{url, file, err}
-			}(n)
-		}
-	}
-
-	var err error
-	imap := make(map[string]string, count)
-	for i := 0; i < count; i++ {
-		r := <-ch
-		imap[r.file] = r.url
-		if r.err != nil && err == nil {
-			// record first error
-			err = fmt.Errorf("%s => %s: %v", r.url, r.file, r.err)
-		}
-	}
-
-	return imap, err
-}
-
-// imageNodes filters out everything except types.NodeImage nodes, recursively.
-func imageNodes(nodes []types.Node) []*types.ImageNode {
-	var imgs []*types.ImageNode
-	for _, n := range nodes {
-		switch n := n.(type) {
-		case *types.ImageNode:
-			imgs = append(imgs, n)
-		case *types.ListNode:
-			imgs = append(imgs, imageNodes(n.Nodes)...)
-		case *types.ItemsListNode:
-			for _, i := range n.Items {
-				imgs = append(imgs, imageNodes(i.Nodes)...)
-			}
-		case *types.HeaderNode:
-			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
-		case *types.URLNode:
-			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
-		case *types.ButtonNode:
-			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
-		case *types.InfoboxNode:
-			imgs = append(imgs, imageNodes(n.Content.Nodes)...)
-		case *types.GridNode:
-			for _, r := range n.Rows {
-				for _, c := range r {
-					imgs = append(imgs, imageNodes(c.Content.Nodes)...)
-				}
-			}
-		}
-	}
-	return imgs
-}
-
-// importNodes filters out everything except types.NodeImport nodes, recursively.
-func importNodes(nodes []types.Node) []*types.ImportNode {
-	var imps []*types.ImportNode
-	for _, n := range nodes {
-		switch n := n.(type) {
-		case *types.ImportNode:
-			imps = append(imps, n)
-		case *types.ListNode:
-			imps = append(imps, importNodes(n.Nodes)...)
-		case *types.InfoboxNode:
-			imps = append(imps, importNodes(n.Content.Nodes)...)
-		case *types.GridNode:
-			for _, r := range n.Rows {
-				for _, c := range r {
-					imps = append(imps, importNodes(c.Content.Nodes)...)
-				}
-			}
-		}
-	}
-	return imps
 }
 
 // writeMeta writes codelab metadata to a local disk location

@@ -181,6 +181,28 @@ func (in *ImportNode) MutateBlock(v interface{}) {
 	in.Content.MutateBlock(v)
 }
 
+// ImportNodes extracts everything except NodeImport nodes, recursively.
+func ImportNodes(nodes []Node) []*ImportNode {
+	var imps []*ImportNode
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *ImportNode:
+			imps = append(imps, n)
+		case *ListNode:
+			imps = append(imps, ImportNodes(n.Nodes)...)
+		case *InfoboxNode:
+			imps = append(imps, ImportNodes(n.Content.Nodes)...)
+		case *GridNode:
+			for _, r := range n.Rows {
+				for _, c := range r {
+					imps = append(imps, ImportNodes(c.Content.Nodes)...)
+				}
+			}
+		}
+	}
+	return imps
+}
+
 // NewGridNode creates a new grid with optional content.
 func NewGridNode(rows ...[]*GridCell) *GridNode {
 	return &GridNode{
@@ -362,6 +384,38 @@ type ImageNode struct {
 // Empty returns true if its Src is zero, excluding space runes.
 func (in *ImageNode) Empty() bool {
 	return strings.TrimSpace(in.Src) == ""
+}
+
+// ImageNodes extracts everything except NodeImage nodes, recursively.
+func ImageNodes(nodes []Node) []*ImageNode {
+	var imgs []*ImageNode
+	for _, n := range nodes {
+		switch n := n.(type) {
+		case *ImageNode:
+			imgs = append(imgs, n)
+		case *ListNode:
+			imgs = append(imgs, ImageNodes(n.Nodes)...)
+		case *ItemsListNode:
+			for _, i := range n.Items {
+				imgs = append(imgs, ImageNodes(i.Nodes)...)
+			}
+		case *HeaderNode:
+			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
+		case *URLNode:
+			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
+		case *ButtonNode:
+			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
+		case *InfoboxNode:
+			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
+		case *GridNode:
+			for _, r := range n.Rows {
+				for _, c := range r {
+					imgs = append(imgs, ImageNodes(c.Content.Nodes)...)
+				}
+			}
+		}
+	}
+	return imgs
 }
 
 // NewButtonNode creates a new button with optional content nodes n.

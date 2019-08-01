@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2016-2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/googlecodelabs/tools/claat/fetch"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
 )
@@ -107,26 +107,23 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	}
 
 	// fetch and parse codelab source
-	clab, err := slurpCodelab(meta.Source, opts.AuthToken, opts.PassMetadata)
+	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, nil)
 	if err != nil {
 		return nil, err
 	}
-	updated := types.ContextTime(clab.mod)
+	clab, err := f.SlurpCodelab(meta.Source)
+	if err != nil {
+		return nil, err
+	}
+	updated := types.ContextTime(clab.Mod)
 	meta.Context.Updated = &updated
 
 	basedir := filepath.Join(dir, "..")
 	newdir := codelabDir(basedir, &clab.Meta)
-	imgdir := filepath.Join(newdir, imgDirname)
+	imgdir := filepath.Join(newdir, util.ImgDirname)
 
 	// slurp codelab assets to disk and rewrite image URLs
-	var client *http.Client
-	if clab.typ == srcGoogleDoc {
-		client, err = driveClient(opts.AuthToken)
-		if err != nil {
-			return nil, err
-		}
-	}
-	imgmap, err := slurpImages(client, meta.Source, imgdir, clab.Steps)
+	imgmap, err := f.SlurpImages(meta.Source, imgdir, clab.Steps)
 	if err != nil {
 		return nil, err
 	}

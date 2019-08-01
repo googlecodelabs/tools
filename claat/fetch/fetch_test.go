@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2016-2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,8 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-package cmd
+package fetch
 
 import (
 	"bytes"
@@ -27,6 +26,8 @@ import (
 
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
+
+	_ "github.com/googlecodelabs/tools/claat/parser/gdoc" // Explicitly register gdoc parser
 )
 
 type testTransport struct {
@@ -38,25 +39,30 @@ func (tt *testTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 func TestFetchRemote(t *testing.T) {
-	const f = "/file.txt"
+	const filename = "/file.txt"
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			t.Errorf("r.Method = %q; want GET", r.Method)
 		}
-		if r.URL.Path != f {
-			t.Errorf("r.URL.Path = %q; want %q", r.URL.Path, f)
+		if r.URL.Path != filename {
+			t.Errorf("r.URL.Path = %q; want %q", r.URL.Path, filename)
 		}
 		w.Write([]byte("test"))
 	}))
 	defer ts.Close()
 
-	res, err := fetchRemote(ts.URL+f, "", false)
+	f, err := NewFetcher("", map[string]bool{}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := f.fetchRemote(ts.URL+filename, false)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer res.body.Close()
-	if res.typ != srcMarkdown {
-		t.Errorf("typ = %q; want %q", res.typ, srcMarkdown)
+	if res.typ != SrcMarkdown {
+		t.Errorf("typ = %q; want %q", res.typ, SrcMarkdown)
 	}
 	b, _ := ioutil.ReadAll(res.body)
 	if s := string(b); s != "test" {
@@ -87,15 +93,19 @@ func TestFetchRemoteDrive(t *testing.T) {
 		b := ioutil.NopCloser(strings.NewReader("test"))
 		return &http.Response{Body: b, StatusCode: http.StatusOK}, nil
 	}}
-	clients[providerGoogle] = &http.Client{Transport: rt}
 
-	res, err := fetchRemote("doc-123", "", false)
+	f, err := NewFetcher("", map[string]bool{}, rt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := f.fetchRemote("doc-123", false)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer res.body.Close()
-	if res.typ != srcGoogleDoc {
-		t.Errorf("typ = %q; want %q", res.typ, srcGoogleDoc)
+	if res.typ != SrcGoogleDoc {
+		t.Errorf("typ = %q; want %q", res.typ, SrcGoogleDoc)
 	}
 	b, _ := ioutil.ReadAll(res.body)
 	if s := string(b); s != "test" {
@@ -133,9 +143,13 @@ func TestSlurpWithFragment(t *testing.T) {
 			StatusCode: http.StatusBadRequest,
 		}, nil
 	}}
-	clients[providerGoogle] = &http.Client{Transport: rt}
 
-	clab, err := slurpCodelab("doc-123", "", map[string]bool{})
+	f, err := NewFetcher("", map[string]bool{}, rt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	clab, err := f.SlurpCodelab("doc-123")
 	if err != nil {
 		t.Fatal(err)
 	}

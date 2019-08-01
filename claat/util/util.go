@@ -13,6 +13,10 @@
 // limitations under the License.
 package util
 
+// ImgDirname is where a codelab images are stored,
+// relative to the codelab dir.
+const ImgDirname = "img"
+
 // Unique de-dupes a.
 // The argument a is not modified.
 func Unique(a []string) []string {
