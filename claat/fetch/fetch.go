@@ -172,16 +172,16 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 	}
 
 	imap := make(map[string]string, count)
-	errBuilder := strings.Builder{}
+	var errStr string
 	for i := 0; i < count; i++ {
 		r := <-ch
 		imap[r.file] = r.url
 		if r.err != nil {
-			errBuilder.WriteString(fmt.Sprintf("%s => %s: %v\n", r.url, r.file, r.err))
+			errStr += fmt.Sprintf("%s => %s: %v\n", r.url, r.file, r.err)
 		}
 	}
-	if errBuilder.Len() > 0 {
-		return nil, errors.New(errBuilder.String())
+	if len(errStr) > 0 {
+		return nil, errors.New(errStr)
 	}
 
 	return imap, nil
