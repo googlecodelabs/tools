@@ -32,6 +32,9 @@ func (tt *testTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return tt.roundTripper(r)
 }
 
+// TODO: add tests of core functionality.
+// Must be able to fake out disk access, which probably involves a refactor focused on dependency injection?
+
 func TestGdocID(t *testing.T) {
 	tests := []struct{ in, out string }{
 		{"https://docs.google.com/document/d/foo", "foo"},
