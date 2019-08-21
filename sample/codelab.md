@@ -36,9 +36,16 @@ In order to create a CodeLab you need *Go* and *claat* (the codelabs command lin
 
 The instructions below are what worked for me on Mac, but you can also find instructions [here](https://github.com/googlecodelabs/tools/tree/master/claat) 
 
-#### Install Go & claat
+#### Install Go and claat
+
+Install [Go](https://golang.org/dl/) if you don't have it.
+You can use Homebrew if you have it on mac 
 ``` bash
 $ brew install go
+```
+
+Install claat
+``` bash
 $ go get -u -v -x github.com/googlecodelabs/tools/claat
 ```
 
@@ -110,9 +117,9 @@ Next add your title using a single '#' character
 # Title of codelab
 ```
 
-#### Add Sections & Durations
-Then for each section use Header 2 or '##' & specify an optional duration beneath for time remaining calculations
-Optional section times will be used to automatically total & remaining tutorial times
+#### Add Sections and Durations
+Then for each section use Header 2 or '##' and specify an optional duration beneath for time remaining calculations
+Optional section times will be used to automatically total and remaining tutorial times
 In markdown I've found that the time is formatted hh:mm:ss
 
 Example
@@ -126,12 +133,12 @@ Duration: 0:05:00
 
 #### Add Section Content
 Now that we have 2 sections to our titled codelab let's go ahead and add some content to each section. 
-Make up your own or copy & paste the example below: 
+Make up your own or copy and paste the example below: 
 
 Copy into section 1 (Below Duration and above Section 2):
 ```
 ### Info Boxes
-Plain Text followed by green & yellow info boxes 
+Plain Text followed by green and yellow info boxes 
 
 Negative
 : This will appear in a yellow info box.
@@ -148,27 +155,37 @@ Plain Text followed by bullets
 * World
 
 You created bullets!
+
+### Numbered List
+1. List
+1. Using
+1. Numbers
+
+You created a numbered list!
+
 ```
 
 Copy into section 2 (Below Duration): 
 ```
 ### Add a Link
-Let's add a link!
+Adding a link!
 [Example of a Link](https://www.google.com)
 
 ### Add an Image
-Let's add an image!
+Adding an image!
 ![image_caption](https://googlecloud.tips/img/031/codelabs.png)
+
+### Embed an iframe
+![https://codepen.io/tzoght/embed/yRNZaP](https://en.wikipedia.org/wiki/File:Example.jpg "Try Me Publisher")
 ```
 
-See the "Markdown Syntax Backup" section for more examples of what can be done. 
 More Markdown Parser examples can be found [here](https://github.com/googlecodelabs/tools/tree/master/claat/parser/md).
 
-## Export & Serve
+## Export and Serve
 Duration: 0:02:00
 
 Now that you have an initial codelab defined in your markdown file let's go ahead and generate the static site content. 
-We can export & serve the content locally using the `claat` command that we installed earlier. 
+We can export and serve the content locally using the `claat` command that we installed earlier. 
 
 ``` bash
 $ claat export codelab.md
@@ -194,46 +211,3 @@ One option is pushing it to github and serving it up from Netlify.
 
 If you'd like to create your own landing page for codelabs, [like this one](https://codelabs.developers.google.com), there is a tool to do that as well! 
 Check it out here: [CodeLabs Site](https://github.com/googlecodelabs/tools/blob/master/site/README.md)
-
-
-## Markdown Syntax Backup
-Duration: 0:00:00
-
-``` Java
-public static void main(String args[]){
-  System.out.println("Hello World!");
-  }
-```
-
-Adding an `inline code` snippet
-
-Positive
-: This will appear in a green info box.
-
-Negative
-: This will appear in a yellow info box.
-
- [Example of a Link](https://www.google.com)
-
-Adding an image
-![image_caption](https://s3-eu-west-1.amazonaws.com/released-artifacts-3.x/assets/tutorial_images/creating-styles/step1.png)
-
-* List
-* using 
-* bullets
-
-###
-
-1. List
-1. Using
-1. Numbers
-
-###
-
-#### Embed an iframe
-Negative
-: Note that the content you embed must be whitelisted in the "IframeWhitelist" var [here](https://github.com/googlecodelabs/tools/blob/master/claat/types/node.go)
-Currently whitelisted include content starting with google.com, google.dev, dartlang.org, web.dev, observablehq.com, repl.it & codepen.io
-
-###
-![https://codepen.io/tzoght/embed/yRNZaP](https://en.wikipedia.org/wiki/File:Example.jpg "Try Me Publisher")

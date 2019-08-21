@@ -3,7 +3,7 @@
   "format": "html",
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
-  "updated": "2019-07-23T10:15:30-04:00",
+  "updated": "2019-08-21T15:33:32-04:00",
   "id": "codelab-4-codelab-markdown",
   "duration": 14,
   "title": "CodeLab to Create a CodeLab",
@@ -21,6 +21,5 @@
     "web"
   ],
   "feedback": "https://github.com/Mrc0113/codelab-4-codelab",
-  "ga": "UA-139902608-1",
   "url": "codelab-4-codelab-markdown"
 }
