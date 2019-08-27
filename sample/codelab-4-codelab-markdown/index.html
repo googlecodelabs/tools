@@ -50,18 +50,20 @@
       <google-codelab-step label="Environment Setup" duration="4">
         <p>In order to create a CodeLab you need <em>Go</em> and <em>claat</em> (the codelabs command line tool) installed.</p>
 <p>The instructions below are what worked for me on Mac, but you can also find instructions <a href="https://github.com/googlecodelabs/tools/tree/master/claat" target="_blank">here</a></p>
-<h3 is-upgraded>Install Go and claat</h3>
+<h3 is-upgraded>Install Go</h3>
 <p>Install <a href="https://golang.org/dl/" target="_blank">Go</a> if you don&#39;t have it.<br>You can use Homebrew if you have it on mac</p>
 <pre><code>$ brew install go
 </code></pre>
-<p>Install claat</p>
-<pre><code>$ go get -u -v -x github.com/googlecodelabs/tools/claat
-</code></pre>
-<h3 is-upgraded>Setup Environment Variables</h3>
+<h3 is-upgraded>Setup Go Environment Variables</h3>
+<p>Below is what I set on mac, but instructions are <a href="https://golang.org/doc/install" target="_blank">here</a> for other OS options</p>
 <pre><code>$ export GOPATH=$HOME/Go
 $ export GOROOT=/usr/local/opt/go/libexec
 $ export PATH=$PATH:$GOPATH/bin
 $ export PATH=$PATH:$GOROOT/bin
+</code></pre>
+<h3 is-upgraded>Install claat</h3>
+<p>Install claat</p>
+<pre><code>$ go get -u -v -x github.com/googlecodelabs/tools/claat
 </code></pre>
 <p>You should now have the <em>claat</em> command available to you.</p>
 <pre><code>$ claat
@@ -72,6 +74,8 @@ $ export PATH=$PATH:$GOROOT/bin
     
       <google-codelab-step label="Create your initial CodeLab" duration="5">
         <p>Now that we have the environment setup let&#39;s go ahead and create a markdown file where we&#39;ll create the actual codelab.</p>
+<aside class="warning"><p>If you&#39;re using Windows make sure to set your text editor to use UNIX line endings!</p>
+</aside>
 <pre><code>$ vim codelab.md
 </code></pre>
 <h3 is-upgraded>Fill-in the header metadata</h3>

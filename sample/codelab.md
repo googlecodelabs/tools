@@ -36,7 +36,7 @@ In order to create a CodeLab you need *Go* and *claat* (the codelabs command lin
 
 The instructions below are what worked for me on Mac, but you can also find instructions [here](https://github.com/googlecodelabs/tools/tree/master/claat) 
 
-#### Install Go and claat
+#### Install Go 
 
 Install [Go](https://golang.org/dl/) if you don't have it.
 You can use Homebrew if you have it on mac 
@@ -44,17 +44,20 @@ You can use Homebrew if you have it on mac
 $ brew install go
 ```
 
-Install claat
-``` bash
-$ go get -u -v -x github.com/googlecodelabs/tools/claat
-```
+#### Setup Go Environment Variables
+Below is what I set on mac, but instructions are [here](https://golang.org/doc/install) for other OS options
 
-#### Setup Environment Variables
 ``` bash
 $ export GOPATH=$HOME/Go
 $ export GOROOT=/usr/local/opt/go/libexec
 $ export PATH=$PATH:$GOPATH/bin
 $ export PATH=$PATH:$GOROOT/bin
+```
+
+#### Install claat
+Install claat
+``` bash
+$ go get -u -v -x github.com/googlecodelabs/tools/claat
 ```
 
 You should now have the *claat* command available to you. 
@@ -67,10 +70,13 @@ Duration: 0:05:00
 
 Now that we have the environment setup let's go ahead and create a markdown file where we'll create the actual codelab. 
 
+Negative
+: If you're using Windows make sure to set your text editor to use UNIX line endings! 
+
+####
 ``` bash
 $ vim codelab.md
 ```
-
 
 #### Fill-in the header metadata
 Copy and paste the headers below into your markdown file and change the values appropriately. 
