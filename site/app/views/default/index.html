@@ -116,16 +116,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <header id="banner" {% if view.id != 'default' -%}down{%- else %}down$="[[_toBoolean(selectedFilter)]]"{%- endif %}>
       <div class="site-width">
         {% if view.id == 'default' %}
-        <h2 class="banner-title">Welcome to Codelabs!</h2>
+        <h2 class="banner-title">Welcome!</h2>
         <div class="banner-description"
              data-filter-selected$="{% raw %}[[_toBoolean(selectedFilter)]]{% endraw %}">
           <p class="banner-info">
-            Codelabs provide a guided, tutorial, hands-on
-            coding experience. Most codelabs will step you through the process
-            of building a small application, or adding a new feature to an
-            existing application.
+            Example tutorials made with CodeLabs
             <br>
-            <a href="https://github.com/googlecodelabs/tools">Codelab tools on GitHub</a>
           </p>
         {%- else -%}
           <div class="banner-description">

@@ -1,0 +1,10 @@
+{
+  "title": "Software Factories and Software Product lines",
+  "description": "Learn about Software Product lines and Software Factories",
+  "logoUrl": "/factories-product-lines/logo.jpg",
+  "tags": ["factories"],
+  "exclude": [
+    ".*-about$",
+    "^lang-.*"
+  ]
+}
