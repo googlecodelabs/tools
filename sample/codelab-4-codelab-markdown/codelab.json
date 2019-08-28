@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-08-27T16:09:11-04:00",
+  "id": "codelab-4-codelab-markdown",
+  "duration": 14,
+  "title": "CodeLab to Create a CodeLab",
+  "summary": "Create a CodeLab Using Markdown",
+  "source": "codelab.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "codelab",
+    "markdown"
+  ],
+  "tags": [
+    "web"
+  ],
+  "feedback": "https://github.com/Mrc0113/codelab-4-codelab",
+  "url": "codelab-4-codelab-markdown"
+}
