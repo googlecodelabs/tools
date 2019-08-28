@@ -1,7 +1,7 @@
 # Codelabs Site
 
 A site for hosting codelabs content.
-
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c25e6083-d4de-43b8-82bb-83103c5cd04e/deploy-status)](https://app.netlify.com/sites/dalthviz-codelabs/deploys)
 
 ## Prerequisites
 
