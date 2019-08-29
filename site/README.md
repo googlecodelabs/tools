@@ -30,6 +30,18 @@ This does pose a mild security risk, so please do so at your own risk.
 
 ## Development
 
+### Build codelabs instances
+
+To create a specific codelab tutorial you need to:
+
+1. Have a source (could be a Google Doc or .md file following the Codelabs templates). We use here a Google Doc.
+2. Have `claat` installed and run (in this case under the `/codelbas` directory to save the output there) and follow the instructions (it would probably will ask you for a code to give `claat` access to the Doc):
+
+    ```cmd
+    claat export <Google Doc ID>
+    ```
+3. After that a directory should be created with a `codelab.json` and a `index.html` that is the codelab tutorial.
+
 ### Serve
 
 To serve the site in dev mode, run `gulp serve`, passing a path to a directory
@@ -170,7 +182,16 @@ Note this filter takes a regular expression. By default, all views are built.
 
 ## Deployment
 
-Once you build, serve, and verify your labs, you're on your own for publishing the artifacts. There are many ways to publish a static web site and we won't try to cover them all, however, we have included support for deploying your landing pages and codelabs to Google Cloud Storage (GCS).
+Once you build, serve, and verify your labs, you're on your own for publishing the artifacts. There are many ways to publish a static web site and we won't try to cover them all, however, we have included support for deploying your landing pages and codelabs to Google Cloud Storage (GCS). And we show an example of deployment using [Netlify](https://www.netlify.com/)
+
+### Setup for Netlify (following the setup of [Solace CodeLabs](https://github.com/SolaceDev/solace-dev-codelabs-site))
+
+1. Create a [Netlify](https://www.netlify.com/) account.
+2. Set the `Build & Deployment` Netlify settings. Using the structure of this repository:
+    * Build command: `gulp dist --codelabs-dir=./codelabs && rm dist/codelabs && cp -r codelabs dist/` (supposing that the generate codelabs are stored at the '/codelabs' dir)
+    * Base directory: `site`
+    * Publish directory: `site/dist` (although in Netlify probably you should just put dist, the setting is taked as a relative path to the base directory)
+ 3. The site will be build and can be accessed with a `*.netlify.com` address that can be customized.
 
 ### Setup for GCS Support
 
