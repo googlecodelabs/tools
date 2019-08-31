@@ -199,3 +199,9 @@ $color-weave-green, 'weave.svg');
 
 @include codelab-card(['web'],
   $color-google-blue, 'web.svg');
+
+@include codelab-card(['tutor'],
+  $color-google-yellow, 'google-g.svg');
+
+@include codelab-card(['factories'],
+  $color-google-blue, 'openthread.svg');

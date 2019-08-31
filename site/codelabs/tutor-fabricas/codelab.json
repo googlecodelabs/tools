@@ -3,22 +3,23 @@
   "format": "html",
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
-  "updated": "2019-08-31T14:36:28Z",
+  "updated": "2019-08-31T16:07:32Z",
   "id": "tutor-fabricas",
   "duration": 87,
   "title": "Guía del tutor: Fábricas de Sw y Líneas de Producto",
   "authors": "Daniel Althviz",
   "summary": "Guía con información semana a semana de las actividades que realiza el tutor, y los objetivos que se busca alcanzar con los estudiantes",
   "source": "1vTZhy8DRQQ7iPBePKZEsDDVH0VLdWZFmIZjZL2vME7c",
-  "theme": "teaching",
+  "theme": "factories",
   "status": [
     "published"
   ],
   "category": [
-    "teaching"
+    "factories"
   ],
   "tags": [
-    "web"
+    "factories",
+    "tutor"
   ],
   "url": "tutor-fabricas"
 }
