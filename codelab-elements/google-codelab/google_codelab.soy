@@ -84,11 +84,9 @@
       {/for}
     </ol>
   </div>
-  {if $feedback}
-  <div id="feedback" class="metadata">
-    <a target="_blank" href="{$feedback}">
+  <div class="metadata">
+    <a target="_blank" {if $feedback}href="{$feedback}"{else}href="#" id="codelab-feedback"{/if}>
       <i class="material-icons">bug_report</i> Report a mistake
     </a>
   </div>
-  {/if}
 {/template}

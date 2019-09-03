@@ -747,6 +747,16 @@ class Codelab extends HTMLElement {
     const feedback = this.getAttribute(FEEDBACK_LINK_ATTR);
     const steps = this.steps_.map((step) => step.getAttribute(LABEL_ATTR));
     soy.renderElement(this.drawer_, Templates.drawer, {steps, feedback});
+    // Start Google Feedback when the feedback link is clicked, if it exists.
+    const feedbackLink = this.drawer_.querySelector('#codelab-feedback');
+    if (feedbackLink) {
+      this.eventHandler_.listen(feedbackLink, events.EventType.CLICK,
+        (e) => {
+          if (userfeedback && userfeedback.api) {
+            userfeedback.api.startFeedback({productId: '5143948'});
+          }
+        });
+    }
   }
 
   /**
