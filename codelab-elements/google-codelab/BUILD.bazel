@@ -30,18 +30,6 @@ closure_js_library(
     deps = [
         "@io_bazel_rules_closure//closure/library",
         ":google_codelab_soy",
-        ":externs",
-    ]
-)
-
-# Externs.
-closure_js_library(
-    name = "externs",
-    srcs = [
-        "externs.js",
-    ],
-    suppress = [
-        "JSC_STRICT_INEXISTENT_PROPERTY",
     ]
 )
 

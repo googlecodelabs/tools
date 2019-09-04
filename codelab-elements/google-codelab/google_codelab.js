@@ -559,6 +559,7 @@ class Codelab extends HTMLElement {
       return;
     }
 
+
     let time = 0;
     for (let i = this.currentSelectedStep_; i < this.steps_.length; i++) {
       const step = /** @type {!Element} */ (this.steps_[i]);
@@ -752,8 +753,9 @@ class Codelab extends HTMLElement {
     if (feedbackLink) {
       this.eventHandler_.listen(feedbackLink, events.EventType.CLICK,
         (e) => {
-          if ('userfeedback' in window && userfeedback.api) {
-            userfeedback.api.startFeedback({productId: '5143948'});
+          if ('userfeedback' in window) {
+            window['userfeedback']['api']['startFeedback']
+                ({productId: '5143948'});
           }
         });
     }
