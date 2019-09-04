@@ -559,6 +559,7 @@ class Codelab extends HTMLElement {
       return;
     }
 
+
     let time = 0;
     for (let i = this.currentSelectedStep_; i < this.steps_.length; i++) {
       const step = /** @type {!Element} */ (this.steps_[i]);
@@ -747,6 +748,17 @@ class Codelab extends HTMLElement {
     const feedback = this.getAttribute(FEEDBACK_LINK_ATTR);
     const steps = this.steps_.map((step) => step.getAttribute(LABEL_ATTR));
     soy.renderElement(this.drawer_, Templates.drawer, {steps, feedback});
+    // Start Google Feedback when the feedback link is clicked, if it exists.
+    const feedbackLink = this.drawer_.querySelector('#codelab-feedback');
+    if (feedbackLink) {
+      this.eventHandler_.listen(feedbackLink, events.EventType.CLICK,
+        (e) => {
+          if ('userfeedback' in window) {
+            window['userfeedback']['api']['startFeedback']
+                ({productId: '5143948'});
+          }
+        });
+    }
   }
 
   /**

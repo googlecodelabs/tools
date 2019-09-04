@@ -25,7 +25,7 @@ closure_js_library(
     name = "google_codelab",
     srcs = [
         "google_codelab.js",
-        "google_codelab_def.js"
+        "google_codelab_def.js",
     ],
     deps = [
         "@io_bazel_rules_closure//closure/library",
