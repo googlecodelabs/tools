@@ -752,7 +752,7 @@ class Codelab extends HTMLElement {
     if (feedbackLink) {
       this.eventHandler_.listen(feedbackLink, events.EventType.CLICK,
         (e) => {
-          if (userfeedback && userfeedback.api) {
+          if ('userfeedback' in window && userfeedback.api) {
             userfeedback.api.startFeedback({productId: '5143948'});
           }
         });
