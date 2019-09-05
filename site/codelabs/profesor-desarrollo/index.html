@@ -1,0 +1,355 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Guía para el profesor del curso ISIS2603 Desarrollo de SW en Equipos</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id=""
+                  title="Guía para el profesor del curso ISIS2603 Desarrollo de SW en Equipos"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Introducción" duration="2">
+        <p>Este es un documento guía del curso ISIS2603 Desarrollo de SW en Equipos. Está organizado por semanas y cada semana está organizada siguiendo el camino de Sicua, que salvo la semana 1 donde se empieza por unas actividades autónomas, el camino tiene la estructura:</p>
+<ol type="1" start="1">
+<li>clase presencial,</li>
+<li>autónomo primera parte</li>
+<li>laboratorio</li>
+<li>autónomo segunda parte.</li>
+</ol>
+<h2 is-upgraded>Objetivo de la guía</h2>
+<p>Ayudar al profesor a preparar la clase teniendo especial cuidado sobre lo que se espera lograr en la semana. Es importante que el profesor motive las actividades que se deben realizar de forma autónoma por fuera de clase. De la misma forma, con el propósito de hacer mejoras en el curso, es importante hacer seguimiento a la cantidad de trabajo que se deja y la dificultad.</p>
+<h2 is-upgraded><strong>Cómo leer la guía</strong></h2>
+<aside class="special"><p>La guía se debe leer al mismo tiempo con la semana correspondiente en sicua abierta para poder verificar las actividades, sus descripciones, secuencia y sus enlaces. </p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Semana 1" duration="15">
+        <h2 is-upgraded><strong>Logros de la semana</strong></h2>
+<p>Al finalizar esta semana:</p>
+<ul>
+<li>Ya están los equipos conformados</li>
+<li>Ya se han asignado los enunciados</li>
+<li>Ya empezaron a trabajar el Modelo UML</li>
+<li>Ya tiene cuenta github</li>
+</ul>
+<h2 is-upgraded><strong>Antes de la presencial  1</strong></h2>
+<p>Enviar un mensaje de bienvenida e  indicar que hay que ir a sicua a ver el material.</p>
+<aside class="special"><p><strong>Ejemplo</strong></p>
+<p>Estimado estudiante,</p>
+<p>Bienvenido al curso ISIS2603 Desarrollo de SW en Equipos.  Antes de nuestro primer encuentro presencial, le solicito que por favor ingrese al curso de sicua y revise en Ciclo 1/Semana 1 el material correspondiente  a:</p>
+<ul>
+<li>Bienvenida</li>
+<li>Programa del curso</li>
+<li>Cómo usar siua y el material dispuesto para este curso</li>
+<li>Los videos de repaso de diagramas de clase  UML</li>
+<li>Video Introductorio a teamwork, la herramienta para manejar el proyecto del curso. </li>
+</ul>
+<p>Muchas gracias y nos vemos en la clase,</p>
+</aside>
+<p>Este es el camino sicua propuesto para antes de la presencialidad 1. Es posible que muchos no entren a mirar esta parte dado que el curso aún no ha empezado. </p>
+<p>Es importante mostrarlo en clase y pedirles que si no lo han revisado que lo hagan. </p>
+<h2 is-upgraded>Durante la  presencial  1</h2>
+<p>Utilizando la presentación, revisar elementos importantes del curso como la estructura global de los ciclos y la evaluación. </p>
+<aside class="warning"><p>Insistir en que la nota de cada ciclo tiene una parte individual y otra grupal pero que la parte grupal no significa que la nota sea la misma para todos. Grupal se refiere a que se construyó de forma colaborativa pero cada uno recibirá la nota de acuerdo con su colaboración. </p>
+</aside>
+<p>Indicar en sicua dónde pueden ver los detalles y mencionar los videos de repaso de UML. </p>
+<p>Ver el video del ejemplo de Bodas. Puede ser cada uno en su máquina, si hay movil express el primer día  (problema de ruido a menos que tengan audífonos).  </p>
+<p>Ver todos juntos el video. Verificar lo del sonido. El video dura un poco más de 6 minutos.  </p>
+<p>Mentimeter &#34;qué es nuevo&#34;:</p>
+<ul>
+<li>Entrar a www.mentimenter.com para activar la encuesta. Asegurarse de que esté vacía.  </li>
+<li>Indicarles que deben ir a menti.com y darles el código de la encuesta</li>
+<li>Dejar unos 5 minutos para que contesten. En la pantalla se va viendo cuántos han contestado</li>
+<li>Revisar las respuestas y discutir dependiendo de lo que hayan contestado pero al final<strong> debe ser claro</strong>:</li>
+</ul>
+<ol type="1" start="1">
+<li>Es una aplicación multiusuario (ellos no han hecho eso hasta ahora, quizás hicieron threads en datos. Aquí decir que vamos a usar un servidor de aplicaciones que se va a ocupar de atender a múltiples usuarios al tiempo). </li>
+<li>Se tiene acceso a la aplicación desde una página web y/o desde el teléfono.  </li>
+<li>No han hecho desarrollo web (no saben esas tecnologías).</li>
+<li>Hacer notar que son dos aplicaciones, el front y el back y que estas se deben comunicar (eso no es obvio de ver en el video pero es bueno mencionarlo). </li>
+<li>La información persiste. Debe estar guardada en una base de datos y hay que guardarla y obtenerla desde allá y llevarla a la página web</li>
+<li>Antes solo se hacía &#34;Run&#34; sobre eclipse o el ide y ahora hay que hacer un proceso para &#34;desplegar&#34; en alguna parte.</li>
+</ol>
+<p>Mentimeter &#34;qué me inquieta del curso&#34;: </p>
+<ul>
+<li>Entrar a www.mentimenter.com para activar la encuesta. Asegurarse de que esté vacía.  </li>
+<li>Indicarles que deben ir a menti.com y darles el código de la encuesta</li>
+<li>Dejar unos 5 minutos para que contesten.  En la pantalla se va viendo cuántos han contestado</li>
+<li>Revisar las respuestas y discutir dependiendo de lo que hayan contestado. Al menos: </li>
+</ul>
+<ol type="1" start="1">
+<li><em>Debería inquietar el trabajo en equipo. Qué pasa si alguien no trabaja. Qué pasa si &#34;yo&#34; no trabajo (eso probablemente no lo van a decir, pero se puede discutir el que cada uno crea que la &#34;culpa&#34; es de los demás). </em>Para calmar la inquietud: Insistir en que lo importante es participar en las actividades y no dejarse colgar. Hacer las entregas y que los demás no pierdan la confianza en uno. No perderse. Comunicar.</li>
+<li><em>No conocer las tecnologías.</em> Importante hacer los ejercicios propuestos, ver los vídeos, preguntar, preguntar, ...</li>
+</ol>
+<aside class="special"><p>Nota: Al finalizar debe quedar un mensaje de que vamos a aprender muchas cosas interesantes. El curso es retador pero es perfectamente posible ser exitoso. El éxito está en no atrasarse, en preguntar, en ir a clase, en participar. </p>
+<p>Resaltar<a href="https://uniandes.sharepoint.com/:p:/s/isis_csw/ERgrd9B6ovlNvtyIfcn0gQUBdiIgYgmxkTCeF_1VBBwmuA?e=dC8LHC" target="_blank"> las grandes ideas del curso</a>. Insistir en que se van a desarrollar de forma integrada, a lo largo del semestre, de manera práctica en el proyecto.</p>
+<ul>
+<li>Construcción de equipo</li>
+<li>Producir Software de Calidad </li>
+<li>Respetar la Arquitectura y el Diseño</li>
+<li>Utilizar efectivamente las Tecnologías y las Herramientas</li>
+<li>Ética del Ingeniero de Software</li>
+</ul>
+</aside>
+<p>Mencionar lo que se espera que hagan en el trabajo autónomo antes del laboratorio.  Van a tener que utilizar genmymodel. Si aun las cuentas no están para crear proyectos privados entonces decirles que creen los proyectos públicos.</p>
+<h2 is-upgraded>Trabajo autónomo<strong> </strong></h2>
+<p>Los estudiantes se van a preparar para empezar a trabajar en el proyecto:</p>
+<ul>
+<li>Revisan cuál es su equipo y cuál el enunciado</li>
+<li>Crean la cuenta en github  para poder crear los teams y sus integrantes.</li>
+<li>Ven el video introductorio de genmymodel para hacer los diagramas de clases</li>
+<li>Ven los tutoriales de UML y los ejercicios individuales</li>
+<li>Ven el ejemplo de modelamiento</li>
+</ul>
+<h2 is-upgraded><strong>Laboratorio</strong></h2>
+<p>El profesor:</p>
+<ul>
+<li>(Máximo 20 minutos para dejar tiempo del trabajo en clase) Utilizando la presentación, revisa la arquitectura del proyecto. Insiste en que en este curso la arquitectura es dada y hay que seguirla. En el curso de Arquitectura ellos deberán decidir sobre el diseño de la arquitectura. La de este curso es &#34;clásica&#34; y utilizada en muchos sistemas. Insistir que se van a desarrollar dos aplicaciones: el front y el back. </li>
+<li>Explicar que Los ciclos están organizados siguiendo la arquitectura. </li>
+<li>Explica que el modelo conceptual del enunciado es el elemento guía para construir el proyecto. </li>
+<li>Da la instrucción para el trabajo en clase. Primero individual y luego en parejas. Durante el trabajo autónomo deberán consolidar el modelo, hacer un glosario y las preguntas. </li>
+</ul>
+<p>Mencionar lo que se espera que hagan en el trabajo autónomo antes de la clase presencial de la semana 2. </p>
+<h2 is-upgraded><strong>Trabajo autónomo </strong></h2>
+<ol type="1" start="1">
+<li>Revisar los videos de trabajo en equipo. Hay unos links a un cuestionario en mentimeter para tratar de generar reflexión sobre qué es lo más importante o crítico del trabajo en equipo. </li>
+<li>La tarea más importante es la consolidación del UML. Deben hacerlo en alguna de las cuentas de genmymodel del equipo y enlazarlo en files de teamwork.  Este proyecto debe ser compartido con el profesor para que lo pueda ver.  También se debe incluir el glosario de términos y la lista de  preguntas. </li>
+<li>La siguiente tarea es contestar el test de hermann para que puedan decidir quién es el líder. </li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Semana 2" duration="15">
+        <h2 is-upgraded><strong>Logros de la semana</strong></h2>
+<p>Al finalizar esta semana:</p>
+<ul>
+<li>Ya está revisado por el profesor el modelo conceptual consolidado por todo el equipo </li>
+<li>Los repos github del back ya están creados</li>
+<li>Cada estudiante aprovisionó su máquina</li>
+<li>Cada estudiante probó con su repo github el ambiente</li>
+</ul>
+<h2 is-upgraded>Presencial  1</h2>
+<h3 is-upgraded><strong>Realizar el quiz de UML (15 min?)</strong></h3>
+<h3 is-upgraded><strong>Ejercicio de Rompecabezas:  (15min)</strong></h3>
+<ol type="1" start="1">
+<li>El objetivo del ejercicio es discutir la importancia de la colaboración entre los integrantes del equipo. </li>
+<li>Se plantea que al final cada uno (5) tenga un cuadrado al frente. </li>
+<li>Entonces lo que puede pasar es que cada uno se preocupe solo por armar su cuadrado impidiendo que otros puedan armar el suyo porque entran en conflicto con las fichas.</li>
+<li>La discusión al final debería girar en torno a que no es suficiente con hacer mi parte porque eso puede llevar a que como equipo las tareas no se logren. Debe preocuparme por cómo van los demás, quién depende de algo que yo haga, etc. </li>
+</ol>
+<h3 is-upgraded><strong>Para la revisión del Ciclo 1: (15min)</strong></h3>
+<ol type="1" start="1">
+<li>insistir en los objetivos que se espera lograr no solo están relacionados con el  el código sino que también está lo de la construcción de equipo (planeación, seguimiento), calidad, etc.</li>
+<li>Para los hitos, se puede dibujar en el tablero la arquitectura o usar la presentación de arquitectura que está en la semana 1 para explicar los hitos sobre ella, semana por semana. </li>
+<li>Insistir en que el trabajo debe ser continuo y que cada semana se hará un seguimiento de los hitos.  </li>
+<li>Justificar que iniciamos por la persistencia para empezar a trabajar en el repo y el ambiente de desarrollo,  a entender los conceptos de Integración continua, las pruebas, etc. </li>
+</ol>
+<h3 is-upgraded><strong>Máquinas Virtuales: (15 min)</strong></h3>
+<ol type="1" start="5">
+<li>Es importante explicar brevemente qué es una máquina virtual y pintar un esquema donde esté la máquina y otras máquinas para acceder a la virtual desde uniandes y fuera de uniandes.  A lo mejor nunca han usado un escritorio remoto así que esto no sobra. </li>
+<li>Hablar que hay dos procesos: aprovisionar y luego acceder</li>
+<li>Explicar que los tutoriales y  manuales están en labsis (mac, windows, linux). Que se necesita la clave para poder acceder a ellos.</li>
+<li>También hay un video sobre cómo acceder usando la VPN. </li>
+</ol>
+<h3 is-upgraded><strong>Modelo conceptual: (20 min)</strong></h3>
+<ol type="1" start="9">
+<li>Chequear que cada grupo ya compartió con el profesor el modelo conceptual y que tiene preguntas sobre el enunciado.</li>
+<li>Lo ideal sería poder hacer aclaraciones para todos sobre lo del modelo</li>
+</ol>
+<aside class="special"><ul>
+<li>Antes de irse:</li>
+</ul>
+<ol type="1" start="1">
+<li>La tarea es aprovisionar la máquina. Contarles que no es un proceso instantáneo así que deben hacerlo con tiempo para que el jueves en el lab esté.</li>
+<li>Deben leer lo de JPA. Explicar que se trata de los conceptos básicos para poder hacer la capa de persistencia.  </li>
+<li>Para ver el tutorial de probar el ambiente hay que ingresar con una cuenta gmail. </li>
+</ol>
+</aside>
+<h2 is-upgraded><strong>Autónomo 1</strong></h2>
+<ul>
+<li>Debemos ver cómo los monitores pueden ayudar con problemas de lo de la MV. </li>
+</ul>
+<h2 is-upgraded><strong>Laboratorio</strong></h2>
+<ul>
+<li>Ejercicio super básico de JPA. Esto debería &#34;preocupar&#34; a quienes aún no han leído.  (10 min)</li>
+<li>Se debe aclarar cosas como:  Objetos vs. relacional: qué es un ORM y qué es JPA (10min)</li>
+<li>Contar que en la presencialidad de la siguiente semana vamos a programar una parte de la persistencia entonces quien no haya leído va a perder el tiempo y a empezar a retrasar al grupo. </li>
+<li>Teamwork en vivo y en directo cada uno en su proyecto. Explicar los conceptos básicos y luego hacer el plan de la semana (cada uno). (20min)</li>
+<li>Lanzamiento:  Deben decidir el Líder y las reglas de funcionamiento 20 min</li>
+<li>Seguimiento con la encuesta (20min). Decir que le debió llegar el enlace al primero de la lista del equipo. Después le va a llegar al líder. Leer la instrucción que está en sicuaplus con ellos.</li>
+</ul>
+<aside class="special"><ul>
+<li>Antes de irse:</li>
+</ul>
+<ol type="1" start="1">
+<li>La tarea es probar el ambiente de desarrollo en su MV</li>
+<li>Hacer el modelo de entidades (quienes no han leído paila!)</li>
+<li>Para ver el tutorial de probar el ambiente hay que ingresar con una cuenta gmail. </li>
+</ol>
+</aside>
+<h2 is-upgraded><strong>Autónomo 2</strong></h2>
+<ul>
+<li>Probar el ambiente (falta revisar este material)</li>
+<li>Modelo de entidades</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Semana 3" duration="15">
+        <h2 is-upgraded><strong>Logros de la semana</strong></h2>
+<p>Al finalizar esta semana:</p>
+<ul>
+<li>Tener implementada la persistencia. Significa: </li>
+<li>El modelo de entidades implementado con las relaciones</li>
+<li>Los métodos CRUD con pruebas que solo crean atributos básicos no las relaciones. </li>
+<li>Empezar la IC sobre Jenkis. Leer los resultados en Jenkis y el cubrimiento en Sonar. </li>
+</ul>
+<h2 is-upgraded><strong>Presencial 1</strong></h2>
+<h3 is-upgraded><strong>Taller de implementación de la persistencia. </strong></h3>
+<p>Primero deben decidir qué entidad va a implementar cada uno. El líder debe coordinar esto.</p>
+<p>Cada estudiante implementa una sola entidad con los  atributos básicos (sin las asociaciones).</p>
+<aside class="special"><p>Todo puede fallar si:</p>
+<ul>
+<li>El estudiante no hizo el taller de probar su ambiente antes de iniciar el taller. </li>
+<li>Si a alguien no le funciona o no ha aprovisionado la MV, que se haga al lado de alguien que sí, de lo contrario se va la clase arreglando problemas. </li>
+<li>Es mejor que los integrantes del mismo grupo están cerca para que se puedan ayudar.</li>
+<li>Insistir insistir, insistir en que deben acceder a la MV con el usuario estudiante de lo contrario no va a funcionar.</li>
+</ul>
+</aside>
+<p>En el siguiente enlace está una ppt con los pasos para ir realizando con los estudiantes. Por favor revisarlo y ojala hacerlo desde su propia MV antes de la clase.</p>
+<p><a href="https://uniandes.sharepoint.com/:p:/s/isis_csw/ES_28FKDnmFHjx94Uz5VxoAB0SaxAqt88uxZI64_7BmsPA?e=PTaDFE" target="_blank">Taller Persistencia Básica</a></p>
+<h2 is-upgraded><strong>Autónomo 1</strong></h2>
+<p>Avanzar en el taller. </p>
+<h2 is-upgraded><strong>Laboratorio</strong></h2>
+<p>Iniciar por el seguimiento y la planeación. </p>
+<h3 is-upgraded><strong>Paso 1</strong></h3>
+<p>Verificar que cada líder recibió el archivo de la encuesta de seguimiento y pedirle que lo enlace a teamwork.</p>
+<h3 is-upgraded><strong>Paso</strong><strong> 2</strong></h3>
+<p>Entre todos contestar el seguimiento. El  líder va diligenciando la encuesta</p>
+<h3 is-upgraded><strong>Paso</strong><strong> 3</strong></h3>
+<p>Pedir que abran la instrucción de planeación de la semana que empieza y realizar la planeación de la semana. cada uno planea sus tareas.</p>
+<h3 is-upgraded><strong>Paso</strong><strong> 4</strong></h3>
+<p>Retomar el taller y el trabajo de la persistencia ayudando a resolver las dudas. </p>
+<p>Explicar los errores comunes. Hay muchos en sicua en el foro de &#34;Preguntas Frecuentes&#34;.</p>
+<h3 is-upgraded><strong>Paso 5</strong></h3>
+<p>Abrir los enlaces de jenkins y sonar. Explicar el significado de los soles en Jenkins</p>
+<p>jenkins-numeroseccion.sis.virtual.uniandes.edu.co</p>
+<aside class="special"><ul>
+<li>Antes de irse:</li>
+</ul>
+<ol type="1" start="1">
+<li>Recordar que en el padlet de JPA hay un video (con índice) que explica la implementación de todos los métodos de persistencia. Completa el taller. </li>
+<li>Enfatizar que cada uno debe terminar la implementación de la persistencia de su entidad. </li>
+<li>Pedir que lean sobre los requisitos funcionales. El enlace está en sicua. </li>
+</ol>
+</aside>
+<h2 is-upgraded><strong>Autónomo 2</strong></h2>
+<p>Los estudiantes deben realizar las tareas propuestas.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Semana 4" duration="15">
+        <h2 is-upgraded><strong>Logros de la semana</strong></h2>
+<p>Al finalizar esta semana:</p>
+<ul>
+<li>Identificar los casos de uso más relevantes/vendedores/importante desde el punto de vista de los usuarios finales (transmitir la idea de los que dan más valor al usuario, los que harían que los usuarios utilicen la aplicación). </li>
+<li>Documentar esos casos de uso e identificar las entidades asociadas con el caso de uso (estado) incluyendo las asociaciones.</li>
+<li>Definir una Propuesta de Valor</li>
+</ul>
+<h2 is-upgraded><strong>Presencial 1</strong></h2>
+<p><a href="https://dseuniandes.gitlab.io/requisitos/#1IngReq" target="_blank">Aquí el capítulo</a></p>
+<p>Sugerencias para la explicación:</p>
+<h3 is-upgraded>Parte 1: <strong>El problema</strong></h3>
+<ul>
+<li>Uno de los riesgos más grandes de un proyecto de desarrollo de sw es hacer la aplicación que no es o que no se necesita. Se puede usar la  imagen Columpio (está en el padlet) para explicar el punto. </li>
+<li>Estrategias para mitigar el riesgo:</li>
+<li>Iteraciones/ciclos incrementales donde en cada uno se va validando con los usuarios para mejorar el entendimiento de la aplicación que se quiere construir.  </li>
+<li>Ir seleccionando en los ciclos las funcionalidades que se piensa son más importantes o relevantes. Lo que da más valor e ir implementando gradualmente. Hablar de lo que da valor al usuario y lo que no (explicar que no es que signifique que no hay que hacerlo pero quizás no primero) relevantes/vendedores/importante/prioritario </li>
+</ul>
+<h3 is-upgraded><strong>Parte 2: Explicar CU. </strong></h3>
+<ul>
+<li>Se puede empezar con el ejemplo del cajero automático asociando los servicios que me ofrece el cajero con los CU.  SOn casos de uso porque es la forma en que un usuario usa el sistema (hay una interacción). El ejemplo debe servir para introducir conceptos como la secuencia de los eventos (cajero, usuario, cajero usuario), las excepciones (código inválido, no hay plata), interacciones que se repiten como la autenticación y entonces se podrán factorizar en todos los CU (include)</li>
+<li>Luego en parejas hacer un ejercicio, utilizando banner, para:</li>
+<li>Actores</li>
+<li>Cada actor que CU tiene.</li>
+<li>seleccionar uno, no tan trivial y definir la secuencia de eventos, y las demás cosas. </li>
+<li>Se puede usar por ejemplo el CU de obtener la lista de estudiantes para explicar lo que significa alternativo: cuando uno selecciona imprimir, el diálogo es distinto a solo ver en pantalla. </li>
+</ul>
+<h3 is-upgraded><strong>Parte 3: Mostrar el ejemplo en los formatos solicitados </strong></h3>
+<ul>
+<li>Mostrar el ejemplo de las bicicletas para introducir el formato, lo campos y lo de las entidades. </li>
+</ul>
+<h3 is-upgraded><strong>Paso 4: Trabajo en los grupos</strong></h3>
+<p>En Grupos seleccionar e identificar los CU. Abrir la instrucción asociada en sicua.</p>
+<aside class="special"><ul>
+<li>Antes de irse:</li>
+</ul>
+<ol type="1" start="1">
+<li>Hablar de la tarea individual de la propuesta de valor</li>
+<li>Explicar que debe cada uno completar su caso de uso.</li>
+</ol>
+</aside>
+<h2 is-upgraded><strong>Autónomo 1</strong></h2>
+<p>Los estudiantes deberán terminar la documentación de su caso de uso y enviar el mensaje con la propuesta de valor. </p>
+<h2 is-upgraded><strong>Laboratorio</strong></h2>
+<p>Iniciar por el seguimiento y la planeación. </p>
+<h3 is-upgraded><strong>Paso 1</strong></h3>
+<p>Verificar que cada líder recibió el archivo de la encuesta de seguimiento y pedirle que lo enlace a teamwork.</p>
+<h3 is-upgraded><strong>Paso 2</strong></h3>
+<p>Entre todos contestar el seguimiento. El  líder va diligenciando la encuesta</p>
+<h3 is-upgraded><strong>Paso 3</strong></h3>
+<p>Abrir los enlaces de jenkins y sonar. Explicar el significado de los soles en Jenkins. Revisar con ellos el resultado de la implementación de la persistencia. </p>
+<p>jenkins-numeroseccion.sis.virtual.uniandes.edu.co</p>
+<h3 is-upgraded><strong>Paso 4</strong></h3>
+<p>Plantear la propuesta de valor del equipo con base en las propuestas individuales. Seguir la instrucción en sicua</p>
+<h3 is-upgraded><strong>Paso 5</strong></h3>
+<p>Revisión por pares de los casos de uso. Seguir la instrucción en sicua</p>
+<h2 is-upgraded><strong>Autónomo 2</strong></h2>
+<aside class="special"><ul>
+<li>Antes de irse:</li>
+</ul>
+<ol type="1" start="1">
+<li>Enfatizar que quienes no han terminado la implementación de la persistencia lo deben hacer</li>
+<li>Lo mismo con la doc de los casos de uso y la revisión. </li>
+<li>Leer la lógica </li>
+</ol>
+</aside>
+<h2 is-upgraded><strong>Autónomo 2</strong></h2>
+<p>Los estudiantes deben realizar las tareas propuestas.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>
