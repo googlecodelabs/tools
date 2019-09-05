@@ -3,7 +3,7 @@
   "format": "html",
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
-  "updated": "2019-08-31T16:07:32Z",
+  "updated": "2019-09-05T01:26:38Z",
   "id": "tutor-fabricas",
   "duration": 87,
   "title": "Guía del tutor: Fábricas de Sw y Líneas de Producto",
@@ -21,5 +21,6 @@
     "factories",
     "tutor"
   ],
+  "feedback": "https://github.com/dalthviz/codelabs",
   "url": "tutor-fabricas"
 }
