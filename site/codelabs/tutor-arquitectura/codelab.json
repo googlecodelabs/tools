@@ -1,0 +1,26 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-09-05T04:23:37Z",
+  "id": "tutor-arquitectura",
+  "duration": 5,
+  "title": "MISO4206 Guia del Tutor",
+  "authors": "Adriana Vargas Pinto",
+  "summary": "Este documento contiene una descripción de las actividades que debe realizar el tutor en la materia de MISO-4206 ARQUITECTURAS DE SOFTWARE ÁGILES. durante cada semana del semestre.",
+  "source": "1WPrHpT3Wa0mGiVeKn4fa219DWOjaNQVVu3jz3ZNKbJs",
+  "theme": "factories",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "factories"
+  ],
+  "tags": [
+    "factories",
+    "tutor"
+  ],
+  "feedback": "https://github.com/dalthviz/codelabs",
+  "url": "tutor-arquitectura"
+}
