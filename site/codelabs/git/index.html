@@ -1,0 +1,155 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Git tutorial: Fork, Clone, Commit, Push, Pull and Merge (&#43;Issues)</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="git"
+                  title="Git tutorial: Fork, Clone, Commit, Push, Pull and Merge (&#43;Issues)"
+                  environment="web"
+                  feedback-link="https://github.com/dalthviz/git_practice">
+    
+      <google-codelab-step label="Introduction and setup" duration="5">
+        <p>In this tutorial we will be using some basic commands of Git. We will be working with Github as the place where our repository can be accessed </p>
+<h2 is-upgraded><strong>Before starting</strong></h2>
+<ul>
+<li>Be sure that you have a <a href="https://github.com/" target="_blank">Github account</a> and you are signed in.</li>
+<li>Be sure you have installed <a href="https://git-scm.com/download" target="_blank">Git </a></li>
+<li>You can use <a href="https://code.visualstudio.com/Download" target="_blank">Visual Studio Code</a> to edit the files</li>
+</ul>
+<h2 is-upgraded><strong>First steps</strong></h2>
+<ul>
+<li>Go to <a href="https://github.com/dalthviz/git_practice" target="_blank">https://github.com/dalthviz/git_practice</a> </li>
+<li>Click the fork button <img style="width: 58.00px" src="img\104a150295caf485.png"></li>
+<li>You now should have a new repository in your account called <strong><em>git_practice</em></strong></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Installing our Github App" duration="5">
+        <p>For this tutorial we have the support of a Github App to do some actions over the repository. We will need you to grant access to the repository you created (<strong><em>git_practice</em></strong>)</p>
+<h2 is-upgraded><strong>Grant Github App Access to the repository</strong></h2>
+<ul>
+<li>Install the Github App available at <a href="https://github.com/apps/example-actions-bot" target="_blank">https://github.com/apps/example-actions-bot</a> </li>
+<li>Click <img style="width: 305.00px" src="img\9761d9a553f6b29b.png"></li>
+<li>Select your account (where you have your <strong><em>git_practice </em></strong>repository)</li>
+</ul>
+<p class="image-container"><img style="width: 523.50px" src="img\b4c3498bae19cbc0.png"></p>
+<ul>
+<li>Select <img style="width: 205.00px" src="img\ad0129173eb76548.png">and select the <strong><em>git_practice</em></strong> repository. Click <img style="width: 88.00px" src="img\34cdfb8e6a451511.png"></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Cloning our repository" duration="5">
+        <p>Now that everything is setup we can start. In this case you are going to <strong><em>clone</em></strong> the repository. For this you need to open a terminal or CMD that can execute git commands. To check this you can try to execute <code>git -v</code></p>
+<h2 is-upgraded><strong>Cloning...</strong></h2>
+<ul>
+<li>In your <strong><em>git_practice </em></strong>repository check for <img style="width: 133.00px" src="img\941506e4c60606f9.png"></li>
+<li>Copy the URL that is given. You can use the <img style="width: 36.00px" src="img\394679e04c1d36b6.png"> (this button will copy to the clipboard the URL we need).</li>
+<li>In your terminal type <code>git clone &lt;URL from your repository&gt;</code>. As an example, the command should similar to this <code>git clone </code><a href="https://github.com/dalthviz/git_practice.git" target="_blank"><code>https://github.com/dalthviz/git_practice.git</code></a></li>
+<li>Do a change of directory (<code>cd</code>) to get to the repository root directory. Doing <code>cd git_practice</code> should be enough,</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Your first commit and push" duration="5">
+        <p>Now that we have a local copy of the repository you can make changes to it. In this case the repository just has a README.md file. The idea is to modify this file and create a <strong><em>commit</em></strong>. The commit is basically a way to define a point for a set of changes made to files in the repository</p>
+<h2 is-upgraded><strong>Commiting...</strong></h2>
+<ul>
+<li>Change the <strong><em>README.md</em></strong> file that is on the root directory of the repository. You can add some basic information about yourself or make a quick recap of what you have done so far in this tutorial.</li>
+<li>After saving the changes we will need to run some commands:</li>
+</ul>
+<p><code>git status</code></p>
+<p><code>git add README.md</code></p>
+<p><code>git commit -m&#34;My first commit!&#34;</code></p>
+<h2 is-upgraded><strong>Pushing...</strong></h2>
+<p>Now you can <strong><em>push </em></strong>your changes to the remote repository that you have in Github. For that just do <code>git push</code></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Working with others and doing a pull" duration="8">
+        <p>The reason to use something like git and Github is to be able to work with others in an organized way. As you did, also others usually will make changes to the files of the repository and then there is a need for you to update the version of the files you are working on.</p>
+<p><strong>Pulling...</strong></p>
+<ul>
+<li>Change again the <strong><em>README.md</em></strong> file that is on the root directory of the repository. You can add more basic information about yourself/the tutorial.</li>
+<li>Again, we will be doing a <strong><em>commit</em></strong> and a <strong><em>push </em></strong>with the following commands:</li>
+</ul>
+<p><code>git status</code></p>
+<p><code>        git add README.md</code></p>
+<p><code>        git commit -m&#34;My second commit!&#34;</code></p>
+<ul>
+<li>But you probably noticed something. In this opportunity you weren&#39;t able to do the push!. As part of the message that you received you should be able to read something like</li>
+</ul>
+<p><code> ! [rejected]        master -&gt; master (fetch first)</code></p>
+<p>        Worry not what you need to do now is to do a <strong><em>pull </em></strong>with the following command</p>
+<p><code> git pull</code></p>
+<p>With this, now you have updated your local files with the info in the remote repository, but now comes the tricky part. Go to the following section to check what you need to do to solve a <strong><em>merge conflict</em></strong></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Solving a merge conflict" duration="10">
+        <p>Although git lets you work in an organized way, sometimes you need to ensure the coherence of the files you are working on. Since not just you are working on the files sometimes the changes can enter in conflict. We handle this conflict by doing a <strong><em>merge</em></strong></p>
+<p><strong>Merging...</strong></p>
+<ul>
+<li>In the console or terminal you should see a message like this:</li>
+</ul>
+<p><code>Auto-merging README.md</code></p>
+<p><code>CONFLICT (content): Merge conflict in README.md</code></p>
+<p><code>Automatic merge failed; fix conflicts and then commit the result.</code></p>
+<ul>
+<li>Look the <strong><em>README.md</em></strong> file again, you should see that now there is more content than when you wrote. It should look something like (if using VSCode) this:</li>
+</ul>
+<p class="image-container"><img style="width: 624.00px" src="img\efc3499f3d0ed4fc.png"></p>
+<ul>
+<li>Fix the conflict by removing the auto generate message and the <code>&lt;&lt;&lt;&lt;&lt; HEAD</code> ,  <code>=====</code> , and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; numbers</code> then:</li>
+</ul>
+<p><code>git status</code></p>
+<p><code>        git add README.md</code></p>
+<p><code>        git commit -m&#34;My first merge commit!&#34;</code></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Issues and recap" duration="5">
+        <p>We manage to do some basic workflow using git and Github. Now a plus for you. In your Github repository exist a sections call <strong><em>issues</em></strong>. This section enables you to create trackable messages that you can use as tickets for bugs, features or discussions.</p>
+<p><strong>Issues...</strong></p>
+<ul>
+<li>Check the issues tab in your repository <img style="width: 98.00px" src="img\6f546a2d1764f8c.png">for a summary of some available commands for git</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

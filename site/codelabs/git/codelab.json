@@ -1,0 +1,26 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-09-05T20:11:06Z",
+  "id": "git",
+  "duration": 43,
+  "title": "Git tutorial: Fork, Clone, Commit, Push, Pull and Merge (+Issues)",
+  "authors": "Daniel Althviz",
+  "summary": "Tutorial for basic Git commands using a Github App to guide part of the tutorial",
+  "source": "1CXI_Mb68ZICNuY8Ir5nT4Vltcfp3FL-RLxwOV5UKC-M",
+  "theme": "tutorial",
+  "status": [
+    "draft"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "git",
+    "tutorial"
+  ],
+  "feedback": "https://github.com/dalthviz/git_practice",
+  "url": "git"
+}
