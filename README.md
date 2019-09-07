@@ -101,19 +101,6 @@ and you should be ready to go.
 The [site directory](site) contains tools for building your own custom landing page(s) and publishing both landing
 pages and codelabs to Google Cloud Storage.
 
-## Can I publish my codelab on the official Google Codelabs site?
-
-Sure, just follow this process:
-
-* Email us at codelab-submissions@google.com with a brief proposal for your content.
-* Assuming your proposal is approved, sign the
-[Google Individual Contributor License Agreement](https://cla.developers.google.com/about/google-individual) (CLA),
-which you can do online. The CLA is necessary mainly because we need your
-permission to use and distribute your codelab.
-* Draft your content using the tools and techniques documented in this repo. 
-* When you're ready for a review, submit a link to your source doc to codelab-submissions@google.com and we'll get it reviewed by one or more subject matter expert(s).
-* Once reviewed and approved by Google, we'll copy the source doc, add attribution for your authorship, and publish it on our official codelabs site (https://g.co/codelabs).
-
 ## Why bother with this approach when I can write tutorials directly in Markdown?
 
 Some people like the Google Docs authoring flow, others prefer to specify their codelabs
