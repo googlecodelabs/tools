@@ -49,6 +49,8 @@ which connects you with other authors and provides access to the
 
 ## Ok, how do I use it?
 
+Check out this [excellent tutorial](https://medium.com/@zarinlo/publish-technical-tutorials-in-google-codelab-format-b07ef76972cd).
+
 1. Create a doc following the syntax conventions described in the [Codelab Formatting Guide](FORMAT-GUIDE.md). Here’s an [example doc](https://docs.google.com/document/d/1E6XMcdTexh5O8JwGy42SY3Ehzi8gOfUGiqTiUX6N04o/). Feel free to copy that doc as a starter template. Once you have your own source doc, note its DocId, which is the long string near the end of the URL (right after docs.google.com/document/d/).
 
 1. Make one or more changes and preview your codelab, using the preview app provided by Google. To preview a codelab, install the [Preview Codelab Chrome extension](https://chrome.google.com/webstore/detail/preview-codelab/lhojjnijnkiglhkggagbapfonpdlinji) in your browser. Now you can preview a codelab directly from the Google Doc view by clicking the Chrome extension’s button, which will open a new tab to display the preview. Alternatively, navigate manually to https://codelabs-preview.appspot.com/?file_id=<google-doc-id>
