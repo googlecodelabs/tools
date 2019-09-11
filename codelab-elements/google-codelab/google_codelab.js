@@ -755,7 +755,7 @@ class Codelab extends HTMLElement {
         (e) => {
           if ('userfeedback' in window) {
             window['userfeedback']['api']['startFeedback']
-                ({productId: '5143948'});
+                ({'productId': '5143948'});
           }
         });
     }
