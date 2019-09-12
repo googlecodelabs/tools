@@ -54,6 +54,7 @@
 <li>Fechas de límite de entrega correctas.</li>
 <li>Calificación semanal de las actividades (máximo al final de la siguiente semana en lo posible).</li>
 <li>Retroalimentación semanal o por ciclos (apoyo al profesor con resúmenes de las revisiones de las actividades y retroalimentación en cada una de las actividades calificadas por el tutor a los estudiantes).</li>
+<li>Realizar un seguimiento de los estudiantes y las actividades por semana en un archivo compartido Excel o Google Sheets con el profesor. Dentro de este archivo se busca dar una perspectiva general de que estudiantes no han hecho actividades, que actividades no han hecho o si no les ha ido del todo bien en alguna actividad.</li>
 <li>Idealmente asistir a las clases presenciales para:</li>
 <li>Apoyar el desarrollo del curso.</li>
 <li>Ayudar a resolver dudas que surjan durante las actividades presenciales.</li>
@@ -77,6 +78,9 @@
 <tr><td colspan="1" rowspan="1"><p><strong>Retroalimentación</strong></p>
 </td><td colspan="1" rowspan="1"><p>Hace referencia al trabajo realizado sobre actividades que son desarrolladas por los estudiantes pero cuya nota no tiene un peso sobre la nota final del curso. Si bien la nota no afecta al estudiante, es importante hacer una retroalimentación. En general hace referencia a actividades formativas cuyo fin no es dar una nota al estudiante, sino buscar el desarrollo inicial de habilidades o establecimiento de convenciones de cómo se deben realizar las actividades (habituar el estudiante a leer el enunciado, entender que es lo que se pide y que pueda preguntar si tiene dudas del mismo o de las herramientas a usar).</p>
 </td></tr>
+<tr><td colspan="1" rowspan="1"><p><strong>Preparación de recursos</strong></p>
+</td><td colspan="1" rowspan="1"><p>En general durante el desarrollo del curso el tutor debe tener presente que los recursos de las actividades deben estar actualizados y disponibles para los estudiantes, sin embargo, es necesario puntualmente cada semestre hacer la creación o configuración de ciertos elementos (por ejemplo la organización en Github del curso y la invitación de los estudiantes a la misma).</p>
+</td></tr>
 </table>
 
 
@@ -95,16 +99,18 @@
     
       <google-codelab-step label="Ciclo I: Semana 1 - Anuncios" duration="5">
         <h2 is-upgraded><strong>Ejemplo de Anuncio de la semana - Bienvenida al curso</strong></h2>
-<p>Hola a todos,</p>
-<p>Nuevamente bienvenidos al curso de Fábricas de Software y Líneas de Producto. Mi nombre es <strong><em>&lt;Nombre del tutor&gt;</em></strong> y en esta oportunidad voy a apoyar el desarrollo del curso como tutor.</p>
-<p>En caso de dudas o inquietudes no duden en hacer uso de los foros que tenemos disponibles:</p>
+<p><em>Hola a todos,</em></p>
+<p><em>Nuevamente bienvenidos al curso de Fábricas de Software y Líneas de Producto. Mi nombre es </em><strong><em>&lt;Nombre del tutor&gt;</em></strong><em> y en esta oportunidad voy a apoyar el desarrollo del curso como tutor.</em></p>
+<p><em>En caso de dudas o inquietudes no duden en hacer uso de los foros que tenemos disponibles:</em></p>
 <ul>
-<li><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35028" target="_blank">Foro de conceptos, talleres y tutoriales</a> (dudas o inquietudes sobre las actividades a desarrollar y elementos conceptuales del curso).</li>
-<li><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35029" target="_blank">Foro de preguntas tecnológicas</a> (dudas o inquietudes sobre las tecnologías usadas en el curso, incluyendo la plataforma misma del curso - moodle).</li>
+<li><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35028" target="_blank"><em>Foro de conceptos, talleres y tutoriales</em></a><em> (dudas o inquietudes sobre las actividades a desarrollar y elementos conceptuales del curso).</em></li>
+<li><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35029" target="_blank"><em>Foro de preguntas tecnológicas</em></a><em> (dudas o inquietudes sobre las tecnologías usadas en el curso, incluyendo la plataforma misma del curso - moodle).</em></li>
 </ul>
-<p>Quedamos pendientes y esperamos que el curso sea de gran provecho para todos.</p>
+<p><em>Quedamos pendientes y esperamos que el curso sea de gran provecho para todos.</em></p>
 <p><strong><em>&lt;Nombre del tutor&gt;</em></strong></p>
 <p><strong><em>&lt;Correo del tutor&gt;</em></strong></p>
+<aside class="special"><p><strong>NOTA: </strong>Además de este anuncio, el profesor debe realizar un primer anuncio en donde invita a la primera clase presencial y hace una breve introducción al curso. Esto es algo que se debe organizar con el profesor del curso.</p>
+</aside>
 
 
       </google-codelab-step>
@@ -125,7 +131,7 @@
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p><em>Encuesta de tecnologías y reuso</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Resumen y seguimiento</strong></p>
-</td><td colspan="1" rowspan="1"><p>En caso de que el profesor lo requiera realizar una presentación para que el profesor la presente en la primera clase presencial.</p>
+</td><td colspan="1" rowspan="1"><p>En caso de que el profesor lo requiera, realizar una presentación para que el profesor la presente en la primera clase presencial.</p>
 <p>Se busca mediante esta actividad hacer énfasis en</p>
 <p>la importancia de los conceptos para los estudiantes</p>
 <p>y también tener un panorama del enfoque inicial </p>
@@ -138,37 +144,37 @@
     
       <google-codelab-step label="Ciclo I: Semana 2 - Anuncios" duration="5">
         <h2 is-upgraded>Ejemplo de <strong>Anuncio de la semana</strong></h2>
-<p>Hola a todos</p>
-<aside class="special"><p>¿Sabía Ud que... desarrollar productos usando componentes o activos reutilizables puede implicar esfuerzos adicionales a los de desarrollar cada producto?</p>
-<p>Por un lado, se requiere de un grupo o una unidad organizacional y de un proceso que permita mantener y desarrollar estos componentes reutilizables. Por otro lado, requiere que se definan mecanismos para que estos componentes reutilizables evolucionen acordes con las necesidades de cada uno de los productos que los usan.</p>
+<p><em>Hola a todos</em></p>
+<aside class="special"><p><em>¿Sabía Ud que... desarrollar productos usando componentes o activos reutilizables puede implicar esfuerzos adicionales a los de desarrollar cada producto?</em></p>
+<p><em>Por un lado, se requiere de un grupo o una unidad organizacional y de un proceso que permita mantener y desarrollar estos componentes reutilizables. Por otro lado, requiere que se definan mecanismos para que estos componentes reutilizables evolucionen acordes con las necesidades de cada uno de los productos que los usan.</em></p>
 </aside>
-<p>Esta es la <a href="https://moodleinstitucional.uniandes.edu.co/course/view.php?id=266&section=3" target="_blank">segunda semana del curso de Fábricas de Software y Líneas de Productos</a>. Esta semana revisaremos algunas propuestas sobre estrategias y modelos de madurez en empresas que implementan estas estrategias. Veremos, por ejemplo, algunas capacidades que deben desarrollar estas empresas.</p>
+<p><em>Esta es la </em><a href="https://moodleinstitucional.uniandes.edu.co/course/view.php?id=266&section=3" target="_blank"><em>segunda semana del curso de Fábricas de Software y Líneas de Productos</em></a><em>. Esta semana revisaremos algunas propuestas sobre estrategias y modelos de madurez en empresas que implementan estas estrategias. Veremos, por ejemplo, algunas capacidades que deben desarrollar estas empresas.</em></p>
 <ul>
-<li>Vamos a revisar unos artículos relacionados con el tema y analizaremos un caso de estudio</li>
-<li>El caso de estudio involucra unas actividades individuales y otras grupales.</li>
-<li>Pueden usar las herramientas de Moodle y de Colaboración de la Universidad para estas tareas.</li>
+<li><em>Vamos a revisar unos artículos relacionados con el tema y analizaremos un caso de estudio</em></li>
+<li><em>El caso de estudio involucra unas actividades individuales y otras grupales.</em></li>
+<li><em>Pueden usar las herramientas de Moodle y de Colaboración de la Universidad para estas tareas.</em></li>
 </ul>
-<p><a href="https://vimeo.com/313919489" target="_blank">https://vimeo.com/313919489</a></p>
-<p>Si tienen alguna inquietud, no duden en contactarnos a través de los espacios de comunicación.</p>
+<p><a href="https://vimeo.com/313919489" target="_blank"><em>https://vimeo.com/313919489</em></a></p>
+<p><em>Si tienen alguna inquietud, no duden en contactarnos a través de los espacios de comunicación.</em></p>
 <h2 is-upgraded><strong>Ejemplo de Anuncio con los grupos del caso de estudio</strong></h2>
-<p>Hola a todos,</p>
-<p>A continuación los grupos que se crearon para el &#34;<a href="https://uniandes.sharepoint.com/:w:/s/mis/Eb64X6pH7SdLlGcabIkj0kYBN--G4s29PGQVU9hIEhH-rQ?e=nJu3rP" target="_blank">caso de estudio de Biometrix Solutions&#34;</a>. Estos grupos los hemos creado de forma aleatoria. Esperamos que puedan contactarse entre Uds y coordinar su trabajo (pueden por ejemplo usar el espacio de trabajo de Slack o el medio que sea más conveniente para Uds).</p>
+<p><em>Hola a todos,</em></p>
+<p><em>A continuación los grupos que se crearon para el &#34;</em><a href="https://uniandes.sharepoint.com/:w:/s/mis/Eb64X6pH7SdLlGcabIkj0kYBN--G4s29PGQVU9hIEhH-rQ?e=nJu3rP" target="_blank"><em>caso de estudio de Biometrix Solutions&#34;</em></a><em>. Estos grupos los hemos creado de forma aleatoria. Esperamos que puedan contactarse entre Uds y coordinar su trabajo (pueden por ejemplo usar el espacio de trabajo de Slack o el medio que sea más conveniente para Uds).</em></p>
 <ul>
-<li>Cada uno de los grupos tiene un espacio diferente en el <a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35040" target="_blank">foro</a>. Esto significa que solo verán los mensajes de sus compañeros de grupo.</li>
-<li>Si lo desean, pueden suscribirse al <a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35040" target="_blank">foro</a> para recibir los mensajes por correo.</li>
+<li><em>Cada uno de los grupos tiene un espacio diferente en el </em><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35040" target="_blank"><em>foro</em></a><em>. Esto significa que solo verán los mensajes de sus compañeros de grupo.</em></li>
+<li><em>Si lo desean, pueden suscribirse al </em><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35040" target="_blank"><em>foro</em></a><em> para recibir los mensajes por correo.</em></li>
 </ul>
 <table>
-<tr><td colspan="1" rowspan="1"><p><strong>Grupos</strong></p>
-</td><td colspan="1" rowspan="1"><p><strong>Miembros del grupo</strong></p>
+<tr><td colspan="1" rowspan="1"><p><strong><em>Grupos</em></strong></p>
+</td><td colspan="1" rowspan="1"><p><strong><em>Miembros del grupo</em></strong></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>Biometrix Solutions 1</p>
-</td><td colspan="1" rowspan="1"><p>Estudiante 1, Estudiante 3</p>
+<tr><td colspan="1" rowspan="1"><p><em>Biometrix Solutions 1</em></p>
+</td><td colspan="1" rowspan="1"><p><em>Estudiante 1, Estudiante 3</em></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>Biometrix Solutions 10</p>
-</td><td colspan="1" rowspan="1"><p>Estudiante 2, Estudiante 4</p>
+<tr><td colspan="1" rowspan="1"><p><em>Biometrix Solutions 10</em></p>
+</td><td colspan="1" rowspan="1"><p><em>Estudiante 2, Estudiante 4</em></p>
 </td></tr>
 </table>
-<p>Si tienen alguna duda o inconveniente con el trabajo o con el uso del foro, no duden en escribirnos.</p>
+<p><em>Si tienen alguna duda o inconveniente con el trabajo o con el uso del foro, no duden en escribirnos.</em></p>
 
 
       </google-codelab-step>
@@ -180,7 +186,7 @@
 </td><td colspan="1" rowspan="1"><p><strong>Rol del tutor</strong></p>
 </td><td colspan="1" rowspan="1"><p><strong>Descripción</strong></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Mapas conceptual sobre niveles de madurez y evaluación de adopción de líneas de producto</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Mapas conceptual sobre niveles de madurez y evaluación de adopción de líneas de producto</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Retroalimentación y</strong></p>
 <p><strong>evaluación</strong></p>
 </td><td colspan="1" rowspan="1"><p>Retroalimentación individual y nota.</p>
@@ -188,7 +194,7 @@
 <p>claros según el desempeño de los trabajos entregados</p>
 <p>para comentarlos al profesor.</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong> Caso de estudio</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em> Caso de estudio</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Retroalimentación y</strong></p>
 <p><strong>evaluación</strong></p>
 </td><td colspan="1" rowspan="1"><p>Anunciar como están conformados los grupos para la actividad.</p>
@@ -204,50 +210,50 @@
     
       <google-codelab-step label="Ciclo I: Semana 3 - Anuncios" duration="5">
         <h2 is-upgraded>Ejemplo de <strong>Anuncio de la semana</strong></h2>
-<p>Hola a Todos</p>
-<aside class="special"><p>¿Sabía Ud que..., en ingeniería de dominio, el &#34;dominio&#34; puede hacer referencia a un dominio (un conjunto) de problemas y aplicaciones?</p>
-<p>En los 70-80, se usó el término de ingeniería de dominio para el diseño de librerías y componentes reutilizables. En desarrollo basado en modelos y lenguajes, la ingeniería de dominio trata sobre el diseño e implementación de lenguajes específicos de dominio. En líneas de productos, la ingeniería de dominios trata sobre la construcción de los activos que son la base para todos los productos.</p>
+<p><em>Hola a Todos</em></p>
+<aside class="special"><p><em>¿Sabía Ud que..., en ingeniería de dominio, el &#34;dominio&#34; puede hacer referencia a un dominio (un conjunto) de problemas y aplicaciones?</em></p>
+<p><em>En los 70-80, se usó el término de ingeniería de dominio para el diseño de librerías y componentes reutilizables. En desarrollo basado en modelos y lenguajes, la ingeniería de dominio trata sobre el diseño e implementación de lenguajes específicos de dominio. En líneas de productos, la ingeniería de dominios trata sobre la construcción de los activos que son la base para todos los productos.</em></p>
 </aside>
-<p>Esta es la <a href="https://moodleinstitucional.uniandes.edu.co/course/view.php?id=266&section=4" target="_blank">tercera semana del curso de Fábricas de Software y Líneas de Productos</a>. Esta semana trataremos los procesos técnicos de ingeniería de dominio y de ingeniería de aplicaciones.</p>
+<p><em>Esta es la </em><a href="https://moodleinstitucional.uniandes.edu.co/course/view.php?id=266&section=4" target="_blank"><em>tercera semana del curso de Fábricas de Software y Líneas de Productos</em></a><em>. Esta semana trataremos los procesos técnicos de ingeniería de dominio y de ingeniería de aplicaciones.</em></p>
 <ul>
-<li>Vamos a realizar una lectura sobre los procesos de ingeniería que aplican en Líneas de Productos de Software</li>
-<li>Deberán hacer un cuadro comparativo de dos propuestas metodológicas</li>
-<li>Realizarán unos tutoriales en la herramienta FeatureIDE</li>
-<li>Deberán hacer una grabación de pantalla con un ejemplo que Uds revisen</li>
+<li><em>Vamos a realizar una lectura sobre los procesos de ingeniería que aplican en Líneas de Productos de Software</em></li>
+<li><em>Deberán hacer un cuadro comparativo de dos propuestas metodológicas</em></li>
+<li><em>Realizarán unos tutoriales en la herramienta FeatureIDE</em></li>
+<li><em>Deberán hacer una grabación de pantalla con un ejemplo que Uds revisen</em></li>
 </ul>
-<p><a href="https://vimeo.com/315015152" target="_blank">https://vimeo.com/315015152</a></p>
-<p>Como todas las semanas, hay un pequeño video explicando las actividades: https://vimeo.com/315015152</p>
-<p>Si tienen alguna inquietud, no duden en contactarnos a través de los espacios de comunicación.</p>
+<p><a href="https://vimeo.com/315015152" target="_blank"><em>https://vimeo.com/315015152</em></a></p>
+<p><em>Como todas las semanas, hay un pequeño video explicando las actividades: https://vimeo.com/315015152</em></p>
+<p><em>Si tienen alguna inquietud, no duden en contactarnos a través de los espacios de comunicación.</em></p>
 <h2 is-upgraded>Ejemplo de <strong>Anuncio con los grupos de la grabación de un proyecto de Spl2go</strong></h2>
-<p>Esta semana deberemos hacer una grabación de pantalla (un screencast) de un ejemplo de líneas de productos. El ejemplo puede descargarse de spl2go o puede utilizarse uno de los ejemplos de FeatureIDE.</p>
+<p><em>Esta semana deberemos hacer una grabación de pantalla (un screencast) de un ejemplo de líneas de productos. El ejemplo puede descargarse de spl2go o puede utilizarse uno de los ejemplos de FeatureIDE.</em></p>
 <ul>
-<li>La idea es que el trabajo sea en parejas. Esto les permitirá comparar notas sobre el proyecto y revisar que incluir en el video. El video lo puede grabar uno del grupo. En el video se debe mencionar las personas que hicieron el video.</li>
-<li>Existe un <a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=28555" target="_blank">foro para resolver cualquier duda sobre el proyecto</a>. Este foro es visible por cada uno de los miembros del grupo y por los profesores. No es visible para los demás. </li>
+<li><em>La idea es que el trabajo sea en parejas. Esto les permitirá comparar notas sobre el proyecto y revisar que incluir en el video. El video lo puede grabar uno del grupo. En el video se debe mencionar las personas que hicieron el video.</em></li>
+<li><em>Existe un </em><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=28555" target="_blank"><em>foro para resolver cualquier duda sobre el proyecto</em></a><em>. Este foro es visible por cada uno de los miembros del grupo y por los profesores. No es visible para los demás. </em></li>
 </ul>
-<p>Recursos</p>
-<p>Para la realización del trabajo, existen una serie de recursos en el sitio Moodle. Aquí se presentan de nuevo enlaces a esos mismos recursos</p>
+<p><em>Recursos</em></p>
+<p><em>Para la realización del trabajo, existen una serie de recursos en el sitio Moodle. Aquí se presentan de nuevo enlaces a esos mismos recursos</em></p>
 <ul>
-<li><a href="https://uniandes.sharepoint.com/:w:/s/mis/Ec_au6SLtFRChYg-NUMKjjEBoM-Dz0MLKc6F1cZ8VFnE2A?e=Z8OpHH" target="_blank">Guía para la revisión del proyecto</a></li>
-<li><a href="https://uniandes.sharepoint.com/:x:/s/mis/EYLSVZnyZSNFn_GRjZTXuqUBYg6CTBWmq4s3mnrlKc2UcA?e=VVUid2" target="_blank">Listado de proyectos recomendados dentro de spl2go y FeatureIDE</a></li>
-<li><a href="https://uniandes.sharepoint.com/:w:/s/mis/EQlKcgfHoYpFl5-482LZlw4BMYotZocQcLs6BxhrRuDWWQ?e=YmfOjg" target="_blank">Formato con la información que debe mostrarse en el video</a></li>
+<li><a href="https://uniandes.sharepoint.com/:w:/s/mis/Ec_au6SLtFRChYg-NUMKjjEBoM-Dz0MLKc6F1cZ8VFnE2A?e=Z8OpHH" target="_blank"><em>Guía para la revisión del proyecto</em></a></li>
+<li><a href="https://uniandes.sharepoint.com/:x:/s/mis/EYLSVZnyZSNFn_GRjZTXuqUBYg6CTBWmq4s3mnrlKc2UcA?e=VVUid2" target="_blank"><em>Listado de proyectos recomendados dentro de spl2go y FeatureIDE</em></a></li>
+<li><a href="https://uniandes.sharepoint.com/:w:/s/mis/EQlKcgfHoYpFl5-482LZlw4BMYotZocQcLs6BxhrRuDWWQ?e=YmfOjg" target="_blank"><em>Formato con la información que debe mostrarse en el video</em></a></li>
 </ul>
-<p>Grupos</p>
-<p>Estos son los grupos para este trabajo. Note que son diferentes a los grupos de la actividad anterior.</p>
+<p><em>Grupos</em></p>
+<p><em>Estos son los grupos para este trabajo. Note que son diferentes a los grupos de la actividad anterior.</em></p>
 <table>
-<tr><td colspan="1" rowspan="1"><p><strong>Grupos</strong></p>
-</td><td colspan="1" rowspan="1"><p><strong>Miembros del grupo</strong></p>
+<tr><td colspan="1" rowspan="1"><p><strong><em>Grupos</em></strong></p>
+</td><td colspan="1" rowspan="1"><p><strong><em>Miembros del grupo</em></strong></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>spl2go 1</p>
-</td><td colspan="1" rowspan="1"><p>Estudiante 1, Estudiante 3</p>
+<tr><td colspan="1" rowspan="1"><p><em>spl2go 1</em></p>
+</td><td colspan="1" rowspan="1"><p><em>Estudiante 1, Estudiante 3</em></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>spl2go 2</p>
-</td><td colspan="1" rowspan="1"><p>Estudiante 2, Estudiante 4</p>
+<tr><td colspan="1" rowspan="1"><p><em>spl2go 2</em></p>
+</td><td colspan="1" rowspan="1"><p><em>Estudiante 2, Estudiante 4</em></p>
 </td></tr>
 </table>
-<p>Cualquier duda al respecto, pueden enviar un correo a los foros y espacios de comunicación:</p>
+<p><em>Cualquier duda al respecto, pueden enviar un correo a los foros y espacios de comunicación:</em></p>
 <ul>
-<li><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=22980" target="_blank">Foro sobre conceptos, talleres y tutoriales del curso</a></li>
-<li><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=22981" target="_blank">Foro para preguntas tecnológicas</a></li>
+<li><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=22980" target="_blank"><em>Foro sobre conceptos, talleres y tutoriales del curso</em></a></li>
+<li><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=22981" target="_blank"><em>Foro para preguntas tecnológicas</em></a></li>
 </ul>
 
 
@@ -260,7 +266,7 @@
 </td><td colspan="1" rowspan="1"><p><strong>Rol del tutor</strong></p>
 </td><td colspan="1" rowspan="1"><p><strong>Descripción</strong></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Cuadro comparativo</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Cuadro comparativo</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Retroalimentación y</strong></p>
 <p><strong>evaluación</strong></p>
 </td><td colspan="1" rowspan="1"><p>Retroalimentación individual y nota<strong>.</strong></p>
@@ -268,7 +274,7 @@
 <p>tan claros según el desempeño de los trabajos entregados</p>
 <p>para comentarlos al profesor.</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Proyectos spl2go</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Proyectos spl2go</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Retroalimentación  y evaluación.</strong></p>
 <p><strong>Actividad formativa</strong></p>
 </td><td colspan="1" rowspan="1"><p>Anunciar como estan conformados los grupos para la actividad.</p>
@@ -287,46 +293,48 @@
 <ul>
 <li>Determinar, Modelar y Analizar la Variabilidad que existe en un conjunto de productos de software</li>
 </ul>
+<aside class="special"><p><strong>NOTA:</strong> En la última semana de este ciclo (sexta semana) se deben tener conformados los grupos con los que los estudiantes trabajaran para el proyecto del curso.  Además, se debe crear la organización del curso en Github y el espacio de Github Classroom para configurar las asignaciones que necesitan de fuentes en Github para su desarrollo en esa última semana y el resto del curso.</p>
+</aside>
 
 
       </google-codelab-step>
     
       <google-codelab-step label="Ciclo II: Semana 4 - Anuncios" duration="5">
         <h2 is-upgraded><strong>Ejemplo de Anuncio de la semana</strong></h2>
-<aside class="special"><p>¿Sabías que... los modelos de características (o feature models) son el estándar &#34;de facto&#34; en la industria?</p>
-<p>Empresas que diseñan aviones, vehículos y equipos electrónicos suelen usar modelos de características para representar la variabilidad de sus productos. Estos modelos son usados, por ejemplo, como un elemento integral en la arquitectura AUTOSAR usada por fabricantes de carros de todo el mundo. Empresas como Polarion y Siemens usan estos modelos en sus soluciones de administración de productos (PLM). Además, software para construir líneas de productos de software como FeatureIDE, pore::variants y gears se basan en este tipo de modelos.</p>
+<aside class="special"><p><em>¿Sabías que... los modelos de características (o feature models) son el estándar &#34;de facto&#34; en la industria?</em></p>
+<p><em>Empresas que diseñan aviones, vehículos y equipos electrónicos suelen usar modelos de características para representar la variabilidad de sus productos. Estos modelos son usados, por ejemplo, como un elemento integral en la arquitectura AUTOSAR usada por fabricantes de carros de todo el mundo. Empresas como Polarion y Siemens usan estos modelos en sus soluciones de administración de productos (PLM). Además, software para construir líneas de productos de software como FeatureIDE, pore::variants y gears se basan en este tipo de modelos.</em></p>
 </aside>
-<p>Esta es la cuarta semana del curso de Fábricas de Software y Líneas de Productos. Esta semana tendremos una serie de actividades por Internet y una sesión presencial.</p>
-<p><a href="https://vimeo.com/316352762" target="_blank">https://vimeo.com/316352762</a></p>
+<p><em>Esta es la cuarta semana del curso de Fábricas de Software y Líneas de Productos. Esta semana tendremos una serie de actividades por Internet y una sesión presencial.</em></p>
+<p><a href="https://vimeo.com/316352762" target="_blank"><em>https://vimeo.com/316352762</em></a></p>
 <ul>
-<li>Deben hacer unas lecturas y ver un video sobre modelos de features / modelos de características</li>
-<li>Deben realizar un Quiz</li>
-<li>Deben hacer un taller de modelamiento de características</li>
+<li><em>Deben hacer unas lecturas y ver un video sobre modelos de features / modelos de características</em></li>
+<li><em>Deben realizar un Quiz</em></li>
+<li><em>Deben hacer un taller de modelamiento de características</em></li>
 </ul>
-<p>Pueden ver toda la información en el Moodle. No duden en escribir a los foros y espacios de comunicación si tienen algún problema o inquietud.</p>
-<p>Nos vemos el fin de semana.</p>
+<p><em>Pueden ver toda la información en el Moodle. No duden en escribir a los foros y espacios de comunicación si tienen algún problema o inquietud.</em></p>
+<p><em>Nos vemos el fin de semana.</em></p>
 <h2 is-upgraded><strong>Ejemplo de Anuncio con los grupos de la definición de alcance de una línea de productos</strong></h2>
-<p>Hola a todos</p>
-<p>Para la otra semana deberán hacer un trabajo en parejas relacionado con determinar el alcance (y la variabilidad) de una línea de productos.</p>
+<p><em>Hola a todos</em></p>
+<p><em>Para la otra semana deberán hacer un trabajo en parejas relacionado con determinar el alcance (y la variabilidad) de una línea de productos.</em></p>
 <ul>
-<li>Este trabajo ya lo pueden ver en la semana 4, al final de las actividades de modelamiento.</li>
-<li>Al colocar la actividad, esperamos que puedan revisar el enunciado y/o avanzar en alguna parte de este trabajo desde esta misma semana.</li>
-<li>La entrega deberá hacerse, como máximo, la otra semana.</li>
+<li><em>Este trabajo ya lo pueden ver en la semana 4, al final de las actividades de modelamiento.</em></li>
+<li><em>Al colocar la actividad, esperamos que puedan revisar el enunciado y/o avanzar en alguna parte de este trabajo desde esta misma semana.</em></li>
+<li><em>La entrega deberá hacerse, como máximo, la otra semana.</em></li>
 </ul>
-<p>Este trabajo deberá hacerse en parejas. Las parejas seleccionadas por Moodle son las siguientes:</p>
+<p><em>Este trabajo deberá hacerse en parejas. Las parejas seleccionadas por Moodle son las siguientes:</em></p>
 <table>
-<tr><td colspan="1" rowspan="1"><p><strong>Grupos</strong></p>
-</td><td colspan="1" rowspan="1"><p><strong>Miembros del grupo</strong></p>
+<tr><td colspan="1" rowspan="1"><p><strong><em>Grupos</em></strong></p>
+</td><td colspan="1" rowspan="1"><p><strong><em>Miembros del grupo</em></strong></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>spl2go 1</p>
-</td><td colspan="1" rowspan="1"><p>Estudiante 1, Estudiante 3</p>
+<tr><td colspan="1" rowspan="1"><p><em>spl2go 1</em></p>
+</td><td colspan="1" rowspan="1"><p><em>Estudiante 1, Estudiante 3</em></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>spl2go 2</p>
-</td><td colspan="1" rowspan="1"><p>Estudiante 2, Estudiante 4</p>
+<tr><td colspan="1" rowspan="1"><p><em>spl2go 2</em></p>
+</td><td colspan="1" rowspan="1"><p><em>Estudiante 2, Estudiante 4</em></p>
 </td></tr>
 </table>
-<p>Como siempre, cualquier inquietud o problema, pueden reportarlo usando los foros del curso. Estaremos atentos.</p>
-<p>Nos vemos el sábado.</p>
+<p><em>Como siempre, cualquier inquietud o problema, pueden reportarlo usando los foros del curso. Estaremos atentos.</em></p>
+<p><em>Nos vemos el sábado.</em></p>
 
 
       </google-codelab-step>
@@ -338,15 +346,15 @@
 </td><td colspan="1" rowspan="1"><p><strong>Rol del tutor</strong></p>
 </td><td colspan="1" rowspan="1"><p><strong>Descripción</strong></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Quiz sobre modelos de características e introducción a la variabilidad</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Quiz sobre modelos de características e introducción a la variabilidad</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Resumen y seguimiento</strong></p>
 </td><td colspan="1" rowspan="1"><p>Identificación de preguntas con más errores y si hubo personas que no les fue muy bien (notas inferiores a 3.8-3.5) preguntar si necesitan ayuda o una explicación.</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Taller modelamiento de características</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Taller modelamiento de características</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Retroalimentación y evaluación</strong></p>
 </td><td colspan="1" rowspan="1"><p>Retroalimentación individual y nota. Dentro de la retroalimentación se debe establecer si los modelos son válidos, tienen restricciones muertas y otras posibilidades de modelamiento no contempladas por el estudiante.</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Definición de Alcance de una línea de producto</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Definición de Alcance de una línea de producto</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Retroalimentación</strong></p>
 </td><td colspan="1" rowspan="1"><p>Se plantea en esta semana iniciar una actividad que debe ser entregada en la semana 5. En este sentido el tutor debe estar pendiente de resolver dudas sobre el enunciado y anunciar como estan conformados los grupos para la actividad.</p>
 </td></tr>
@@ -357,34 +365,34 @@
     
       <google-codelab-step label="Ciclo II: Semana 5 - Anuncios" duration="8">
         <h2 is-upgraded>Ejemplo <strong>Anuncio de la semana</strong></h2>
-<p>Esta es la quinta semana del curso de Fábricas de Software y Líneas de Productos. Esta semana tendremos una serie de actividades individuales y en grupo.</p>
-<p><a href="https://vimeo.com/316352762" target="_blank">https://vimeo.com/</a><a href="https://vimeo.com/317531609" target="_blank">317531609</a></p>
+<p><em>Esta es la quinta semana del curso de Fábricas de Software y Líneas de Productos. Esta semana tendremos una serie de actividades individuales y en grupo.</em></p>
+<p><a href="https://vimeo.com/316352762" target="_blank"><em>https://vimeo.com/</em></a><a href="https://vimeo.com/317531609" target="_blank"><em>317531609</em></a></p>
 <ul>
-<li>Deben hacer unas lecturas y ver un video sobre análisis de variabilidad con modelos de features / modelos de características</li>
-<li>Deben realizar un Quiz sobre el análisis de variabilidad (hay un taller de preparación para que puedan preparar el Quiz)</li>
-<li>Deben hacer el taller de conteo de productos con FeatureIDE y realizar el taller de preparación para el Quiz sobre el conteo de productos.</li>
-<li>Deben realizar un Quiz sobre conteo de productos.</li>
-<li>Deben realizar la entrega de la definición de alcance de una línea de productos en los grupos definidos desde la semana 4</li>
+<li><em>Deben hacer unas lecturas y ver un video sobre análisis de variabilidad con modelos de features / modelos de características</em></li>
+<li><em>Deben realizar un Quiz sobre el análisis de variabilidad (hay un taller de preparación para que puedan preparar el Quiz)</em></li>
+<li><em>Deben hacer el taller de conteo de productos con FeatureIDE y realizar el taller de preparación para el Quiz sobre el conteo de productos.</em></li>
+<li><em>Deben realizar un Quiz sobre conteo de productos.</em></li>
+<li><em>Deben realizar la entrega de la definición de alcance de una línea de productos en los grupos definidos desde la semana 4</em></li>
 </ul>
-<p>Pueden ver toda la información en el Moodle. No duden en escribir a los foros y espacios de comunicación si tienen algún problema o inquietud.</p>
+<p><em>Pueden ver toda la información en el Moodle. No duden en escribir a los foros y espacios de comunicación si tienen algún problema o inquietud.</em></p>
 <h2 is-upgraded><strong>Ejemplo Anuncio de invitación a Github Classroom - Uso de Github</strong></h2>
-<p>Hola a todos</p>
-<p>Ya tenemos los repositorios y el acceso a Github Classroom. A partir de ahora, vamos a hacer unos talleres y el proyecto final en el Github.</p>
-<p>Se les ha enviado una invitación a todos para que hagan parte de la organización Github para el curso: </p>
+<p><em>Hola a todos</em></p>
+<p><em>Ya tenemos los repositorios y el acceso a Github Classroom. A partir de ahora, vamos a hacer unos talleres y el proyecto final en el Github.</em></p>
+<p><em>Se les ha enviado una invitación a todos para que hagan parte de la organización Github para el curso: </em></p>
 <ul>
-<li>Organización para el curso: <strong><em>&lt;Enlace de la organización del curso&gt;</em></strong></li>
-<li>La invitación se envió a su correo en la Universidad de los Andes.</li>
-<li>Si ya tienen una cuenta en Github, no necesitan crear una nueva cuenta.</li>
-<li>Pueden agregar el correo de Uniandes usando la configuración del Github, en <a href="https://github.com/settings/emails" target="_blank">https://github.com/settings/emails</a> </li>
+<li><em>Organización para el curso: </em><strong><em>&lt;Enlace de la organización del curso&gt;</em></strong></li>
+<li><em>La invitación se envió a su correo en la Universidad de los Andes.</em></li>
+<li><em>Si ya tienen una cuenta en Github, no necesitan crear una nueva cuenta.</em></li>
+<li><em>Pueden agregar el correo de Uniandes usando la configuración del Github, en </em><a href="https://github.com/settings/emails" target="_blank"><em>https://github.com/settings/emails</em></a><em> </em></li>
 </ul>
-<p>Si tienen alguna pregunta o hay algún inconveniente, nos pueden mandar un mensaje a los foros del curso.</p>
+<p><em>Si tienen alguna pregunta o hay algún inconveniente, nos pueden mandar un mensaje a los foros del curso.</em></p>
 <h2 is-upgraded><strong>Ejemplo Anuncio de creación de grupos</strong></h2>
-<p>Hola a todos,</p>
-<p>Buscando conformar los grupos del proyecto les pedimos que escriban un mensaje al canal general del slack del curso. Pueden acceder al espacio en slack con este enlace:</p>
+<p><em>Hola a todos,</em></p>
+<p><em>Buscando conformar los grupos del proyecto les pedimos que escriban un mensaje al canal general del slack del curso. Pueden acceder al espacio en slack con este enlace:</em></p>
 <p><strong><em>&lt;Enlace de invitación al espacio de slack&gt;</em></strong></p>
-<p>Nuestro espacio en slack se encuentra en esta dirección: <strong><em>&lt;Enlace del espacio del trabajo&gt;</em></strong></p>
-<p>Para el proyecto debemos definir <strong><em>&lt;Número de grupos&gt;</em></strong>: <strong><em>&lt;Descripción de número de personas por grupo&gt;</em></strong></p>
-<p>Cualquier duda pueden escribirnos en los foros o en slack</p>
+<p><em>Nuestro espacio en slack se encuentra en esta dirección: </em><strong><em>&lt;Enlace del espacio del trabajo&gt;</em></strong></p>
+<p><em>Para el proyecto debemos definir </em><strong><em>&lt;Número de grupos&gt;</em></strong><em>: </em><strong><em>&lt;Descripción de número de personas por grupo&gt;</em></strong></p>
+<p><em>Cualquier duda pueden escribirnos en los foros o en slack</em></p>
 
 
       </google-codelab-step>
@@ -396,15 +404,15 @@
 </td><td colspan="1" rowspan="1"><p><strong>Rol del tutor</strong></p>
 </td><td colspan="1" rowspan="1"><p><strong>Descripción</strong></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Quiz de análisis de variabilidad</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Quiz de análisis de variabilidad</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Resumen y seguimiento</strong></p>
 </td><td colspan="1" rowspan="1"><p>Identificación de preguntas con más errores y si hubo personas que no les fue muy bien (notas inferiores a 3.8-3.5) preguntar si necesitan ayuda o una explicación.</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Quiz de conteo de productos</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Quiz de conteo de productos</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Resumen y seguimiento</strong></p>
 </td><td colspan="1" rowspan="1"><p>Identificación de preguntas con más errores y si hubo personas que no les fue muy bien (notas inferiores a 3.8-3.5) preguntar si necesitan ayuda o una explicación.</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Definición de Alcance de una línea de producto</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Definición de Alcance de una línea de producto</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Retroalimentación y evaluación</strong></p>
 </td><td colspan="1" rowspan="1"><p>La actividad planteada desde la semana pasada debe ser calificada.</p>
 <p>Retroalimentación en grupo y nota<strong>.</strong></p>
@@ -416,20 +424,20 @@
     
       <google-codelab-step label="Ciclo II: Semana 6 - Anuncios" duration="5">
         <h2 is-upgraded>Ejemplo de <strong>Anuncio de la semana</strong></h2>
-<p>Hola a todos</p>
-<p>Actividades Generales</p>
-<p>En la página de esta sexta semana ya tiene los enlaces al tutorial de la librería de FeatureIDE y las actividades para esta semana.</p>
+<p><em>Hola a todos</em></p>
+<p><em>Actividades Generales</em></p>
+<p><em>En la página de esta sexta semana ya tiene los enlaces al tutorial de la librería de FeatureIDE y las actividades para esta semana.</em></p>
 <ul>
-<li>Hay un tutorial paso-a-paso de Git, para las personas que no hayan utilizado antes Git</li>
-<li>Hay un tutorial de programación en la librería de FeatureIDE</li>
-<li>Hay un caso de estudio sobre análisis de variabilidad a realizar en los grupos del proyecto.</li>
+<li><em>Hay un tutorial paso-a-paso de Git, para las personas que no hayan utilizado antes Git</em></li>
+<li><em>Hay un tutorial de programación en la librería de FeatureIDE</em></li>
+<li><em>Hay un caso de estudio sobre análisis de variabilidad a realizar en los grupos del proyecto.</em></li>
 </ul>
-<p> Actividad con Github</p>
-<p>Recuerden que para realizar la actividad del tutorial con FeatureIDE deben aceptar la invitación a la organización del curso en <strong><em>&lt;Enlace a la organización en GIthub&gt; </em></strong>que enviamos a su correo uniandes (algunos ya aceptaron la invitación pero faltan personas todavía).</p>
-<p>Actividad en los grupos del proyecto</p>
-<p>Recuerden que es necesario que tengan ya conformados los grupos para el proyecto del curso. Los grupos deben ser de 4-5 personas (idealmente 4 grupos de 5 personas y un único grupo de 4 personas). Igualmente tengan en cuenta que la actividad de &#34;<a href="https://moodleinstitucional.uniandes.edu.co/mod/assign/view.php?id=35064" target="_blank">Caso de estudio de análisis de variabilidad</a>&#34; es con estos grupos de proyecto.</p>
-<p>Pueden escribir en el foro de &#34;<a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35063" target="_blank">Definición de Grupos para el Proyecto del Curso</a>&#34; los grupos que vayan conformando como lo han venido haciendo y de esta manera vamos creando los grupos en moodle para que puedan acceder al enlace de entrega de la actividad. Si no tiene grupo pueden preguntar por el foro o mediante slack a sus compañeros del curso para crear un grupo o unirse a uno.</p>
-<p>Si tienen algún problema o pregunta adicional, nos la pueden hacer por los foros del curso</p>
+<p><em> Actividad con Github</em></p>
+<p><em>Recuerden que para realizar la actividad del tutorial con FeatureIDE deben aceptar la invitación a la organización del curso en </em><strong><em>&lt;Enlace a la organización en GIthub&gt; </em></strong><em>que enviamos a su correo uniandes (algunos ya aceptaron la invitación pero faltan personas todavía).</em></p>
+<p><em>Actividad en los grupos del proyecto</em></p>
+<p><em>Recuerden que es necesario que tengan ya conformados los grupos para el proyecto del curso. Los grupos deben ser de 4-5 personas (idealmente 4 grupos de 5 personas y un único grupo de 4 personas). Igualmente tengan en cuenta que la actividad de &#34;</em><a href="https://moodleinstitucional.uniandes.edu.co/mod/assign/view.php?id=35064" target="_blank"><em>Caso de estudio de análisis de variabilidad</em></a><em>&#34; es con estos grupos de proyecto.</em></p>
+<p><em>Pueden escribir en el foro de &#34;</em><a href="https://moodleinstitucional.uniandes.edu.co/mod/forum/view.php?id=35063" target="_blank"><em>Definición de Grupos para el Proyecto del Curso</em></a><em>&#34; los grupos que vayan conformando como lo han venido haciendo y de esta manera vamos creando los grupos en moodle para que puedan acceder al enlace de entrega de la actividad. Si no tiene grupo pueden preguntar por el foro o mediante slack a sus compañeros del curso para crear un grupo o unirse a uno.</em></p>
+<p><em>Si tienen algún problema o pregunta adicional, nos la pueden hacer por los foros del curso</em></p>
 
 
       </google-codelab-step>
@@ -441,15 +449,16 @@
 </td><td colspan="1" rowspan="1"><p><strong>Rol del tutor</strong></p>
 </td><td colspan="1" rowspan="1"><p><strong>Descripción</strong></p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Caso de estudio de análisis de variabilidad (primer trabajo con grupos del proyecto)</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Caso de estudio de análisis de variabilidad (primer trabajo con grupos del proyecto)</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Retroalimentación y evaluación - Preparación de recursos</strong></p>
 </td><td colspan="1" rowspan="1"><p>Asegurar que los estudiantes se organicen en grupos para los trabajos del proyecto del curso (se puede usar para esto el foro en la semana 6 de grupos para el proyecto del curso). Creación de los grupos en la plataforma para dar acceso al enlace de entrega de la actividad.</p>
+<p>Retroalimentar las entregas de la actividad y evaluarlas teniendo en cuenta los entregables esperados en el enunciado de la actividad.</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Tutorial FeatureIDE</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Tutorial FeatureIDE</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Preparación de recursos</strong></p>
 </td><td colspan="1" rowspan="1"><p>En conjunto con el profesor crear: Organización en Github, invitación a los estudiantes a la organización en Github, creación de espacio de trabajo en Github Classroom, importación de repositorios base para las actividades, creación de actividad de la semana en Github Classroom, actualización de enlaces en guías y Moodle.</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p><strong>Tutorial Git</strong></p>
+<tr><td colspan="1" rowspan="1"><p><em>Tutorial Git</em></p>
 </td><td colspan="1" rowspan="1"><p><strong>Preparación de recursos</strong></p>
 </td><td colspan="1" rowspan="1"><p>Revisión de tutorial en Codelabs y actualización de enlaces si es necesario</p>
 </td></tr>
