@@ -73,19 +73,16 @@ type Fetcher struct {
 	authToken    string
 	crcTable     *crc64.Table
 	passMetadata map[string]bool
+	roundTripper http.RoundTripper
 }
 
 func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper) (*Fetcher, error) {
-	h, err := auth.NewHelper(at, auth.ProviderGoogle, rt)
-	if err != nil {
-		return nil, err
-	}
-
 	return &Fetcher{
-		authHelper:   h,
+		authHelper:   nil,
 		authToken:    at,
 		crcTable:     crc64.MakeTable(crc64.ECMA),
 		passMetadata: pm,
+		roundTripper: rt,
 	}, nil
 }
 
@@ -96,6 +93,16 @@ func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper) (*Fetcher, 
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
 func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
+	_, err := os.Stat(src)
+	// Only setup oauth if this source is not a local file.
+	if os.IsNotExist(err) {
+		if f.authHelper == nil {
+			f.authHelper, err = auth.NewHelper(f.authToken, auth.ProviderGoogle, f.roundTripper)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
 	res, err := f.fetch(src)
 	if err != nil {
 		return nil, err
