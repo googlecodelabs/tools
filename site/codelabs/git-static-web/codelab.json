@@ -1,0 +1,27 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-09-19T18:10:01Z",
+  "id": "git-static-web",
+  "duration": 45,
+  "title": "Git tutorial: Fixing a static page",
+  "authors": "Daniel Althviz",
+  "summary": "Git tutorial: Fixing a static page",
+  "source": "1H40sqzJODMql-SDeICRWaIk6TShVI7U6ReD84W_nZGs",
+  "theme": "tutorial",
+  "status": [
+    "draft"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "git",
+    "tutorial",
+    "web"
+  ],
+  "feedback": "https://github.com/dalthviz/git_web_practice",
+  "url": "git-static-web"
+}
