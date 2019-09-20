@@ -80,7 +80,7 @@ See instructions in the [site directory's readme](site/README.md).
 
 ## How do I generate a custom view?
 
-Copy the [sample view](site/app/views/sample), customize it to your liking,
+Copy the [sample view](site/app/views/vslive), customize it to your liking,
 tag and rebuild the codelabs you want included, and then generate your view.
 
 ## How do I publish my codelabs?
