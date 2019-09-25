@@ -756,6 +756,7 @@ class Codelab extends HTMLElement {
           if ('userfeedback' in window) {
             window['userfeedback']['api']['startFeedback']
                 ({'productId': '5143948'});
+            e.preventDefault();
           }
         });
     }
