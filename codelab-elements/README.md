@@ -155,6 +155,26 @@ Here's an index.html obtaining the codelab-elements from Google Cloud Storage:
 </html>
 ```
 
+## NPM
+
+The library is published on NPM.js at: https://www.npmjs.com/package/codelab-elements
+
+We also support a build workflow using NPM. To build the library run from the root of the repo:
+
+```bash
+# Install dependencies. This takes care of installing the right version of Bazel.
+npm install
+
+# Build the library
+npm run build
+
+# The output is a zip file under bazel-genfiles
+ls bazel-genfiles npm_dist.zip
+
+# Publish a new version of the library to NPM
+npm run dist
+```
+
 ## Notes
 
 This is not an official Google product.

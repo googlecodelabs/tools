@@ -1,0 +1,21 @@
+{
+  "name": "codelab-elements",
+  "version": "1.0.1",
+  "description": "Custom elements for codelabs",
+  "main": "index.js",
+  "scripts": {
+    "clean": "node_modules/.bin/bazel clean",
+    "build": "node_modules/.bin/bazel build npm_dist",
+    "test": "node_modules/.bin/bazel test --test_output=all codelab-elements/demo:hello_test",
+    "pub": "npm run clean && npm run build && cd bazel-genfiles && unzip npm_dist.zip -d npm_dist && npm publish npm_dist"
+  },
+  "author": "Google",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/googlecodelabs/tools.git"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@bazel/bazel": "^0.18.1"
+  }
+}

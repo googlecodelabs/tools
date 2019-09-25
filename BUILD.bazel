@@ -17,3 +17,15 @@ genrule(
     ],
     cmd = "zip -j $@ $(SRCS)",
 )
+
+genrule(
+    name = "npm_dist",
+    outs = ["npm_dist.zip"],
+    srcs = [
+        "LICENSE",
+        "package.json",
+        "//codelab-elements:README.md",
+        "//codelab-elements:all_files",
+    ],
+    cmd = "zip -j $@ $(SRCS)",
+)
