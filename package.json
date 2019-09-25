@@ -1,6 +1,6 @@
 {
   "name": "codelab-elements",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Custom elements for codelabs",
   "main": "index.js",
   "scripts": {
