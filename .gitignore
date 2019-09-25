@@ -4,3 +4,4 @@ bazel-*
 .idea/
 debug.test
 *pb.go
+node_modules
