@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <meta name="theme-color" content="#4F7DC9">
   <meta charset="UTF-8">
-  <title>Git tutorial: Fixing a static page</title>
+  <title>Proyecto git: Corrigiendo un sitio web estático</title>
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
   <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
@@ -23,66 +23,67 @@
   <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
   <google-codelab codelab-gaid=""
                   id="git-static-web"
-                  title="Git tutorial: Fixing a static page"
+                  title="Proyecto git: Corrigiendo un sitio web estático"
                   environment="web"
                   feedback-link="https://github.com/dalthviz/git_web_practice">
     
-      <google-codelab-step label="Introduction and setup" duration="5">
-        <p>In this tutorial we will be using some basic commands of Git. We will be working with Github as the place where our repository can be accessed </p>
-<h2 is-upgraded><strong>Before starting</strong></h2>
+      <google-codelab-step label="Introducción y pasos previos" duration="5">
+        <p>En este proyecto vamos a poner en práctica el conjunto de comandos básicos de git que se han aprendido hasta el momento. Estaremos utilizando Github como la plataforma donde nuestro repositorio de trabajo podrá ser accedido.</p>
+<h2 is-upgraded><strong>Antes de comenzar</strong></h2>
 <ul>
-<li>Be sure that you have a <a href="https://github.com/" target="_blank">Github account</a> and you are signed in.</li>
-<li>Be sure you have installed <a href="https://git-scm.com/download" target="_blank">Git </a></li>
-<li>You can use <a href="https://code.visualstudio.com/Download" target="_blank">Visual Studio Code</a> to edit the files</li>
+<li>Asegúrese de tener una <a href="https://github.com/" target="_blank">cuenta en Github</a> y tener la sesión iniciada.</li>
+<li>Asegurese de tener <a href="https://git-scm.com/download" target="_blank">Git </a>instalado.</li>
+<li>Puede tener instalado algún editor de archivos. Una opción recomendada es usar <a href="https://code.visualstudio.com/Download" target="_blank">Visual Studio Code</a> para la edición de los archivos.</li>
 </ul>
-<h2 is-upgraded><strong>First steps</strong></h2>
+<h2 is-upgraded><strong>Primeros pasos</strong></h2>
 <ul>
-<li>Go to <a href="https://github.com/dalthviz/git_web_practice" target="_blank">https://github.com/dalthviz/git_web_practice</a> </li>
-<li>Click the fork button <img style="width: 58.00px" src="img\104a150295caf485.png"></li>
-<li>You now should have a new repository in your account called <strong><em>git_web_practice</em></strong></li>
+<li>Ir a <a href="https://github.com/dalthviz/git_web_practice" target="_blank">https://github.com/dalthviz/git_web_practice</a> </li>
+<li>Dar clic sobre el botón de <img style="width: 58.00px" src="img\104a150295caf485.png"></li>
+<li>Ahora debería tener dentro de su cuenta un nuevo repositorio con el sitio web estático base con el nombre <strong><em>git_web_practice</em></strong></li>
 </ul>
 
 
       </google-codelab-step>
     
-      <google-codelab-step label="Installing our Github App" duration="5">
-        <p>For this tutorial we have the support of a Github App to do some actions over the repository. We will need you to grant access to the repository you created (<strong><em>git_web_practice</em></strong>)</p>
-<h2 is-upgraded><strong>Grant Github App Access to the repository</strong></h2>
+      <google-codelab-step label="Instalando nuestra Github App" duration="5">
+        <p>Para el proyecto contemos con una Github App como herramienta para realizar algunas acciones sobre el repositorio del proyecto. Teniendo esto en cuenta, necesitamos que se le de acceso a está aplicación al repositorio previamente creado (<strong><em>git_web_practice</em></strong>)</p>
+<h2 is-upgraded><strong>Dando permisos a la Github App</strong></h2>
 <ul>
-<li>Install the Github App available at <a href="https://github.com/apps/example-actions-bot" target="_blank">https://github.com/apps/example-actions-bot</a> </li>
-<li>Click <img style="width: 305.00px" src="img\9761d9a553f6b29b.png"></li>
-<li>Select your account (where you have your <strong><em>git_web_practice </em></strong>repository)</li>
+<li>Instalar la Github App disponible en <a href="https://github.com/apps/example-actions-bot" target="_blank">https://github.com/apps/example-actions-bot</a> </li>
+<li>Clic <img style="width: 305.00px" src="img\9761d9a553f6b29b.png"></li>
+<li>Seleccione su cuenta (donde quedó creado el repositorio <strong><em>git_web_practice</em></strong>)</li>
 </ul>
 <p class="image-container"><img style="width: 523.50px" src="img\b4c3498bae19cbc0.png"></p>
 <ul>
-<li>Select <img style="width: 205.00px" src="img\ad0129173eb76548.png">and select the <strong><em>git_web_practice</em></strong> repository. Click <img style="width: 88.00px" src="img\34cdfb8e6a451511.png"></li>
+<li>Seleccione <img style="width: 205.00px" src="img\ad0129173eb76548.png">y seleccione el repostiorio <strong><em>git_web_practice</em></strong>. Clic en <img style="width: 88.00px" src="img\34cdfb8e6a451511.png"></li>
 </ul>
 
 
       </google-codelab-step>
     
-      <google-codelab-step label="Cloning our repository" duration="5">
-        <p>Now that everything is setup we can start. In this case you are going to <strong><em>clone</em></strong> the repository. For this you need to open a terminal or CMD that can execute git commands. To check this you can try to execute <code>git -v</code></p>
+      <google-codelab-step label="Clonando el repositorio" duration="5">
+        <p>Dado que ahora ya se configuro todo podemos empezar a trabajar. En este caso deberá clonar el repositorio creado. Para esto necesita abrir una terminal/consola con capacidad de ejecutar comando git. Para verificar si es posible puede probar con el comando <code>git -v</code> (debería con esto obtener la versión de git instalada).</p>
 <h2 is-upgraded><strong>Cloning...</strong></h2>
 <ul>
-<li>In your <strong><em>git_web_practice </em></strong>repository check for <img style="width: 133.00px" src="img\941506e4c60606f9.png"></li>
-<li>Copy the URL that is given. You can use the <img style="width: 36.00px" src="img\394679e04c1d36b6.png"> (this button will copy to the clipboard the URL we need).</li>
-<li>In your terminal type <code>git clone &lt;URL from your repository&gt;</code>. As an example, the command should similar to this <code>git clone </code><a href="https://github.com/dalthviz/git_web_practice.git" target="_blank"><code>https://github.com/dalthviz/git_web_practice.git</code></a></li>
-<li>Do a change of directory (<code>cd</code>) to get to the repository root directory. Doing <code>cd git_web_practice</code> should be enough,</li>
+<li>En su repositorio <strong><em>git_web_practice </em></strong>de clic en <img style="width: 133.00px" src="img\941506e4c60606f9.png"></li>
+<li>Copie la URL dada. Puede usar el botón<img style="width: 36.00px" src="img\394679e04c1d36b6.png"> (este botón copiara en su portapapeles la URL que se necesita).</li>
+<li>En su terminal/consola escriba <code>git clone &lt;URL del repositorio&gt;</code>. Como ejemplo, el comando deberpia ser algo similar a <code>git clone </code><a href="https://github.com/dalthviz/git_web_practice.git" target="_blank"><code>https://github.com/dalthviz/git_web_practice.git</code></a><code> </code>(si su usario en github fuera <em>dalthviz</em>).</li>
+<li>Cambie el directorio activo (<code>cd</code>)a la carpeta raíz del repositorio. Ejecutando <code>cd git_web_practice</code> debería bastar.</li>
 </ul>
 
 
       </google-codelab-step>
     
-      <google-codelab-step label="Web issues and requirements" duration="30">
-        <p>Now that we have a local copy of the repository you can make changes to it. In this case the repository just has a simple static page. The idea is to fix the website and do some changes to it while creating a <strong><em>commit</em></strong> per item listed above. Also after each commit you need to make a <strong><em>push</em></strong> of your changes.</p>
-<h2 is-upgraded><strong>List of issues...</strong></h2>
-<aside class="special"><p><strong>NOTE: </strong>For each issue you need to comment your commit following the convention <strong><em>&lt;FIX ID&gt; : &lt;Comment&gt;</em></strong></p>
+      <google-codelab-step label="Proyecto: Errores a solucionar" duration="30">
+        <p>Ahora que tenemos una copia local del repositorio podemos hacer los cambios necesario para corregir los errores. En este caso el repositorio contiene una página web estática que puede revisar abriendo los archivos en su navegador. La idea general es arreglar este sitio según los arreglos listados a continuación. Por cada arreglo especificado es necesario hacer un <strong><em>commit</em></strong>. Además, luego de cada <strong><em>commit, </em></strong>debe subir sus cambios locales mediante un <strong><em>push</em></strong> al repositorio remoto.</p>
+<h2 is-upgraded><strong>Listado de errores a corregir...</strong></h2>
+<aside class="special"><p><strong>NOTA:</strong><em> Por cada error debe realizar un commit cuyo comentario siga la convención: </em><strong><em>&lt;FIX ID&gt; : &lt;Comentario&gt;</em></strong></p>
 </aside>
 <table>
 <tr><td colspan="1" rowspan="1"><p><strong>FIX ID</strong></p>
-</td><td colspan="1" rowspan="1"><p><strong>Issue to fix</strong></p>
-</td><td colspan="1" rowspan="1"><p><strong>Solution</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>Error a corregir</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>Solución</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>Asignado</strong></p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>FIX1</p>
 </td><td colspan="1" rowspan="1"><ul>
@@ -93,6 +94,7 @@
 <li>En Pagina8.html, cambiar el link de la imagen a BD8.gif y el texto del título que se encuentra debajo de la imagen por &#34;Mi octava P&amp;aacute;gina&#34;.</li>
 <li>En Pagina4.html, cambiar el link de la navegación y colocarle el nombre correcto (&#34;Mi quinta P&amp;aacute;gina HTML&#34;).</li>
 </ul>
+</td><td colspan="1" rowspan="1"><p>Estudiante</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>FIX2</p>
 </td><td colspan="1" rowspan="1"><ul>
@@ -103,6 +105,7 @@
 <li>En Pagina7.html, cambiar el link de la imagen a BD7.gif y el texto del título que se encuentra debajo de la imagen por &#34;Mi s&amp;eacute;ptima P&amp;aacute;gina HTML&#34;.</li>
 <li>En Pagina6.html, cambiar el link de la navegación y colocarle el nombre correcto (Mi s&amp;eacute;ptima P&amp;aacute;gina HTML).</li>
 </ul>
+</td><td colspan="1" rowspan="1"><p>Estudiante</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>FIX3</p>
 </td><td colspan="1" rowspan="1"><ul>
@@ -113,6 +116,7 @@
 <li>En Pagina6.html, cambiar el link de la imagen a BD6.gif y el texto del título que se encuentra debajo de la imagen por &#34;Mi sexta P&amp;aacute;gina HTML&#34;.</li>
 <li>En Pagina5.html, cambiar el link de la navegación y colocarle el nombre correcto (&#34;Mi sexta P&amp;aacute;gina HTML&#34;).</li>
 </ul>
+</td><td colspan="1" rowspan="1"><p>Estudiante</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>FIX4</p>
 </td><td colspan="1" rowspan="1"><ul>
@@ -123,6 +127,7 @@
 <li>En Pagina10.html, cambiar el link de la imagen a BD10.gif y el texto del título debajo de la imágen por &#34;Mi d&amp;eacute;cima P&amp;aacute;gina&#34;.</li>
 <li>En Pagina2.html, cambiar el link de la navegación y colocarle el nombre correcto (&#34;Mi tercera P&amp;aacute;gina&#34;).</li>
 </ul>
+</td><td colspan="1" rowspan="1"><p>Estudiante</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>FIX5</p>
 </td><td colspan="1" rowspan="1"><ul>
@@ -133,29 +138,62 @@
 <li>En Pagina9.html, cambiar el link de la imagen a BD9.gif y el texto del título debajo de la imágen por &#34;Mi novena P&amp;aacute;gina&#34;.</li>
 <li>En Pagina3.html, cambiar el link de la navegación y colocarle el nombre correcto (&#34;Mi cuarta P&amp;aacute;gina        &#34;).</li>
 </ul>
+</td><td colspan="1" rowspan="1"><p>Estudiante</p>
 </td></tr>
-</table>
-<h2 is-upgraded><strong>List of requirements...</strong></h2>
-<aside class="special"><p>For each requirement you need to comment your commit following the convention <strong><em>&lt;Requirement ID&gt; : &lt;Comment&gt;</em></strong></p>
-</aside>
-<table>
-<tr><td colspan="1" rowspan="1"><p><strong>Requirement ID</strong></p>
-</td><td colspan="1" rowspan="1"><p><strong>Requirement</strong></p>
+<tr><td colspan="1" rowspan="1"><p>FIX6</p>
+</td><td colspan="1" rowspan="1"><ul>
+<li>Pagina5.html.  La imagen y el título de la página no corresponden.</li>
+<li>Pagina7.html.  El link del final de la hoja debe ir a la página 8.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><ul>
+<li>En Pagina5.html, cambiar el link de la imagen a BD5.gif y el texto del título.</li>
+<li>En Pagina7.html, cambiar el link de la navegación y colocarle el nombre correcto.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><p>Nuestra Github App</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>REQ1</p>
-</td><td colspan="1" rowspan="1"><p>Adicionar un archivo llamado pagina13.html, con la imagen BD3.gif y el texto del título.  La página se debe integrar adecuadamente en links y títulos.</p>
+<tr><td colspan="1" rowspan="1"><p>FIX7</p>
+</td><td colspan="1" rowspan="1"><ul>
+<li>Pagina8.html.  La imagen y el título de la página no corresponden.</li>
+<li>Pagina4.html.  El link del final de la hoja debe ir a la página 5.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><ul>
+<li>En Pagina8.html, cambiar el link de la imagen a BD8.gif y el texto del título.</li>
+<li>En Pagina4.html, cambiar el link de la navegación y colocarle el nombre correcto.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><p>Nuestra Github App</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>REQ2</p>
-</td><td colspan="1" rowspan="1"><p>Adicionar un archivo llamado pagina16.html, con la imagen BD6.gif y el texto del título.  La página se debe integrar adecuadamente en links y títulos.</p>
+<tr><td colspan="1" rowspan="1"><p>FIX8</p>
+</td><td colspan="1" rowspan="1"><ul>
+<li>Pagina2.html.  La imagen y el título de la página no corresponden.</li>
+<li>Pagina10.html.  El link del final de la hoja debe ir a la página 1.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><ul>
+<li>En Pagina2.html, cambiar el link de la imagen a BD2.gif y el texto del título.</li>
+<li>En Pagina10.html, cambiar el link de la navegación y colocarle el nombre correcto.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><p>Nuestra Github App</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>REQ3</p>
-</td><td colspan="1" rowspan="1"><p>Adicionar un archivo llamado pagina11.html, con la imagen BD1.gif y el texto del título.  La página se debe integrar adecuadamente en links y títulos.</p>
+<tr><td colspan="1" rowspan="1"><p>FIX9</p>
+</td><td colspan="1" rowspan="1"><ul>
+<li>Pagina4.html.  La imagen y el título de la página no corresponden.</li>
+<li>Pagina8.html.  El link del final de la hoja debe ir a la página 9.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><ul>
+<li>En Pagina4.html, cambiar el link de la imagen a BD4.gif y el texto del título.</li>
+<li>En Pagina8.html, cambiar el link de la navegación y colocarle el nombre correcto.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><p>Nuestra Github App</p>
 </td></tr>
-<tr><td colspan="1" rowspan="1"><p>REQ4</p>
-</td><td colspan="1" rowspan="1"><p>Adicionar un archivo llamado pagina14.html, con la imagen BD4.gif y el texto del título.  La página se debe integrar adecuadamente en links y títulos.</p>
-</td></tr>
-<tr><td colspan="1" rowspan="1"><p>REQ5</p>
-</td><td colspan="1" rowspan="1"><p>Adicionar un archivo llamado pagina17.html, con la imagen BD7.gif y el texto del título.  La página se debe integrar adecuadamente en links y títulos.</p>
+<tr><td colspan="1" rowspan="1"><p>FIX10</p>
+</td><td colspan="1" rowspan="1"><ul>
+<li>Pagina3.html.  La imagen y el título de la página no corresponden.</li>
+<li>Pagina9.html.  El link del final de la hoja debe ir a la página 10.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><ul>
+<li>En Pagina3.html, cambiar el link de la imagen a BD3.gif y el texto del título.</li>
+<li>En Pagina9.html, cambiar el link de la navegación y colocarle el nombre correcto.</li>
+</ul>
+</td><td colspan="1" rowspan="1"><p>Nuestra Github App</p>
 </td></tr>
 </table>
 
