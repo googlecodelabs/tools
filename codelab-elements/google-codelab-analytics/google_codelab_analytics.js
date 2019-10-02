@@ -130,7 +130,7 @@ class CodelabAnalytics extends HTMLElement {
       return;
     }
 
-    if (!goog.isDef(window['ga'])) {
+    if (!('ga' in window)) {
       this.initGAScript_().then((response) => {
         if (response) {
           this.init_();
