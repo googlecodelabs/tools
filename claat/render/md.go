@@ -81,6 +81,25 @@ func (mw *mdWriter) matchEnv(v []string) bool {
 	return i < len(v) && v[i] == mw.env
 }
 
+// writeText only writes text of nodes, ignoring header formatting.
+func (mw *mdWriter) writeText(nodes ...types.Node) error {
+	for _, n := range nodes {
+		if !mw.matchEnv(n.Env()) {
+			continue
+		}
+		switch n := n.(type) {
+		case *types.TextNode:
+			mw.text(n)
+		case *types.ListNode:
+			mw.writeText(n.Nodes...)
+		}
+		if mw.err != nil {
+			return mw.err
+		}
+	}
+	return nil
+}
+
 func (mw *mdWriter) write(nodes ...types.Node) error {
 	for _, n := range nodes {
 		if !mw.matchEnv(n.Env()) {
@@ -233,18 +252,14 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 }
 
 func (mw *mdWriter) infobox(n *types.InfoboxNode) {
-	// TODO: This should use the "detail item" syntax so that it can be pure MD and not HTML
-	// kind
-	// : <content>
-	//
-	// The main issue is that when you do write(n.Content.Nodes...) it always adds two newlines
-	// at the beginning.
 	mw.newBlock()
-	mw.writeString(`<aside class="`)
-	mw.writeString(string(n.Kind))
-	mw.writeString(`">`)
-	mw.write(n.Content.Nodes...)
-	mw.writeString("</aside>")
+	switch n.Kind {
+	case types.InfoboxPositive:
+		mw.writeString("> success ")
+	case types.InfoboxNegative:
+		mw.writeString("> caution ")
+	}
+	mw.writeText(n.Content.Nodes...)
 }
 
 func (mw *mdWriter) header(n *types.HeaderNode) {
