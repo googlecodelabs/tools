@@ -151,7 +151,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </paper-tabs>
         </div>
 
-        {% if view.id == 'default' %}
+        {% if view.id == 'default' && views|length > 1 %}
         <paper-dropdown-menu
           label="Choose an event"
           class="dropdown-filter"
