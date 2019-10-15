@@ -183,15 +183,30 @@ func (mw *mdWriter) image(n *types.ImageNode) {
 }
 
 func (mw *mdWriter) url(n *types.URLNode) {
+	if len(n.Content.Nodes) == 1 && n.Content.Nodes[0].Type() == types.NodeButton {
+		mw.writeString(`<a href="`)
+		mw.writeString(n.URL)
+		mw.writeString(`" class="button`)
+		button, _ := n.Content.Nodes[0].(*types.ButtonNode)
+		if button.Download {
+			mw.writeString(` download"`)
+		} else {
+			mw.writeString(`"`)
+		}
+		mw.writeString(">")
+		mw.write(button)
+		mw.writeString(`</a>`)
+	} else {
+		mw.defaultURL(n)
+	}
+}
+
+func (mw *mdWriter) defaultURL(n *types.URLNode) {
 	mw.space()
 	if n.URL != "" {
 		mw.writeString("[")
 	}
-	for _, cn := range n.Content.Nodes {
-		if t, ok := cn.(*types.TextNode); ok {
-			mw.writeString(t.Value)
-		}
-	}
+	mw.write(n.Content.Nodes...)
 	if n.URL != "" {
 		mw.writeString("](")
 		mw.writeString(n.URL)
