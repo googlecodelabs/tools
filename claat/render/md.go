@@ -106,16 +106,10 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 			mw.write(n.Content.Nodes...)
 		case *types.ItemsListNode:
 			mw.itemsList(n)
-		//case *types.GridNode:
-		//	mw.grid(n)
 		case *types.InfoboxNode:
 			mw.infobox(n)
-		//case *types.SurveyNode:
-		//	mw.survey(n)
 		case *types.HeaderNode:
 			mw.header(n)
-			//case *types.YouTubeNode:
-			//	mw.youtube(n)
 		}
 		if mw.err != nil {
 			return mw.err
