@@ -89,9 +89,6 @@ func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper) (*Fetcher, 
 // SlurpCodelab retrieves and parses codelab source.
 // It takes the source, plus an auth token and a set of extra metadata to pass along.
 // It returns parsed codelab and its source type.
-//
-// The function will also fetch and parse fragments included
-// with types.ImportNode.
 func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
 	_, err := os.Stat(src)
 	// Only setup oauth if this source is not a local file.
@@ -121,24 +118,6 @@ func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
 	var imports []*types.ImportNode
 	for _, st := range clab.Steps {
 		imports = append(imports, types.ImportNodes(st.Content.Nodes)...)
-	}
-	ch := make(chan error, len(imports))
-	defer close(ch)
-	for _, imp := range imports {
-		go func(n *types.ImportNode) {
-			frag, err := f.slurpFragment(n.URL)
-			if err != nil {
-				ch <- fmt.Errorf("%s: %v", n.URL, err)
-				return
-			}
-			n.Content.Nodes = frag
-			ch <- nil
-		}(imp)
-	}
-	for range imports {
-		if err := <-ch; err != nil {
-			return nil, err
-		}
 	}
 
 	v := &codelab{

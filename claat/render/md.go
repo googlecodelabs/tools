@@ -120,6 +120,8 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 			mw.list(n)
 		case *types.ImportNode:
 			if len(n.Content.Nodes) == 0 {
+				mw.newBlock()
+				mw.writeString("<< TODO >>\n")
 				break
 			}
 			mw.write(n.Content.Nodes...)
