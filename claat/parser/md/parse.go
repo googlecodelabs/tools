@@ -756,29 +756,23 @@ func button(ds *docState) types.Node {
 // It returns nil if hn contents is empty.
 // The resuling link's content is always a single text node.
 func link(ds *docState) types.Node {
-	href := nodeAttr(ds.cur, "href")
-
-	text := stringifyNode(ds.cur, false)
-	if strings.TrimSpace(text) == "" {
+	ds.push(nil)
+	nodes := parseSubtree(ds)
+	ds.pop()
+	if len(nodes) == 0 {
 		return nil
 	}
 
-	t := types.NewTextNode(text)
-	if isBold(ds.cur.Parent) {
-		t.Bold = true
-	}
-	if isItalic(ds.cur.Parent) {
-		t.Italic = true
-	}
-	if isCode(ds.cur.Parent) {
-		t.Code = true
-	}
+	href := nodeAttr(ds.cur, "href")
+
 	if href == "" || href[0] == '#' {
-		t.MutateBlock(findBlockParent(ds.cur))
-		return t
+		l := types.NewListNode(nodes...)
+		l.MutateBlock(findBlockParent(ds.cur))
+		return l
 	}
 
-	n := types.NewURLNode(href, t)
+	n := types.NewURLNode(href, nodes...)
+
 	n.Name = nodeAttr(ds.cur, "name")
 	if v := nodeAttr(ds.cur, "target"); v != "" {
 		n.Target = v
