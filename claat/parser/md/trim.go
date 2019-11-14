@@ -17,6 +17,7 @@ package md
 import (
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/googlecodelabs/tools/claat/types"
 )
@@ -154,23 +155,26 @@ func concatURL(a, b types.Node) bool {
 	return true
 }
 
-func splitSpaceLeft(s string) (v string, sp string) {
+// splitSpaceLeft trims leading spaces from s and returns these in a second string.
+func splitSpaceLeft(s string) (string, string) {
 	for i, r := range s {
 		if !unicode.IsSpace(r) {
 			return s[i:], s[:i]
 		}
 	}
-	return s, ""
+	return "", s
 }
 
-func splitSpaceRight(s string) (v string, sp string) {
-	rs := []rune(s)
-	for i := len(rs) - 1; i >= 0; i-- {
-		if !unicode.IsSpace(rs[i]) {
-			return s[:i+1], s[i+1:]
+// splitSpaceRight trims trailing spaces from s and returns these in a second string.
+func splitSpaceRight(s string) (string, string) {
+	r, l := utf8.DecodeLastRuneInString(s)
+	for i := len(s) - l; i >= 0; i -= l {
+		if !unicode.IsSpace(r) {
+			return s[:i+l], s[i+l:]
 		}
+		r, l = utf8.DecodeLastRuneInString(s[:i])
 	}
-	return s, ""
+	return "", s
 }
 
 // nodeBlocks encapsulates all nodes of the same block into a new ListNode
