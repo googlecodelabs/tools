@@ -46,19 +46,21 @@ func isMeta(hn *html.Node) bool {
 }
 
 func isBold(hn *html.Node) bool {
-	if hn.Type == html.TextNode {
-		hn = hn.Parent
+	for n := hn; n != nil; n = n.Parent {
+		if n.DataAtom == atom.Strong || n.DataAtom == atom.B {
+			return true
+		}
 	}
-	return hn.DataAtom == atom.Strong ||
-		hn.DataAtom == atom.B
+	return false
 }
 
 func isItalic(hn *html.Node) bool {
-	if hn.Type == html.TextNode {
-		hn = hn.Parent
+	for n := hn; n != nil; n = n.Parent {
+		if n.DataAtom == atom.Em || n.DataAtom == atom.I {
+			return true
+		}
 	}
-	return hn.DataAtom == atom.Em ||
-		hn.DataAtom == atom.I
+	return false
 }
 
 func isConsole(hn *html.Node) bool {
@@ -69,10 +71,12 @@ func isConsole(hn *html.Node) bool {
 }
 
 func isCode(hn *html.Node) bool {
-	if hn.Type == html.TextNode {
-		hn = hn.Parent
+	for n := hn; n != nil; n = n.Parent {
+		if n.DataAtom == atom.Code && n.Parent.DataAtom == atom.Pre {
+			return true
+		}
 	}
-	return hn.DataAtom == atom.Code && hn.Parent.DataAtom == atom.Pre
+	return false
 }
 
 func isButton(hn *html.Node) bool {
