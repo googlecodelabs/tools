@@ -221,6 +221,7 @@ func nodeAttr(n *html.Node, name string) string {
 func stringifyNode(root *html.Node, trim bool) string {
 	if root.Type == html.TextNode {
 		s := textCleaner.Replace(root.Data)
+		s = strings.Replace(s, "\n", " ", -1)
 		if !trim {
 			return s
 		}
