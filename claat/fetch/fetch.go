@@ -238,12 +238,29 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 }
 
 func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
-	res, err := f.fetchRemote(url, true)
+	res, err := f.fetchResource(url)
 	if err != nil {
 		return nil, err
 	}
 	defer res.body.Close()
+
 	return parser.ParseFragment(string(res.typ), res.body)
+}
+
+func (f *Fetcher) fetchResource(name string) (*resource, error) {
+	fi, err := os.Stat(name)
+	if os.IsNotExist(err) {
+		return f.fetchRemote(name, true)
+	}
+	r, err := os.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	return &resource{
+		body: r,
+		typ:  SrcMarkdown,
+		mod:  fi.ModTime(),
+	}, nil
 }
 
 // fetch retrieves codelab doc either from local disk
