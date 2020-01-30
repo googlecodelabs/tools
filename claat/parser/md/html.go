@@ -76,7 +76,7 @@ func isCode(hn *html.Node) bool {
 }
 
 func isButton(hn *html.Node) bool {
-        return hn.DataAtom == atom.Button
+	return hn.DataAtom == atom.Button
 }
 
 func isInfobox(hn *html.Node) bool {
