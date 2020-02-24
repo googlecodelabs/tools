@@ -91,10 +91,11 @@ maven_jar(
 #     sha1 = "e64e10e00ce86b0780dd2bd5e46d0f1c7e4e1062",
 # )
 
-http_archive(
-    name = "com_google_javascript_closure_compiler",
-    url = "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20180805/closure-compiler-unshaded-v20180805.jar",
-)
+# http_archive(
+#     name = "com_google_javascript_closure_compiler",
+#     strip_prefix = "closure-compiler-unshaded-v20180805",
+#     url = "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20180805/closure-compiler-unshaded-v20180805.jar",
+# )
 
 # Required by io_bazel_rules_webtesting.
 skylib_ver = "f9b0ff1dd3d119d19b9cacbbc425a9e61759f1f5"
