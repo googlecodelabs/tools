@@ -151,6 +151,8 @@ class CodelabStep extends HTMLElement {
       return;
     }
 
+    this.setAttribute('tabindex', '-1');
+
     // If there is an google-codelab-about element we keep it aside.
     const aboutElements = this.getElementsByTagName('google-codelab-about');
     if (aboutElements.length > 0) {

@@ -149,6 +149,9 @@ class Codelab extends HTMLElement {
     /** @private {string} */
     this.title_ = '';
 
+    /** @private {number} */
+    this.setFocusTimeoutId_ = -1;
+
     /** @private {!Array<!Element>} */
     this.steps_ = [];
 
@@ -627,9 +630,10 @@ class Codelab extends HTMLElement {
       'title': stepTitle.replace(re, '').trim()
     });
 
+    const stepToSelect = this.steps_[selected];
+
     if (this.currentSelectedStep_ === -1) {
       // No previous selected step, so select the correct step with no animation
-      const stepToSelect = this.steps_[selected];
       stepToSelect.setAttribute(SELECTED_ATTR, '');
     } else {
       if (this.transitionIn_) {
@@ -651,7 +655,6 @@ class Codelab extends HTMLElement {
       };
       const transitionOutFinalStyle = {};
 
-      const stepToSelect = this.steps_[selected];
       const currentStep = this.steps_[this.currentSelectedStep_];
       stepToSelect.setAttribute(ANIMATING_ATTR, '');
 
@@ -693,6 +696,13 @@ class Codelab extends HTMLElement {
     }
 
     this.currentSelectedStep_ = selected;
+
+    // Set the focus on the new step after the animation is finished becasue it
+    // messes up the animation.
+    clearTimeout(this.setFocusTimeoutId_);
+    this.setFocusTimeoutId_ = setTimeout(() => {
+      stepToSelect.focus();
+    }, ANIMATION_DURATION * 1000);
 
     if (this.nextStepBtn_ && this.prevStepBtn_ && this.doneBtn_) {
       if (selected === 0) {

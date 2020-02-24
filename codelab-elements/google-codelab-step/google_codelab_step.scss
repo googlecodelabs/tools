@@ -32,6 +32,10 @@ $google-codelab-step-link-color: $google-material-blue-600;
 google-codelab-step {
   line-height: 24px;
   display: block;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 google-codelab-step {
