@@ -1,5 +1,95 @@
 workspace(name = "googlecodelabs_custom_elements")
 
+maven_server(
+    name = "default",
+    url = "https://repo1.maven.org/maven2/"
+)
+
+maven_jar(
+    name = "org_apache_httpcomponents_httpclient",
+    artifact = "org.apache.httpcomponents:httpclient:4.5.5",
+)
+
+maven_jar(
+    name = "org_apache_httpcomponents_httpmime",
+    artifact = "org.apache.httpcomponents:httpmime:4.5.5",
+)
+
+maven_jar(
+    name = "org_apache_httpcomponents_httpcore",
+    artifact = "org.apache.httpcomponents:httpcore:4.4.9",
+)
+
+maven_jar(
+    name = "org_apache_commons_exec",
+    artifact = "org.apache.commons:commons-exec:1.3",
+)
+
+maven_jar(
+    name = "org_seleniumhq_selenium_api",
+    artifact = "org.seleniumhq:selenium-api:3.9.1",
+)
+
+maven_jar(
+    name = "org_seleniumhq_selenium_remote_driver",
+    artifact = "org.seleniumhq.selenium:selenium-remote-driver:3.8.1",
+)
+
+maven_jar(
+    name = "net_java_dev_jna_platform",
+    artifact = "net.java.dev:jna-client:4.5.1",
+)
+
+maven_jar(
+    name = "net_java_dev_jna",
+    artifact = "net.java.dev:jna:4.5.1",
+)
+
+maven_jar(
+    name = "net_bytebuddy",
+    artifact = "net.bytebuddy:byte-buddy:1.7.9",
+)
+
+maven_jar(
+    name = "com_squareup_okio",
+    artifact = "com.squareup:okio:1.14.0",
+)
+
+maven_jar(
+    name = "com_squareup_okhttp3_okhttp",
+    artifact = "com.squareup.okhttp3:okhttp:3.9.1",
+)
+
+maven_jar(
+    name = "cglib_nodep",
+    artifact = "cglib:cglib-nodep:3.2.6",
+)
+
+maven_jar(
+    name = "junit",
+    artifact = "junit:junit:4.12",
+)
+
+maven_jar(
+    name = "com_google_javascript_closure_compiler",
+    artifact = "com.google.javascript:closure-compiler-unshaded:v20180805",
+)
+
+maven_jar(
+    name = "commons_logging",
+    artifact = "commons-logging:commons-logging:1.2",
+)
+
+maven_jar(
+    name = "commons_codec",
+    artifact = "commons-codec:commons-codec:1.11",
+)
+
+maven_jar(
+    name = "org_hamcrest_core",
+    artifact = "org.hamcrest:hamcrest-core:1.3",
+)
+
 # Required by io_bazel_rules_webtesting.
 skylib_ver = "f9b0ff1dd3d119d19b9cacbbc425a9e61759f1f5"
 http_archive(
