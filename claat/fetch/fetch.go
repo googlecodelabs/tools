@@ -68,6 +68,39 @@ type codelab struct {
 	Mod time.Time // last modified timestamp
 }
 
+type MemoryFetcher struct {
+	passMetadata map[string]bool
+}
+
+func NewMemoryFetcher(pm map[string]bool) *MemoryFetcher {
+	return &MemoryFetcher{
+		passMetadata: pm,
+	}
+}
+
+func (m *MemoryFetcher) SlurpCodelab(rc io.ReadCloser) (*codelab, error) {
+	r := &resource{
+		body: rc,
+		typ:  SrcMarkdown,
+		mod:  time.Now(),
+	}
+	defer r.body.Close()
+
+	opts := *parser.NewOptions()
+	opts.PassMetadata = m.passMetadata
+
+	clab, err := parser.Parse(string(r.typ), r.body, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &codelab{
+		Codelab: clab,
+		Typ:     r.typ,
+		Mod:     r.mod,
+	}, nil
+}
+
 type Fetcher struct {
 	authHelper   *auth.Helper
 	authToken    string

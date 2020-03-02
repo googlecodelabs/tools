@@ -17,6 +17,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -128,6 +129,56 @@ func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*ty
 	}
 	// write codelab and its metadata to disk
 	return meta, writeCodelab(dir, clab.Codelab, opts.ExtraVars, ctx)
+}
+
+func ExportCodelabMemory(src io.ReadCloser, w io.Writer, opts CmdExportOptions) (*types.Meta, error) {
+	m := fetch.NewMemoryFetcher(opts.PassMetadata)
+	clab, err := m.SlurpCodelab(src)
+	if err != nil {
+		return nil, err
+	}
+
+	// codelab export context
+	lastmod := types.ContextTime(clab.Mod)
+	meta := &clab.Meta
+	ctx := &types.Context{
+		Env:     opts.Expenv,
+		Format:  opts.Tmplout,
+		Prefix:  opts.Prefix,
+		MainGA:  opts.GlobalGA,
+		Updated: &lastmod,
+	}
+
+	return meta, writeCodelabWriter(w, clab.Codelab, opts.ExtraVars, ctx)
+}
+
+func writeCodelabWriter(w io.Writer, clab *types.Codelab, extraVars map[string]string, ctx *types.Context) error {
+	// main content file(s)
+	data := &struct {
+		render.Context
+		Current *types.Step
+		StepNum int
+		Prev    bool
+		Next    bool
+	}{Context: render.Context{
+		Env:      ctx.Env,
+		Prefix:   ctx.Prefix,
+		GlobalGA: ctx.MainGA,
+		Updated:  time.Time(*ctx.Updated).Format(time.RFC3339),
+		Meta:     &clab.Meta,
+		Steps:    clab.Steps,
+		Extra:    extraVars,
+	}}
+	for i, step := range clab.Steps {
+		data.Current = step
+		data.StepNum = i + 1
+		data.Prev = i > 0
+		data.Next = i < len(clab.Steps)-1
+		if err := render.Execute(w, ctx.Format, data); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // writeCodelab stores codelab main content in ctx.Format and its metadata
