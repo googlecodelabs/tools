@@ -227,6 +227,24 @@ google-codelab-step .instructions iron-icon {
   margin-right: 7px;
   margin-left: 3px;
   font-size: 16px;
+  top: -1px;
+  position: relative;
+}
+
+iron-icon {
+  font: normal normal normal 24px/1 "Material Icons";
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  word-wrap: normal;
+  font-size: inherit;
+}
+
+iron-icon[icon=file-download]::after {
+  content: "cloud_download";
 }
 
 google-codelab-step .instructions img {
