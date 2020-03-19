@@ -813,6 +813,7 @@ class Codelab extends HTMLElement {
 
   /**
    * Fires events for initial page load.
+   * @private
    */
   firePageLoadEvents_() {
     this.fireEvent_(CODELAB_PAGEVIEW_EVENT, {
