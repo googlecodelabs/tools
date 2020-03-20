@@ -604,6 +604,9 @@ class Codelab extends HTMLElement {
    * @private
    */
   showSelectedStep_() {
+    // Close drawer if any.
+    this.removeAttribute(DRAWER_OPEN_ATTR);
+
     let selected = 0;
     if (this.hasAttribute(SELECTED_ATTR)) {
       selected = parseInt(this.getAttribute(SELECTED_ATTR), 0);
@@ -810,6 +813,7 @@ class Codelab extends HTMLElement {
 
   /**
    * Fires events for initial page load.
+   * @private
    */
   firePageLoadEvents_() {
     this.fireEvent_(CODELAB_PAGEVIEW_EVENT, {
