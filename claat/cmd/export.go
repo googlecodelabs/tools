@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -169,16 +170,12 @@ func writeCodelabWriter(w io.Writer, clab *types.Codelab, extraVars map[string]s
 		Steps:    clab.Steps,
 		Extra:    extraVars,
 	}}
-	for i, step := range clab.Steps {
-		data.Current = step
-		data.StepNum = i + 1
-		data.Prev = i > 0
-		data.Next = i < len(clab.Steps)-1
-		if err := render.Execute(w, ctx.Format, data); err != nil {
-			return err
-		}
+
+	if ctx.Format == "offline" {
+		return errors.New("exporting codelab offline is not supported for In-Memory Export")
 	}
-	return nil
+
+	return render.Execute(w, ctx.Format, data)
 }
 
 // writeCodelab stores codelab main content in ctx.Format and its metadata

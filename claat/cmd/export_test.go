@@ -21,6 +21,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -36,21 +37,15 @@ func TestExportCodelabMemory(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string
-		knownBug string
 	}{
 		{
 			name:     "Multiple Steps",
 			filePath: "testdata/simple-2-steps.md",
-			knownBug: "https://github.com/googlecodelabs/tools/issues/391",
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if test.knownBug != "" {
-				t.Skip("Skipping Tests with known issue", test.knownBug)
-			}
-
 			tmp, err := ioutil.TempDir(".", "TestExportCodelabMemory-*")
 			if err != nil {
 				t.Fatal(err)
@@ -105,9 +100,41 @@ func TestExportCodelabMemory(t *testing.T) {
 				t.Errorf("ExportCodelabMemory returns metadata:\n%+v\nwant:\n%+v\n", gotMeta, wantMeta)
 			}
 
-			if bytes.Compare(wantBytes, gotBytes.Bytes()) != 0 {
-				t.Errorf("ExportCodelabMemory returns diff: %s", cmp.Diff(string(wantBytes), string(gotBytes.Bytes())))
+			wantContent := filterIgnoredLinePrefix(string(wantBytes))
+			gotContent := filterIgnoredLinePrefix(string(gotBytes.Bytes()))
+			if diff := cmp.Diff(wantContent, gotContent); diff != "" {
+				t.Errorf("ExportCodelabMemory returns diff: %s", diff)
 			}
 		})
 	}
+}
+
+func filterIgnoredLinePrefix(content string) string {
+	// ignoredLinePrefix is used because
+	// 1. InMemory Export method doesn't have a file to begin with
+	// 2. Some expected bugs to be resolved.
+	ignoredLinePrefix := []string{
+		"<meta name=\"original_source\" content=\"",
+		"doc-id=\"",
+		"last-updated=\"", // https://github.com/googlecodelabs/tools/issues/395
+	}
+
+	lines := strings.Split(content, "\n")
+	processedContent := []string{}
+	for _, l := range lines {
+		trimmed := strings.TrimLeft(l, " ")
+		toBeIgnored := false
+		for _, ignored := range ignoredLinePrefix {
+			if strings.HasPrefix(trimmed, ignored) {
+				toBeIgnored = true
+				break
+			}
+		}
+
+		if !toBeIgnored {
+			processedContent = append(processedContent, l)
+		}
+	}
+
+	return strings.Join(processedContent, "\n")
 }
