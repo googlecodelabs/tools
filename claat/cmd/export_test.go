@@ -46,7 +46,7 @@ func TestExportCodelabMemory(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			tmp, err := ioutil.TempDir(".", "TestExportCodelabMemory-*")
+			tmp, err := ioutil.TempDir("", "TestExportCodelabMemory-*")
 			if err != nil {
 				t.Fatal(err)
 			}
