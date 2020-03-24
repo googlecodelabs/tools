@@ -306,6 +306,8 @@ func parseNode(ds *docState) (types.Node, bool) {
 		return survey(ds), true
 	case isTable(ds.cur):
 		return table(ds), true
+	case isYoutube(ds.cur):
+		return youtube(ds), true
 	}
 	return nil, false
 }
@@ -696,17 +698,14 @@ func image(ds *docState) types.Node {
 }
 
 func youtube(ds *docState) types.Node {
-	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
-	if err != nil {
-		return nil
+	for _, attr := range ds.cur.Attr {
+		if attr.Key == "id" {
+			n := types.NewYouTubeNode(attr.Val)
+			n.MutateBlock(true)
+			return n
+		}
 	}
-	v := u.Query().Get("v")
-	if v == "" {
-		return nil
-	}
-	n := types.NewYouTubeNode(v)
-	n.MutateBlock(true)
-	return n
+	return nil
 }
 
 func iframe(ds *docState) types.Node {
