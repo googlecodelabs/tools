@@ -111,6 +111,10 @@ func isList(hn *html.Node) bool {
 	return hn.DataAtom == atom.Ul || hn.DataAtom == atom.Ol
 }
 
+func isYoutube(hn *html.Node) bool {
+	return hn.DataAtom == atom.Video
+}
+
 // countTwo starts counting the number of a Atom children in hn.
 // It returns as soon as the count exceeds 1, so the returned value is inexact.
 //
