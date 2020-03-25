@@ -94,10 +94,16 @@ func isInfoboxNegative(hn *html.Node) bool {
 }
 
 func isSurvey(hn *html.Node) bool {
-	if hn.DataAtom != atom.Dt {
+	if hn.DataAtom != atom.Form {
 		return false
 	}
-	return strings.ToLower(hn.FirstChild.Data) == "survey"
+	if findAtom(hn, atom.Name) == nil {
+		return false
+	}
+	if len(findChildAtoms(hn, atom.Input)) == 0 {
+		return false
+	}
+	return true
 }
 
 func isTable(hn *html.Node) bool {
