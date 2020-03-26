@@ -547,28 +547,21 @@ func tableRow(ds *docState) []*types.GridCell {
 	return row
 }
 
-// survey expects a title followed by 1 or more lists. They all are in the same dd element.
+// survey expects a name Node followed by 1 or more inputs Nodes. Each input node is expected to have a value attribute.
 func survey(ds *docState) types.Node {
 	var gg []*types.SurveyGroup
 	hn := ds.cur
-	for hn = hn.NextSibling; hn != nil; hn = hn.NextSibling {
-		ds.cur = ds.cur.NextSibling
-		if hn.DataAtom != atom.Dd {
-			continue
-		}
-		optionsNode := findAtom(hn, atom.Li)
-		if optionsNode == nil {
-			fmt.Println("No survey results list")
-			continue
-		}
-		opt := surveyOpt(optionsNode)
-		if len(opt) > 0 {
-			gg = append(gg, &types.SurveyGroup{
-				Name:    strings.TrimSpace(hn.FirstChild.Data),
-				Options: opt,
-			})
-		}
+	n := findAtom(hn, atom.Name)
+	inputs := findChildAtoms(hn, atom.Input)
+	opt := surveyOpt(inputs)
+
+	if len(opt) > 0 {
+		gg = append(gg, &types.SurveyGroup{
+			Name:    strings.TrimSpace(n.FirstChild.Data),
+			Options: opt,
+		})
 	}
+
 	if len(gg) == 0 {
 		return nil
 	}
@@ -577,13 +570,14 @@ func survey(ds *docState) types.Node {
 	return types.NewSurveyNode(id, gg...)
 }
 
-func surveyOpt(hn *html.Node) []string {
+func surveyOpt(inputs []*html.Node) []string {
 	var opt []string
-	for ; hn != nil; hn = hn.NextSibling {
-		if hn.DataAtom != atom.Li {
-			continue
+	for _, input := range inputs {
+		for _, attr := range input.Attr {
+			if attr.Key == "value" {
+				opt = append(opt, attr.Val)
+			}
 		}
-		opt = append(opt, stringifyNode(hn, true))
 	}
 	return opt
 }
