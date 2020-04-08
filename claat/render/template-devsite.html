@@ -53,14 +53,14 @@ the License.
                     title="{{.Meta.Title}}"
                     environment="{{index .Env}}"
                     feedback-link="{{.Meta.Feedback}}"
-                    {{if $.Meta.BadgeURI}}badge-uri="{{$.Meta.BadgeURI}}"{{end}}>
+                    {{if $.Meta.BadgePath}}badge-path="{{$.Meta.BadgePath}}"{{end}}>
       {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
         <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
           {{if eq $i 0}}
             <google-codelab-about codelab-title="{{$.Meta.Title}}"
                                   {{if $.Updated}}last-updated="{{$.Updated}}"{{end}}
                                   {{if $.Meta.Authors}}authors="{{$.Meta.Authors}}"{{end}}
-                                  {{if $.Meta.BadgeURI}}badge-uri="{{$.Meta.BadgeURI}}"{{end}}>
+                                  {{if $.Meta.BadgePath}}badge-path="{{$.Meta.BadgePath}}"{{end}}>
             </google-codelab-about>
           {{end}}
           {{.Content | renderHTML $.Env}}
