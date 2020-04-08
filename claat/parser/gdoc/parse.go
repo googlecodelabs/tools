@@ -392,8 +392,8 @@ func metaTable(ds *docState) {
 			ds.clab.ID = s
 		case "author", "authors":
 			ds.clab.Authors = s
-		case "badge uri":
-			ds.clab.BadgeURI = s
+		case "badge path":
+			ds.clab.BadgePath = s
 		case "summary":
 			ds.clab.Summary = stringifyNode(tr.FirstChild.NextSibling, true, true)
 		case "category", "categories":
