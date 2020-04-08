@@ -42,7 +42,7 @@ import (
 // Metadata constants for the YAML header
 const (
 	MetaAuthors          = "authors"
-	MetaBadgeID          = "badge id"
+	MetaBadgePath        = "badge path"
 	MetaSummary          = "summary"
 	MetaID               = "id"
 	MetaCategories       = "categories"
@@ -362,9 +362,9 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 		case MetaAuthors:
 			// Directly assign the summary to the codelab field.
 			c.Authors = v
-		case MetaBadgeID:
-			// Directly assign the codelab ID to the codelab field.
-			c.BadgeID = v
+		case MetaBadgePath:
+			// Directly assign the badge Path to the codelab field.
+			c.BadgePath = v
 		case MetaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v
