@@ -81,6 +81,13 @@ var (
 	)
 )
 
+var (
+	// ErrForbiddenFragmentImports means importing another markdown file in a markdown fragment is forbidden.
+	ErrForbiddenFragmentImports = errors.New("importing content in a fragment is forbidden")
+	// ErrForbiddenFragmentSteps means declaring extra codelabs step in a markdown fragment is forbidden.
+	ErrForbiddenFragmentSteps = errors.New("defining steps in a fragment is forbidden")
+)
+
 // init registers this parser so it is available to CLaaT.
 func init() {
 	parser.Register("md", &Parser{})
@@ -107,9 +114,44 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	return parseMarkup(doc, opts)
 }
 
-// ParseFragment parses a codelab fragment writtet in Markdown.
+// ParseFragment parses a codelab fragment written in Markdown.
 func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
-	return nil, errors.New("fragment parser not implemented")
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+	b = claatMarkdown(b)
+	h := bytes.NewBuffer(b)
+	doc, err := html.Parse(h)
+	if err != nil {
+		return nil, err
+	}
+
+	return parsePartialMarkup(doc)
+}
+
+func parsePartialMarkup(root *html.Node) ([]types.Node, error) {
+	body := findAtom(root, atom.Body)
+	if body == nil {
+		return nil, fmt.Errorf("document without a body")
+	}
+
+	ds := newDocState()
+	ds.partial = true
+	ds.step = ds.clab.NewStep("fragment")
+	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
+		switch {
+		case ds.cur.DataAtom == atom.H1:
+			return nil, ErrForbiddenFragmentSteps
+		case ds.cur.DataAtom == atom.H2:
+			return nil, ErrForbiddenFragmentSteps
+		}
+
+		parseTop(ds)
+	}
+
+	finalizeStep(ds.step)
+	return ds.step.Content.Nodes, nil
 }
 
 type docState struct {
@@ -121,6 +163,7 @@ type docState struct {
 	env      []string       // current enviornment
 	cur      *html.Node     // current HTML node
 	stack    []*stackItem   // cur and flags stack
+	partial  bool           // true if the document currently being parsed should be treated as a fragment
 }
 
 type stackItem struct {
