@@ -51,6 +51,12 @@ func parseCodelab(markup string, opts parser.Options) (*types.Codelab, error) {
 	return p.Parse(r, opts)
 }
 
+func parseFragment(markup string) ([]types.Node, error) {
+	r := strings.NewReader(markup)
+	p := &Parser{}
+
+	return p.ParseFragment(r)
+}
 func TestHandleCodelabTitle(t *testing.T) {
 	// Set up.
 	title := "Egret"
@@ -200,4 +206,103 @@ extrafieldtwo: bbbbb
 	if !reflect.DeepEqual(c.Meta, wantMeta) {
 		t.Errorf("\ngot:\n%+v\nwant:\n%+v", c.Meta, wantMeta)
 	}
+}
+
+func TestParseFragment(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr error
+
+		skipReason string
+	}{
+		{
+			name:  "Empty String",
+			input: "",
+		},
+		{
+			name:  "Kinda broken markdown",
+			input: `**this is kinda broken*`,
+		},
+		{
+			name: "Valid Markdown",
+			input: `
+### This is cool
+![Image Title](image path)
+#### Level more
+<video id="dQw4w9WgXcQ"></video>
+<!--won't show-->
+`,
+		},
+		{
+			name:       "Forbidden Nested Imports",
+			skipReason: "Import semantic is not implemented",
+			input:      `<!--#include=/path/this/is/harmless/anyway-->`,
+			wantErr:    ErrForbiddenFragmentImports,
+		},
+		{
+			name: "If something looks like metadata, it is treated as text content",
+			input: `
+---
+id: zyxwvut
+authors: john smith
+summary: abcdefghij
+categories: not, really
+environments: kiosk, web
+analytics account: 12345
+feedback link: https://www.google.com
+extrafieldone: aaaaa
+extrafieldtwo: bbbbb
+
+---
+We don't parse the above!`,
+		},
+		{
+			name:    "Forbidden Steps",
+			input:   `## This is not allowed`,
+			wantErr: ErrForbiddenFragmentSteps,
+		},
+		{
+			name:    "Forbidden Top level",
+			input:   `# This is not allowed`,
+			wantErr: ErrForbiddenFragmentSteps,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if test.skipReason != "" {
+				t.Skip(test.skipReason)
+			}
+
+			got, err := parseFragment(test.input)
+			t.Logf("parseFragment(\n%q\n) =\n%s\n, %+v", test.input, stringify(got, " >"), err)
+			if err != test.wantErr {
+				t.Errorf("want error = %+v", test.wantErr)
+			}
+		})
+	}
+}
+
+func stringify(nodes []types.Node, level string) string {
+	var content []string
+	for _, node := range nodes {
+		base := fmt.Sprintf("%+v", node)
+		if node.Type() == types.NodeItemsList {
+			children := []types.Node{}
+			for _, list := range node.(*types.ItemsListNode).Items {
+				children = append(children, list)
+			}
+
+			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(children, level+">") + "\n" + level + " Child Nodes: ^^^^"
+		}
+
+		if node.Type() == types.NodeList {
+			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(node.(*types.ListNode).Nodes, level+">") + "\n" + level + " Child Nodes: ^^^^"
+		}
+
+		content = append(content, base)
+	}
+
+	return strings.Join(content, "\n")
 }
