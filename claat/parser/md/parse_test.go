@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -57,6 +58,30 @@ func parseFragment(markup string) ([]types.Node, error) {
 
 	return p.ParseFragment(r)
 }
+
+func stringify(nodes []types.Node, level string) string {
+	var content []string
+	for _, node := range nodes {
+		base := fmt.Sprintf("%+v", node)
+		if node.Type() == types.NodeItemsList {
+			children := []types.Node{}
+			for _, list := range node.(*types.ItemsListNode).Items {
+				children = append(children, list)
+			}
+
+			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(children, level+">") + "\n" + level + " Child Nodes: ^^^^"
+		}
+
+		if node.Type() == types.NodeList {
+			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(node.(*types.ListNode).Nodes, level+">") + "\n" + level + " Child Nodes: ^^^^"
+		}
+
+		content = append(content, base)
+	}
+
+	return strings.Join(content, "\n")
+}
+
 func TestHandleCodelabTitle(t *testing.T) {
 	// Set up.
 	title := "Egret"
@@ -235,10 +260,11 @@ func TestParseFragment(t *testing.T) {
 `,
 		},
 		{
-			name:       "Forbidden Nested Imports",
-			skipReason: "Import semantic is not implemented",
-			input:      `<!--#include=/path/this/is/harmless/anyway-->`,
-			wantErr:    ErrForbiddenFragmentImports,
+			name: "Forbidden Nested Imports",
+			input: `
+I want nested imports
+<</path/to/something else.md>>`,
+			wantErr: ErrForbiddenFragmentImports,
 		},
 		{
 			name: "If something looks like metadata, it is treated as text content",
@@ -284,25 +310,94 @@ We don't parse the above!`,
 	}
 }
 
-func stringify(nodes []types.Node, level string) string {
-	var content []string
-	for _, node := range nodes {
-		base := fmt.Sprintf("%+v", node)
-		if node.Type() == types.NodeItemsList {
-			children := []types.Node{}
-			for _, list := range node.(*types.ItemsListNode).Items {
-				children = append(children, list)
-			}
+func TestParseWithImport(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  []string
+	}{
+		{
+			name: "valid imports",
+			input: stdHeader + `
+## Step 1
+before
 
-			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(children, level+">") + "\n" + level + " Child Nodes: ^^^^"
-		}
+<<import1.md>>
 
-		if node.Type() == types.NodeList {
-			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(node.(*types.ListNode).Nodes, level+">") + "\n" + level + " Child Nodes: ^^^^"
-		}
+after
+<<example/import2.md>>
+with space
+<<space/is allowed.md>>
+## Step 2
+<<import_another_file.md>>`,
+			want: []string{"import1.md", "example/import2.md", "space/is allowed.md", "import_another_file.md"},
+		},
+		{
+			name: "import not in steps",
+			input: stdHeader + `
+<<should_not_work.md>>
 
-		content = append(content, base)
+## Step 1
+<<allowed.md>>
+		`,
+			want: []string{"allowed.md"},
+		},
+		{
+			name: "import not on its own line",
+			input: stdHeader + `
+## Step 1 <<This is not allowed>>
+<<not like this>><<not like this>>
+<<this is ok>>
+<<but not this>>this line
+
+<<strange case is here and should not be allowed>>## Step 2
+<<you cannot do this ## Step 3>> Otherwise it's really broken.
+		`,
+			want: []string{"this is ok"},
+		},
+		{
+			name: "import inside code block should not be considered",
+			input: stdHeader + `
+## Step 1
+		` + "```" + `
+<<I guess we should consider it here>>
+		` + "```" + `
+		`,
+			want: []string{"I guess we should consider it here"},
+		},
+		{
+			name: "HTML injection is not allowed",
+			input: stdHeader + `
+## Step 1
+I'm going to inject some HTML
+<<-->alert("yup")>>
+<</>})<script>alert("gotcha")</script>>>>
+<<"});alert("how aobut this?">>>
+<script>
+<<--document.write("random stuff")>>
+</script>
+`,
+		},
 	}
 
-	return strings.Join(content, "\n")
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			lab := mustParseCodelab(test.input, *parser.NewOptions())
+			var got []string
+			for _, s := range lab.Steps {
+				for _, n := range types.ImportNodes(s.Content.Nodes) {
+					got = append(got, n.URL)
+				}
+			}
+
+			// make consistent ordering
+			sort.StringSlice(got).Sort()
+			sort.StringSlice(test.want).Sort()
+			if !reflect.DeepEqual(test.want, got) {
+				t.Errorf("Parsing\n%s\nGot Imports:\n%s\nWant Imports:\n%s\n", test.input, got, test.want)
+			}
+		})
+	}
 }
