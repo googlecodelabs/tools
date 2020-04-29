@@ -271,7 +271,7 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 }
 
 func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
-	res, err := f.fetchRemote(url, true)
+	res, err := f.fetch(url)
 	if err != nil {
 		return nil, err
 	}

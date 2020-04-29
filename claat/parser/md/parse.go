@@ -65,6 +65,13 @@ const (
 	headerFAQ   = "frequently asked questions"
 )
 
+var (
+	importsTagRegexp           = regexp.MustCompile("^<<([^<>()]+.md)>>\\s*$")
+	convertedImportsDataPrefix = "__unsupported_import_zmcgv2epyv="
+	convertedImportsPrefix     = []byte("<!--" + convertedImportsDataPrefix)
+	convertedImportsSuffix     = []byte("-->")
+)
+
 var metadataRegexp = regexp.MustCompile(`(.+?):(.+)`)
 var languageRegexp = regexp.MustCompile(`language-(.+)`)
 
@@ -104,7 +111,7 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	if err != nil {
 		return nil, err
 	}
-	b = claatMarkdown(b)
+	b = renderToHTML(b)
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -120,7 +127,7 @@ func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	b = claatMarkdown(b)
+	b = renderToHTML(b)
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -137,7 +144,6 @@ func parsePartialMarkup(root *html.Node) ([]types.Node, error) {
 	}
 
 	ds := newDocState()
-	ds.partial = true
 	ds.step = ds.clab.NewStep("fragment")
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		switch {
@@ -151,6 +157,10 @@ func parsePartialMarkup(root *html.Node) ([]types.Node, error) {
 	}
 
 	finalizeStep(ds.step)
+	if hasImport(ds) {
+		return nil, ErrForbiddenFragmentImports
+	}
+
 	return ds.step.Content.Nodes, nil
 }
 
@@ -163,7 +173,6 @@ type docState struct {
 	env      []string       // current enviornment
 	cur      *html.Node     // current HTML node
 	stack    []*stackItem   // cur and flags stack
-	partial  bool           // true if the document currently being parsed should be treated as a fragment
 }
 
 type stackItem struct {
@@ -207,9 +216,11 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 	ds.lastNode = nn[len(nn)-1]
 }
 
-// claatMarkdown calls the Blackfriday Markdown parser with some special addons selected. It takes a byte slice as a parameter,
-// and returns its result as a byte slice.
-func claatMarkdown(b []byte) []byte {
+// renderToHTML preprocesses markdown bytes and then calls the Blackfriday Markdown parser with some special addons selected.
+// It takes a raw markdown bytes and output parsed xhtml in bytes.
+func renderToHTML(b []byte) []byte {
+	b = convertImports(b)
+
 	htmlFlags := blackfriday.UseXHTML |
 		blackfriday.Smartypants |
 		blackfriday.SmartypantsFractions |
@@ -351,6 +362,8 @@ func parseNode(ds *docState) (types.Node, bool) {
 		return table(ds), true
 	case isYoutube(ds.cur):
 		return youtube(ds), true
+	case isFragmentImport(ds.cur):
+		return fragmentImport(ds), true
 	}
 	return nil, false
 }
@@ -745,6 +758,14 @@ func youtube(ds *docState) types.Node {
 	return nil
 }
 
+func fragmentImport(ds *docState) types.Node {
+	if url := strings.TrimPrefix(ds.cur.Data, convertedImportsDataPrefix); url != "" {
+		return types.NewImportNode(url)
+	}
+
+	return nil
+}
+
 func iframe(ds *docState) types.Node {
 	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
 	if err != nil {
@@ -900,4 +921,35 @@ func roundDuration(d time.Duration) time.Duration {
 		rd += time.Minute
 	}
 	return rd
+}
+
+func convertImports(content []byte) []byte {
+	slices := bytes.Split(content, []byte("\n"))
+	escaped := [][]byte{}
+	for _, slice := range slices {
+		if matches := importsTagRegexp.FindSubmatch(slice); len(matches) > 0 {
+			if len(matches) > 1 {
+				url := string(matches[1])
+				slice = bytes.Join([][]byte{
+					convertedImportsPrefix,
+					[]byte(html.EscapeString(url)),
+					convertedImportsSuffix,
+				}, []byte(""))
+			}
+		}
+
+		escaped = append(escaped, slice)
+	}
+
+	return bytes.Join(escaped, []byte("\n"))
+}
+
+func hasImport(ds *docState) bool {
+	for _, step := range ds.clab.Steps {
+		if len(types.ImportNodes(step.Content.Nodes)) > 0 {
+			return true
+		}
+	}
+
+	return false
 }
