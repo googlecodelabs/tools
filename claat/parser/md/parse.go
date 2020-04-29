@@ -66,7 +66,7 @@ const (
 )
 
 var (
-	importsTagRegexp           = regexp.MustCompile("^<<([^<>()]+)>>\\s*$")
+	importsTagRegexp           = regexp.MustCompile("^<<([^<>()]+.md)>>\\s*$")
 	convertedImportsDataPrefix = "__unsupported_import_zmcgv2epyv="
 	convertedImportsPrefix     = []byte("<!--" + convertedImportsDataPrefix)
 	convertedImportsSuffix     = []byte("-->")

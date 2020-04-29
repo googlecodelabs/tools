@@ -347,23 +347,23 @@ with space
 			input: stdHeader + `
 ## Step 1 <<This is not allowed>>
 <<not like this>><<not like this>>
-<<this is ok>>
+<<this is ok.md>>
 <<but not this>>this line
 
 <<strange case is here and should not be allowed>>## Step 2
 <<you cannot do this ## Step 3>> Otherwise it's really broken.
 		`,
-			want: []string{"this is ok"},
+			want: []string{"this is ok.md"},
 		},
 		{
 			name: "import inside code block should not be considered",
 			input: stdHeader + `
 ## Step 1
 		` + "```" + `
-<<I guess we should consider it here>>
+<<I guess we should consider it here.md>>
 		` + "```" + `
 		`,
-			want: []string{"I guess we should consider it here"},
+			want: []string{"I guess we should consider it here.md"},
 		},
 		{
 			name: "HTML injection is not allowed",
@@ -377,6 +377,14 @@ I'm going to inject some HTML
 <<--document.write("random stuff")>>
 </script>
 `,
+		},
+		{
+			name: "nonmarkdown file is currently not supported",
+			input: stdHeader + `
+## Step 1
+<<nonmd file.gdoc>>
+<<somemd.md>>`,
+			want: []string{"somemd.md"},
 		},
 	}
 
