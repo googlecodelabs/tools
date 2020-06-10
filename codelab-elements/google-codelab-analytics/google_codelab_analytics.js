@@ -253,10 +253,12 @@ class CodelabAnalytics extends HTMLElement {
   /** @private */
   gaSend_(params) {
     window['ga'](function() {
-      const trackers = window['ga'].getAll();
-      trackers.forEach((tracker) => {
-        tracker.send(params);
-      });
+      if (window['ga'].getAll) {
+        const trackers = window['ga'].getAll();
+        trackers.forEach((tracker) => {
+          tracker.send(params);
+        });
+      }
     });
   }
 
@@ -330,15 +332,17 @@ class CodelabAnalytics extends HTMLElement {
 
   /** @private */
   createTrackers_() {
-    // The default tracker is given name 't0' per analytics.js dev docs.
-    if (this.gaid_ && !this.isTrackerCreated_(this.gaid_)) {
-      window['ga']('create', this.gaid_, 'auto');
-    }
+    if (window['ga']) {
+      // The default tracker is given name 't0' per analytics.js dev docs.
+      if (this.gaid_ && !this.isTrackerCreated_(this.gaid_)) {
+        window['ga']('create', this.gaid_, 'auto');
+      }
 
-    const gaView = this.getGAView_();
-    if (gaView && !this.isTrackerCreated_(gaView)) {
-      window['ga']('create', gaView, 'auto', 'view');
-      window['ga']('view.send', 'pageview');
+      const gaView = this.getGAView_();
+      if (gaView && !this.isTrackerCreated_(gaView)) {
+        window['ga']('create', gaView, 'auto', 'view');
+        window['ga']('view.send', 'pageview');
+      }
     }
 
     this.createCodelabGATracker_();
@@ -349,9 +353,11 @@ class CodelabAnalytics extends HTMLElement {
    * @private
    */
   createCodelabGATracker_() {
-    const codelabGAId = this.getAttribute(CODELAB_GAID_ATTR);
-    if (codelabGAId && !this.isTrackerCreated_(codelabGAId)) {
-      window['ga']('create', codelabGAId, 'auto', 'codelabAccount');
+    if (window['ga']) {
+      const codelabGAId = this.getAttribute(CODELAB_GAID_ATTR);
+      if (codelabGAId && !this.isTrackerCreated_(codelabGAId)) {
+        window['ga']('create', codelabGAId, 'auto', 'codelabAccount');
+      }
     }
   }
 
@@ -361,13 +367,15 @@ class CodelabAnalytics extends HTMLElement {
    * @private
    */
   isTrackerCreated_(trackerId) {
-    const allTrackers = window['ga'].getAll();
     let isCreated = false;
-    allTrackers.forEach((tracker) => {
-      if (tracker.get('trackingId') == trackerId) {
-        isCreated = true;
-      }
-    });
+    if (window['ga'] && window['ga'].getAll) {
+      const allTrackers = window['ga'].getAll();
+      allTrackers.forEach((tracker) => {
+        if (tracker.get('trackingId') == trackerId) {
+          isCreated = true;
+        }
+      });
+    }
     return isCreated;
   }
 }
