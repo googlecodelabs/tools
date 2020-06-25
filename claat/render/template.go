@@ -62,7 +62,9 @@ func Execute(w io.Writer, fmt string, data interface{}, opt ...Option) error {
 		return err
 	}
 	if ctx, ok := data.(*Context); ok {
-		sort.Strings(ctx.Meta.Tags)
+		tags := stringSlice((*ctx.Meta)["Tags"])
+		sort.Strings(tags)
+		(*ctx.Meta)["Tags"] = strings.Join(tags, ",")
 	}
 	return t.Execute(w, data)
 }
@@ -91,16 +93,16 @@ var funcMap = map[string]interface{}{
 		}
 
 		res := ""
-		res += kvLine(mdParse.MetaID, meta.ID)
-		res += kvLine(mdParse.MetaSummary, meta.Summary)
-		if meta.Status != nil {
-			res += kvLine(mdParse.MetaStatus, meta.Status.String())
+		res += kvLine(mdParse.MetaID, (*meta)["ID"]) // AAAAAAAAAAAAAAAAA
+		res += kvLine(mdParse.MetaSummary, (*meta)["Summary"])
+		if _, ok := (*meta)["Status"]; ok {
+			res += kvLine(mdParse.MetaStatus, (*meta)["Status"])
 		}
-		res += kvLine(mdParse.MetaAuthors, meta.Authors)
-		res += kvLine(mdParse.MetaCategories, strings.Join(meta.Categories, ","))
-		res += kvLine(mdParse.MetaTags, strings.Join(meta.Tags, ","))
-		res += kvLine(mdParse.MetaFeedbackLink, meta.Feedback)
-		res += kvLine(mdParse.MetaAnalyticsAccount, meta.GA)
+		res += kvLine(mdParse.MetaAuthors, (*meta)["Authors"])
+		res += kvLine(mdParse.MetaCategories, (*meta)["Categories"])
+		res += kvLine(mdParse.MetaTags, (*meta)["Tags"])
+		res += kvLine(mdParse.MetaFeedbackLink, (*meta)["Feedback"])
+		res += kvLine(mdParse.MetaAnalyticsAccount, (*meta)["GA"])
 
 		return res
 	},
@@ -199,3 +201,16 @@ func WithFuncMap(fm map[string]interface{}) Option {
 type optFuncMap map[string]interface{}
 
 func (o optFuncMap) option() {}
+
+// stringSlice splits v by comma "," while ignoring empty elements.
+func stringSlice(v string) []string {
+	f := strings.Split(v, ",")
+	a := f[0:0]
+	for _, s := range f {
+		s = strings.TrimSpace(s)
+		if s != "" {
+			a = append(a, s)
+		}
+	}
+	return a
+}

@@ -170,7 +170,7 @@ type docState struct {
 	survey   int            // last used survey ID
 	step     *types.Step    // current codelab step
 	lastNode types.Node     // last appended node
-	env      []string       // current enviornment
+	env      []string       // current environment
 	cur      *html.Node     // current HTML node
 	stack    []*stackItem   // cur and flags stack
 }
@@ -251,12 +251,12 @@ func parseMarkup(markup *html.Node, opts parser.Options) (*types.Codelab, error)
 	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		switch {
 		// metadata first
-		case ds.cur.DataAtom == atom.H1 && ds.clab.Title == "":
+		case ds.cur.DataAtom == atom.H1 && ds.clab.Meta["Title"] == "":
 			if v := stringifyNode(ds.cur, true); v != "" {
-				ds.clab.Title = v
+				ds.clab.Meta["Title"] = v
 			}
 			continue
-		case ds.cur.DataAtom == atom.P && ds.clab.ID == "":
+		case ds.cur.DataAtom == atom.P && ds.clab.Meta["ID"] == "":
 			if err := parseMetadata(ds, opts); err != nil {
 				return nil, err
 			}
@@ -272,9 +272,10 @@ func parseMarkup(markup *html.Node, opts parser.Options) (*types.Codelab, error)
 	}
 
 	finalizeStep(ds.step) // TODO: last ds.step is never finalized in newStep
-	ds.clab.Tags = util.Unique(ds.clab.Tags)
-	sort.Strings(ds.clab.Tags)
-	ds.clab.Duration = int(ds.totdur.Minutes())
+	tags := util.Unique(stringSlice(ds.clab.Meta["Tags"]))
+	sort.Strings(tags)
+	ds.clab.Meta["Tags"] = strings.Join(tags, ",")
+	ds.clab.Meta["Duration"] = string(int(ds.totdur.Minutes()))
 	return ds.clab, nil
 }
 
@@ -420,50 +421,39 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 		switch k {
 		case MetaAuthors:
 			// Directly assign the summary to the codelab field.
-			c.Authors = v
+			c.Meta["Authors"] = v
 		case MetaBadgePath:
 			// Directly assign the badge Path to the codelab field.
-			c.BadgePath = v
+			c.Meta["BadgePath"] = v
 		case MetaSummary:
 			// Directly assign the summary to the codelab field.
-			c.Summary = v
-			break
+			c.Meta["Summary"] = v
 		case MetaID:
 			// Directly assign the ID to the codelab field.
-			c.ID = v
-			break
+			c.Meta["ID"] = v
 		case MetaCategories:
 			// Standardize the categories and append to codelab field.
-			c.Categories = append(c.Categories, standardSplit(v)...)
-			break
+			c.Meta["Categories"] = c.Meta["Categories"] + "," + v
 		case MetaEnvironments:
 			// Standardize the tags and append to the codelab field.
-			c.Tags = append(c.Tags, standardSplit(v)...)
-			break
+			c.Meta["Tags"] = c.Meta["Tags"] + "," + v
 		case MetaStatus:
 			// Standardize the statuses and append to the codelab field.
-			statuses := standardSplit(v)
-			statusesAsLegacy := types.LegacyStatus(statuses)
-			c.Status = &statusesAsLegacy
-			break
+			c.Meta["Status"] = v
 		case MetaFeedbackLink:
 			// Directly assign the feedback link to the codelab field.
-			c.Feedback = v
-			break
+			c.Meta["Feedback"] = v
 		case MetaAnalyticsAccount:
 			// Directly assign the GA id to the codelab field.
-			c.GA = v
-			break
+			c.Meta["GA"] = v
 		case MetaTags:
 			// Standardize the tags and append to the codelab field.
-			c.Tags = append(c.Tags, standardSplit(v)...)
-			break
+			c.Meta["Tags"] = c.Meta["Tags"] + "," + v
 		default:
 			// If not explicitly parsed, it might be a pass_metadata value.
 			if _, ok := opts.PassMetadata[k]; ok {
-				c.Extra[k] = v
+				c.Meta[k] = v
 			}
-			break
 		}
 	}
 	return nil
@@ -504,7 +494,7 @@ func metaStep(ds *docState) {
 		ds.env = util.Unique(stringSlice(value))
 		toLowerSlice(ds.env)
 		ds.step.Tags = append(ds.step.Tags, ds.env...)
-		ds.clab.Tags = append(ds.clab.Tags, ds.env...)
+		ds.clab.Meta["Tags"] = ds.clab.Meta["Tags"] + "," + strings.Join(ds.env, ",")
 		if ds.lastNode != nil && types.IsHeader(ds.lastNode.Type()) {
 			ds.lastNode.MutateEnv(ds.env)
 		}
@@ -622,7 +612,7 @@ func survey(ds *docState) types.Node {
 		return nil
 	}
 	ds.survey++
-	id := fmt.Sprintf("%s-%d", ds.clab.ID, ds.survey)
+	id := fmt.Sprintf("%s-%d", ds.clab.Meta["ID"], ds.survey)
 	return types.NewSurveyNode(id, gg...)
 }
 

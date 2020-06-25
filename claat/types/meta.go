@@ -23,25 +23,8 @@ import (
 	"time"
 )
 
-// Meta contains a single codelab metadata.
-type Meta struct {
-	ID         string            `json:"id"`                   // ID is also part of codelab URL
-	Duration   int               `json:"duration"`             // Codelab duration in minutes
-	Title      string            `json:"title"`                // Codelab title
-	Authors    string            `json:"authors,omitempty"`    // Arbitrary authorship text
-	BadgePath  string            `json:"badge_path,omitempty"` // Path of the Badge to grant on codelab completion on devsite
-	Summary    string            `json:"summary"`              // Short summary
-	Source     string            `json:"source"`               // Codelab source doc
-	Theme      string            `json:"theme"`                // Usually first item of Categories
-	Status     *LegacyStatus     `json:"status"`               // Draft, Published, Hidden, etc.
-	Categories []string          `json:"category"`             // Categories from the meta table
-	Tags       []string          `json:"tags"`                 // All environments supported by the codelab
-	Feedback   string            `json:"feedback,omitempty"`   // Issues and bugs are sent here
-	GA         string            `json:"ga,omitempty"`         // Codelab-specific GA tracking ID
-	Extra      map[string]string `json:"extra,omitempty"`      // Extra metadata specified in pass_metadata
-
-	URL string `json:"url"` // Legacy ID; TODO: remove
-}
+// Meta contains a single codelab metadata
+type Meta map[string]string
 
 // Context is an export context.
 // It is defined in this package so that it can be used by both cli and a server.
@@ -65,10 +48,9 @@ type Codelab struct {
 	Steps []*Step
 }
 
+// NewCodelab Returns a fresh Codelab struct, populated with mandatory metadata
 func NewCodelab() *Codelab {
 	clab := &Codelab{}
-	clab.Extra = map[string]string{}
-
 	return clab
 }
 
