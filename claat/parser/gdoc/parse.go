@@ -239,7 +239,7 @@ func parseDoc(doc *html.Node, opts parser.Options) (*types.Codelab, error) {
 	finalizeStep(ds.step) // TODO: last ds.step is never finalized in newStep
 	ds.clab.Tags = util.Unique(ds.clab.Tags)
 	sort.Strings(ds.clab.Tags)
-	ds.clab.Duration = int(ds.totdur.Minutes())
+	ds.clab.Duration = strconv.Itoa(int(ds.totdur.Minutes()))
 	return ds.clab, nil
 }
 

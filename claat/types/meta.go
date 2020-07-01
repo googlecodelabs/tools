@@ -23,7 +23,7 @@ import (
 // Meta contains a single codelab metadata.
 type Meta struct {
 	ID         string            `json:"id"`                   // ID is also part of codelab URL
-	Duration   int               `json:"duration"`             // Codelab duration in minutes
+	Duration   string            `json:"duration"`             // Codelab duration in minutes
 	Title      string            `json:"title"`                // Codelab title
 	Authors    string            `json:"authors,omitempty"`    // Arbitrary authorship text
 	BadgePath  string            `json:"badge_path,omitempty"` // Path of the Badge to grant on codelab completion on devsite

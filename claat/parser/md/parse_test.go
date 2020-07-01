@@ -18,6 +18,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -122,7 +123,8 @@ func TestProcessDuration(t *testing.T) {
 	for i, tc := range tests {
 		content := fmt.Sprintf(stdHeader+"\n## Step Title\nDuration: %v\n", tc.in)
 		c := mustParseCodelab(content, *parser.NewOptions())
-		out := time.Duration(c.Duration) * time.Minute
+		durationInt, _ := strconv.Atoi(c.Duration)
+		out := time.Duration(durationInt) * time.Minute
 
 		if out != tc.out {
 			t.Errorf("%d: got duration %v from %q, wanted %v", i, out, tc.in, tc.out)
@@ -152,8 +154,8 @@ Duration: %v
 		}
 
 		c := mustParseCodelab(content, *parser.NewOptions())
-		if c.Duration != tc.out {
-			t.Errorf("%d: wanted duration %d but got %d", i, c.Duration, tc.out)
+		if c.Duration != strconv.Itoa(tc.out) {
+			t.Errorf("%d: wanted duration %s but got %d", i, c.Duration, tc.out)
 		}
 	}
 }
