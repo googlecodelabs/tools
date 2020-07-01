@@ -195,12 +195,12 @@ func TestMetaTable(t *testing.T) {
 	if !reflect.DeepEqual(clab.Meta, meta) {
 		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
 	}
-	status := types.LegacyStatus([]string{"final"})
-	if clab.Meta.Status == nil {
-		t.Fatalf("Meta.Status is nil; want %q", status)
+	status := "final"
+	if clab.Meta.Status == "" {
+		t.Fatalf("Meta.Status is \"\"; want %q", status)
 	}
-	if !reflect.DeepEqual(clab.Meta.Status, &status) {
-		t.Errorf("Meta.Status: %q; want %q", *clab.Meta.Status, status)
+	if !reflect.DeepEqual(clab.Meta.Status, status) {
+		t.Errorf("Meta.Status: %q; want %q", clab.Meta.Status, status)
 	}
 }
 
@@ -278,12 +278,12 @@ func TestMetaTablePassMetadata(t *testing.T) {
 	if !reflect.DeepEqual(clab.Meta, meta) {
 		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
 	}
-	status := types.LegacyStatus([]string{"final"})
-	if clab.Meta.Status == nil {
+	status := "final"
+	if clab.Meta.Status == "" {
 		t.Fatalf("Meta.Status is nil; want %q", status)
 	}
-	if !reflect.DeepEqual(clab.Meta.Status, &status) {
-		t.Errorf("Meta.Status: %q; want %q", *clab.Meta.Status, status)
+	if !reflect.DeepEqual(clab.Meta.Status, status) {
+		t.Errorf("Meta.Status: %q; want %q", clab.Meta.Status, status)
 	}
 }
 

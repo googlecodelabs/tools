@@ -404,8 +404,7 @@ func metaTable(ds *docState) {
 		case "status", "state":
 			v := stringSlice(s)
 			toLowerSlice(v)
-			sv := types.LegacyStatus(v)
-			ds.clab.Status = &sv
+			ds.clab.Status = strings.Join(v, ",")
 		case "feedback", "feedback link":
 			ds.clab.Feedback = s
 		case "analytics", "analytics account", "google analytics":

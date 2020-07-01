@@ -383,9 +383,7 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 			break
 		case MetaStatus:
 			// Standardize the statuses and append to the codelab field.
-			statuses := standardSplit(v)
-			statusesAsLegacy := types.LegacyStatus(statuses)
-			c.Status = &statusesAsLegacy
+			c.Status = v
 			break
 		case MetaFeedbackLink:
 			// Directly assign the feedback link to the codelab field.
