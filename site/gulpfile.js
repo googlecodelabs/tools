@@ -426,16 +426,19 @@ const parseViewMetadata = (filepath) => {
 
 // parseCodelabMetadata parses the codelab metadata at the given path.
 const parseCodelabMetadata = (filepath) => {
-  var meta = JSON.parse(fs.readFileSync(filepath));
+  var meta = JSON.parse(fs.readFileSync(filepath)).Meta;
 
-  meta.category = meta.category || [];
-  if (!Array.isArray(meta.category)) {
-    meta.category = [meta.category];
-  }
+  console.log(meta);
+  
+  meta.category = meta.category ? meta.Categories.split(",") : [];
+  // For some reason this file expects 'ID' to be lowercase when in Go we have it uppercase
+  meta.id = meta.ID; 
 
   meta.mainCategory = meta.category[0] || DEFAULT_CATEGORY;
   meta.categoryClass = categoryClass(meta);
-  meta.url = path.join(CODELABS_NAMESPACE, meta.id, 'index.html');
+  meta.url = path.join(CODELABS_NAMESPACE, meta.ID, 'index.html');
+
+ 
 
   return meta;
 }
