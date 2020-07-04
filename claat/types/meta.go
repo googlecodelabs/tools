@@ -31,8 +31,8 @@ type Meta struct {
 	Source     string            `json:"source"`               // Codelab source doc
 	Theme      string            `json:"theme"`                // Usually first item of Categories
 	Status     string            `json:"status"`               // Draft, Published, Hidden, etc.
-	Categories []string          `json:"category"`             // Categories from the meta table
-	Tags       []string          `json:"tags"`                 // All environments supported by the codelab
+	Categories string            `json:"category"`             // Categories from the meta table
+	Tags       string            `json:"tags"`                 // All environments supported by the codelab
 	Feedback   string            `json:"feedback,omitempty"`   // Issues and bugs are sent here
 	GA         string            `json:"ga,omitempty"`         // Codelab-specific GA tracking ID
 	Extra      map[string]string `json:"extra,omitempty"`      // Extra metadata specified in pass_metadata

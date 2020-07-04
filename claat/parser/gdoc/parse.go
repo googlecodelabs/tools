@@ -237,8 +237,9 @@ func parseDoc(doc *html.Node, opts parser.Options) (*types.Codelab, error) {
 	}
 
 	finalizeStep(ds.step) // TODO: last ds.step is never finalized in newStep
-	ds.clab.Tags = util.Unique(ds.clab.Tags)
-	sort.Strings(ds.clab.Tags)
+	tags := util.Unique(parser.StringSlice(ds.clab.Tags))
+	sort.Strings(tags)
+	ds.clab.Tags = strings.Join(tags, ",")
 	ds.clab.Duration = strconv.Itoa(int(ds.totdur.Minutes()))
 	return ds.clab, nil
 }
@@ -397,12 +398,13 @@ func metaTable(ds *docState) {
 		case "summary":
 			ds.clab.Summary = stringifyNode(tr.FirstChild.NextSibling, true, true)
 		case "category", "categories":
-			ds.clab.Categories = util.Unique(stringSlice(s))
+			ds.clab.Categories = strings.Join(util.Unique(parser.StringSlice(s)), ",")
 		case "environment", "environments", "tags":
-			ds.clab.Tags = stringSlice(s)
-			toLowerSlice(ds.clab.Tags)
+			tags := parser.StringSlice(s)
+			toLowerSlice(tags)
+			ds.clab.Tags = strings.Join(tags, ",")
 		case "status", "state":
-			v := stringSlice(s)
+			v := parser.StringSlice(s)
 			toLowerSlice(v)
 			ds.clab.Status = strings.Join(v, ",")
 		case "feedback", "feedback link":
@@ -416,8 +418,8 @@ func metaTable(ds *docState) {
 			}
 		}
 	}
-	if len(ds.clab.Categories) > 0 {
-		ds.clab.Theme = slug(ds.clab.Categories[0])
+	if len(parser.StringSlice(ds.clab.Categories)) > 0 {
+		ds.clab.Theme = slug(parser.StringSlice(ds.clab.Categories)[0])
 	}
 }
 
@@ -453,10 +455,10 @@ func metaStep(ds *docState) {
 		ds.step.Duration = roundDuration(d)
 		ds.totdur += ds.step.Duration
 	case metaEnvironment:
-		ds.env = util.Unique(stringSlice(value))
+		ds.env = util.Unique(parser.StringSlice(value))
 		toLowerSlice(ds.env)
 		ds.step.Tags = append(ds.step.Tags, ds.env...)
-		ds.clab.Tags = append(ds.clab.Tags, ds.env...)
+		ds.clab.Tags = strings.Join(append(parser.StringSlice(ds.clab.Tags), ds.env...), ",")
 		if ds.lastNode != nil && types.IsHeader(ds.lastNode.Type()) {
 			ds.lastNode.MutateEnv(ds.env)
 		}
@@ -871,19 +873,6 @@ func slug(s string) string {
 		}
 	}
 	return buf.String()
-}
-
-// stringSlice splits v by comma "," while ignoring empty elements.
-func stringSlice(v string) []string {
-	f := strings.Split(v, ",")
-	a := f[0:0]
-	for _, s := range f {
-		s = strings.TrimSpace(s)
-		if s != "" {
-			a = append(a, s)
-		}
-	}
-	return a
 }
 
 func toLowerSlice(a []string) {

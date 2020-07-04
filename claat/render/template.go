@@ -24,6 +24,7 @@ import (
 	textTemplate "text/template"
 	"time"
 
+	"github.com/googlecodelabs/tools/claat/parser"
 	mdParse "github.com/googlecodelabs/tools/claat/parser/md"
 
 	"strings"
@@ -49,7 +50,7 @@ type Context struct {
 // Template execution context data is expected to be of type *Context
 // but can be an arbitrary struct, as long as it contains at least Context's fields
 // for the built-in templates to be successfully executed.
-func Execute(w io.Writer, fmt string, data interface{}, opt ...Option) error {
+func Execute(w io.Writer, fmt2 string, data interface{}, opt ...Option) error {
 	var funcs map[string]interface{}
 	for _, o := range opt {
 		switch o := o.(type) {
@@ -57,12 +58,15 @@ func Execute(w io.Writer, fmt string, data interface{}, opt ...Option) error {
 			funcs = o
 		}
 	}
-	t, err := parseTemplate(fmt, funcs)
+
+	t, err := parseTemplate(fmt2, funcs)
 	if err != nil {
 		return err
 	}
 	if ctx, ok := data.(*Context); ok {
-		sort.Strings(ctx.Meta.Tags)
+		tags := parser.StringSlice(ctx.Meta.Tags)
+		sort.Strings(tags)
+		ctx.Meta.Tags = strings.Join(tags, ",")
 	}
 	return t.Execute(w, data)
 }
@@ -97,8 +101,8 @@ var funcMap = map[string]interface{}{
 			res += kvLine(mdParse.MetaStatus, meta.Status)
 		}
 		res += kvLine(mdParse.MetaAuthors, meta.Authors)
-		res += kvLine(mdParse.MetaCategories, strings.Join(meta.Categories, ","))
-		res += kvLine(mdParse.MetaTags, strings.Join(meta.Tags, ","))
+		res += kvLine(mdParse.MetaCategories, meta.Categories)
+		res += kvLine(mdParse.MetaTags, meta.Tags)
 		res += kvLine(mdParse.MetaFeedbackLink, meta.Feedback)
 		res += kvLine(mdParse.MetaAnalyticsAccount, meta.GA)
 

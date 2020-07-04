@@ -17,6 +17,7 @@ package parser
 import (
 	"fmt"
 	"io"
+	"strings"
 	"sync"
 
 	"github.com/googlecodelabs/tools/claat/types"
@@ -97,4 +98,17 @@ func ParseFragment(name string, r io.Reader) ([]types.Node, error) {
 		return nil, fmt.Errorf("no parser named %q", name)
 	}
 	return p.ParseFragment(r)
+}
+
+// StringSlice splits v by comma "," while ignoring empty elements.
+func StringSlice(v string) []string {
+	f := strings.Split(v, ",")
+	a := f[0:0]
+	for _, s := range f {
+		s = strings.TrimSpace(s)
+		if s != "" {
+			a = append(a, s)
+		}
+	}
+	return a
 }

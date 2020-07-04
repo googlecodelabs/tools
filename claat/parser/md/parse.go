@@ -272,8 +272,9 @@ func parseMarkup(markup *html.Node, opts parser.Options) (*types.Codelab, error)
 	}
 
 	finalizeStep(ds.step) // TODO: last ds.step is never finalized in newStep
-	ds.clab.Tags = util.Unique(ds.clab.Tags)
-	sort.Strings(ds.clab.Tags)
+	tags := util.Unique(parser.StringSlice(ds.clab.Tags))
+	sort.Strings(tags)
+	ds.clab.Tags = strings.Join(tags, ",")
 	ds.clab.Duration = strconv.Itoa(int(ds.totdur.Minutes()))
 	return ds.clab, nil
 }
@@ -434,11 +435,11 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 			break
 		case MetaCategories:
 			// Standardize the categories and append to codelab field.
-			c.Categories = append(c.Categories, standardSplit(v)...)
+			c.Categories = strings.Join(append(parser.StringSlice(c.Categories), standardSplit(v)...), ",")
 			break
-		case MetaEnvironments:
+		case MetaEnvironments, MetaTags:
 			// Standardize the tags and append to the codelab field.
-			c.Tags = append(c.Tags, standardSplit(v)...)
+			c.Tags = strings.Join(append(parser.StringSlice(c.Tags), standardSplit(v)...), ",")
 			break
 		case MetaStatus:
 			// Standardize the statuses and append to the codelab field.
@@ -451,10 +452,6 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 		case MetaAnalyticsAccount:
 			// Directly assign the GA id to the codelab field.
 			c.GA = v
-			break
-		case MetaTags:
-			// Standardize the tags and append to the codelab field.
-			c.Tags = append(c.Tags, standardSplit(v)...)
 			break
 		default:
 			// If not explicitly parsed, it might be a pass_metadata value.
@@ -499,10 +496,10 @@ func metaStep(ds *docState) {
 		ds.step.Duration = roundDuration(d)
 		ds.totdur += ds.step.Duration
 	case metaEnvironment:
-		ds.env = util.Unique(stringSlice(value))
+		ds.env = util.Unique(parser.StringSlice(value))
 		toLowerSlice(ds.env)
 		ds.step.Tags = append(ds.step.Tags, ds.env...)
-		ds.clab.Tags = append(ds.clab.Tags, ds.env...)
+		ds.clab.Tags = strings.Join(append(parser.StringSlice(ds.clab.Tags), ds.env...), ",")
 		if ds.lastNode != nil && types.IsHeader(ds.lastNode.Type()) {
 			ds.lastNode.MutateEnv(ds.env)
 		}
@@ -886,19 +883,6 @@ func slug(s string) string {
 		}
 	}
 	return buf.String()
-}
-
-// stringSlice splits v by comma "," while ignoring empty elements.
-func stringSlice(v string) []string {
-	f := strings.Split(v, ",")
-	a := f[0:0]
-	for _, s := range f {
-		s = strings.TrimSpace(s)
-		if s != "" {
-			a = append(a, s)
-		}
-	}
-	return a
 }
 
 func toLowerSlice(a []string) {

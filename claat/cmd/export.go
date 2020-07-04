@@ -100,13 +100,15 @@ func CmdExport(opts CmdExportOptions) int {
 func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*types.Meta, error) {
 	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, rt)
 	if err != nil {
+		fmt.Println("% 1")
 		return nil, err
 	}
 	clab, err := f.SlurpCodelab(src)
 	if err != nil {
+		fmt.Println("% 2")
 		return nil, err
 	}
-
+	fmt.Println("% 2.5")
 	// codelab export context
 	lastmod := types.ContextTime(clab.Mod)
 	clab.Meta.Source = src
@@ -125,9 +127,11 @@ func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*ty
 		// download or copy codelab assets to disk, and rewrite image URLs
 		mdir := filepath.Join(dir, util.ImgDirname)
 		if _, err := f.SlurpImages(src, mdir, clab.Steps); err != nil {
+			fmt.Println("% 3")
 			return nil, err
 		}
 	}
+	fmt.Println("% 3.5")
 	// write codelab and its metadata to disk
 	return meta, writeCodelab(dir, clab.Codelab, opts.ExtraVars, ctx)
 }
@@ -182,20 +186,23 @@ func writeCodelabWriter(w io.Writer, clab *types.Codelab, extraVars map[string]s
 // in JSON format on disk.
 // extraVars is extra variables to pass into the template context.
 func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, ctx *types.Context) error {
+	fmt.Println("% 3.9")
 	// output to stdout does not include metadata
 	if !isStdout(dir) {
 		// make sure codelab dir exists
 		if err := os.MkdirAll(dir, 0755); err != nil {
+			fmt.Println("% 4")
 			return err
 		}
 		// codelab metadata
 		cm := &types.ContextMeta{Context: *ctx, Meta: clab.Meta}
 		f := filepath.Join(dir, metaFilename)
 		if err := writeMeta(f, cm); err != nil {
+			fmt.Println("% 5")
 			return err
 		}
 	}
-
+	fmt.Println("% 5.1")
 	// main content file(s)
 	data := &struct {
 		render.Context
@@ -212,7 +219,9 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 		Steps:    clab.Steps,
 		Extra:    extraVars,
 	}}
+	fmt.Println("% 5.2")
 	if ctx.Format != "offline" {
+		fmt.Println("% 5.3")
 		w := os.Stdout
 		if !isStdout(dir) {
 			ext := ctx.Format
@@ -221,13 +230,16 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 			}
 			f, err := os.Create(filepath.Join(dir, "index."+ext))
 			if err != nil {
+				fmt.Println("% 6")
 				return err
 			}
 			w = f
 			defer f.Close()
 		}
+		fmt.Println("% 5.4")
 		return render.Execute(w, ctx.Format, data)
 	}
+	fmt.Println("% 6.1")
 	for i, step := range clab.Steps {
 		data.Current = step
 		data.StepNum = i + 1
@@ -241,15 +253,18 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 			}
 			f, err := os.Create(filepath.Join(dir, name))
 			if err != nil {
+				fmt.Println("% 7")
 				return err
 			}
 			w = f
 			defer f.Close()
 		}
 		if err := render.Execute(w, ctx.Format, data); err != nil {
+			fmt.Println("% 8")
 			return err
 		}
 	}
+	fmt.Println("% 9")
 	return nil
 }
 

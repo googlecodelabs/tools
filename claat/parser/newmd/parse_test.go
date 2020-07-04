@@ -98,7 +98,7 @@ more content
 			out: &types.Codelab{
 				Meta: types.Meta{
 					Title:    "titlegoeshere",
-					Tags:     []string{"bar", "baz", "foo"},
+					Tags:     "bar,baz,foo",
 					ID:       "idvalue",
 					Extra:    map[string]string{},
 					Duration: "187", // Minutes. This is an int, not a duration.
@@ -280,8 +280,9 @@ func TestParseMetadata(t *testing.T) {
 		ID:         "zyxwvut",
 		Authors:    "john smith",
 		Summary:    "abcdefghij",
-		Categories: []string{"not", "really"},
-		Tags:       []string{"kiosk", "web"},
+		Categories: "not,really",
+		Duration:   "0",
+		Tags:       "kiosk,web",
 		Feedback:   "https://www.google.com",
 		GA:         "12345",
 		Extra:      map[string]string{},
@@ -313,8 +314,9 @@ func TestParseMetadataPassMetadata(t *testing.T) {
 		ID:         "zyxwvut",
 		Authors:    "john smith",
 		Summary:    "abcdefghij",
-		Categories: []string{"not", "really"},
-		Tags:       []string{"kiosk", "web"},
+		Categories: "not,really",
+		Duration:   "0",
+		Tags:       "kiosk,web",
 		Feedback:   "https://www.google.com",
 		GA:         "12345",
 		Extra: map[string]string{

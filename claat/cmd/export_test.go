@@ -17,6 +17,7 @@ package cmd_test
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -70,6 +71,7 @@ func TestExportCodelabMemory(t *testing.T) {
 			// Given the same markdown input, ExportCodelabMemory should have the same output content as ExportCodelab
 			wantMeta, err := cmd.ExportCodelab(test.filePath, nil, opts)
 			if err != nil {
+				fmt.Println("% 0")
 				t.Fatal(err)
 			}
 

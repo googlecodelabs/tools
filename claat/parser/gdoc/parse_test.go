@@ -53,9 +53,9 @@ func TestStringSlice(t *testing.T) {
 		{" one, two and a half, three", []string{"one", "two and a half", "three"}},
 	}
 	for i, test := range tests {
-		v := stringSlice(test.in)
+		v := parser.StringSlice(test.in)
 		if !reflect.DeepEqual(v, test.out) {
-			t.Errorf("%d: stringSlice(%q): %v; want %v", i, test.in, v, test.out)
+			t.Errorf("%d: parser.StringSlice(%q): %v; want %v", i, test.in, v, test.out)
 		}
 	}
 }
@@ -182,15 +182,16 @@ func TestMetaTable(t *testing.T) {
 	meta := types.Meta{
 		Summary:    "Test summary",
 		Authors:    "John Smith <user@example.com>",
-		Categories: []string{"Foo", "Bar"},
+		Categories: "Foo,Bar",
 		Theme:      "foo",
 		Status:     clab.Meta.Status, // verified separately
 		Feedback:   "https://example.com/issues",
 		GA:         "GA-12345",
 		// Tags are always sorted.
 		// TODO: move sorting to Parse of the parser package
-		Tags:  []string{"kiosk", "web"},
-		Extra: map[string]string{},
+		Duration: "0",
+		Tags:     "kiosk,web",
+		Extra:    map[string]string{},
 	}
 	if !reflect.DeepEqual(clab.Meta, meta) {
 		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
@@ -263,14 +264,15 @@ func TestMetaTablePassMetadata(t *testing.T) {
 	meta := types.Meta{
 		Summary:    "Test summary",
 		Authors:    "John Smith <user@example.com>",
-		Categories: []string{"Foo", "Bar"},
+		Categories: "Foo,Bar",
 		Theme:      "foo",
 		Status:     clab.Meta.Status, // verified separately
 		Feedback:   "https://example.com/issues",
 		GA:         "GA-12345",
 		// Tags are always sorted.
 		// TODO: move sorting to Parse of the parser package
-		Tags: []string{"kiosk", "web"},
+		Tags:     "kiosk,web",
+		Duration: "0",
 		Extra: map[string]string{
 			"extrafieldone": "11111",
 		},
