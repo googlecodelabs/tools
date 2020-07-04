@@ -84,7 +84,7 @@ func Parse(name string, r io.Reader, opts Options) (*types.Codelab, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.URL = c.ID
+	c.Meta["URL"] = c.Meta["ID"]
 	return c, err
 }
 

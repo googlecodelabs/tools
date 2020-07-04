@@ -64,9 +64,9 @@ func Execute(w io.Writer, fmt2 string, data interface{}, opt ...Option) error {
 		return err
 	}
 	if ctx, ok := data.(*Context); ok {
-		tags := parser.StringSlice(ctx.Meta.Tags)
+		tags := parser.StringSlice((*ctx.Meta)["Tags"])
 		sort.Strings(tags)
-		ctx.Meta.Tags = strings.Join(tags, ",")
+		(*ctx.Meta)["Tags"] = strings.Join(tags, ",")
 	}
 	return t.Execute(w, data)
 }
@@ -95,16 +95,16 @@ var funcMap = map[string]interface{}{
 		}
 
 		res := ""
-		res += kvLine(mdParse.MetaID, meta.ID)
-		res += kvLine(mdParse.MetaSummary, meta.Summary)
-		if meta.Status != "" {
-			res += kvLine(mdParse.MetaStatus, meta.Status)
+		res += kvLine(mdParse.MetaID, (*meta)["ID"])
+		res += kvLine(mdParse.MetaSummary, (*meta)["Summary"])
+		if (*meta)["Status"] != "" {
+			res += kvLine(mdParse.MetaStatus, (*meta)["Status"])
 		}
-		res += kvLine(mdParse.MetaAuthors, meta.Authors)
-		res += kvLine(mdParse.MetaCategories, meta.Categories)
-		res += kvLine(mdParse.MetaTags, meta.Tags)
-		res += kvLine(mdParse.MetaFeedbackLink, meta.Feedback)
-		res += kvLine(mdParse.MetaAnalyticsAccount, meta.GA)
+		res += kvLine(mdParse.MetaAuthors, (*meta)["Authors"])
+		res += kvLine(mdParse.MetaCategories, (*meta)["Categories"])
+		res += kvLine(mdParse.MetaTags, (*meta)["Tags"])
+		res += kvLine(mdParse.MetaFeedbackLink, (*meta)["Feedback"])
+		res += kvLine(mdParse.MetaAnalyticsAccount, (*meta)["GA"])
 
 		return res
 	},

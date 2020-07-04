@@ -83,7 +83,7 @@ func CmdUpdate(opts CmdUpdateOptions) int {
 			exitCode = 1
 			log.Printf(reportErr, res.dir, res.err)
 		} else {
-			log.Printf(reportOk, res.meta.ID)
+			log.Printf(reportOk, (*res.meta)["ID"])
 		}
 	}
 	return exitCode
@@ -111,7 +111,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	if err != nil {
 		return nil, err
 	}
-	clab, err := f.SlurpCodelab(meta.Source)
+	clab, err := f.SlurpCodelab(meta.Meta["Source"])
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	imgdir := filepath.Join(newdir, util.ImgDirname)
 
 	// slurp codelab assets to disk and rewrite image URLs
-	imgmap, err := f.SlurpImages(meta.Source, imgdir, clab.Steps)
+	imgmap, err := f.SlurpImages(meta.Meta["Source"], imgdir, clab.Steps)
 	if err != nil {
 		return nil, err
 	}

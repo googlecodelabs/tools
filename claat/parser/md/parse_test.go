@@ -88,8 +88,8 @@ func TestHandleCodelabTitle(t *testing.T) {
 	title := "Egret"
 	c := mustParseCodelab(fmt.Sprintf("# %s", title), *parser.NewOptions())
 
-	if c.Title != title {
-		t.Errorf("[%q] got %v, want %v", title, c.Title, title)
+	if c.Meta["Title"] != title {
+		t.Errorf("[%q] got %v, want %v", title, c.Meta["Title"], title)
 	}
 }
 
@@ -123,7 +123,7 @@ func TestProcessDuration(t *testing.T) {
 	for i, tc := range tests {
 		content := fmt.Sprintf(stdHeader+"\n## Step Title\nDuration: %v\n", tc.in)
 		c := mustParseCodelab(content, *parser.NewOptions())
-		durationInt, _ := strconv.Atoi(c.Duration)
+		durationInt, _ := strconv.Atoi(c.Meta["Duration"])
 		out := time.Duration(durationInt) * time.Minute
 
 		if out != tc.out {
@@ -154,8 +154,8 @@ Duration: %v
 		}
 
 		c := mustParseCodelab(content, *parser.NewOptions())
-		if c.Duration != strconv.Itoa(tc.out) {
-			t.Errorf("%d: wanted duration %s but got %d", i, c.Duration, tc.out)
+		if c.Meta["Duration"] != strconv.Itoa(tc.out) {
+			t.Errorf("%d: wanted duration %s but got %d", i, c.Meta["Duration"], tc.out)
 		}
 	}
 }
@@ -163,16 +163,15 @@ Duration: %v
 func TestParseMetadata(t *testing.T) {
 	title := "Codelab Title"
 	wantMeta := types.Meta{
-		Title:      title,
-		ID:         "zyxwvut",
-		Authors:    "john smith",
-		Summary:    "abcdefghij",
-		Categories: "not,really",
-		Duration:   "0",
-		Tags:       "kiosk,web",
-		Feedback:   "https://www.google.com",
-		GA:         "12345",
-		Extra:      map[string]string{},
+		"Title":      title,
+		"ID":         "zyxwvut",
+		"Authors":    "john smith",
+		"Summary":    "abcdefghij",
+		"Categories": "not,really",
+		"Duration":   "0",
+		"Tags":       "kiosk,web",
+		"Feedback":   "https://www.google.com",
+		"GA":         "12345",
 	}
 
 	content := `---
@@ -197,18 +196,16 @@ feedback link: https://www.google.com
 func TestParseMetadataPassMetadata(t *testing.T) {
 	title := "Codelab Title"
 	wantMeta := types.Meta{
-		Title:      title,
-		ID:         "zyxwvut",
-		Authors:    "john smith",
-		Summary:    "abcdefghij",
-		Categories: "not,really",
-		Duration:   "0",
-		Tags:       "kiosk,web",
-		Feedback:   "https://www.google.com",
-		GA:         "12345",
-		Extra: map[string]string{
-			"extrafieldtwo": "bbbbb",
-		},
+		"Title":         title,
+		"ID":            "zyxwvut",
+		"Authors":       "john smith",
+		"Summary":       "abcdefghij",
+		"Categories":    "not,really",
+		"Duration":      "0",
+		"Tags":          "kiosk,web",
+		"Feedback":      "https://www.google.com",
+		"GA":            "12345",
+		"extrafieldtwo": "bbbbb",
 	}
 
 	content := `---
