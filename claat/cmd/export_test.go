@@ -73,7 +73,7 @@ func TestExportCodelabMemory(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			generatedFolder := path.Join(tmp, wantMeta.ID)
+			generatedFolder := path.Join(tmp, (*wantMeta)["ID"])
 			files, err := ioutil.ReadDir(generatedFolder)
 			if err != nil {
 				t.Fatal(err)
@@ -84,7 +84,7 @@ func TestExportCodelabMemory(t *testing.T) {
 				t.Logf("Name: %s, IsDir: %v, Size: %d", f.Name(), f.IsDir(), f.Size())
 			}
 
-			wantBytes, err := ioutil.ReadFile(path.Join(tmp, wantMeta.ID, "index.html"))
+			wantBytes, err := ioutil.ReadFile(path.Join(tmp, (*wantMeta)["ID"], "index.html"))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -95,7 +95,7 @@ func TestExportCodelabMemory(t *testing.T) {
 			}
 
 			// Because the In-Memory codelab doesn't have the source, when comparing, we remove Source
-			wantMeta.Source = ""
+			delete((*wantMeta), "Source")
 			if !reflect.DeepEqual(wantMeta, gotMeta) {
 				t.Errorf("ExportCodelabMemory returns metadata:\n%+v\nwant:\n%+v\n", gotMeta, wantMeta)
 			}

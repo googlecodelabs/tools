@@ -217,10 +217,10 @@ func parseDoc(doc *html.Node, opts parser.Options) (*types.Codelab, error) {
 		switch {
 		case hasClass(ds.cur, "title") && ds.step == nil:
 			if v := stringifyNode(ds.cur, true, false); v != "" {
-				ds.clab.Title = v
+				ds.clab.Meta["Title"] = v
 			}
-			if ds.clab.ID == "" {
-				ds.clab.ID = slug(ds.clab.Title)
+			if ds.clab.Meta["ID"] == "" {
+				ds.clab.Meta["ID"] = slug(ds.clab.Meta["Title"])
 			}
 			continue
 		case ds.cur.DataAtom == atom.Table && ds.step == nil:
@@ -237,9 +237,10 @@ func parseDoc(doc *html.Node, opts parser.Options) (*types.Codelab, error) {
 	}
 
 	finalizeStep(ds.step) // TODO: last ds.step is never finalized in newStep
-	ds.clab.Tags = util.Unique(ds.clab.Tags)
-	sort.Strings(ds.clab.Tags)
-	ds.clab.Duration = int(ds.totdur.Minutes())
+	tags := util.Unique(parser.StringSlice(ds.clab.Meta["Tags"]))
+	sort.Strings(tags)
+	ds.clab.Meta["Tags"] = strings.Join(tags, ",")
+	ds.clab.Meta["Duration"] = strconv.Itoa(int(ds.totdur.Minutes()))
 	return ds.clab, nil
 }
 
@@ -389,36 +390,36 @@ func metaTable(ds *docState) {
 		fieldName := strings.ToLower(stringifyNode(tr.FirstChild, true, false))
 		switch fieldName {
 		case "id", "url":
-			ds.clab.ID = s
+			ds.clab.Meta["ID"] = s
 		case "author", "authors":
-			ds.clab.Authors = s
+			ds.clab.Meta["Authors"] = s
 		case "badge path":
-			ds.clab.BadgePath = s
+			ds.clab.Meta["BadgePath"] = s
 		case "summary":
-			ds.clab.Summary = stringifyNode(tr.FirstChild.NextSibling, true, true)
+			ds.clab.Meta["Summary"] = stringifyNode(tr.FirstChild.NextSibling, true, true)
 		case "category", "categories":
-			ds.clab.Categories = util.Unique(stringSlice(s))
+			ds.clab.Meta["Categories"] = strings.Join(util.Unique(parser.StringSlice(s)), ",")
 		case "environment", "environments", "tags":
-			ds.clab.Tags = stringSlice(s)
-			toLowerSlice(ds.clab.Tags)
+			tags := parser.StringSlice(s)
+			toLowerSlice(tags)
+			ds.clab.Meta["Tags"] = strings.Join(tags, ",")
 		case "status", "state":
-			v := stringSlice(s)
+			v := parser.StringSlice(s)
 			toLowerSlice(v)
-			sv := types.LegacyStatus(v)
-			ds.clab.Status = &sv
+			ds.clab.Meta["Status"] = strings.Join(v, ",")
 		case "feedback", "feedback link":
-			ds.clab.Feedback = s
+			ds.clab.Meta["Feedback"] = s
 		case "analytics", "analytics account", "google analytics":
-			ds.clab.GA = s
+			ds.clab.Meta["GA"] = s
 		default:
 			// If not explicitly parsed, it might be a pass_metadata value.
 			if _, ok := ds.passMetadata[fieldName]; ok {
-				ds.clab.Extra[fieldName] = s
+				ds.clab.Meta[fieldName] = s
 			}
 		}
 	}
-	if len(ds.clab.Categories) > 0 {
-		ds.clab.Theme = slug(ds.clab.Categories[0])
+	if len(parser.StringSlice(ds.clab.Meta["Categories"])) > 0 {
+		ds.clab.Meta["Theme"] = slug(parser.StringSlice(ds.clab.Meta["Categories"])[0])
 	}
 }
 
@@ -454,10 +455,10 @@ func metaStep(ds *docState) {
 		ds.step.Duration = roundDuration(d)
 		ds.totdur += ds.step.Duration
 	case metaEnvironment:
-		ds.env = util.Unique(stringSlice(value))
+		ds.env = util.Unique(parser.StringSlice(value))
 		toLowerSlice(ds.env)
 		ds.step.Tags = append(ds.step.Tags, ds.env...)
-		ds.clab.Tags = append(ds.clab.Tags, ds.env...)
+		ds.clab.Meta["Tags"] = strings.Join(append(parser.StringSlice(ds.clab.Meta["Tags"]), ds.env...), ",")
 		if ds.lastNode != nil && types.IsHeader(ds.lastNode.Type()) {
 			ds.lastNode.MutateEnv(ds.env)
 		}
@@ -581,7 +582,7 @@ func survey(ds *docState) types.Node {
 		return nil
 	}
 	ds.survey++
-	id := fmt.Sprintf("%s-%d", ds.clab.ID, ds.survey)
+	id := fmt.Sprintf("%s-%d", ds.clab.Meta["ID"], ds.survey)
 	return types.NewSurveyNode(id, gg...)
 }
 
@@ -872,19 +873,6 @@ func slug(s string) string {
 		}
 	}
 	return buf.String()
-}
-
-// stringSlice splits v by comma "," while ignoring empty elements.
-func stringSlice(v string) []string {
-	f := strings.Split(v, ",")
-	a := f[0:0]
-	for _, s := range f {
-		s = strings.TrimSpace(s)
-		if s != "" {
-			a = append(a, s)
-		}
-	}
-	return a
 }
 
 func toLowerSlice(a []string) {

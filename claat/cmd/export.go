@@ -80,7 +80,7 @@ func CmdExport(opts CmdExportOptions) int {
 			exitCode = 1
 			log.Printf(reportErr, res.src, res.err)
 		} else if !isStdout(opts.Output) {
-			log.Printf(reportOk, res.meta.ID)
+			log.Printf(reportOk, (*res.meta)["ID"])
 		}
 	}
 	return exitCode
@@ -106,10 +106,9 @@ func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*ty
 	if err != nil {
 		return nil, err
 	}
-
 	// codelab export context
 	lastmod := types.ContextTime(clab.Mod)
-	clab.Meta.Source = src
+	clab.Meta["Source"] = src
 	meta := &clab.Meta
 	ctx := &types.Context{
 		Env:     opts.Expenv,
@@ -195,7 +194,6 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 			return err
 		}
 	}
-
 	// main content file(s)
 	data := &struct {
 		render.Context
@@ -270,5 +268,5 @@ func writeMeta(path string, cm *types.ContextMeta) error {
 // codelabDir returns codelab root directory.
 // The base argument is codelab parent directory.
 func codelabDir(base string, m *types.Meta) string {
-	return filepath.Join(base, m.ID)
+	return filepath.Join(base, (*m)["ID"])
 }

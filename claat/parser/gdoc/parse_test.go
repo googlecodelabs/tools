@@ -53,9 +53,9 @@ func TestStringSlice(t *testing.T) {
 		{" one, two and a half, three", []string{"one", "two and a half", "three"}},
 	}
 	for i, test := range tests {
-		v := stringSlice(test.in)
+		v := parser.StringSlice(test.in)
 		if !reflect.DeepEqual(v, test.out) {
-			t.Errorf("%d: stringSlice(%q): %v; want %v", i, test.in, v, test.out)
+			t.Errorf("%d: parser.StringSlice(%q): %v; want %v", i, test.in, v, test.out)
 		}
 	}
 }
@@ -180,27 +180,25 @@ func TestMetaTable(t *testing.T) {
 		t.Fatal(err)
 	}
 	meta := types.Meta{
-		Summary:    "Test summary",
-		Authors:    "John Smith <user@example.com>",
-		Categories: []string{"Foo", "Bar"},
-		Theme:      "foo",
-		Status:     clab.Meta.Status, // verified separately
-		Feedback:   "https://example.com/issues",
-		GA:         "GA-12345",
-		// Tags are always sorted.
-		// TODO: move sorting to Parse of the parser package
-		Tags:  []string{"kiosk", "web"},
-		Extra: map[string]string{},
+		"Summary":    "Test summary",
+		"Authors":    "John Smith <user@example.com>",
+		"Categories": "Foo,Bar",
+		"Theme":      "foo",
+		"Status":     clab.Meta["Status"], // verified separately
+		"Feedback":   "https://example.com/issues",
+		"GA":         "GA-12345",
+		"Duration":   "0",
+		"Tags":       "kiosk,web",
 	}
 	if !reflect.DeepEqual(clab.Meta, meta) {
 		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
 	}
-	status := types.LegacyStatus([]string{"final"})
-	if clab.Meta.Status == nil {
-		t.Fatalf("Meta.Status is nil; want %q", status)
+	status := "final"
+	if clab.Meta["Status"] == "" {
+		t.Fatalf("Meta.Status is \"\"; want %q", status)
 	}
-	if !reflect.DeepEqual(clab.Meta.Status, &status) {
-		t.Errorf("Meta.Status: %q; want %q", *clab.Meta.Status, status)
+	if !reflect.DeepEqual(clab.Meta["Status"], status) {
+		t.Errorf("Meta.Status: %q; want %q", clab.Meta["Status"], status)
 	}
 }
 
@@ -261,29 +259,28 @@ func TestMetaTablePassMetadata(t *testing.T) {
 		t.Fatal(err)
 	}
 	meta := types.Meta{
-		Summary:    "Test summary",
-		Authors:    "John Smith <user@example.com>",
-		Categories: []string{"Foo", "Bar"},
-		Theme:      "foo",
-		Status:     clab.Meta.Status, // verified separately
-		Feedback:   "https://example.com/issues",
-		GA:         "GA-12345",
+		"Summary":    "Test summary",
+		"Authors":    "John Smith <user@example.com>",
+		"Categories": "Foo,Bar",
+		"Theme":      "foo",
+		"Status":     clab.Meta["Status"], // verified separately
+		"Feedback":   "https://example.com/issues",
+		"GA":         "GA-12345",
 		// Tags are always sorted.
 		// TODO: move sorting to Parse of the parser package
-		Tags: []string{"kiosk", "web"},
-		Extra: map[string]string{
-			"extrafieldone": "11111",
-		},
+		"Tags":          "kiosk,web",
+		"Duration":      "0",
+		"extrafieldone": "11111",
 	}
 	if !reflect.DeepEqual(clab.Meta, meta) {
 		t.Errorf("Meta: \n%+v\nwant:\n%+v", clab.Meta, meta)
 	}
-	status := types.LegacyStatus([]string{"final"})
-	if clab.Meta.Status == nil {
+	status := "final"
+	if clab.Meta["Status"] == "" {
 		t.Fatalf("Meta.Status is nil; want %q", status)
 	}
-	if !reflect.DeepEqual(clab.Meta.Status, &status) {
-		t.Errorf("Meta.Status: %q; want %q", *clab.Meta.Status, status)
+	if !reflect.DeepEqual(clab.Meta["Status"], status) {
+		t.Errorf("Meta.Status: %q; want %q", clab.Meta["Status"], status)
 	}
 }
 
@@ -382,11 +379,11 @@ func TestParseDoc(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Meta.Title != "Test Codelab" {
-		t.Errorf("c.Meta.Title = %q; want Test Codelab", c.Meta.Title)
+	if c.Meta["Title"] != "Test Codelab" {
+		t.Errorf("c.Meta.Title = %q; want Test Codelab", c.Meta["Title"])
 	}
-	if c.Meta.ID != "test-codelab" {
-		t.Errorf("c.ID = %q; want test-codelab", c.Meta.ID)
+	if c.Meta["ID"] != "test-codelab" {
+		t.Errorf("c.ID = %q; want test-codelab", c.Meta["ID"])
 	}
 	if len(c.Steps) == 0 {
 		t.Fatalf("len(c.Steps) = 0")

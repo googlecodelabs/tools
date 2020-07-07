@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -57,8 +58,8 @@ func TestHandleCodelabTitle(t *testing.T) {
 	title := "Egret"
 	c := mustParseCodelab(fmt.Sprintf("# %s", title), *parser.NewOptions())
 
-	if c.Title != title {
-		t.Errorf("[%q] got %v, want %v", title, c.Title, title)
+	if c.Meta["Title"] != title {
+		t.Errorf("[%q] got %v, want %v", title, c.Meta["Title"], title)
 	}
 }
 
@@ -96,11 +97,10 @@ more content
 `,
 			out: &types.Codelab{
 				Meta: types.Meta{
-					Title:    "titlegoeshere",
-					Tags:     []string{"bar", "baz", "foo"},
-					ID:       "idvalue",
-					Extra:    map[string]string{},
-					Duration: 187, // Minutes. This is an int, not a duration.
+					"Title":    "titlegoeshere",
+					"Tags":     "bar,baz,foo",
+					"ID":       "idvalue",
+					"Duration": "187", // Minutes. This is an int, not a duration.
 				},
 				Steps: []*types.Step{
 					&types.Step{
@@ -235,7 +235,8 @@ func TestProcessDuration(t *testing.T) {
 	for i, tc := range tests {
 		content := fmt.Sprintf(stdHeader+"\n## Step Title\nDuration: %v\n", tc.in)
 		c := mustParseCodelab(content, *parser.NewOptions())
-		out := time.Duration(c.Duration) * time.Minute
+		durationInt, _ := strconv.Atoi(c.Meta["Duration"])
+		out := time.Duration(durationInt) * time.Minute
 
 		if out != tc.out {
 			t.Errorf("%d: got duration %v from %q, wanted %v", i, out, tc.in, tc.out)
@@ -265,8 +266,8 @@ Duration: %v
 		}
 
 		c := mustParseCodelab(content, *parser.NewOptions())
-		if c.Duration != tc.out {
-			t.Errorf("%d: wanted duration %d but got %d", i, c.Duration, tc.out)
+		if c.Meta["Duration"] != strconv.Itoa(tc.out) {
+			t.Errorf("%d: wanted duration %s but got %d", i, c.Meta["Duration"], tc.out)
 		}
 	}
 }
@@ -274,15 +275,15 @@ Duration: %v
 func TestParseMetadata(t *testing.T) {
 	title := "Codelab Title"
 	wantMeta := types.Meta{
-		Title:      title,
-		ID:         "zyxwvut",
-		Authors:    "john smith",
-		Summary:    "abcdefghij",
-		Categories: []string{"not", "really"},
-		Tags:       []string{"kiosk", "web"},
-		Feedback:   "https://www.google.com",
-		GA:         "12345",
-		Extra:      map[string]string{},
+		"Title":      title,
+		"ID":         "zyxwvut",
+		"Authors":    "john smith",
+		"Summary":    "abcdefghij",
+		"Categories": "not,really",
+		"Duration":   "0",
+		"Tags":       "kiosk,web",
+		"Feedback":   "https://www.google.com",
+		"GA":         "12345",
 	}
 
 	content := `---
@@ -307,17 +308,16 @@ feedback link: https://www.google.com
 func TestParseMetadataPassMetadata(t *testing.T) {
 	title := "Codelab Title"
 	wantMeta := types.Meta{
-		Title:      title,
-		ID:         "zyxwvut",
-		Authors:    "john smith",
-		Summary:    "abcdefghij",
-		Categories: []string{"not", "really"},
-		Tags:       []string{"kiosk", "web"},
-		Feedback:   "https://www.google.com",
-		GA:         "12345",
-		Extra: map[string]string{
-			"extrafieldtwo": "bbbbb",
-		},
+		"Title":         title,
+		"ID":            "zyxwvut",
+		"Authors":       "john smith",
+		"Summary":       "abcdefghij",
+		"Categories":    "not,really",
+		"Duration":      "0",
+		"Tags":          "kiosk,web",
+		"Feedback":      "https://www.google.com",
+		"GA":            "12345",
+		"extrafieldtwo": "bbbbb",
 	}
 
 	content := `---

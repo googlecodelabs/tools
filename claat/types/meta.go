@@ -17,31 +17,11 @@ package types
 
 import (
 	"bytes"
-	"encoding/json"
-	"fmt"
-	"strings"
 	"time"
 )
 
-// Meta contains a single codelab metadata.
-type Meta struct {
-	ID         string            `json:"id"`                   // ID is also part of codelab URL
-	Duration   int               `json:"duration"`             // Codelab duration in minutes
-	Title      string            `json:"title"`                // Codelab title
-	Authors    string            `json:"authors,omitempty"`    // Arbitrary authorship text
-	BadgePath  string            `json:"badge_path,omitempty"` // Path of the Badge to grant on codelab completion on devsite
-	Summary    string            `json:"summary"`              // Short summary
-	Source     string            `json:"source"`               // Codelab source doc
-	Theme      string            `json:"theme"`                // Usually first item of Categories
-	Status     *LegacyStatus     `json:"status"`               // Draft, Published, Hidden, etc.
-	Categories []string          `json:"category"`             // Categories from the meta table
-	Tags       []string          `json:"tags"`                 // All environments supported by the codelab
-	Feedback   string            `json:"feedback,omitempty"`   // Issues and bugs are sent here
-	GA         string            `json:"ga,omitempty"`         // Codelab-specific GA tracking ID
-	Extra      map[string]string `json:"extra,omitempty"`      // Extra metadata specified in pass_metadata
-
-	URL string `json:"url"` // Legacy ID; TODO: remove
-}
+// Meta contains a single codelab metadata in the form of map[string]string
+type Meta map[string]string
 
 // Context is an export context.
 // It is defined in this package so that it can be used by both cli and a server.
@@ -67,7 +47,7 @@ type Codelab struct {
 
 func NewCodelab() *Codelab {
 	clab := &Codelab{}
-	clab.Extra = map[string]string{}
+	clab.Meta = Meta{}
 
 	return clab
 }
@@ -115,46 +95,4 @@ func (ct *ContextTime) UnmarshalJSON(b []byte) error {
 	}
 	*ct = ContextTime(t)
 	return nil
-}
-
-// LegacyStatus supports legacy status values which are strings
-// as opposed to an array, e.g. "['one', u'two', ...]".
-type LegacyStatus []string
-
-// MarshalJSON implements Marshaler interface.
-func (s LegacyStatus) MarshalJSON() ([]byte, error) {
-	if len(s) == 0 {
-		return []byte("[]"), nil
-	}
-	return json.Marshal([]string(s))
-}
-
-// UnmarshalJSON implements Unmarshaler interface.
-func (s *LegacyStatus) UnmarshalJSON(b []byte) error {
-	if len(b) == 0 {
-		return nil
-	}
-	if b[0] == '"' {
-		// legacy status: "['s1', u's2', ...]"
-		// assume no status value contains single quotes
-		b = bytes.Trim(b, `"`)
-		b = bytes.Replace(b, []byte("u'"), []byte(`"`), -1)
-		b = bytes.Replace(b, []byte("'"), []byte(`"`), -1)
-	}
-	var v []string
-	if err := json.Unmarshal(b, &v); err != nil {
-		return fmt.Errorf("%v: %s", err, b)
-	}
-	*s = LegacyStatus(v)
-	return nil
-}
-
-// String turns a status into a string
-func (s LegacyStatus) String() string {
-	ss := []string(s)
-	if len(ss) == 0 {
-		return ""
-	}
-
-	return "[" + strings.Join(ss, ",") + "]"
 }
