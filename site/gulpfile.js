@@ -426,7 +426,7 @@ const parseViewMetadata = (filepath) => {
 
 // parseCodelabMetadata parses the codelab metadata at the given path.
 const parseCodelabMetadata = (filepath) => {
-  var meta = JSON.parse(fs.readFileSync(filepath));
+  var meta = JSON.parse(fs.readFileSync(filepath)).Meta;
 
   // Since Metadata in Golang was changed from struct to map, the resulting JSON 
   // contains a nested meta object which must be converted into the old, expected format
@@ -448,7 +448,9 @@ const parseCodelabMetadata = (filepath) => {
 
   meta.mainCategory = meta.category[0] || DEFAULT_CATEGORY;
   meta.categoryClass = categoryClass(meta);
-  meta.url = path.join(CODELABS_NAMESPACE, meta.id, 'index.html');
+  meta.url = path.join(CODELABS_NAMESPACE, meta.ID, 'index.html');
+
+ 
 
   return meta;
   
