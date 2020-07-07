@@ -815,27 +815,11 @@ func button(ds *docState) types.Node {
 func link(ds *docState) types.Node {
 	href := nodeAttr(ds.cur, "href")
 
-	text := stringifyNode(ds.cur, false)
-	if strings.TrimSpace(text) == "" {
-		return nil
-	}
+	ds.push(nil)
+	parsedChildNodes := parseSubtree(ds)
+	ds.pop()
 
-	t := types.NewTextNode(text)
-	if isBold(ds.cur.Parent) {
-		t.Bold = true
-	}
-	if isItalic(ds.cur.Parent) {
-		t.Italic = true
-	}
-	if isCode(ds.cur.Parent) {
-		t.Code = true
-	}
-	if href == "" || href[0] == '#' {
-		t.MutateBlock(findBlockParent(ds.cur))
-		return t
-	}
-
-	n := types.NewURLNode(href, t)
+	n := types.NewURLNode(href, parsedChildNodes...)
 	n.Name = nodeAttr(ds.cur, "name")
 	if v := nodeAttr(ds.cur, "target"); v != "" {
 		n.Target = v
