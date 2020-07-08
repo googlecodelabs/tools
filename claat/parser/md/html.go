@@ -61,6 +61,17 @@ func isItalic(hn *html.Node) bool {
 		hn.DataAtom == atom.I
 }
 
+func isBoldAndItalic(hn *html.Node) bool {
+	if hn.Parent == nil || hn.Parent.Parent == nil {
+		return false
+	}
+	if hn.Type == html.TextNode {
+		hn = hn.Parent
+	}
+	return (isItalic(hn) && isBold(hn.Parent)) || (isItalic(hn.Parent) && isBold(hn))
+
+}
+
 func isConsole(hn *html.Node) bool {
 	if hn.Type == html.TextNode {
 		hn = hn.Parent

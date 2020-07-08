@@ -849,6 +849,10 @@ func link(ds *docState) types.Node {
 func text(ds *docState) types.Node {
 	bold := isBold(ds.cur)
 	italic := isItalic(ds.cur)
+	if isBoldAndItalic(ds.cur) {
+		bold = true
+		italic = true
+	}
 	code := isCode(ds.cur) || isConsole(ds.cur)
 
 	// TODO: verify whether this actually does anything
