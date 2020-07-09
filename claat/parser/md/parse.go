@@ -849,6 +849,7 @@ func link(ds *docState) types.Node {
 func text(ds *docState) types.Node {
 	bold := isBold(ds.cur)
 	italic := isItalic(ds.cur)
+	// We must call this to look up an extra level in the node tree to obtain both styles
 	if isBoldAndItalic(ds.cur) {
 		bold = true
 		italic = true

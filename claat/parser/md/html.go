@@ -61,6 +61,8 @@ func isItalic(hn *html.Node) bool {
 		hn.DataAtom == atom.I
 }
 
+// This is different to calling isBold and isItalic seperately as we must look
+// up an extra level in the tree
 func isBoldAndItalic(hn *html.Node) bool {
 	if hn.Parent == nil || hn.Parent.Parent == nil {
 		return false
