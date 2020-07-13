@@ -561,8 +561,10 @@ func table(ds *docState) types.Node {
 	var rows [][]*types.GridCell
 	for _, tr := range findChildAtoms(ds.cur, atom.Tr) {
 		ds.push(tr)
+		fmt.Println(tr)
 		r := tableRow(ds)
 		ds.pop()
+		fmt.Println(r)
 		rows = append(rows, r)
 	}
 	if len(rows) == 0 {
@@ -573,8 +575,14 @@ func table(ds *docState) types.Node {
 
 func tableRow(ds *docState) []*types.GridCell {
 	var row []*types.GridCell
-	for td := findAtom(ds.cur, atom.Td); td != nil; td = td.NextSibling {
-		if td.DataAtom != atom.Td {
+
+	firstChild := findAtom(ds.cur, atom.Td)
+	// If there is no Td child found, could be table header so look for Th
+	if firstChild == nil {
+		firstChild = findAtom(ds.cur, atom.Th)
+	}
+	for td := firstChild; td != nil; td = td.NextSibling {
+		if td.DataAtom != atom.Td && td.DataAtom != atom.Th {
 			continue
 		}
 		ds.push(td)
