@@ -563,7 +563,6 @@ func table(ds *docState) types.Node {
 		ds.push(tr)
 		r := tableRow(ds)
 		ds.pop()
-		fmt.Println(r)
 		rows = append(rows, r)
 	}
 	if len(rows) == 0 {
