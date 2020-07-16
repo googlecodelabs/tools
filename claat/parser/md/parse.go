@@ -828,6 +828,10 @@ func link(ds *docState) types.Node {
 	// Check outside styles
 	outsideBold := isBold(ds.cur.Parent)
 	outsideItalic := isItalic(ds.cur.Parent)
+	if isBoldAndItalic(ds.cur.Parent) {
+		outsideBold = true
+		outsideItalic = true
+	}
 	// Apply outside styles to inside parsed (text) nodes
 	for _, node := range parsedChildNodes {
 		if textNode, ok := node.(*types.TextNode); ok {
