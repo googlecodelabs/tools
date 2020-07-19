@@ -29,3 +29,8 @@ genrule(
     ],
     cmd = "zip -j $@ $(SRCS)",
 )
+
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/googlecodelabs/tools
+gazelle(name = "gazelle")

@@ -4,8 +4,12 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
-load("//codelab-elements/tools:defs.bzl",
-     "closure_js_library", "closure_js_binary", "closure_js_test")
+load(
+    "//codelab-elements/tools:defs.bzl",
+    "closure_js_library",
+    "closure_js_binary",
+    "closure_js_test",
+)
 
 # All static artifacts needed for various demo files.
 # Used by //tools:server target.

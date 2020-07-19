@@ -4,8 +4,12 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
-load("//codelab-elements/tools:defs.bzl",
-     "closure_js_library", "closure_js_binary", "closure_js_test")
+load(
+    "//codelab-elements/tools:defs.bzl",
+    "closure_js_library",
+    "closure_js_binary",
+    "closure_js_test",
+)
 load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_template_library")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary", "sass_library")
 
@@ -24,25 +28,25 @@ closure_js_library(
     name = "google_codelab_index",
     srcs = [
         "google_codelab_index.js",
-        "google_codelab_index_def.js"
+        "google_codelab_index_def.js",
     ],
     deps = [
         "@io_bazel_rules_closure//closure/library",
         ":google_codelab_index_soy",
         ":google_codelab_index_cards",
-    ]
+    ],
 )
 
 closure_js_library(
     name = "google_codelab_index_cards",
     srcs = [
         "google_codelab_index_cards.js",
-        "google_codelab_index_cards_def.js"
+        "google_codelab_index_cards_def.js",
     ],
     deps = [
         "@io_bazel_rules_closure//closure/library",
         ":google_codelab_index_soy",
-    ]
+    ],
 )
 
 # Compiled version of GoogleCodelabStep element, suitable for distribution.
@@ -79,5 +83,5 @@ sass_binary(
 
 closure_js_template_library(
     name = "google_codelab_index_soy",
-    srcs = ["google_codelab_index.soy"]
+    srcs = ["google_codelab_index.soy"],
 )
