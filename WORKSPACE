@@ -1,7 +1,6 @@
 workspace(name="googlecodelabs_custom_elements")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 RULES_JVM_EXTERNAL_TAG = "3.0"
 
@@ -44,8 +43,9 @@ maven_install(
 
 http_archive(
     name="com_google_javascript_closure_compiler",
-    build_file="third_party/BUILD.closure",
+    build_file="@//third_party:BUILD.closure",
     url="https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20180805/closure-compiler-unshaded-v20180805.jar",
+    sha256="facf537aad7f643c92771f71bd8d9c9b6830ec2aa56e458d2411678d8dc32368",
 )
 
 http_archive(
@@ -126,7 +126,7 @@ prettify_ver = "2013-03-04"
 
 http_archive(
     name="prettify",
-    build_file="third_party/BUILD.prettify",
+    build_file="@//third_party:BUILD.prettify",
     strip_prefix="code-prettify-{v}".format(v=prettify_ver),
     url="https://github.com/google/code-prettify/archive/{v}.zip".format(
         v=prettify_ver,
@@ -135,7 +135,7 @@ http_archive(
 
 http_archive(
     name="polyfill",
-    build_file="third_party/BUILD.polyfill",
+    build_file="@//third_party:BUILD.polyfill",
     sha256="9606cdeacbb67f21fb495a4b0a0e5ea6a137fc453945907822e1b930e77124d4",
     strip_prefix="custom-elements-1.0.8",
     url="https://github.com/webcomponents/custom-elements/archive/v1.0.8.zip",

@@ -1,5 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
 licenses(["notice"])
 
 exports_files(["LICENSE"])
@@ -29,8 +31,6 @@ genrule(
     ],
     cmd = "zip -j $@ $(SRCS)",
 )
-
-load("@bazel_gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix github.com/googlecodelabs/tools
 gazelle(name = "gazelle")
