@@ -354,6 +354,8 @@ func parseNode(ds *docState) (types.Node, bool) {
 		return code(ds, true), true
 	case isCode(ds.cur):
 		return code(ds, false), true
+	case isAside(ds.cur):
+		return aside(ds), true
 	case isInfobox(ds.cur):
 		return infobox(ds), true
 	case isSurvey(ds.cur):
@@ -533,6 +535,27 @@ func header(ds *docState) types.Node {
 	}
 	ds.env = nil
 	return n
+}
+
+// aside produces an infobox.
+func aside(ds *docState) types.Node {
+	kind := types.InfoboxPositive
+	for _, v := range ds.cur.Attr {
+		// If class "negative" is given, set the infobox type.
+		if v.Key == "class" && v.Val == "negative" {
+			kind = types.InfoboxNegative
+		}
+	}
+
+	ds.push(nil)
+	nn := parseSubtree(ds)
+	nn = blockNodes(nn)
+	nn = compactNodes(nn)
+	ds.pop()
+	if len(nn) == 0 {
+		return nil
+	}
+	return types.NewInfoboxNode(kind, nn...)
 }
 
 // infobox doesn't have a block parent.
