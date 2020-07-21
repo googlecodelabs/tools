@@ -92,6 +92,10 @@ func isButton(hn *html.Node) bool {
 	return hn.DataAtom == atom.Button
 }
 
+func isAside(hn *html.Node) bool {
+	return hn.DataAtom == atom.Aside
+}
+
 func isInfobox(hn *html.Node) bool {
 	if hn.DataAtom != atom.Dt {
 		return false
