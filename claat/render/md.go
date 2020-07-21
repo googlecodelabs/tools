@@ -265,7 +265,5 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 
 func (mw *mdWriter) youtube(n *types.YouTubeNode) {
 	mw.newBlock()
-	mw.writeString(`<video id="`)
-	mw.writeString(n.VideoID)
-	mw.writeString(`"></video>`)
+	mw.writeString(fmt.Sprintf(`<video id="%s"></video>`, n.VideoID))
 }
