@@ -76,6 +76,22 @@ the first fence to explicitly specify which highlighting plan to use.
     This block will be highlighted as Go source code.
     ```
 
+#### Code blocks in lists: 
+
+If you are interspersing code blocks in a list, please use the following format: 
+
+````
+1. list item one
+1. list item two 
+
+    ```
+    code
+    block
+    over multiple lines 
+    ```
+1. list item three 
+````
+
 #### Info Boxes
 
 Info boxes are colored callouts that enclose special information in codelabs.
@@ -108,9 +124,46 @@ This will appear in a negative info box.
 
 Codelabs sometimes contain links to SDKs or sample code. The codelab renderer
 will apply special button-esque styling to any link that begins with the word
-"Download".
+"Download" that is also wrapped in a button tag as follows: 
 
 ```
-  [Download SDK](https://www.google.com)
+  <button>
+    [download me](http://google.com)
+  </button>
 ```
 
+#### Embedded Youtube Videos
+
+To embed a youtube video, you can use a video tag with an id attribute of the 
+youtube video id that you wish to embed. A youtube video id is the part of the 
+url that is of the format "v=hEpbKqV0Adc", where hEpbKqV0Adc would be the youtube
+video id. Ignore any other part of the query string. 
+
+```
+  <video id="hEpbKqV0Adc"></video>
+```
+
+#### "Frequently Asked Questions" Section
+
+If you add a FAQ section to your codelab in the following format, then respective
+link icons will be automatically added to replace the bullet point symbol. (Note
+that the "Frequently Asked Questions" string must be exact)
+
+```
+### Frequently Asked Questions
+* [stack overflow link](example.com/)
+* [developers.android.com link ](example.com/) 
+* [support.google.com link](example.com/)
+```
+
+#### "What You’ll Learn" Section
+
+If you add a "What You'll Learn" section to your codelab in the following format,
+the bullet point symbols will be replaced with checkbox symbols
+
+```
+### What You’ll Learn 
+* Thing 1
+* Thing 2
+* Thing 3
+```
