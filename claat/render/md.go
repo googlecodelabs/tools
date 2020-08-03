@@ -114,8 +114,8 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 		//	mw.survey(n)
 		case *types.HeaderNode:
 			mw.header(n)
-			//case *types.YouTubeNode:
-			//	mw.youtube(n)
+		case *types.YouTubeNode:
+			mw.youtube(n)
 		}
 		if mw.err != nil {
 			return mw.err
@@ -261,4 +261,9 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 	if !mw.lineStart {
 		mw.writeBytes(newLine)
 	}
+}
+
+func (mw *mdWriter) youtube(n *types.YouTubeNode) {
+	mw.newBlock()
+	mw.writeString(fmt.Sprintf(`<video id="%s"></video>`, n.VideoID))
 }
