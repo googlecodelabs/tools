@@ -61,6 +61,19 @@ func isItalic(hn *html.Node) bool {
 		hn.DataAtom == atom.I
 }
 
+// This is different to calling isBold and isItalic seperately as we must look
+// up an extra level in the tree
+func isBoldAndItalic(hn *html.Node) bool {
+	if hn.Parent == nil || hn.Parent.Parent == nil {
+		return false
+	}
+	if hn.Type == html.TextNode {
+		hn = hn.Parent
+	}
+	return (isItalic(hn) && isBold(hn.Parent)) || (isItalic(hn.Parent) && isBold(hn))
+
+}
+
 func isConsole(hn *html.Node) bool {
 	if hn.Type == html.TextNode {
 		hn = hn.Parent
@@ -76,8 +89,11 @@ func isCode(hn *html.Node) bool {
 }
 
 func isButton(hn *html.Node) bool {
-	// TODO: implements
-	return false
+	return hn.DataAtom == atom.Button
+}
+
+func isAside(hn *html.Node) bool {
+	return hn.DataAtom == atom.Aside
 }
 
 func isInfobox(hn *html.Node) bool {
@@ -95,10 +111,16 @@ func isInfoboxNegative(hn *html.Node) bool {
 }
 
 func isSurvey(hn *html.Node) bool {
-	if hn.DataAtom != atom.Dt {
+	if hn.DataAtom != atom.Form {
 		return false
 	}
-	return strings.ToLower(hn.FirstChild.Data) == "survey"
+	if findAtom(hn, atom.Name) == nil {
+		return false
+	}
+	if len(findChildAtoms(hn, atom.Input)) == 0 {
+		return false
+	}
+	return true
 }
 
 func isTable(hn *html.Node) bool {
@@ -110,6 +132,14 @@ func isTable(hn *html.Node) bool {
 
 func isList(hn *html.Node) bool {
 	return hn.DataAtom == atom.Ul || hn.DataAtom == atom.Ol
+}
+
+func isYoutube(hn *html.Node) bool {
+	return hn.DataAtom == atom.Video
+}
+
+func isFragmentImport(hn *html.Node) bool {
+	return hn.DataAtom == 0 && strings.HasPrefix(hn.Data, convertedImportsDataPrefix)
 }
 
 // countTwo starts counting the number of a Atom children in hn.
@@ -221,6 +251,7 @@ func nodeAttr(n *html.Node, name string) string {
 func stringifyNode(root *html.Node, trim bool) string {
 	if root.Type == html.TextNode {
 		s := textCleaner.Replace(root.Data)
+		s = strings.Replace(s, "\n", " ", -1)
 		if !trim {
 			return s
 		}

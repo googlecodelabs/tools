@@ -392,8 +392,8 @@ func metaTable(ds *docState) {
 			ds.clab.ID = s
 		case "author", "authors":
 			ds.clab.Authors = s
-		case "badge", "badge id":
-			ds.clab.BadgeID = s
+		case "badge path":
+			ds.clab.BadgePath = s
 		case "summary":
 			ds.clab.Summary = stringifyNode(tr.FirstChild.NextSibling, true, true)
 		case "category", "categories":
@@ -686,10 +686,9 @@ func image(ds *docState) types.Node {
 		}
 		if ok {
 			return iframe(ds)
-		} else {
-			errorAlt = "The domain of the requested iframe (" + u.Hostname() + ") has not been whitelisted."
-			fmt.Fprint(os.Stderr, errorAlt+"\n")
 		}
+		errorAlt = "The domain of the requested iframe (" + u.Hostname() + ") has not been whitelisted."
+		fmt.Fprint(os.Stderr, errorAlt+"\n")
 	}
 	s := nodeAttr(ds.cur, "src")
 	if s == "" {

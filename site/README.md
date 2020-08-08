@@ -162,7 +162,7 @@ to build a single set of views, you can do so with the `--views-filter`
 parameter:
 
 ```text
-$ gulp serve --views-filer='^event-*'
+$ gulp serve --views-filter='^event-*'
 ```
 
 Note this filter takes a regular expression. By default, all views are built.

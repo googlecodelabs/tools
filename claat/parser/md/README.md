@@ -92,6 +92,18 @@ Negative
 : This will appear in a negative info box.
 ```
 
+`<aside>` elements work as well:
+
+```
+<aside class="positive">
+This will appear in a positive info box.
+</aside>
+
+<aside class="negative">
+This will appear in a negative info box.
+</aside>
+```
+
 #### Download Buttons
 
 Codelabs sometimes contain links to SDKs or sample code. The codelab renderer
@@ -99,6 +111,8 @@ will apply special button-esque styling to any link that begins with the word
 "Download".
 
 ```
+<button>
   [Download SDK](https://www.google.com)
+</button>
 ```
 
