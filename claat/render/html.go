@@ -224,18 +224,23 @@ func (hw *htmlWriter) button(n *types.ButtonNode) {
 }
 
 func (hw *htmlWriter) code(n *types.CodeNode) {
-	hw.writeString("<pre>")
-	if !n.Term {
-		hw.writeString("<code")
-		if n.Lang != "" {
-			hw.writeFmt(" language=%q class=%q", n.Lang, n.Lang)
-		}
-		hw.writeBytes(greaterThan)
+	hw.writeString(`<pre class="code-block">`)
+
+	hw.writeString(`<div class="code-menu">`)
+	hw.writeString(`<input type="button" onclick="wrap(this);" value="&#8677;">`)
+	hw.writeString(`<input type="button" onclick="copy(this);" value="&#10697;">`)
+	hw.writeString(`</div>`)
+
+	hw.writeString("<code")
+	if n.Lang != "" {
+		hw.writeFmt(" language=%q class=%q", n.Lang, n.Lang)
 	}
+	hw.writeBytes(greaterThan)
+
 	hw.writeEscape(n.Value)
-	if !n.Term {
-		hw.writeString("</code>")
-	}
+
+	hw.writeString("</code>")
+
 	hw.writeString("</pre>")
 }
 

@@ -25,6 +25,20 @@ the License.
   <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="{{.Prefix}}/codelab-elements/codelab-elements.css">
   <style>
+    .code-block {
+      position: relative;
+    }
+    .code-menu {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
+    .code-block > .code-menu {
+      visibility: hidden;
+    }
+    .code-block:hover > .code-menu {
+      visibility: visible;
+    }
     .success {
       color: #1e8e3e;
     }
@@ -32,6 +46,42 @@ the License.
       color: red;
     }
   </style>
+  <script>
+        function wrap(el){
+            var style = el.parentNode.parentNode.getElementsByTagName("code")[0].style;
+            if( style.whiteSpace == "pre-wrap"){
+                style.removeProperty( "white-space" );
+                // wrap
+                el.value = "\u21E5";
+            }else{
+               style.whiteSpace = "pre-wrap";
+               // unwrap
+                el.value = "\u2194";
+            }
+
+        }
+
+
+        function copy(el){
+            var cel = el;
+            
+            var text = el.parentNode.parentNode.children[1].textContent;
+            navigator.clipboard.writeText( text )
+                  .then(() => {
+                    //console.log('Text copied to clipboard');
+                    cel.value = "\u220E";
+                    setTimeout( () => {
+                            cel.value = "\u29c9";
+                        }, 250 );
+                  })
+                  .catch(err => {
+                    // This can happen if the user denies clipboard permissions:
+                    console.error('Could not copy text: ', err);
+                  });;
+              
+            return text;
+        }
+    </script>    
 </head>
 <body>
   <google-codelab-analytics gaid="{{.GlobalGA}}"></google-codelab-analytics>
