@@ -244,10 +244,16 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 	// : <content>
 	//
 	// The main issue is that when you do write(n.Content.Nodes...) it always adds two newlines
-	// at the beginning.
+	// at the beginning. This is because the gdoc parser parses info boxes as a list node
+	// followed by a text node, and the list node is an md block unto itself, resulting in two
+	// newlines being added to the output before the text.
 	mw.newBlock()
 	mw.writeString(`<aside class="`)
-	mw.writeString(string(n.Kind))
+	class := "positive"
+	if n.Kind == types.InfoboxNegative {
+		class = "negative"
+	}
+	mw.writeString(class)
 	mw.writeString(`">`)
 	mw.write(n.Content.Nodes...)
 	mw.writeString("</aside>")
