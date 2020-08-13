@@ -172,17 +172,21 @@ func (mw *mdWriter) image(n *types.ImageNode) {
 func (mw *mdWriter) url(n *types.URLNode) {
 	mw.space()
 	if n.URL != "" {
+		// Look-ahead for button syntax.
+		if _, ok := n.Content.Nodes[0].(*types.ButtonNode); ok {
+			mw.writeString("<button>")
+		}
 		mw.writeString("[")
 	}
-	for _, cn := range n.Content.Nodes {
-		if t, ok := cn.(*types.TextNode); ok {
-			mw.writeString(t.Value)
-		}
-	}
+	mw.write(n.Content.Nodes...)
 	if n.URL != "" {
 		mw.writeString("](")
 		mw.writeString(n.URL)
 		mw.writeString(")")
+		if _, ok := n.Content.Nodes[0].(*types.ButtonNode); ok {
+			// Look-ahead for button syntax.
+			mw.writeString("</button>")
+		}
 	}
 }
 
