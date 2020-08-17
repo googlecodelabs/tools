@@ -1,0 +1,76 @@
+<!--
+Copyright (c) 2018 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+
+<!doctype html>
+<html>
+
+<head>
+    <title>Google Codelab Code Menu</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Roboto", sans-serif;
+        }
+    </style>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro'>
+    <link rel="stylesheet" href="google_codelab_code_menu_scss_bin.css">
+    <link rel="stylesheet" href="codelab-elements.css">
+</head>
+
+<body>
+    <google-codelab-step>
+        <p>A code block</p>
+        <pre class="code-block">
+            <google-codelab-code-menu></google-codelab-code-menu>
+            <code>
+# code block 1
+$todaydt = Get-Date
+$years = $todaydt.AddYears(10)
+New-SelfSignedCertificate -dnsname adfs.exco.com -notafter $years -CertStoreLocation cert:\LocalMachine\My
+            </code>
+        </pre>
+
+        <p>Another code block</p>
+        <pre class="code-block">
+            <google-codelab-code-menu></google-codelab-code-menu>
+            <code>
+# code block 2
+$todaydt = Get-Date
+
+New-SelfSignedCertificate -dnsname adfs.exco.com -notafter $years -CertStoreLocation cert:\LocalMachine\My
+            </code>
+        </pre>
+
+        <p>Yet Another code block</p>
+        <pre class="code-block">
+            <google-codelab-code-menu></google-codelab-code-menu>
+            <code>
+# code block 3
+$todaydt = Get-Date
+
+New-SelfSignedCertificate -dnsname adfs.exco.com -notafter $years -CertStoreLocation cert:\LocalMachine\My
+            </code>
+        </pre>
+
+    </google-codelab-step>
+    <script src="/external/polyfill/src/native-shim.js"></script>
+    <script src="/external/polyfill/custom-elements.min.js"></script>
+    <script src="google_codelab_code_menu_bin.js"></script>
+</body>
+
+</html>

@@ -226,10 +226,7 @@ func (hw *htmlWriter) button(n *types.ButtonNode) {
 func (hw *htmlWriter) code(n *types.CodeNode) {
 	hw.writeString(`<pre class="code-block">`)
 
-	hw.writeString(`<div class="code-menu">`)
-	hw.writeString(`<input type="button" onclick="wrap(this);" value="&#8677;">`)
-	hw.writeString(`<input type="button" onclick="copy(this);" value="&#10697;">`)
-	hw.writeString(`</div>`)
+	hw.writeString(`<google-codelab-code-menu></google-codelab-code-menu>`)
 
 	hw.writeString("<code")
 	if n.Lang != "" {

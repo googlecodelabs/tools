@@ -1,0 +1,64 @@
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+load("//codelab-elements/tools:defs.bzl",
+    "closure_js_library", "closure_js_binary", "closure_js_test")
+load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_template_library")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary", "sass_library")
+
+filegroup(
+    name = "google_codelab_code_menu_files",
+    srcs = glob([
+        "*.html",
+        "*.png",
+        "*.css",
+    ]) + [
+        ":google_codelab_code_menu_scss_bin",
+        ":google_codelab_code_menu_bin",
+    ],
+)
+
+# Codelab Code Menu.
+closure_js_library(
+    name = "google_codelab_code_menu",
+    srcs = [
+        "google_codelab_code_menu.js",
+        "google_codelab_code_menu_def.js",
+        "w3c_clipboard.js"
+    ],
+    deps = [
+        "@io_bazel_rules_closure//closure/library",
+        ":google_codelab_code_menu_soy",
+    ],
+)
+
+# Compiled version of CodelabCodeMenu element, suitable for distribution.
+closure_js_binary(
+    name = "google_codelab_code_menu_bin",
+    entry_points = ["googlecodelabs.CodelabCodeMenuDef"],
+    deps = [":google_codelab_code_menu"],
+)
+
+closure_js_test(
+    name = "google_codelab_code_menu_test",
+    srcs = ["google_codelab_code_menu_test.js"],
+    entry_points = ["googlecodelabs.CodelabCodeMenuTest"],
+    deps = [
+      "@io_bazel_rules_closure//closure/library",
+      ":google_codelab_code_menu"
+    ],
+)
+
+closure_js_template_library(
+    name = "google_codelab_code_menu_soy",
+    srcs = ["google_codelab_code_menu.soy"]
+)
+
+sass_binary(
+    name = "google_codelab_code_menu_scss_bin",
+    src = "google_codelab_code_menu.scss",
+)
+
