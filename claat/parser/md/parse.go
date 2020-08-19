@@ -331,7 +331,7 @@ func parseSubtree(ds *docState) []types.Node {
 func parseNode(ds *docState) (types.Node, bool) {
 	// we have \n end of line nodes after each tag from the blackfriday parser.
 	// We just want to ignore them as it makes previous node detection fuzzy.
-	if ds.cur.Type == html.TextNode && strings.TrimSpace(ds.cur.Data) == "" {
+	if ds.cur.Type == html.TextNode && ds.cur.Data == "\n" {
 		return nil, true
 	}
 	switch {

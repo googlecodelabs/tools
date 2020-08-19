@@ -125,25 +125,42 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 }
 
 func (mw *mdWriter) text(n *types.TextNode) {
-	if n.Bold {
-		mw.writeString("**")
+	t := strings.TrimSpace(n.Value)
+	tl := len([]rune(t))
+	nl := len([]rune(n.Value))
+	ls := nl - len([]rune(strings.TrimLeft(n.Value, " ")))
+	// Don't just copy above and TrimRight instead of TrimLeft to avoid " " counting as 1
+	// left space and 1 right space. Instead, number of right spaces is
+	// length of whole string - length of string with spaces trimmed - number of left spaces.
+	rs := nl - tl - ls
+
+	mw.writeString(strings.Repeat(" ", ls))
+	if tl > 0 {
+		if n.Bold {
+			mw.writeString("**")
+		}
+		if n.Italic {
+			mw.writeString("*")
+		}
+		if n.Code {
+			mw.writeString("`")
+		}
 	}
-	if n.Italic {
-		mw.writeString(" *")
+
+	mw.writeString(t)
+
+	if tl > 0 {
+		if n.Code {
+			mw.writeString("`")
+		}
+		if n.Italic {
+			mw.writeString("*")
+		}
+		if n.Bold {
+			mw.writeString("**")
+		}
 	}
-	if n.Code {
-		mw.writeString("`")
-	}
-	mw.writeString(n.Value)
-	if n.Code {
-		mw.writeString("`")
-	}
-	if n.Italic {
-		mw.writeString("* ")
-	}
-	if n.Bold {
-		mw.writeString("**")
-	}
+	mw.writeString(strings.Repeat(" ", rs))
 }
 
 func (mw *mdWriter) image(n *types.ImageNode) {
