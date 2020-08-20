@@ -243,24 +243,22 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 }
 
 func (mw *mdWriter) infobox(n *types.InfoboxNode) {
-	// TODO: This should use the "detail item" syntax so that it can be pure MD and not HTML
-	// kind
-	// : <content>
-	//
-	// The main issue is that when you do write(n.Content.Nodes...) it always adds two newlines
-	// at the beginning. This is because the gdoc parser parses info boxes as a list node
-	// followed by a text node, and the list node is an md block unto itself, resulting in two
-	// newlines being added to the output before the text.
-	mw.newBlock()
-	mw.writeString(`<aside class="`)
-	class := "positive"
-	if n.Kind == types.InfoboxNegative {
-		class = "negative"
+	// InfoBoxes are comprised of a ListNode with the contents of the InfoBox. 
+	// Writing the ListNode directly results in extra newlines in the md output
+	// which breaks the formatting. So instead, write the ListNode's children 
+	// directly and don't write the ListNode itself.
+	ln, ok := n.Content.Nodes[0].(*types.ListNode)
+	if !ok {
+		return
 	}
-	mw.writeString(class)
-	mw.writeString(`">`)
-	mw.write(n.Content.Nodes...)
-	mw.writeString("</aside>")
+	mw.newBlock()
+	k := "Positive"
+	if n.Kind == types.InfoboxNegative {
+		k = "Negative"
+	}
+	mw.writeString(k)
+	mw.writeString("\n: ")
+	mw.write(ln.Nodes...)
 }
 
 func (mw *mdWriter) header(n *types.HeaderNode) {
