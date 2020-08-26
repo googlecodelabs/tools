@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package md
+package parser
 
 import (
 	"strings"
@@ -176,7 +176,7 @@ func splitSpaceRight(s string) (v string, sp string) {
 // nodeBlocks encapsulates all nodes of the same block into a new ListNode
 // with its B field set to true.
 // Nodes which are not blockSquashable remain as is.
-func blockNodes(nodes []types.Node) []types.Node {
+func BlockNodes(nodes []types.Node) []types.Node {
 	var blocks []types.Node
 	for {
 		if len(nodes) == 0 {
@@ -190,18 +190,18 @@ func blockNodes(nodes []types.Node) []types.Node {
 }
 
 // Although nodes slice is not modified, its elements are.
-func compactNodes(nodes []types.Node) []types.Node {
+func CompactNodes(nodes []types.Node) []types.Node {
 	res := make([]types.Node, 0, len(nodes))
 	var last types.Node
 	for _, n := range nodes {
 		switch {
 		case n.Type() == types.NodeList:
 			l := n.(*types.ListNode)
-			l.Nodes = compactNodes(l.Nodes)
+			l.Nodes = CompactNodes(l.Nodes)
 		case types.IsItemsList(n.Type()):
 			l := n.(*types.ItemsListNode)
 			for _, it := range l.Items {
-				it.Nodes = compactNodes(it.Nodes)
+				it.Nodes = CompactNodes(it.Nodes)
 			}
 		}
 		if last == nil || !concatNodes(last, n) {

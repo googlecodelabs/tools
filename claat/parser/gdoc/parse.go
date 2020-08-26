@@ -249,8 +249,8 @@ func finalizeStep(s *types.Step) {
 	}
 	s.Tags = util.Unique(s.Tags)
 	sort.Strings(s.Tags)
-	s.Content.Nodes = blockNodes(s.Content.Nodes)
-	s.Content.Nodes = compactNodes(s.Content.Nodes)
+	s.Content.Nodes = parser.BlockNodes(s.Content.Nodes)
+	s.Content.Nodes = parser.CompactNodes(s.Content.Nodes)
 	// TODO: find a better place for the code below
 	// find [[directive]] instructions and act accordingly
 	for i, n := range s.Content.Nodes {
@@ -308,7 +308,7 @@ func parseTop(ds *docState) {
 	ds.push(nil, ds.flags)
 	nn := parseSubtree(ds)
 	ds.pop()
-	ds.appendNodes(compactNodes(nn)...)
+	ds.appendNodes(parser.CompactNodes(nn)...)
 }
 
 // parseSubtree parses children of root recursively.
@@ -492,8 +492,8 @@ func header(ds *docState) types.Node {
 func infobox(ds *docState) types.Node {
 	ds.push(nil, ds.flags|fSkipCode|fSkipInfobox|fSkipSurvey)
 	nn := parseSubtree(ds)
-	nn = blockNodes(nn)
-	nn = compactNodes(nn)
+	nn = parser.BlockNodes(nn)
+	nn = parser.CompactNodes(nn)
 	ds.pop()
 	if len(nn) == 0 {
 		return nil
@@ -529,8 +529,8 @@ func tableRow(ds *docState) []*types.GridCell {
 		}
 		ds.push(td, ds.flags|fSkipBlock)
 		nn := parseSubtree(ds)
-		nn = blockNodes(nn)
-		nn = compactNodes(nn)
+		nn = parser.BlockNodes(nn)
+		nn = parser.CompactNodes(nn)
 		ds.pop()
 		if len(nn) == 0 {
 			continue
@@ -642,7 +642,7 @@ func list(ds *docState) types.Node {
 		}
 		ds.push(hn, ds.flags)
 		nn := parseSubtree(ds)
-		nn = compactNodes(nn)
+		nn = parser.CompactNodes(nn)
 		ds.pop()
 		if len(nn) > 0 {
 			list.NewItem(nn...)
