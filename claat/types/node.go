@@ -241,11 +241,13 @@ func (gn *GridNode) Empty() bool {
 // Provide a positive start to make this a numbered list.
 // NodeItemsCheck and NodeItemsFAQ are always unnumbered.
 func NewItemsListNode(typ string, start int) *ItemsListNode {
-	return &ItemsListNode{
+	iln := ItemsListNode{
 		node:     node{typ: NodeItemsList},
 		ListType: typ,
 		Start:    start,
 	}
+	iln.MutateBlock(true)
+	return &iln
 }
 
 // ItemsListNode containts sets of ListNode.

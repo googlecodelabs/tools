@@ -356,6 +356,8 @@ func parseNode(ds *docState) (types.Node, bool) {
 		return code(ds, false), true
 	case isAside(ds.cur):
 		return aside(ds), true
+	case isNewAside(ds.cur):
+		return newAside(ds), true
 	case isInfobox(ds.cur):
 		return infobox(ds), true
 	case isSurvey(ds.cur):
@@ -545,6 +547,28 @@ func aside(ds *docState) types.Node {
 		if v.Key == "class" && v.Val == "negative" {
 			kind = types.InfoboxNegative
 		}
+	}
+
+	ds.push(nil)
+	nn := parseSubtree(ds)
+	nn = parser.BlockNodes(nn)
+	nn = parser.CompactNodes(nn)
+	ds.pop()
+	if len(nn) == 0 {
+		return nil
+	}
+	return types.NewInfoboxNode(kind, nn...)
+}
+
+// new style aside, to produce an infobox
+func newAside(ds *docState) types.Node {
+	kind := types.InfoboxPositive
+	s := ds.cur.FirstChild.NextSibling.FirstChild.Data
+	if strings.HasPrefix(s, "aside negative") {
+		ds.cur.FirstChild.NextSibling.FirstChild.Data = strings.TrimPrefix(s, "aside negative")
+		kind = types.InfoboxNegative
+	} else {
+		ds.cur.FirstChild.NextSibling.FirstChild.Data = strings.TrimPrefix(s, "aside positive")
 	}
 
 	ds.push(nil)
