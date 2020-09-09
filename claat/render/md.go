@@ -37,7 +37,7 @@ func MD(env string, nodes ...types.Node) (string, error) {
 
 // WriteMD does the same as MD but outputs rendered markup to w.
 func WriteMD(w io.Writer, env string, nodes ...types.Node) error {
-	mw := mdWriter{w: w, env: env}
+	mw := mdWriter{w: w, env: env, Prefix: ""}
 	return mw.write(nodes...)
 }
 
@@ -46,6 +46,7 @@ type mdWriter struct {
 	env       string    // target environment
 	err       error     // error during any writeXxx methods
 	lineStart bool
+	Prefix    string    // prefix for e.g. blockquote content
 }
 
 func (mw *mdWriter) writeBytes(b []byte) {
@@ -57,6 +58,9 @@ func (mw *mdWriter) writeBytes(b []byte) {
 }
 
 func (mw *mdWriter) writeString(s string) {
+	if mw.lineStart {
+		s = mw.Prefix + s
+	}
 	mw.writeBytes([]byte(s))
 }
 
@@ -245,7 +249,9 @@ func (mw *mdWriter) list(n *types.ListNode) {
 }
 
 func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
-	mw.newBlock()
+	if n.Block() == true {
+		mw.newBlock()
+	}
 	for i, item := range n.Items {
 		s := "* "
 		if n.Type() == types.NodeItemsList && n.Start > 0 {
@@ -264,18 +270,21 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 	// Writing the ListNode directly results in extra newlines in the md output
 	// which breaks the formatting. So instead, write the ListNode's children 
 	// directly and don't write the ListNode itself.
-	ln, ok := n.Content.Nodes[0].(*types.ListNode)
-	if !ok {
-		return
-	}
 	mw.newBlock()
-	k := "Positive"
+	k := "aside positive"
 	if n.Kind == types.InfoboxNegative {
-		k = "Negative"
+		k = "aside negative"
 	}
+	mw.Prefix = "> "
 	mw.writeString(k)
-	mw.writeString("\n: ")
-	mw.write(ln.Nodes...)
+	mw.writeString("\n")
+
+	for _, cn := range n.Content.Nodes {
+		cn.MutateBlock(false)
+		mw.write(cn)
+	}
+	
+	mw.Prefix = ""
 }
 
 func (mw *mdWriter) header(n *types.HeaderNode) {
