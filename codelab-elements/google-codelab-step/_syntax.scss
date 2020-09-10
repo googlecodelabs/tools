@@ -43,7 +43,7 @@ code em {
 }
 pre .str, code .str { color: #34A853; } /* string  - green */
 pre .kwd, code .kwd { color: #F538A0; } /* keyword - dark pink */
-pre .com, code .com { color: #BDC1C6; font-style: italic; } /* comment - gray */
+pre .com, code .com { color: #BDC1C6; } /* comment - gray */
 pre .typ, code .typ { color: #24C1E0; } /* type - light blue */
 pre .lit, code .lit { color: #4285F4; } /* literal - blue */
 pre .pun, code .pun { color: #F8F9FA; } /* punctuation - white */
