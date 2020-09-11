@@ -30,13 +30,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
-	"gopkg.in/russross/blackfriday.v2"
 )
 
 // Metadata constants for the YAML header
@@ -216,27 +218,20 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 	ds.lastNode = nn[len(nn)-1]
 }
 
-// renderToHTML preprocesses markdown bytes and then calls the Blackfriday Markdown parser with some special addons selected.
+// renderToHTML preprocesses markdown bytes and then calls the goldmark Markdown parser with some special addons selected.
 // It takes a raw markdown bytes and output parsed xhtml in bytes.
 func renderToHTML(b []byte) []byte {
 	b = convertImports(b)
 
-	htmlFlags := blackfriday.UseXHTML |
-		blackfriday.Smartypants |
-		blackfriday.SmartypantsFractions |
-		blackfriday.SmartypantsDashes |
-		blackfriday.SmartypantsLatexDashes
-
-	params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
-	r := blackfriday.NewHTMLRenderer(params)
-
-	extns := blackfriday.FencedCode |
-		blackfriday.NoEmptyLineBeforeBlock |
-		blackfriday.NoIntraEmphasis |
-		blackfriday.DefinitionLists |
-		blackfriday.Tables
-
-	return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r))
+	md := goldmark.New(goldmark.WithExtensions(
+		extension.Table,
+		extension.Typographer,
+	))
+	var buf bytes.Buffer
+	if err := md.Convert(b, &buf); err != nil {
+		panic(err)
+	}
+	return buf.Bytes()
 }
 
 // parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
