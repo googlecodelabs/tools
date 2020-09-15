@@ -1,0 +1,422 @@
+MIME-Version: 1.0
+Date: Sat, 12 Sep 2020 16:00:38 +0300
+From: CircleCI Builds <builds@circleci.com>
+Subject: [Workflow] Failed: sumuis/java-server-sdk on master / test
+ (445ef79)
+Thread-Topic: [Workflow] Failed: sumuis/java-server-sdk on master / test
+ (445ef79)
+Message-ID:
+ <ffsXg7R6m2vr7l5RvJe0g.1599915618336@postal.circle-legacy-notifier-v1-7d8595cdd-4mjgf>
+To: sumuis <alexisiumus@gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="utf-8"
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html style=3D"box-sizing:border-box; font-size:14px; margin:0">
+  <head style=3D"box-sizing:border-box; font-size:14px; margin:0">
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width" style=3D"box-s=
+izing:border-box; font-size:14px; margin:0" />
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8=
+" style=3D"box-sizing:border-box; font-size:14px; margin:0" />
+    <title style=3D"box-sizing:border-box; font-size:14px; margin:0">Uh-oh,=
+ this workflow did not succeed.</title>
+    <style type=3D"text/css" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0">@media only screen and (max-width: 640px) {
+    body {
+        padding: 0 !important
+        }
+    h1, h2, h3, h4 {
+        font-weight: 800 !important;
+        margin: 20px 0 5px !important
+        }
+    h1 {
+        font-size: 22px !important
+        }
+    h2 {
+        font-size: 18px !important
+        }
+    h3 {
+        font-size: 16px !important
+        }
+    .container {
+        padding: 0 !important;
+        width: 100% !important
+        }
+    .content {
+        padding: 0 !important
+        }
+    .content-wrap {
+        padding: 10px !important
+        }
+    .invoice {
+        width: 100% !important
+        }
+    }</style><script type=3D"application/ld+json" style=3D"box-sizing:borde=
+r-box; font-size:14px; margin:0"></script>
+  <style type=3D"text/css" style=3D"box-sizing:border-box; font-size:14px; =
+margin:0">@media only screen and (max-width: 640px) {
+    body {
+        padding: 0 !important
+        }
+    h1, h2, h3, h4 {
+        font-weight: 800 !important;
+        margin: 20px 0 5px !important
+        }
+    h1 {
+        font-size: 22px !important
+        }
+    h2 {
+        font-size: 18px !important
+        }
+    h3 {
+        font-size: 16px !important
+        }
+    .container {
+        padding: 0 !important;
+        width: 100% !important
+        }
+    .content {
+        padding: 0 !important
+        }
+    .content-wrap {
+        padding: 10px !important
+        }
+    .invoice {
+        width: 100% !important
+        }
+    }</style></head>
+
+  <body itemscope=3D"itemscope" itemtype=3D"http://schema.org/EmailMessage"=
+ style=3D"box-sizing:border-box; font-size:14px; margin:0; -webkit-font-smo=
+othing:antialiased; -webkit-text-size-adjust:none; color:#898989; font-fami=
+ly:&quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; height:100%; l=
+ine-height:1.6em; background-color:#f6f6f6; width:100% !important" height=
+=3D"100%" bgcolor=3D"#f6f6f6" width=3D"100% !important">
+
+    <table class=3D"body-wrap" style=3D"box-sizing:border-box; font-size:14=
+px; margin:0; background-color:#f6f6f6; width:100%" bgcolor=3D"#f6f6f6" wid=
+th=3D"100%">
+      <tr style=3D"box-sizing:border-box; font-size:14px; margin:0">
+        <td style=3D"box-sizing:border-box; font-size:14px; margin:0; verti=
+cal-align:top" valign=3D"top"></td>
+        <td class=3D"container" width=3D"600" style=3D"box-sizing:border-bo=
+x; font-size:14px; margin:0 auto !important; vertical-align:top; clear:both=
+ !important; display:block !important; max-width:600px !important" valign=
+=3D"top">
+          <div class=3D"content" style=3D"box-sizing:border-box; font-size:=
+14px; margin:0 auto; display:block; max-width:600px; padding:20px"><table c=
+lass=3D"letterhead" style=3D"box-sizing:border-box; font-size:14px; margin:=
+0; width:100%" width=3D"100%">
+      <tr style=3D"box-sizing:border-box; font-size:14px; margin:0">
+        <td class=3D"pad20" height=3D"20" style=3D"box-sizing:border-box; f=
+ont-size:20px; margin:0; vertical-align:top; line-height:20px" valign=3D"to=
+p">
+        </td>
+      </tr>
+      <tr style=3D"box-sizing:border-box; font-size:14px; margin:0">
+        <td class=3D"pad80" valign=3D"top" height=3D"80" style=3D"box-sizin=
+g:border-box; font-size:80px; margin:0; vertical-align:top; line-height:80p=
+x">
+          <center style=3D"box-sizing:border-box; font-size:14px; margin:0"=
+><img class=3D"badge" src=3D"https://dmmj3mmt94rvw.cloudfront.net/img/email=
+/failed/icon@3x.png" style=3D"box-sizing:border-box; font-size:14px; margin=
+:auto; max-width:100%; display:block; height:80px; width:80px" height=3D"80=
+" width=3D"80" /></center>
+        </td>
+      </tr>
+      <tr style=3D"box-sizing:border-box; font-size:14px; margin:0">
+        <td class=3D"pad30" height=3D"30" style=3D"box-sizing:border-box; f=
+ont-size:30px; margin:0; vertical-align:top; line-height:30px" valign=3D"to=
+p">
+        </td>
+      </tr>
+    </table>
+            <table class=3D"main" width=3D"100%" cellpadding=3D"0" cellspac=
+ing=3D"0" style=3D"box-sizing:border-box; font-size:14px; margin:0; backgro=
+und-color:#fff; border:1px solid #e9e9e9; border-radius:3px; max-width:560p=
+x" bgcolor=3D"#ffffff">
+             =20
+             =20
+              <tr class=3D"alert bad" style=3D"box-sizing:border-box; font-=
+size:14px; margin:0">
+                <td class=3D"alert bad" style=3D"box-sizing:border-box; fon=
+t-size:16px; margin:0; vertical-align:top; border-radius:3px 3px 0 0; color=
+:#fff; font-weight:bold; letter-spacing:0.5px; padding:20px; text-align:cen=
+ter; background-color:#ed5c5c" valign=3D"top" align=3D"center" bgcolor=3D"#=
+ed5c5c">Uh-oh, this workflow did not succeed.</td>
+              </tr>
+              <tr style=3D"box-sizing:border-box; font-size:14px; margin:0"=
+>
+                <td class=3D"content-wrap" style=3D"box-sizing:border-box; =
+font-size:14px; margin:0; vertical-align:top; padding:20px; width:568px" va=
+lign=3D"top" width=3D"568"><table class=3D"statusbox" style=3D"box-sizing:b=
+order-box; font-size:14px; margin:0; width:100%" width=3D"100%">
+      <tbody style=3D"box-sizing:border-box; font-size:14px; margin:0">
+       =20
+        <tr class=3D"author" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0">
+          <td class=3D"name" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0; vertical-align:top; font-weight:bold; width:18%" valign=3D"top"=
+ width=3D"18%">Author</td>
+          <td class=3D"value" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0; vertical-align:top; font-family:&quot;Courier&quot;" valign=3D=
+"top">
+            <a href=3D"mailto:70836969+sumuis@users.noreply.github.com" sty=
+le=3D"box-sizing:border-box; font-size:14px; margin:0; color:#337ab7; text-=
+decoration:none">sumuis</a>
+          </td>
+        </tr>
+       =20
+        <tr class=3D"project" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0">
+          <td class=3D"name" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0; vertical-align:top; font-weight:bold; width:18%" valign=3D"top"=
+ width=3D"18%">Project</td>
+          <td class=3D"value" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0; vertical-align:top; font-family:&quot;Courier&quot;" valign=3D=
+"top">
+            <a href=3D"http://email.circleci.com/c/eJw1T7tuhDAQ_BrTGWGDARcU=
+kaIrUl6VLlr8Ot_ZGPnBJX8fo0uk1Wp2dvYxcplHPjd20Tp9muk6enrEybHr8aE60xLGOSdsJHP=
+fj2jo9pAyuFbYKJzCThkQP3gL2WqrIj4InuTMOBNS4sHfjW5uC2eMzJQPK-XABZdVIImElXVsWh=
+WFxi23nPeE-jdELzVey4VtRfC1NLeaUvHFpgqeIT60C88T3-EAnFQ86ukkH6i_lOy_BPgdrNlQ_=
+_4vxhqsUxLR8RR4JW3xta18pf_IFEoUqpIvMwKyDVsTF3Dq26aqL6naN-fE-dcvjWBoUQ" styl=
+e=3D"box-sizing:border-box; font-size:14px; margin:0; color:#337ab7; text-d=
+ecoration:none">sumuis/java-server-sdk</a>
+          </td>
+        </tr>
+       =20
+        <tr class=3D"workflow" style=3D"box-sizing:border-box; font-size:14=
+px; margin:0">
+          <td class=3D"name" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0; vertical-align:top; font-weight:bold; width:18%" valign=3D"top"=
+ width=3D"18%">Workflow</td>
+          <td class=3D"value" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0; vertical-align:top; font-family:&quot;Courier&quot;" valign=3D=
+"top">
+            <a href=3D"http://email.circleci.com/c/eJw9UMtuxCAM_BpyIwohIXDI=
+oVK1hx731FvlNSZLCyEij23_vkRbVfLBMx6PxrajVkZXfnRufZ-Gq4rtkYfQX483aqZa9MYY0Su=
+hpVSsa5a0bhBq9BkD8UAT4A-f0-adp8wPwQere9OjtbyLn5Or7uNtACkRSRvoBEprALpGoiYYWo=
+1WVGG8b9uyMvnC2kuppzn6GlMs8JHylwvpwfM-F6ilNogKOBkyvING8ZvVyAGV6F1ptbVMXvYtf=
+iDEBfw0M_n6b-LAB7KsVacgkvV7LGOKhf4j17RnpEI-z0LYfJqrPEKgb78W_b6WR0znxpnwF8Nl=
+aaM" style=3D"box-sizing:border-box; font-size:14px; margin:0; color:#337ab=
+7; text-decoration:none">test</a>
+          </td>
+        </tr>       =20
+        <tr class=3D"branch" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0">
+          <td class=3D"name" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0; vertical-align:top; font-weight:bold; width:18%" valign=3D"top"=
+ width=3D"18%">Branch</td>
+          <td class=3D"value" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0; vertical-align:top; font-family:&quot;Courier&quot;" valign=3D=
+"top">
+            <a href=3D"http://email.circleci.com/c/eJw1UDtvwyAQ_jV4wzLG2DB4=
+qFRl6JipW0XgwCRgLMBO---LlVY63eO775565qPgjZuNyZ92uo6hP9Lk2fX4gM62hAkhCBsJp3R=
+EQ7fFXKRvlUvKA_ZgpfrBayzOOEj4IHjSnAmmtMZDuFvTLLPgw8A6wrgEoybdD7qDm6acw3Ajhq=
+rGz0spW0b0DfWXKq_myrUqhhrapaq8h93l6jxjehgfn6d_l4fEGdJRR2f9qEhJANUEmQskRC97C=
+V9Khk06uyL6_l-MjXQeNOrHkxBAuz3UNIQK_4E57klBBV_HKVlcXJs0Sw_fLlf-nus77Flx7vkL=
+Nclt8w" style=3D"box-sizing:border-box; font-size:14px; margin:0; color:#33=
+7ab7; text-decoration:none">master</a>
+          </td>
+        </tr>
+        <tr class=3D"commits" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0">
+          <td class=3D"name" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0; vertical-align:top; font-weight:bold; width:18%" valign=3D"top"=
+ width=3D"18%">Commit</td>
+          <td class=3D"value" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0; vertical-align:top; font-family:&quot;Courier&quot;" valign=3D=
+"top">
+            <div style=3D"box-sizing:border-box; font-size:14px; margin:0">=
+scala.yml <a style=3D"box-sizing:border-box; font-size:14px; margin:0; colo=
+r:#337ab7; text-decoration:none" href=3D"http://email.circleci.com/c/eJwVT7=
+FuxSAQ-5pkIwohF2DI0KVDxzd1vcBBeIXmKZCo_fteJQ-2ZdmyX81iTZ_WEOpn1I-lTPepMzzuD=
+xrjIMFaK2GRRqmlm8fXURvmwaXTZRKZIrpf8X20FBKd4pZCewMWnPdiLs8Y-n0FGbSCUVEgr7jG=
+usmTNN4hSD067PO6t_aqnXrrpndGTG2_tsEdhUW9ypUqkyfeKCqdN-9U_8UOB0pqTOYZKGi7jVY=
+ujjxLhG2WQU44UbBgpTKolO_PFTP9pJq4tPKbWDDl_6E_qp1SMA">445ef79</a></div>
+          </td>
+        </tr>
+        <tr class=3D"more-commits" style=3D"box-sizing:border-box; font-siz=
+e:14px; margin:0">
+          <td class=3D"name" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0; vertical-align:top; font-weight:bold; width:18%" valign=3D"top"=
+ width=3D"18%"></td>
+          <td class=3D"value" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0; vertical-align:top; font-family:&quot;Courier&quot;" valign=3D=
+"top">
+              <a href=3Dhttp://email.circleci.com/c/eJwNjTkOwyAQAF9jOiwOcxV=
+8IKWrtJgrG0FsgW0lvw_SVDPFBKul0QhsSv2Z1Soru5sqYr0fkeSZCmMMFZJqzuW0kGPvpyuzh-=
+ZLxCVm53_4s5-QIDZ8U6yCFkb4EPBS3zmhl908jWFYxr3wxBEuzchKKs02I5xCxU6MDVCzrsQvd=
+Ljq1ccsVwfjtdc_YKszFw style=3D"box-sizing:border-box; font-size:14px; margi=
+n:0; color:#337ab7; text-decoration:none"></a>
+          </td>
+        </tr>
+       =20
+      </tbody>
+    </table></td>
+              </tr>
+            </table>
+            <table class=3D"secondary" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"box-sizing:border-box; font-size:14px; margin:0; margin-top:20px; =
+background-color:#fff; border:1px solid #e9e9e9; border-radius:3px; max-wid=
+th:560px; display:block" bgcolor=3D"#ffffff">
+              <tr style=3D"box-sizing:border-box; font-size:14px; margin:0"=
+>
+                <td class=3D"content-wrap" style=3D"box-sizing:border-box; =
+font-size:14px; margin:0; vertical-align:top; padding:20px; width:568px" va=
+lign=3D"top" width=3D"568"><table class=3D"workflow-details" style=3D"box-s=
+izing:border-box; font-size:14px; margin:0; width:100%" width=3D"100%">
+      <tbody style=3D"box-sizing:border-box; font-size:14px; margin:0">
+        <tr style=3D"box-sizing:border-box; font-size:14px; margin:0">
+          <td class=3D"name" style=3D"box-sizing:border-box; font-size:14px=
+; margin:0; vertical-align:top; font-weight:bold; width:18%" valign=3D"top"=
+ width=3D"18%">Jobs</td>
+          <td class=3D"value" style=3D"box-sizing:border-box; font-size:14p=
+x; margin:0; vertical-align:top;" valign=3D"top">
+            <table class=3D"jobs" style=3D"box-sizing:border-box; font-size=
+:14px; margin:0; width:100%; table-layout:fixed;" width=3D"100%">
+              <tbody style=3D"box-sizing:border-box; font-size:14px; margin=
+:0">
+                <tr class=3D"job">
+                  <td class=3D"job-name" style=3D"width:43%; white-space: n=
+owrap; overflow: hidden; text-overflow: ellipsis; font-family:'Courier';" w=
+idth=3D"43%">
+                    <a href=3D"http://email.circleci.com/c/eJwtj01vhCAQhn-N=
+3jAignLwsEmzhx731FuDw8iyC2JA3PbfF7NNJpOZZz5fPY1CjrWdliV9meEmfHfEwfHb8YmtaSi=
+XUlIu6MiYqPp2C2lXrgEbwSFxaBT8kjXsdrEYyUHJoEcuOWhNev8wS32fOLTt3M-dwqEHRQWDme=
+MgpFSiBwRZu-m-71uq2KXqrsXey8E2EHxJzb24lH22qQQPdSiSMB7lXNLPQmhXsWve_Tcovylr1=
+op9vEJ8Li68yKKsQ1114mzwqG32pYy-4H-YQo6ABb5VgNptWOs4KYc_NpX-nIpuc06cD_0BkuVl=
+Gg" style=3D"box-sizing:border-box; font-size:14px; margin:0; color:#337ab7=
+; text-decoration:none; vertical-align:middle;">
+                      build-linux
+                    </a>
+                  </td>
+                  <td class=3D"job-result" style=3D"width:57%;">
+                    <img src=3D"https://dmmj3mmt94rvw.cloudfront.net/img/em=
+ail/failed/icon@3x.png" width=3D"20px" style=3D"width:20px; vertical-align:=
+middle;" />
+                    <span class=3D"bad" style=3D"color:#ed5c5c; font-weight=
+:bold; vertical-align:middle;">
+                      Failed
+                    </span>
+                   =20
+                  </td>
+                </tr><tr class=3D"job">
+                  <td class=3D"job-name" style=3D"width:43%; white-space: n=
+owrap; overflow: hidden; text-overflow: ellipsis; font-family:'Courier';" w=
+idth=3D"43%">
+                    <a href=3D"http://email.circleci.com/c/eJwtj8luwyAQhp8G=
+37ACGLAPPkSqcugxp94qzGYSMBaL0759sVJpNJr5Zv3VPLJp7NxsTP6y_M4CPhL39H586ovtEZ2=
+mCVGGRkIYGC57zEX4XrokvYZeWyF_4RaLM04neCDI1UgnKpWCQ3hY063zYATXo5QLVgoPakAGEY=
+o55swwsZil8_Nayp4BuQJ8a_ZeLl0vY2ipXZvLNVSXW_AQh4BZp6Ody-rZCEKA3GoJ31KEXTi7A=
+fLxiulpfHxBI5zXCmB2NgStXA2trEPD_zDHmqRu8K1CiuLi1qVZeP3jcuuvuem258T50B-5v2VJ=
+" style=3D"box-sizing:border-box; font-size:14px; margin:0; color:#337ab7; =
+text-decoration:none; vertical-align:middle;">
+                      Java 11 - Windows - OpenJDK
+                    </a>
+                  </td>
+                  <td class=3D"job-result" style=3D"width:57%;">
+                    <img src=3D"https://dmmj3mmt94rvw.cloudfront.net/img/em=
+ail/failed/icon@3x.png" width=3D"20px" style=3D"width:20px; vertical-align:=
+middle;" />
+                    <span class=3D"bad" style=3D"color:#ed5c5c; font-weight=
+:bold; vertical-align:middle;">
+                      Failed
+                    </span>
+                   =20
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table></td>
+              </tr>
+            </table>
+            <div class=3D"footer" style=3D"box-sizing:border-box; font-size=
+:14px; margin:0; clear:both; color:#999; padding:20px; width:100%" width=3D=
+"100%">
+              <table width=3D"100%" class=3D"unsubscribe" style=3D"box-sizi=
+ng:border-box; font-size:14px; margin:0">
+                <tr style=3D"box-sizing:border-box; font-size:14px; margin:=
+0">
+                  <td class=3D"aligncenter content-block" style=3D"box-sizi=
+ng:border-box; font-size:12px; margin:0; vertical-align:top; padding:0 0 20=
+px; text-align:center; color:#999" valign=3D"top" align=3D"center">
+                    You're receiving this email because you follow <a href=
+=3D"http://email.circleci.com/c/eJw1T7tuhDAQ_BrTGWGDARcUkaIrUl6VLlr8Ot_ZGPn=
+BJX8fo0uk1Wp2dvYxcplHPjd20Tp9muk6enrEybHr8aE60xLGOSdsJHPfj2jo9pAyuFbYKJzCTh=
+kQP3gL2WqrIj4InuTMOBNS4sHfjW5uC2eMzJQPK-XABZdVIImElXVsWhWFxi23nPeE-jdELzVey=
+4VtRfC1NLeaUvHFpgqeIT60C88T3-EAnFQ86ukkH6i_lOy_BPgdrNlQ__4vxhqsUxLR8RR4JW3x=
+ta18pf_IFEoUqpIvMwKyDVsTF3Dq26aqL6naN-fE-dcvjWBoUQ" class=3D"project" style=
+=3D"box-sizing:border-box; font-size:12px; margin:0; color:#999; text-decor=
+ation:underline">sumuis/java-server-sdk</a> on <a href=3D"http://email.circ=
+leci.com/c/eJwtjztvxCAQhH-N3WHxMBgXLiJFV6S8Kl3ELY_jAsYC7Ev-fbAu0lbfzu7M6EWK=
+WfZ-sbZ8uukqIj3yFPj1-DDYDYTP80y4IJIx0Y14S6WqMIDPEAwKxin4RWuq3nqT0UHQpCWfOWi=
+Nxvhwtr8vWIFi1IyWcgAjMSXE2onpG-aTuEnch-Ve61Y69tbRS5vXc_ADpHgSdtlr_AIVN-Xd2r=
+H3Z8rfNqQnssoHozsqTkE02u-xrU1s-B-WtGcwDb4ygqo-rX1eVDA_vjT9Xlord16cdn8k6FlX"=
+ class=3D"root" style=3D"box-sizing:border-box; font-size:12px; margin:0; c=
+olor:#999; text-decoration:underline">CircleCI</a>.
+                    <br style=3D"box-sizing:border-box; font-size:14px; mar=
+gin:0" />Unsubscribe by
+                      <a href=3D"http://email.circleci.com/c/eJwtT8tuxCAM_J=
+rkRpTHQuCQQ6VqDz3uqbeKgiHsQoh4ZNu_r6OtZFn2eDz26IUzwVu3GJM_7XxjYTzS7Ont-IDed=
+gMVQgyUDXyaWHPp95iL9J1ySXkgHqxUv2SLxRkHiRwDmTWngiqtySXcrWnXRdMRgOleD6gkhAbK=
+Z6Fmzug4UvU9t35ZS9lzM7014xXjJa5cp2LA1q6Ycg3VZSzu8pAkQzrwXNYPREC70kzXWsKXkmG=
+Xzm7N9P6M6WF8fBIjnQfdjOwkBCTXgGMICP-DOdakAMGXDyWLi1ubFunhx2Xk14zO7blxvvQHKM=
+FlwA" class=3D"unfollow" style=3D"box-sizing:border-box; font-size:12px; ma=
+rgin:0; color:#999; text-decoration:underline">
+                        unfollowing sumuis/java-server-sdk</a>
+                      or
+                      <a href=3D"http://email.circleci.com/c/eJxNjz1vxCAMhn=
+9NshGF5CAwZKhU3dDxpm6VYz6OFkIEJNf--xJdh0oe7MevX9tqFlyK1s3G5Hc73XgYjjR5djved=
+G87yqSUlHEqxpE3l36LuYDv0CX0mnhtAX_IGoszTidyUDIpwSRDpcglfFrT3meJUmgQChkHLimX=
+uAixUAYL9MvST62f76VsuRlfmuFa42mOrsMYagmIcV9LzZ57EIqLa5Vf9xI-EMIGzq7N-PqI6cv=
+4-CAGnNeqGfgpCFq5PdS2DhX_wRz3hLrC_5ZtmsHrb5erfs_1WXtOnFf8AgJuYqU" class=3D"=
+disable" style=3D"box-sizing:border-box; font-size:12px; margin:0; color:#9=
+99; text-decoration:underline">changing your email notification settings</a=
+>.
+                    </td>
+                  </tr>
+                </table>
+                <table width=3D"100%" class=3D"address" style=3D"box-sizing=
+:border-box; font-size:14px; margin:0">
+                  <tr style=3D"box-sizing:border-box; font-size:14px; margi=
+n:0">
+                    <td class=3D"aligncenter content-block" style=3D"box-si=
+zing:border-box; font-size:12px; margin:0; vertical-align:top; padding:0 0 =
+20px; text-align:center; color:#999" valign=3D"top" align=3D"center">
+                      CircleCI - 201 Spear Street - 12th Floor - San Franci=
+sco, CA, 94105
+                      <br style=3D"box-sizing:border-box; font-size:14px; m=
+argin:0" />
+                      <a href=3D"http://email.circleci.com/c/eJwtj7tuxCAQRb=
+8Gd1hgm1dBEWm1Rcqt0kUsryUBYwH2Jn8frI001dGZuXeM5FTwIUjn6odnN5qmo7BIbse7RX7ER=
+AiBCcV8nilY0JZrU3HUoehoYbRe6V-45hZcsAUeGDLDiSDaGLikL--Gh1SWMSMWTBaEzKI5MuLO=
+BePmTih1HA9RPlrbKpjfwHTt8zquw6hzAvN1b-lTq7Sp4FcwX565fLuYn9CpEK0BEz2FZE3Yu32=
+xqeN_WPNetO3wVVCrFvI6FKmi_Qm1-3vtL_lz48z6Aww6WFI" style=3D"box-sizing:borde=
+r-box; font-size:12px; margin:0; color:#999; text-decoration:underline">cir=
+cleci.com</a> - +1-800-585-7075 - <a style=3D"box-sizing:border-box; font-s=
+ize:12px; margin:0; color:#999; text-decoration:underline" href=3D"http://e=
+mail.circleci.com/c/eJwljj0PgyAURX-NbhiQD2Vg6NKho1NX8gR8DVQDaNt_X5smd7nJyT1=
+3NqPSY4vG-3IPw6RSf-Qhyum4ORo6JrXWTCo2cq4aQbe1VBs7wAzRkeiChQ95rhU9ukwORoZ5lF=
+rCPBORHsG3i7G-t5QDAFOOcieYp4L3g6JUKH_uttEstW6l4Zemv56pL6zV5Q7WdLa_CrDNxkb3x=
+oJ72st5JSSL8Qd9AeyWPbk">@circleci</a>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </td>
+        <td style=3D"box-sizing:border-box; font-size:14px; margin:0; verti=
+cal-align:top" valign=3D"top"></td>
+        </tr>
+      </table>
+    <img width=3D"1px" height=3D"1px" alt=3D"" src=3D"http://email.circleci=
+.com/o/eJwNzTsSwiAUAMDTmI4MhN-j4AKWqWwJP58D4kCS0dubvcAGC8rAhDal8ch6VXU5uy5y=
+Pe-R5plJYwyTigHn6ibop43dldlj9yWSErPzP_JuOyaMnZyM6ADSSB8CEfWV0_S0GzVsEz4lrgG=
+EEUJuHCjwtCgKTqmpW1fiFwce9RjXkavDq2j1D5odMFI"></body>
+
+</html>=
