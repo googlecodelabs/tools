@@ -16,7 +16,6 @@ before_install:
   rm -f install.sh
 install:
 - go get github.com/golang/lint/golint
-- go get github.com/russross/blackfriday/v2@v2.0.2-0.20200714164129-acedacffef10
 # Install protobuf dependencies
 - go get -u github.com/golang/protobuf/protoc-gen-go
 - curl -OL https://github.com/google/protobuf/releases/download/v3.7.1/protoc-3.7.1-linux-x86_64.zip
@@ -26,7 +25,9 @@ install:
 # Compile protobuf
 - protoc tutorial.proto -I=third_party --go_out=third_party
 # Dynamically get rest of Golang-specific dependencies
-- go get -t -d ./claat/...
+- cd ./claat
+- go mod
+- go get -t -d ./...
 script:
 - make -C claat test lint
 - bash codelab-elements/tools/ci-presubmit.sh
