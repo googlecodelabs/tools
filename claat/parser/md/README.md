@@ -15,6 +15,7 @@ will be understood by the renderer:
 - Id: An identifier composed of lowercase letters ideally describing the
   content of the codelab. This field should be unique among
   codelabs.
+- Authors: A comma-separated list of the codelab's authors.
 - Categories: A comma-separated list of the topics the codelab covers.
 - Environments: A list of environments the codelab should be discoverable in.
   Codelabs marked "Web" will be visible at the codelabs index. Codelabs marked
@@ -116,3 +117,54 @@ will apply special button-esque styling to any link that begins with the word
 </button>
 ```
 
+#### Tables
+
+
+Codelabs support standard markdown tables:
+
+
+```md
+| Foo | Bar | Baz |
+|---- |-----|-----|
+| The quick | brown fox | jumped over the lazy dog |
+```
+
+
+#### Images
+
+Images can be inserted using the following syntax:
+
+![alt-text](local path to image asset)
+
+#### Videos
+
+To embed a youtube video, you can use a video tag with an id attribute of the youtube video id that you wish to embed. A youtube video id is the part of the url that is of the format "v=hEpbKqV0Adc", where hEpbKqV0Adc would be the youtube video id. Ignore any other part of the query string. 
+
+```
+  <video id="hEpbKqV0Adc"></video>
+```
+
+#### Text Styling
+
+Codelabs support all normal markdown text styling:
+
+
+```md
+* Normal
+* **Bold**
+* *Italics*
+* ***Bold and Italics***
+```
+
+#### Special Links
+
+Some links get special styling if underneath a 'Frequently Asked Questions' header
+
+```md
+### Frequently Asked Questions
+
+* [cloud](https://cloud.google.com/dataflow/model/programming-model) 
+* [stack overflow](https://stackoverflow.com/questions/14323872/using-forked-package-import-in-go) 
+* [nothing](https://test.com)
+
+```
