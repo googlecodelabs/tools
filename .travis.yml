@@ -25,9 +25,7 @@ install:
 # Compile protobuf
 - protoc tutorial.proto -I=third_party --go_out=third_party
 # Dynamically get rest of Golang-specific dependencies
-- cd claat
-- go get -t -d ./...
-- cd ..
+- go get -t -d ./claat/...
 script:
 - make -C claat test lint
 - bash codelab-elements/tools/ci-presubmit.sh

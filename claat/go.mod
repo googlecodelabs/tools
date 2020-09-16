@@ -1,6 +1,6 @@
 module github.com/googlecodelabs/tools/claat
 
-go 1.15
+go 1.11
 
 require (
 	github.com/russross/blackfriday/v2 v2.0.2-0.20200714164129-acedacffef10
