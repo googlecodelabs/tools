@@ -24,9 +24,7 @@ install:
 # Compile protobuf
 - protoc tutorial.proto -I=third_party --go_out=third_party
 # Dynamically get rest of Golang-specific dependencies
-- cd ./claat
-- go mod
-- go get -t -d ./...
+- go get -t -d ./claat/...
 script:
 - make -C claat test lint
 - bash codelab-elements/tools/ci-presubmit.sh
@@ -40,7 +38,7 @@ deploy:
   on:
     repo: googlecodelabs/tools
     tags: true
-    go: 1.10.x # match the above; latest release
+    go: 1.12.x # match the above; latest release
   skip_cleanup: true
   file:
   - claat/bin/claat-darwin-amd64
