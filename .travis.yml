@@ -4,8 +4,7 @@ git:
   depth: 3
 language: go
 go:
-- 1.9.x  # need for App Engine
-- 1.11.x # latest release because "master" is dev version
+- 1.12.x  # need for App Engine
 env:
 - BAZEL=0.18.1
 before_install:
