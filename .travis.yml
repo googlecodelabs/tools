@@ -4,7 +4,7 @@ git:
   depth: 3
 language: go
 go:
-- 1.12.x  # need for App Engine
+- 1.11.x  # need for App Engine
 env:
 - BAZEL=0.18.1
 before_install:
@@ -26,7 +26,6 @@ install:
 - protoc tutorial.proto -I=third_party --go_out=third_party
 # Dynamically get rest of Golang-specific dependencies
 - cd claat
-- go mod download
 - go get -t -d ./...
 - cd ..
 script:
@@ -42,7 +41,7 @@ deploy:
   on:
     repo: googlecodelabs/tools
     tags: true
-    go: 1.12.x # match the above; latest release
+    go: 1.11.x # match the above; latest release
   skip_cleanup: true
   file:
   - claat/bin/claat-darwin-amd64
