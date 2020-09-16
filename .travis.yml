@@ -7,7 +7,6 @@ go:
 - 1.12.x  # need for App Engine
 env:
 - BAZEL=0.18.1
-- GO111MODULE=true
 before_install:
 - |
   wget -O install.sh "https://github.com/bazelbuild/bazel/releases/download/${BAZEL}/bazel-${BAZEL}-installer-linux-x86_64.sh"
@@ -15,6 +14,7 @@ before_install:
   ./install.sh --user
   rm -f install.sh
 install:
+- set GO111MODULE=on
 - go get golang.org/x/lint/golint
 # Install protobuf dependencies
 - go get -u github.com/golang/protobuf/protoc-gen-go
