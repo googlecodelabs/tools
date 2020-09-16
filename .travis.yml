@@ -16,6 +16,7 @@ before_install:
   rm -f install.sh
 install:
 - go get github.com/golang/lint/golint
+- go get github.com/russross/blackfriday/v2@v2.0.2-0.20200714164129-acedacffef10
 # Install protobuf dependencies
 - go get -u github.com/golang/protobuf/protoc-gen-go
 - curl -OL https://github.com/google/protobuf/releases/download/v3.7.1/protoc-3.7.1-linux-x86_64.zip
