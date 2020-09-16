@@ -7,6 +7,7 @@ go:
 - 1.12.x  # need for App Engine
 env:
 - BAZEL=0.18.1
+- GO111MODULE=true
 before_install:
 - |
   wget -O install.sh "https://github.com/bazelbuild/bazel/releases/download/${BAZEL}/bazel-${BAZEL}-installer-linux-x86_64.sh"
