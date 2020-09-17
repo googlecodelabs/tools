@@ -36,6 +36,7 @@ type MarkdownParser int
 
 const (
 	Blackfriday MarkdownParser = iota
+	Goldmark    MarkdownParser = iota
 )
 
 // Container for parsing options.

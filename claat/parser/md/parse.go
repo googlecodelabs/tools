@@ -36,6 +36,8 @@ import (
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
 	"gopkg.in/russross/blackfriday.v2"
 )
 
@@ -222,7 +224,7 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 	ds.lastNode = nn[len(nn)-1]
 }
 
-// renderToHTML preprocesses markdown bytes and then calls the Blackfriday Markdown parser with some special addons selected.
+// renderToHTML preprocesses Markdown bytes and then calls a Markdown parser on the Markdown.
 // It takes a raw markdown bytes and output parsed xhtml in bytes.
 func renderToHTML(b []byte, mdp parser.MarkdownParser) ([]byte, error) {
 	b = convertImports(b)
@@ -245,6 +247,13 @@ func renderToHTML(b []byte, mdp parser.MarkdownParser) ([]byte, error) {
 			blackfriday.Tables
 
 		return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r)), nil
+	case parser.Goldmark:
+		gmParser := goldmark.New(goldmark.WithExtensions(extension.Typographer, extension.Table))
+		var out bytes.Buffer
+		if err := gmParser.Convert(b, &out); err != nil {
+			panic(err)
+		}
+		return out.Bytes(), nil
 	default:
 		return nil, fmt.Errorf("unrecognized Markdown parser %d", mdp)
 	}
