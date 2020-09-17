@@ -45,10 +45,10 @@ type Options struct {
 	MDParser     MarkdownParser
 }
 
-func NewOptions() *Options {
+func NewOptions(mdp MarkdownParser) *Options {
 	return &Options{
 		PassMetadata: map[string]bool{},
-		MDParser:     Blackfriday,
+		MDParser:     mdp,
 	}
 }
 
