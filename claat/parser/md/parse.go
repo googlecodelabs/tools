@@ -111,7 +111,10 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	if err != nil {
 		return nil, err
 	}
-	b = renderToHTML(b, opts.MDParser)
+	b, err = renderToHTML(b, opts.MDParser)
+	if err != nil {
+		return nil, err
+	}
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -127,7 +130,10 @@ func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, 
 	if err != nil {
 		return nil, err
 	}
-	b = renderToHTML(b, opts.MDParser)
+	b, err = renderToHTML(b, opts.MDParser)
+	if err != nil {
+		return nil, err
+	}
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -218,7 +224,7 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 
 // renderToHTML preprocesses markdown bytes and then calls the Blackfriday Markdown parser with some special addons selected.
 // It takes a raw markdown bytes and output parsed xhtml in bytes.
-func renderToHTML(b []byte, mdp parser.MarkdownParser) []byte {
+func renderToHTML(b []byte, mdp parser.MarkdownParser) ([]byte, error) {
 	b = convertImports(b)
 
 	switch mdp {
@@ -238,9 +244,9 @@ func renderToHTML(b []byte, mdp parser.MarkdownParser) []byte {
 			blackfriday.DefinitionLists |
 			blackfriday.Tables
 
-		return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r))
+		return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r)), nil
 	default:
-		panic("unrecognized parser")
+		return nil, fmt.Errorf("unrecognized Markdown parser %d", mdp)
 	}
 
 }
