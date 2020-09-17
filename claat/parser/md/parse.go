@@ -36,7 +36,7 @@ import (
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
-	"github.com/russross/blackfriday/v2"
+	"github.com/russross/blackfriday.v2"
 )
 
 // Metadata constants for the YAML header
@@ -710,11 +710,11 @@ func code(ds *docState, term bool) types.Node {
 		v = "\n" + v
 	}
 	// get the language hint
-	var lan string;
-	if (!term) {
+	var lan string
+	if !term {
 		for _, a := range ds.cur.Attr {
-			if (a.Key == "class" && strings.HasPrefix(a.Val, "language-")) {
-				lan = strings.Replace(a.Val, "language-", "", 0);
+			if a.Key == "class" && strings.HasPrefix(a.Val, "language-") {
+				lan = strings.Replace(a.Val, "language-", "", 0)
 			}
 		}
 	}
