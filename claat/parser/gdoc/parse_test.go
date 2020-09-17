@@ -553,7 +553,8 @@ func TestParseFragment(t *testing.T) {
 	`
 
 	p := &Parser{}
-	nodes, err := p.ParseFragment(markupReader(markup))
+	opts := *parser.NewOptions()
+	nodes, err := p.ParseFragment(markupReader(markup), opts)
 	if err != nil {
 		t.Fatal(err)
 	}

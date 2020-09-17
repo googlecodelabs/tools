@@ -29,7 +29,7 @@ type Parser interface {
 	Parse(r io.Reader, opts Options) (*types.Codelab, error)
 
 	// ParseFragment is similar to Parse except it doesn't parse codelab metadata.
-	ParseFragment(r io.Reader) ([]types.Node, error)
+	ParseFragment(r io.Reader, opts Options) ([]types.Node, error)
 }
 
 type MarkdownParser int
@@ -97,12 +97,12 @@ func Parse(name string, r io.Reader, opts Options) (*types.Codelab, error) {
 
 // ParseFragment parses a codelab fragment provided in r, using a parser
 // registered with the specified name.
-func ParseFragment(name string, r io.Reader) ([]types.Node, error) {
+func ParseFragment(name string, r io.Reader, opts Options) ([]types.Node, error) {
 	parsersMu.Lock()
 	p, ok := parsers[name]
 	parsersMu.Unlock()
 	if !ok {
 		return nil, fmt.Errorf("no parser named %q", name)
 	}
-	return p.ParseFragment(r)
+	return p.ParseFragment(r, opts)
 }

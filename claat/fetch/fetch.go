@@ -276,7 +276,11 @@ func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
 		return nil, err
 	}
 	defer res.body.Close()
-	return parser.ParseFragment(string(res.typ), res.body)
+
+	opts := *parser.NewOptions()
+	opts.PassMetadata = f.passMetadata
+
+	return parser.ParseFragment(string(res.typ), res.body, opts)
 }
 
 // fetch retrieves codelab doc either from local disk

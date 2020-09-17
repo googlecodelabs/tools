@@ -111,7 +111,7 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	if err != nil {
 		return nil, err
 	}
-	b = renderToHTML(b)
+	b = renderToHTML(b, opts.MDParser)
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -122,12 +122,12 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 }
 
 // ParseFragment parses a codelab fragment written in Markdown.
-func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
+func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, error) {
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
-	b = renderToHTML(b)
+	b = renderToHTML(b, opts.MDParser)
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -218,25 +218,31 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 
 // renderToHTML preprocesses markdown bytes and then calls the Blackfriday Markdown parser with some special addons selected.
 // It takes a raw markdown bytes and output parsed xhtml in bytes.
-func renderToHTML(b []byte) []byte {
+func renderToHTML(b []byte, mdp parser.MarkdownParser) []byte {
 	b = convertImports(b)
 
-	htmlFlags := blackfriday.UseXHTML |
-		blackfriday.Smartypants |
-		blackfriday.SmartypantsFractions |
-		blackfriday.SmartypantsDashes |
-		blackfriday.SmartypantsLatexDashes
+	switch mdp {
+	case parser.Blackfriday:
+		htmlFlags := blackfriday.UseXHTML |
+			blackfriday.Smartypants |
+			blackfriday.SmartypantsFractions |
+			blackfriday.SmartypantsDashes |
+			blackfriday.SmartypantsLatexDashes
 
-	params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
-	r := blackfriday.NewHTMLRenderer(params)
+		params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
+		r := blackfriday.NewHTMLRenderer(params)
 
-	extns := blackfriday.FencedCode |
-		blackfriday.NoEmptyLineBeforeBlock |
-		blackfriday.NoIntraEmphasis |
-		blackfriday.DefinitionLists |
-		blackfriday.Tables
+		extns := blackfriday.FencedCode |
+			blackfriday.NoEmptyLineBeforeBlock |
+			blackfriday.NoIntraEmphasis |
+			blackfriday.DefinitionLists |
+			blackfriday.Tables
 
-	return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r))
+		return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r))
+	default:
+		panic("unrecognized parser")
+	}
+
 }
 
 // parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.

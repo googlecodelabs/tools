@@ -56,7 +56,8 @@ func parseFragment(markup string) ([]types.Node, error) {
 	r := strings.NewReader(markup)
 	p := &Parser{}
 
-	return p.ParseFragment(r)
+	opts := *parser.NewOptions()
+	return p.ParseFragment(r, opts)
 }
 
 func stringify(nodes []types.Node, level string) string {
