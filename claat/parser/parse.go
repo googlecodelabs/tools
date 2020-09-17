@@ -32,14 +32,22 @@ type Parser interface {
 	ParseFragment(r io.Reader) ([]types.Node, error)
 }
 
+type MarkdownParser int
+
+const (
+	Blackfriday MarkdownParser = iota
+)
+
 // Container for parsing options.
 type Options struct {
 	PassMetadata map[string]bool
+	MDParser     MarkdownParser
 }
 
 func NewOptions() *Options {
 	return &Options{
 		PassMetadata: map[string]bool{},
+		MDParser:     Blackfriday,
 	}
 }
 
