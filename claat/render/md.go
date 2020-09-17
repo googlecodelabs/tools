@@ -215,22 +215,14 @@ func (mw *mdWriter) url(n *types.URLNode) {
 func (mw *mdWriter) code(n *types.CodeNode) {
 	mw.newBlock()
 	defer mw.writeBytes(newLine)
-	if n.Term {
-		var buf bytes.Buffer
-		const prefix = "    "
-		lineStart := true
-		for _, r := range n.Value {
-			if lineStart {
-				buf.WriteString(prefix)
-			}
-			buf.WriteRune(r)
-			lineStart = r == '\n'
-		}
-		mw.writeBytes(buf.Bytes())
-		return
-	}
 	mw.writeString("```")
-	mw.writeString(n.Lang)
+	if n.Term {
+		mw.writeString("console")
+	} else if (len(n.Lang) > 0) {
+		mw.writeString(n.Lang)
+	} else {
+		mw.writeString("auto")
+	}
 	mw.writeBytes(newLine)
 	mw.writeString(n.Value)
 	if !mw.lineStart {

@@ -709,7 +709,16 @@ func code(ds *docState, term bool) types.Node {
 	} else if ds.cur.Parent.FirstChild == ds.cur && ds.cur.Parent.DataAtom != atom.Span {
 		v = "\n" + v
 	}
-	n := types.NewCodeNode(v, term)
+	// get the language hint
+	var lan string;
+	if (!term) {
+		for _, a := range ds.cur.Attr {
+			if (a.Key == "class" && strings.HasPrefix(a.Val, "language-")) {
+				lan = strings.Replace(a.Val, "language-", "", 0);
+			}
+		}
+	}
+	n := types.NewCodeNode(v, term, lan)
 	n.MutateBlock(elem)
 	return n
 }
