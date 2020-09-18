@@ -62,7 +62,7 @@ the License.
                                   {{if $.Meta.BadgePath}}badge-path="{{$.Meta.BadgePath}}"{{end}}>
             </google-codelab-about>
           {{end}}
-          {{.Content | renderHTML $.Env}}
+          {{.Content | renderHTML $.Context}}
         </google-codelab-step>
       {{end}}{{end}}
     </google-codelab>

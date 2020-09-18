@@ -30,9 +30,9 @@ import (
 )
 
 // Lite renders nodes as a standard HTML markup, without Custom Elements.
-func Lite(env string, nodes ...types.Node) (htmlTemplate.HTML, error) {
+func Lite(ctx Context, nodes ...types.Node) (htmlTemplate.HTML, error) {
 	var buf bytes.Buffer
-	if err := WriteLite(&buf, env, nodes...); err != nil {
+	if err := WriteLite(&buf, ctx.Env, nodes...); err != nil {
 		return "", err
 	}
 	return htmlTemplate.HTML(buf.String()), nil

@@ -27,9 +27,9 @@ import (
 )
 
 // MD renders nodes as markdown for the target env.
-func MD(env string, nodes ...types.Node) (string, error) {
+func MD(ctx Context, nodes ...types.Node) (string, error) {
 	var buf bytes.Buffer
-	if err := WriteMD(&buf, env, nodes...); err != nil {
+	if err := WriteMD(&buf, ctx.Env, nodes...); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
@@ -42,12 +42,12 @@ func WriteMD(w io.Writer, env string, nodes ...types.Node) error {
 }
 
 type mdWriter struct {
-	w         io.Writer // output writer
-	env       string    // target environment
-	err       error     // error during any writeXxx methods
-	lineStart bool
-	isWritingTableCell bool // used to override lineStart for correct cell formatting
-	Prefix    string    // prefix for e.g. blockquote content
+	w                  io.Writer // output writer
+	env                string    // target environment
+	err                error     // error during any writeXxx methods
+	lineStart          bool
+	isWritingTableCell bool   // used to override lineStart for correct cell formatting
+	Prefix             string // prefix for e.g. blockquote content
 }
 
 func (mw *mdWriter) writeBytes(b []byte) {
