@@ -176,7 +176,7 @@ func TestMetaTable(t *testing.T) {
 	`
 
 	p := &Parser{}
-	clab, err := p.Parse(markupReader(markup), *parser.NewOptions())
+	clab, err := p.Parse(markupReader(markup), *parser.NewOptions(parser.Blackfriday))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -252,7 +252,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 	`
 
 	p := &Parser{}
-	opts := *parser.NewOptions()
+	opts := *parser.NewOptions(parser.Blackfriday)
 	opts.PassMetadata = map[string]bool{
 		"extrafieldone": true,
 	}
@@ -379,7 +379,7 @@ func TestParseDoc(t *testing.T) {
 	`
 
 	p := &Parser{}
-	c, err := p.Parse(markupReader(markup), *parser.NewOptions())
+	c, err := p.Parse(markupReader(markup), *parser.NewOptions(parser.Blackfriday))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -555,7 +555,8 @@ func TestParseFragment(t *testing.T) {
 	`
 
 	p := &Parser{}
-	nodes, err := p.ParseFragment(markupReader(markup))
+	opts := *parser.NewOptions(parser.Blackfriday)
+	nodes, err := p.ParseFragment(markupReader(markup), opts)
 	if err != nil {
 		t.Fatal(err)
 	}

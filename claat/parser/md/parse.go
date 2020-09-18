@@ -37,6 +37,8 @@ import (
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
 	"github.com/russross/blackfriday/v2"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
 )
 
 // Metadata constants for the YAML header
@@ -111,7 +113,10 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	if err != nil {
 		return nil, err
 	}
-	b = renderToHTML(b)
+	b, err = renderToHTML(b, opts.MDParser)
+	if err != nil {
+		return nil, err
+	}
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -122,12 +127,15 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 }
 
 // ParseFragment parses a codelab fragment written in Markdown.
-func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
+func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, error) {
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
-	b = renderToHTML(b)
+	b, err = renderToHTML(b, opts.MDParser)
+	if err != nil {
+		return nil, err
+	}
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -216,27 +224,40 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 	ds.lastNode = nn[len(nn)-1]
 }
 
-// renderToHTML preprocesses markdown bytes and then calls the Blackfriday Markdown parser with some special addons selected.
+// renderToHTML preprocesses Markdown bytes and then calls a Markdown parser on the Markdown.
 // It takes a raw markdown bytes and output parsed xhtml in bytes.
-func renderToHTML(b []byte) []byte {
+func renderToHTML(b []byte, mdp parser.MarkdownParser) ([]byte, error) {
 	b = convertImports(b)
 
-	htmlFlags := blackfriday.UseXHTML |
-		blackfriday.Smartypants |
-		blackfriday.SmartypantsFractions |
-		blackfriday.SmartypantsDashes |
-		blackfriday.SmartypantsLatexDashes
+	switch mdp {
+	case parser.Blackfriday:
+		htmlFlags := blackfriday.UseXHTML |
+			blackfriday.Smartypants |
+			blackfriday.SmartypantsFractions |
+			blackfriday.SmartypantsDashes |
+			blackfriday.SmartypantsLatexDashes
 
-	params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
-	r := blackfriday.NewHTMLRenderer(params)
+		params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
+		r := blackfriday.NewHTMLRenderer(params)
 
-	extns := blackfriday.FencedCode |
-		blackfriday.NoEmptyLineBeforeBlock |
-		blackfriday.NoIntraEmphasis |
-		blackfriday.DefinitionLists |
-		blackfriday.Tables
+		extns := blackfriday.FencedCode |
+			blackfriday.NoEmptyLineBeforeBlock |
+			blackfriday.NoIntraEmphasis |
+			blackfriday.DefinitionLists |
+			blackfriday.Tables
 
-	return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r))
+		return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r)), nil
+	case parser.Goldmark:
+		gmParser := goldmark.New(goldmark.WithExtensions(extension.Typographer, extension.Table))
+		var out bytes.Buffer
+		if err := gmParser.Convert(b, &out); err != nil {
+			panic(err)
+		}
+		return out.Bytes(), nil
+	default:
+		return nil, fmt.Errorf("unrecognized Markdown parser %d", mdp)
+	}
+
 }
 
 // parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
@@ -710,11 +731,11 @@ func code(ds *docState, term bool) types.Node {
 		v = "\n" + v
 	}
 	// get the language hint
-	var lan string;
-	if (!term) {
+	var lan string
+	if !term {
 		for _, a := range ds.cur.Attr {
-			if (a.Key == "class" && strings.HasPrefix(a.Val, "language-")) {
-				lan = strings.Replace(a.Val, "language-", "", 0);
+			if a.Key == "class" && strings.HasPrefix(a.Val, "language-") {
+				lan = strings.Replace(a.Val, "language-", "", 0)
 			}
 		}
 	}

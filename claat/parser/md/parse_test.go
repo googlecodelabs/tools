@@ -56,7 +56,8 @@ func parseFragment(markup string) ([]types.Node, error) {
 	r := strings.NewReader(markup)
 	p := &Parser{}
 
-	return p.ParseFragment(r)
+	opts := *parser.NewOptions(parser.Blackfriday)
+	return p.ParseFragment(r, opts)
 }
 
 func stringify(nodes []types.Node, level string) string {
@@ -85,7 +86,7 @@ func stringify(nodes []types.Node, level string) string {
 func TestHandleCodelabTitle(t *testing.T) {
 	// Set up.
 	title := "Egret"
-	c := mustParseCodelab(fmt.Sprintf("# %s", title), *parser.NewOptions())
+	c := mustParseCodelab(fmt.Sprintf("# %s", title), *parser.NewOptions(parser.Blackfriday))
 
 	if c.Title != title {
 		t.Errorf("[%q] got %v, want %v", title, c.Title, title)
@@ -121,7 +122,7 @@ func TestProcessDuration(t *testing.T) {
 
 	for i, tc := range tests {
 		content := fmt.Sprintf(stdHeader+"\n## Step Title\nDuration: %v\n", tc.in)
-		c := mustParseCodelab(content, *parser.NewOptions())
+		c := mustParseCodelab(content, *parser.NewOptions(parser.Blackfriday))
 		out := time.Duration(c.Duration) * time.Minute
 
 		if out != tc.out {
@@ -151,7 +152,7 @@ Duration: %v
 			content += fmt.Sprintf(tmp, dur)
 		}
 
-		c := mustParseCodelab(content, *parser.NewOptions())
+		c := mustParseCodelab(content, *parser.NewOptions(parser.Blackfriday))
 		if c.Duration != tc.out {
 			t.Errorf("%d: wanted duration %d but got %d", i, c.Duration, tc.out)
 		}
@@ -185,7 +186,7 @@ feedback link: https://www.google.com
 `
 	content += ("# " + title)
 
-	c := mustParseCodelab(content, *parser.NewOptions())
+	c := mustParseCodelab(content, *parser.NewOptions(parser.Blackfriday))
 	if !reflect.DeepEqual(c.Meta, wantMeta) {
 		t.Errorf("\ngot:\n%+v\nwant:\n%+v", c.Meta, wantMeta)
 	}
@@ -222,7 +223,7 @@ extrafieldtwo: bbbbb
 `
 	content += ("# " + title)
 
-	opts := *parser.NewOptions()
+	opts := *parser.NewOptions(parser.Blackfriday)
 	opts.PassMetadata = map[string]bool{
 		"extrafieldtwo": true,
 	}
@@ -392,7 +393,7 @@ I'm going to inject some HTML
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			lab := mustParseCodelab(test.input, *parser.NewOptions())
+			lab := mustParseCodelab(test.input, *parser.NewOptions(parser.Blackfriday))
 			var got []string
 			for _, s := range lab.Steps {
 				for _, n := range types.ImportNodes(s.Content.Nodes) {
