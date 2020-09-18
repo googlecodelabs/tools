@@ -167,6 +167,7 @@ func writeCodelabWriter(w io.Writer, clab *types.Codelab, extraVars map[string]s
 	}{Context: render.Context{
 		Env:      ctx.Env,
 		Prefix:   ctx.Prefix,
+		Format:   ctx.Format,
 		GlobalGA: ctx.MainGA,
 		Updated:  time.Time(*ctx.Updated).Format(time.RFC3339),
 		Meta:     &clab.Meta,
@@ -209,6 +210,7 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 	}{Context: render.Context{
 		Env:      ctx.Env,
 		Prefix:   ctx.Prefix,
+		Format:   ctx.Format,
 		GlobalGA: ctx.MainGA,
 		Updated:  time.Time(*ctx.Updated).Format(time.RFC3339),
 		Meta:     &clab.Meta,

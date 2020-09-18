@@ -70,7 +70,7 @@ the License.
     <div class="step__body">
       <h1>{{.Meta.Title}}</h1>
       <h2>{{.StepNum}}. {{.Current.Title}}</h2>
-      {{.Current.Content | renderLite .Env}}
+      {{.Current.Content | renderLite $.Context}}
     </div>
 
   </div><!-- codelab__toc -->

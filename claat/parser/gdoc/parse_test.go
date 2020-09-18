@@ -110,7 +110,7 @@ func TestParseTopCodeBlock(t *testing.T) {
 	code := "start func() {\n}\n\nfunc2() {\n} // comment"
 	term := "adb shell am start -a VIEW \\\n-d \"http://host\" app"
 	content := types.NewListNode()
-	var lang string;
+	var lang string
 	content.Append(types.NewCodeNode(code, false, lang))
 	content.Append(types.NewCodeNode(term, true, lang))
 
@@ -127,9 +127,9 @@ func TestParseTopCodeBlock(t *testing.T) {
 		cur: doc.FirstChild,
 	}
 	parseTop(ds)
-
-	html1, _ := render.HTML("", ds.step.Content)
-	html2, _ := render.HTML("", content)
+	var ctx render.Context
+	html1, _ := render.HTML(ctx, ds.step.Content)
+	html2, _ := render.HTML(ctx, content)
 	s1 := strings.TrimSpace(string(html1))
 	s2 := strings.TrimSpace(string(html2))
 	if s1 != s2 {
@@ -492,7 +492,7 @@ func TestParseDoc(t *testing.T) {
 		"http://host/file.java", types.NewTextNode("a file")))
 	content.Append(h)
 
-	var lang string;
+	var lang string
 	code := "start func() {\n}\n\nfunc2() {\n} // comment"
 	cn := types.NewCodeNode(code, false, lang)
 	cn.MutateBlock(1)
@@ -523,8 +523,9 @@ func TestParseDoc(t *testing.T) {
 	})
 	content.Append(sv)
 
-	html1, _ := render.HTML("", step.Content)
-	html2, _ := render.HTML("", content)
+	var ctx render.Context
+	html1, _ := render.HTML(ctx, step.Content)
+	html2, _ := render.HTML(ctx, content)
 	if html1 != html2 {
 		t.Errorf("step.Content:\n\n%s\nwant:\n\n%s", html1, html2)
 	}
@@ -578,8 +579,9 @@ func TestParseFragment(t *testing.T) {
 	para.MutateBlock(true)
 	want = append(want, para)
 
-	html1, _ := render.HTML("", nodes...)
-	html2, _ := render.HTML("", want...)
+	var ctx render.Context
+	html1, _ := render.HTML(ctx, nodes...)
+	html2, _ := render.HTML(ctx, want...)
 	if html1 != html2 {
 		t.Errorf("nodes:\n\n%s\nwant:\n\n%s", html1, html2)
 	}

@@ -27,9 +27,9 @@ import (
 )
 
 // MD renders nodes as markdown for the target env.
-func MD(env string, nodes ...types.Node) (string, error) {
+func MD(ctx Context, nodes ...types.Node) (string, error) {
 	var buf bytes.Buffer
-	if err := WriteMD(&buf, env, nodes...); err != nil {
+	if err := WriteMD(&buf, ctx.Env, nodes...); err != nil {
 		return "", err
 	}
 	return buf.String(), nil

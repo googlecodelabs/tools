@@ -36,6 +36,7 @@ type Context struct {
 	Env      string
 	Prefix   string
 	GlobalGA string
+	Format   string
 	Meta     *types.Meta
 	Steps    []*types.Step
 	Updated  string

@@ -36,17 +36,17 @@ var (
 )
 
 // HTML renders nodes as the markup for the target env.
-func HTML(env string, nodes ...types.Node) (htmlTemplate.HTML, error) {
+func HTML(ctx Context, nodes ...types.Node) (htmlTemplate.HTML, error) {
 	var buf bytes.Buffer
-	if err := WriteHTML(&buf, env, nodes...); err != nil {
+	if err := WriteHTML(&buf, ctx.Env, ctx.Format, nodes...); err != nil {
 		return "", err
 	}
 	return htmlTemplate.HTML(buf.String()), nil
 }
 
 // WriteHTML does the same as HTML but outputs rendered markup to w.
-func WriteHTML(w io.Writer, env string, nodes ...types.Node) error {
-	hw := htmlWriter{w: w, env: env}
+func WriteHTML(w io.Writer, env string, fmt string, nodes ...types.Node) error {
+	hw := htmlWriter{w: w, env: env, format: fmt}
 	return hw.write(nodes...)
 }
 
@@ -64,9 +64,10 @@ func ReplaceAmpersand(s string) string {
 }
 
 type htmlWriter struct {
-	w   io.Writer // output writer
-	env string    // target environment
-	err error     // error during any writeXxx methods
+	w      io.Writer // output writer
+	env    string    // target environment
+	format string    // target template
+	err    error     // error during any writeXxx methods
 }
 
 func (hw *htmlWriter) matchEnv(v []string) bool {
@@ -241,7 +242,13 @@ func (hw *htmlWriter) code(n *types.CodeNode) {
 		}
 		hw.writeBytes(greaterThan)
 	}
+	if hw.format == "devsite" {
+		hw.writeString("{% verbatim %}")
+	}
 	hw.writeEscape(n.Value)
+	if hw.format == "devsite" {
+		hw.writeString("{% endverbatim %}")
+	}
 	if !n.Term {
 		hw.writeString("</code>")
 	}
