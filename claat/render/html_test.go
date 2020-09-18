@@ -39,7 +39,9 @@ func TestHTMLEnv(t *testing.T) {
 		{"four", ""},
 	}
 	for i, test := range tests {
-		h, err := HTML(test.env, one, two, three)
+		var ctx Context
+		ctx.Env = test.env
+		h, err := HTML(ctx, one, two, three)
 		if err != nil {
 			t.Errorf("%d: %v", i, err)
 			continue

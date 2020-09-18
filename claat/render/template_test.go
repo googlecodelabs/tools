@@ -26,13 +26,15 @@ func TestExecuteBuiltin(t *testing.T) {
 		Title:   "Test step",
 		Content: types.NewListNode(types.NewTextNode("text")),
 	}
-	ctx := &Context{
+	data := &struct {
+		Context
+	}{Context: Context{
 		Meta:  &types.Meta{},
 		Steps: []*types.Step{step},
-	}
+	}}
 	for _, f := range []string{"html", "md"} {
 		var buf bytes.Buffer
-		if err := Execute(&buf, f, ctx); err != nil {
+		if err := Execute(&buf, f, data); err != nil {
 			t.Errorf("%s: %v", f, err)
 		}
 	}
