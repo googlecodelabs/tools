@@ -622,7 +622,8 @@ func code(ds *docState, term bool) types.Node {
 	} else if ds.cur.Parent.FirstChild == ds.cur && ds.cur.Parent.DataAtom != atom.Span {
 		v = "\n" + v
 	}
-	n := types.NewCodeNode(v, term)
+	var lang string;
+	n := types.NewCodeNode(v, term, lang)
 	n.MutateBlock(td)
 	return n
 }

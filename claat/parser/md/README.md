@@ -72,8 +72,15 @@ perform syntax highlighting on code blocks, but it is not always effective at
 guessing the language to highlight in. Put the name of the code language after
 the first fence to explicitly specify which highlighting plan to use.
 
-    ``` go
+    ```go
     This block will be highlighted as Go source code.
+    ```
+
+If you'd like to disable syntax highlighting, you can specify the language
+hint to "console":
+
+    ```console
+    This block will not be syntax highlighted.
     ```
 
 #### Info Boxes

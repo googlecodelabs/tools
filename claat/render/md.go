@@ -46,6 +46,7 @@ type mdWriter struct {
 	env       string    // target environment
 	err       error     // error during any writeXxx methods
 	lineStart bool
+	isWritingTableCell bool // used to override lineStart for correct cell formatting
 	Prefix    string    // prefix for e.g. blockquote content
 }
 
@@ -110,8 +111,8 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 			mw.write(n.Content.Nodes...)
 		case *types.ItemsListNode:
 			mw.itemsList(n)
-		//case *types.GridNode:
-		//	mw.grid(n)
+		case *types.GridNode:
+			mw.table(n)
 		case *types.InfoboxNode:
 			mw.infobox(n)
 		//case *types.SurveyNode:
@@ -214,22 +215,14 @@ func (mw *mdWriter) url(n *types.URLNode) {
 func (mw *mdWriter) code(n *types.CodeNode) {
 	mw.newBlock()
 	defer mw.writeBytes(newLine)
-	if n.Term {
-		var buf bytes.Buffer
-		const prefix = "    "
-		lineStart := true
-		for _, r := range n.Value {
-			if lineStart {
-				buf.WriteString(prefix)
-			}
-			buf.WriteRune(r)
-			lineStart = r == '\n'
-		}
-		mw.writeBytes(buf.Bytes())
-		return
-	}
 	mw.writeString("```")
-	mw.writeString(n.Lang)
+	if n.Term {
+		mw.writeString("console")
+	} else if (len(n.Lang) > 0) {
+		mw.writeString(n.Lang)
+	} else {
+		mw.writeString("auto")
+	}
 	mw.writeBytes(newLine)
 	mw.writeString(n.Value)
 	if !mw.lineStart {
@@ -243,7 +236,7 @@ func (mw *mdWriter) list(n *types.ListNode) {
 		mw.newBlock()
 	}
 	mw.write(n.Nodes...)
-	if !mw.lineStart {
+	if !mw.lineStart && !mw.isWritingTableCell {
 		mw.writeBytes(newLine)
 	}
 }
@@ -266,9 +259,9 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 }
 
 func (mw *mdWriter) infobox(n *types.InfoboxNode) {
-	// InfoBoxes are comprised of a ListNode with the contents of the InfoBox. 
+	// InfoBoxes are comprised of a ListNode with the contents of the InfoBox.
 	// Writing the ListNode directly results in extra newlines in the md output
-	// which breaks the formatting. So instead, write the ListNode's children 
+	// which breaks the formatting. So instead, write the ListNode's children
 	// directly and don't write the ListNode itself.
 	mw.newBlock()
 	k := "aside positive"
@@ -283,7 +276,7 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 		cn.MutateBlock(false)
 		mw.write(cn)
 	}
-	
+
 	mw.Prefix = ""
 }
 
@@ -300,4 +293,37 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 func (mw *mdWriter) youtube(n *types.YouTubeNode) {
 	mw.newBlock()
 	mw.writeString(fmt.Sprintf(`<video id="%s"></video>`, n.VideoID))
+}
+
+func (mw *mdWriter) table(n *types.GridNode) {
+	for rowIndex, row := range n.Rows {
+		for cellIndex, cell := range row {
+			mw.isWritingTableCell = true
+
+			for _, cn := range cell.Content.Nodes {
+				cn.MutateBlock(false) // don't treat content as a new block
+				mw.write(cn)
+			}
+
+			// Write cell separator
+			if(cellIndex != len(row) - 1){
+				mw.writeString(" | ")
+			} else {
+				mw.writeBytes(newLine)
+			}
+		}
+
+		// Write header bottom border
+		if(rowIndex == 0){
+			for index, _ := range row {
+				mw.writeString("---")
+				if(index != len(row) - 1){
+					mw.writeString(" | ")
+				}
+			}
+			mw.writeBytes(newLine)
+		}
+
+		mw.isWritingTableCell = false
+	}
 }

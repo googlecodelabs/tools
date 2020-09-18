@@ -110,8 +110,9 @@ func TestParseTopCodeBlock(t *testing.T) {
 	code := "start func() {\n}\n\nfunc2() {\n} // comment"
 	term := "adb shell am start -a VIEW \\\n-d \"http://host\" app"
 	content := types.NewListNode()
-	content.Append(types.NewCodeNode(code, false))
-	content.Append(types.NewCodeNode(term, true))
+	var lang string;
+	content.Append(types.NewCodeNode(code, false, lang))
+	content.Append(types.NewCodeNode(term, true, lang))
 
 	doc, err := html.Parse(markupReader(markup))
 	if err != nil {
@@ -491,13 +492,14 @@ func TestParseDoc(t *testing.T) {
 		"http://host/file.java", types.NewTextNode("a file")))
 	content.Append(h)
 
+	var lang string;
 	code := "start func() {\n}\n\nfunc2() {\n} // comment"
-	cn := types.NewCodeNode(code, false)
+	cn := types.NewCodeNode(code, false, lang)
 	cn.MutateBlock(1)
 	content.Append(cn)
 
 	term := "adb shell am start -a VIEW \\\n-d \"http://host\" app"
-	tn := types.NewCodeNode(term, true)
+	tn := types.NewCodeNode(term, true, lang)
 	tn.MutateBlock(2)
 	content.Append(tn)
 

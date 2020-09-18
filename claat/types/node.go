@@ -300,11 +300,12 @@ func (tn *TextNode) Empty() bool {
 
 // NewCodeNode creates a new Node of type NodeCode.
 // Use term argument to specify a terminal output.
-func NewCodeNode(v string, term bool) *CodeNode {
+func NewCodeNode(v string, term bool, lang string) *CodeNode {
 	return &CodeNode{
 		node:  node{typ: NodeCode},
 		Value: v,
 		Term:  term,
+		Lang: lang,
 	}
 }
 
