@@ -36,6 +36,7 @@ go_binary(
         "//codelab-elements/google-codelab-index:google_codelab_index_files",
         "//codelab-elements/google-codelab-step:google_codelab_step_files",
         "//codelab-elements/google-codelab-survey:google_codelab_survey_files",
+        "//codelab-elements/google-codelab-code-menu:google_codelab_code_menu_files",
         "@polyfill//:custom_elements",
         "@polyfill//:native_shim",
         "@prettify//:prettify",

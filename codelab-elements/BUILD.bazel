@@ -25,6 +25,7 @@ genrule(
         "//codelab-elements/google-codelab-about:google_codelab_about_bin",
         "//codelab-elements/google-codelab-step:google_codelab_step_bin",
         "//codelab-elements/google-codelab-survey:google_codelab_survey_bin",
+        "//codelab-elements/google-codelab-code-menu:google_codelab_code_menu_bin",
     ],
     cmd = concat("js"),
 )
@@ -37,6 +38,7 @@ genrule(
         "//codelab-elements/google-codelab-about:google_codelab_about_scss_bin",
         "//codelab-elements/google-codelab-step:google_codelab_step_scss_bin",
         "//codelab-elements/google-codelab-survey:google_codelab_survey_scss_bin",
+        "//codelab-elements/google-codelab-code-menu:google_codelab_code_menu_scss_bin",
     ],
     cmd = concat("css"),
 )

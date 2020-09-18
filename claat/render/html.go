@@ -233,18 +233,20 @@ func (hw *htmlWriter) button(n *types.ButtonNode) {
 }
 
 func (hw *htmlWriter) code(n *types.CodeNode) {
-	hw.writeString("<pre>")
-	if !n.Term {
-		hw.writeString("<code")
-		if n.Lang != "" {
-			hw.writeFmt(" language=%q class=%q", n.Lang, n.Lang)
-		}
-		hw.writeBytes(greaterThan)
+	hw.writeString(`<pre class="code-block">`)
+
+	hw.writeString(`<google-codelab-code-menu></google-codelab-code-menu>`)
+
+	hw.writeString("<code")
+	if n.Lang != "" {
+		hw.writeFmt(" language=%q class=%q", n.Lang, n.Lang)
 	}
+	hw.writeBytes(greaterThan)
+
 	hw.writeEscape(n.Value)
-	if !n.Term {
-		hw.writeString("</code>")
-	}
+
+	hw.writeString("</code>")
+
 	hw.writeString("</pre>")
 }
 

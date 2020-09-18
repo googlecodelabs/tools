@@ -1,0 +1,39 @@
+google-codelab-step pre,google-codelab-step code {
+    font-family: 'Source Code Pro', Helvetica, Arial;
+    font-size: inherit;
+    border-radius: 4px;
+    overflow-x: auto;
+    overflow-y: visible
+}
+
+google-codelab-step code {
+    background-color: #E8EAEd;
+    padding: 0.1em 0.3em
+}
+
+google-codelab-step pre {
+    display: block;
+    color: white;
+    background-color: #28323f;
+    padding: 14px;
+    -webkit-text-size-adjust: none;
+    line-height: 1.4;
+    /* white-space: pre-wrap; */
+}
+
+google-codelab-step pre>code {
+    padding: 0;
+    background-color: transparent
+}
+
+google-codelab-step code em {
+    color: #97C8F2
+}
+
+google-codelab-step pre .pun,google-codelab-step code .pun {
+    color: #F8F9FA
+}
+
+google-codelab-step pre .pln,google-codelab-step code .pln {
+    color: #F8F9FA
+}
