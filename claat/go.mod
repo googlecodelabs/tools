@@ -3,7 +3,7 @@ module github.com/googlecodelabs/tools/claat
 go 1.11
 
 require (
-	github.com/russross/blackfriday/v2 v2.0.2-0.20200714164129-acedacffef10
+	github.com/russross/blackfriday.v2 v2.0.2-0.20200714164129-acedacffef10
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/x1ddos/csslex v0.0.0-20160125172232-7894d8ab8bfe
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73
