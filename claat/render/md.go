@@ -218,10 +218,8 @@ func (mw *mdWriter) code(n *types.CodeNode) {
 	mw.writeString("```")
 	if n.Term {
 		mw.writeString("console")
-	} else if (len(n.Lang) > 0) {
-		mw.writeString(n.Lang)
 	} else {
-		mw.writeString("auto")
+		mw.writeString(n.Lang)
 	}
 	mw.writeBytes(newLine)
 	mw.writeString(n.Value)
