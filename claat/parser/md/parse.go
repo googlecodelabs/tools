@@ -785,10 +785,12 @@ func list(ds *docState) types.Node {
 // It may also return a YouTubeNode if alt property contains specific substring.
 func image(ds *docState) types.Node {
 	alt := nodeAttr(ds.cur, "alt")
+	// Author-added double quotes in attributes break html syntax
+	alt = strings.Replace(alt, `"`, "&quot;", -1)
 	if strings.Contains(alt, "youtube.com/watch") {
 		return youtube(ds)
 	} else if strings.Contains(alt, "https://") {
-		u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+		u, err := url.Parse(alt)
 		if err != nil {
 			return nil
 		}
@@ -811,12 +813,13 @@ func image(ds *docState) types.Node {
 
 	n := types.NewImageNode(s)
 
-	if alt := nodeAttr(ds.cur, "alt"); alt != "" {
+	if alt != "" {
 		n.Alt = alt
 	}
 
 	if title := nodeAttr(ds.cur, "title"); title != "" {
-		n.Title = title
+		// Author-added double quotes in attributes break html syntax
+		n.Title = strings.Replace(title, `"`, "&quot;", -1)
 	}
 
 	if ws := nodeAttr(ds.cur, "width"); ws != "" {
