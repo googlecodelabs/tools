@@ -38,6 +38,7 @@ import (
 	"github.com/googlecodelabs/tools/claat/util"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
+	gmhtml "github.com/yuin/goldmark/renderer/html"
 	"gopkg.in/russross/blackfriday.v2"
 )
 
@@ -248,7 +249,7 @@ func renderToHTML(b []byte, mdp parser.MarkdownParser) ([]byte, error) {
 
 		return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r)), nil
 	case parser.Goldmark:
-		gmParser := goldmark.New(goldmark.WithExtensions(extension.Typographer, extension.Table))
+		gmParser := goldmark.New(goldmark.WithRendererOptions(gmhtml.WithUnsafe()), goldmark.WithExtensions(extension.Typographer, extension.Table))
 		var out bytes.Buffer
 		if err := gmParser.Convert(b, &out); err != nil {
 			panic(err)
