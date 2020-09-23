@@ -58,8 +58,9 @@ func ReplaceDoubleCurlyBracketsWithEntity(s string) string {
 // TODO: replace this. It's a temporary work around for this:
 // https://github.com/russross/blackfriday/issues/403
 func ReplaceAmpersand(s string) string {
-	s = strings.Replace(s, "&amp;dArr", "&dArr", -1)
-	s = strings.Replace(s, "&amp;mdash", "&mdash", -1)
+	for k, v := range entities {
+		s = strings.Replace(s, k, v, -1)
+	}
 	return s
 }
 
