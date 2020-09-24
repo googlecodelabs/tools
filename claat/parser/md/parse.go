@@ -678,21 +678,28 @@ func tableRow(ds *docState) []*types.GridCell {
 	return row
 }
 
-// survey expects a name Node followed by 1 or more inputs Nodes. Each input node is expected to have a value attribute.
+// survey expects 1 or more name Nodes followed by 1 or more input Nodes.
+// Each input node is expected to have a value attribute.
 func survey(ds *docState) types.Node {
 	var gg []*types.SurveyGroup
-	hn := ds.cur
-	n := findAtom(hn, atom.Name)
-	inputs := findChildAtoms(hn, atom.Input)
-	opt := surveyOpt(inputs)
-
-	if len(opt) > 0 {
-		gg = append(gg, &types.SurveyGroup{
-			Name:    strings.TrimSpace(n.FirstChild.Data),
-			Options: opt,
-		})
+	ns := findChildAtoms(ds.cur, atom.Name)
+	for _, n := range ns {
+		var inputs []*html.Node
+		for hn := n.NextSibling; hn != nil; hn = hn.NextSibling {
+			if hn.DataAtom == atom.Input {
+				inputs = append(inputs, hn)
+			} else if hn.DataAtom == atom.Name {
+				break
+			}
+		}
+		opt := surveyOpt(inputs)
+		if len(opt) > 0 {
+			gg = append(gg, &types.SurveyGroup{
+				Name:    strings.TrimSpace(n.FirstChild.Data),
+				Options: opt,
+			})
+		}
 	}
-
 	if len(gg) == 0 {
 		return nil
 	}
