@@ -622,7 +622,7 @@ func code(ds *docState, term bool) types.Node {
 	} else if ds.cur.Parent.FirstChild == ds.cur && ds.cur.Parent.DataAtom != atom.Span {
 		v = "\n" + v
 	}
-	var lang string;
+	var lang string
 	n := types.NewCodeNode(v, term, lang)
 	n.MutateBlock(td)
 	return n
@@ -833,9 +833,12 @@ func text(ds *docState) types.Node {
 
 	v := stringifyNode(ds.cur, false, true)
 	n := types.NewTextNode(v)
-	n.Bold = bold
-	n.Italic = italic
-	n.Code = code
+	// Only apply styling if the node contains non-whitespace.
+	if len(strings.TrimSpace(v)) > 0 {
+		n.Bold = bold
+		n.Italic = italic
+		n.Code = code
+	}
 	n.MutateBlock(findBlockParent(ds.cur))
 	return n
 }
