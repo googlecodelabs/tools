@@ -207,6 +207,9 @@ func (mw *mdWriter) url(n *types.URLNode) {
 }
 
 func (mw *mdWriter) code(n *types.CodeNode) {
+	if len(strings.TrimSpace(n.Value)) == 0 {
+		return
+	}
 	mw.newBlock()
 	defer mw.writeBytes(newLine)
 	mw.writeString("```")
