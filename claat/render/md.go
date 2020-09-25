@@ -165,16 +165,16 @@ func (mw *mdWriter) text(n *types.TextNode) {
 func (mw *mdWriter) image(n *types.ImageNode) {
 	mw.space()
 	mw.writeString("<img ")
-	mw.writeString(fmt.Sprintf("src=\"%s\" ", n.Src))
+	mw.writeString(fmt.Sprintf("src=%q ", n.Src))
 
 	if n.Alt != "" {
-		mw.writeString(fmt.Sprintf("alt=\"%s\" ", n.Alt))
+		mw.writeString(fmt.Sprintf("alt=%q ", n.Alt))
 	} else {
-		mw.writeString(fmt.Sprintf("alt=\"%s\" ", path.Base(n.Src)))
+		mw.writeString(fmt.Sprintf("alt=%q ", path.Base(n.Src)))
 	}
 
 	if n.Title != "" {
-		mw.writeString(fmt.Sprintf("title=\"%q\" ", n.Title))
+		mw.writeString(fmt.Sprintf("title=%q ", n.Title))
 	}
 
 	// If available append width to the src string of the image.
