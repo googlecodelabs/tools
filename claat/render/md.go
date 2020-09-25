@@ -289,30 +289,25 @@ func (mw *mdWriter) youtube(n *types.YouTubeNode) {
 
 func (mw *mdWriter) table(n *types.GridNode) {
 	for rowIndex, row := range n.Rows {
-		for cellIndex, cell := range row {
+		mw.writeString("| ")
+		for _, cell := range row {
 			mw.isWritingTableCell = true
 
 			for _, cn := range cell.Content.Nodes {
 				cn.MutateBlock(false) // don't treat content as a new block
 				mw.write(cn)
 			}
-
-			// Write cell separator
-			if cellIndex != len(row)-1 {
-				mw.writeString(" | ")
-			} else {
-				mw.writeBytes(newLine)
-			}
 		}
+		mw.writeString(" |")
+		mw.writeBytes(newLine)
 
 		// Write header bottom border
 		if rowIndex == 0 {
-			for index, _ := range row {
+			mw.writeString("| ")
+			for range row {
 				mw.writeString("---")
-				if index != len(row)-1 {
-					mw.writeString(" | ")
-				}
 			}
+			mw.writeString(" |")
 			mw.writeBytes(newLine)
 		}
 
