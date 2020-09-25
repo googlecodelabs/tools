@@ -17,6 +17,7 @@ package render
 import (
 	"bytes"
 	"fmt"
+	htmlTemplate "html/template"
 	"io"
 	"path"
 	"sort"
@@ -63,6 +64,11 @@ func (mw *mdWriter) writeString(s string) {
 		s = mw.Prefix + s
 	}
 	mw.writeBytes([]byte(s))
+}
+
+func (mw *mdWriter) writeEscape(s string) {
+	s = htmlTemplate.HTMLEscapeString(s)
+	mw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
 }
 
 func (mw *mdWriter) space() {
@@ -115,8 +121,8 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 			mw.table(n)
 		case *types.InfoboxNode:
 			mw.infobox(n)
-		//case *types.SurveyNode:
-		//	mw.survey(n)
+		case *types.SurveyNode:
+			mw.survey(n)
 		case *types.HeaderNode:
 			mw.header(n)
 		case *types.YouTubeNode:
@@ -273,6 +279,25 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 	}
 
 	mw.Prefix = ""
+}
+
+func (mw *mdWriter) survey(n *types.SurveyNode) {
+	mw.newBlock()
+	mw.writeString("<form>")
+	mw.writeBytes(newLine)
+	for _, g := range n.Groups {
+		mw.writeString("<name>")
+		mw.writeEscape(g.Name)
+		mw.writeString("</name>")
+		mw.writeBytes(newLine)
+		for _, o := range g.Options {
+			mw.writeString("<input value=\"")
+			mw.writeEscape(o)
+			mw.writeString("\">")
+			mw.writeBytes(newLine)
+		}
+	}
+	mw.writeString("</form>")
 }
 
 func (mw *mdWriter) header(n *types.HeaderNode) {
