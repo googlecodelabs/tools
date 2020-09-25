@@ -478,6 +478,9 @@ func header(ds *docState) types.Node {
 		return nil
 	}
 	n := types.NewHeaderNode(headerLevel[ds.cur.DataAtom], nodes...)
+	if n.Empty() {
+		return nil
+	}
 	switch strings.ToLower(stringifyNode(ds.cur, true, false)) {
 	case headerLearn, headerCover:
 		n.MutateType(types.NodeHeaderCheck)
