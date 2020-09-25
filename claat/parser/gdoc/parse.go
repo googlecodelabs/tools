@@ -675,7 +675,7 @@ func image(ds *docState) types.Node {
 	// Consecutive newlines aren't supported in markdown images, and
 	// author-added double quotes in attributes break html syntax
 	alt = strings.Replace(alt, "\n", " ", -1)
-	alt = strings.Replace(alt, `"`, "&quot;", -1)
+	alt = html.EscapeString(alt)
 	errorAlt := ""
 	if strings.Contains(alt, "youtube.com/watch") {
 		return youtube(ds)
