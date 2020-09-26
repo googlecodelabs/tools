@@ -1,3 +1,5 @@
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/googlecodelabs/tools)
+
 # Tools for authoring and serving codelabs
 
 [![Demo](https://storage.googleapis.com/claat/demo.png)](https://storage.googleapis.com/claat/demo.mp4)
