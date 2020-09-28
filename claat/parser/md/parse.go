@@ -793,7 +793,7 @@ func list(ds *docState) types.Node {
 func image(ds *docState) types.Node {
 	alt := nodeAttr(ds.cur, "alt")
 	// Author-added double quotes in attributes break html syntax
-	alt = strings.Replace(alt, `"`, "&quot;", -1)
+	alt = html.EscapeString(alt)
 	if strings.Contains(alt, "youtube.com/watch") {
 		return youtube(ds)
 	} else if strings.Contains(alt, "https://") {
