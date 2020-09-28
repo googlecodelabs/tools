@@ -826,7 +826,7 @@ func image(ds *docState) types.Node {
 
 	if title := nodeAttr(ds.cur, "title"); title != "" {
 		// Author-added double quotes in attributes break html syntax
-		n.Title = strings.Replace(title, `"`, "&quot;", -1)
+		n.Title = html.EscapeString(title)
 	}
 
 	if ws := nodeAttr(ds.cur, "width"); ws != "" {
