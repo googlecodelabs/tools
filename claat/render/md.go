@@ -316,26 +316,26 @@ func (mw *mdWriter) youtube(n *types.YouTubeNode) {
 }
 
 func (mw *mdWriter) table(n *types.GridNode) {
+	mw.writeBytes(newLine)
 	for rowIndex, row := range n.Rows {
-		mw.writeString("| ")
+		mw.writeString("|")
 		for _, cell := range row {
 			mw.isWritingTableCell = true
-
+			mw.writeString(" ")
 			for _, cn := range cell.Content.Nodes {
 				cn.MutateBlock(false) // don't treat content as a new block
 				mw.write(cn)
 			}
+			mw.writeString(" |")
 		}
-		mw.writeString(" |")
 		mw.writeBytes(newLine)
 
 		// Write header bottom border
 		if rowIndex == 0 {
-			mw.writeString("| ")
+			mw.writeString("|")
 			for range row {
-				mw.writeString("---")
+				mw.writeString(" --- |")
 			}
-			mw.writeString(" |")
 			mw.writeBytes(newLine)
 		}
 
