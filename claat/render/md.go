@@ -17,6 +17,7 @@ package render
 import (
 	"bytes"
 	"fmt"
+	htmlTemplate "html/template"
 	"io"
 	"path"
 	"sort"
@@ -63,6 +64,11 @@ func (mw *mdWriter) writeString(s string) {
 		s = mw.Prefix + s
 	}
 	mw.writeBytes([]byte(s))
+}
+
+func (mw *mdWriter) writeEscape(s string) {
+	s = htmlTemplate.HTMLEscapeString(s)
+	mw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
 }
 
 func (mw *mdWriter) space() {
@@ -115,8 +121,8 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 			mw.table(n)
 		case *types.InfoboxNode:
 			mw.infobox(n)
-		//case *types.SurveyNode:
-		//	mw.survey(n)
+		case *types.SurveyNode:
+			mw.survey(n)
 		case *types.HeaderNode:
 			mw.header(n)
 		case *types.YouTubeNode:
@@ -165,16 +171,16 @@ func (mw *mdWriter) text(n *types.TextNode) {
 func (mw *mdWriter) image(n *types.ImageNode) {
 	mw.space()
 	mw.writeString("<img ")
-	mw.writeString(fmt.Sprintf("src=\"%s\" ", n.Src))
+	mw.writeString(fmt.Sprintf("src=%q ", n.Src))
 
 	if n.Alt != "" {
-		mw.writeString(fmt.Sprintf("alt=\"%s\" ", n.Alt))
+		mw.writeString(fmt.Sprintf("alt=%q ", n.Alt))
 	} else {
-		mw.writeString(fmt.Sprintf("alt=\"%s\" ", path.Base(n.Src)))
+		mw.writeString(fmt.Sprintf("alt=%q ", path.Base(n.Src)))
 	}
 
 	if n.Title != "" {
-		mw.writeString(fmt.Sprintf("title=\"%q\" ", n.Title))
+		mw.writeString(fmt.Sprintf("title=%q ", n.Title))
 	}
 
 	// If available append width to the src string of the image.
@@ -207,6 +213,9 @@ func (mw *mdWriter) url(n *types.URLNode) {
 }
 
 func (mw *mdWriter) code(n *types.CodeNode) {
+	if n.Empty() {
+		return
+	}
 	mw.newBlock()
 	defer mw.writeBytes(newLine)
 	mw.writeString("```")
@@ -270,6 +279,25 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 	}
 
 	mw.Prefix = ""
+}
+
+func (mw *mdWriter) survey(n *types.SurveyNode) {
+	mw.newBlock()
+	mw.writeString("<form>")
+	mw.writeBytes(newLine)
+	for _, g := range n.Groups {
+		mw.writeString("<name>")
+		mw.writeEscape(g.Name)
+		mw.writeString("</name>")
+		mw.writeBytes(newLine)
+		for _, o := range g.Options {
+			mw.writeString("<input value=\"")
+			mw.writeEscape(o)
+			mw.writeString("\">")
+			mw.writeBytes(newLine)
+		}
+	}
+	mw.writeString("</form>")
 }
 
 func (mw *mdWriter) header(n *types.HeaderNode) {
