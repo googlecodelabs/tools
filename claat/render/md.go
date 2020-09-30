@@ -48,6 +48,7 @@ type mdWriter struct {
 	err                error     // error during any writeXxx methods
 	lineStart          bool
 	isWritingTableCell bool   // used to override lineStart for correct cell formatting
+	isWritingList      bool  // used for override newblock when needed
 	Prefix             string // prefix for e.g. blockquote content
 }
 
@@ -243,6 +244,7 @@ func (mw *mdWriter) list(n *types.ListNode) {
 }
 
 func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
+	mw.isWritingList = true
 	if n.Block() == true {
 		mw.newBlock()
 	}
@@ -257,6 +259,7 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 			mw.writeBytes(newLine)
 		}
 	}
+	mw.isWritingList = false
 }
 
 func (mw *mdWriter) infobox(n *types.InfoboxNode) {
@@ -311,7 +314,9 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 }
 
 func (mw *mdWriter) youtube(n *types.YouTubeNode) {
-	mw.newBlock()
+	if(!mw.isWritingList){
+		mw.newBlock()
+	}
 	mw.writeString(fmt.Sprintf(`<video id="%s"></video>`, n.VideoID))
 }
 
