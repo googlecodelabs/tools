@@ -24,6 +24,7 @@ const Templates = goog.require('googlecodelabs.CodelabSurvey.Templates');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.events');
 const soy = goog.require('goog.soy');
+const {assertIsElement, assertIsHtmlInputElement} = goog.require('goog.asserts.dom');
 
 
 /**
@@ -49,6 +50,11 @@ const SURVEY_UPGRADED_ATTR = 'upgraded';
 /** @const {string} */
 const DEFAULT_SURVEY_NAME = 'default-codelabs-survey';
 
+/** @const {string} */
+const OPTION_WRAPPER_CLASS = 'survey-option-wrapper';
+
+/** @const {string} */
+const RADIO_TEXT_CLASS = 'option-text';
 
 /** @enum {string} */
 const CssClass = {
@@ -112,32 +118,37 @@ class CodelabSurvey extends HTMLElement {
 
   /** @private */
   bindEvents_() {
-    this.eventHandler_.listen(document.body, events.EventType.CLICK,
-      (e) => this.handleClick_(e.target));
+    this.eventHandler_.listen(this, events.EventType.CHANGE,
+      (event) => this.handleOptionSelected_(event));
   }
 
   /**
-   * @param {!Element} el
+   * @param {!Event} event
    * @private
    */
-  handleClick_(el) {
-    const isOptionWrapper = el.classList.contains(
-      CssClass.RADIO_WRAPPER);
-    const elParent = el.parentElement;
-    let isOptionChild = false;
-    if (elParent) {
-      isOptionChild = elParent.classList.contains(CssClass.RADIO_WRAPPER);
+  handleOptionSelected_(event) {
+    const inputElement = assertIsHtmlInputElement(event.target);
+    const optionWrapperElement = assertIsElement(
+        dom.getAncestorByClass(inputElement, OPTION_WRAPPER_CLASS));
+    const optionTextElement =
+        optionWrapperElement.querySelector(`.${RADIO_TEXT_CLASS}`);
+    let answer = '';
+    if (optionTextElement) {
+      answer = optionTextElement.textContent;
     }
 
-    if (isOptionWrapper || isOptionChild) {
-      let optionEl = el;
-      if (isOptionChild) {
-        optionEl = /** @type {!Element} */ (elParent);
+    const question = inputElement.name;
+    this.storedData_[this.surveyName_][question] = answer;
+    this.storage_.set(
+      this.storageKey_, JSON.stringify(this.storedData_[this.surveyName_]));
+    const codelabEvent = new CustomEvent('google-codelab-action', {
+      detail: {
+        'category': 'survey',
+        'action': question.substring(0, 500),
+        'label': answer.substring(0, 500)
       }
-      if (optionEl) {
-        this.handleOptionSelected_(optionEl);
-      }
-    }
+    });
+    document.body.dispatchEvent(codelabEvent);
   }
 
   /**
