@@ -55,14 +55,6 @@ func ReplaceDoubleCurlyBracketsWithEntity(s string) string {
 	return strings.Replace(s, "{{", "&#123;&#123;", -1)
 }
 
-// TODO: replace this. It's a temporary work around for this:
-// https://github.com/russross/blackfriday/issues/403
-func ReplaceAmpersand(s string) string {
-	s = strings.Replace(s, "&amp;dArr", "&dArr", -1)
-	s = strings.Replace(s, "&amp;mdash", "&mdash", -1)
-	return s
-}
-
 type htmlWriter struct {
 	w      io.Writer // output writer
 	env    string    // target environment
@@ -165,7 +157,6 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 	}
 	s := htmlTemplate.HTMLEscapeString(n.Value)
 	s = ReplaceDoubleCurlyBracketsWithEntity(s)
-	s = ReplaceAmpersand(s)
 	hw.writeString(strings.Replace(s, "\n", "<br>", -1))
 	if n.Code {
 		hw.writeString("</code>")
