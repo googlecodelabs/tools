@@ -38,7 +38,7 @@ func MD(ctx Context, nodes ...types.Node) (string, error) {
 
 // WriteMD does the same as MD but outputs rendered markup to w.
 func WriteMD(w io.Writer, env string, nodes ...types.Node) error {
-	mw := mdWriter{w: w, env: env, Prefix: ""}
+	mw := mdWriter{w: w, env: env, Prefix: []byte("")}
 	return mw.write(nodes...)
 }
 
@@ -49,21 +49,21 @@ type mdWriter struct {
 	lineStart          bool
 	isWritingTableCell bool   // used to override lineStart for correct cell formatting
 	isWritingList      bool   // used for override newblock when needed
-	Prefix             string // prefix for e.g. blockquote content
+	Prefix             []byte // prefix for e.g. blockquote content
 }
 
 func (mw *mdWriter) writeBytes(b []byte) {
 	if mw.err != nil {
 		return
 	}
+	if mw.lineStart {
+		_, mw.err = mw.w.Write(mw.Prefix)
+	}
 	mw.lineStart = len(b) > 0 && b[len(b)-1] == '\n'
 	_, mw.err = mw.w.Write(b)
 }
 
 func (mw *mdWriter) writeString(s string) {
-	if mw.lineStart {
-		s = mw.Prefix + s
-	}
 	mw.writeBytes([]byte(s))
 }
 
@@ -272,16 +272,15 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 	if n.Kind == types.InfoboxNegative {
 		k = "aside negative"
 	}
-	mw.Prefix = "> "
+	mw.Prefix = []byte("> ")
 	mw.writeString(k)
 	mw.writeString("\n")
 
 	for _, cn := range n.Content.Nodes {
-		cn.MutateBlock(false)
 		mw.write(cn)
 	}
 
-	mw.Prefix = ""
+	mw.Prefix = []byte("")
 }
 
 func (mw *mdWriter) survey(n *types.SurveyNode) {
