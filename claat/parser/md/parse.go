@@ -670,7 +670,7 @@ func tableRow(ds *docState) []*types.GridCell {
 				if ns.FirstChild != nil {
 					break
 				}
-				cs += 1
+				cs++
 			}
 		}
 		rs, err := strconv.Atoi(nodeAttr(td, "rowspan"))
