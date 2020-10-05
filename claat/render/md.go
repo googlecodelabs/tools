@@ -322,6 +322,7 @@ func (mw *mdWriter) youtube(n *types.YouTubeNode) {
 
 func (mw *mdWriter) table(n *types.GridNode) {
 	mw.writeBytes(newLine)
+	maxcols := maxColsInTable(n)
 	for rowIndex, row := range n.Rows {
 		mw.writeString("|")
 		for _, cell := range row {
@@ -333,12 +334,17 @@ func (mw *mdWriter) table(n *types.GridNode) {
 			}
 			mw.writeString(" |")
 		}
+		if rowIndex == 0 && len(row) < maxcols {
+			for i:= 0; i < maxcols - len(row); i++ {
+				mw.writeString(" |")
+			}
+		}
 		mw.writeBytes(newLine)
 
 		// Write header bottom border
 		if rowIndex == 0 {
 			mw.writeString("|")
-			for range row {
+			for i := 0; i < maxcols; i++ {
 				mw.writeString(" --- |")
 			}
 			mw.writeBytes(newLine)
@@ -346,4 +352,14 @@ func (mw *mdWriter) table(n *types.GridNode) {
 
 		mw.isWritingTableCell = false
 	}
+}
+
+func maxColsInTable(n *types.GridNode) int {
+	m := 0
+	for _, row := range n.Rows {
+		if len(row) > m {
+			m = len(row)
+		}
+	}
+	return m
 }
