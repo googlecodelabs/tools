@@ -24,7 +24,6 @@ const Templates = goog.require('googlecodelabs.CodelabSurvey.Templates');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.events');
 const soy = goog.require('goog.soy');
-const {assertIsElement, assertIsHtmlInputElement} = goog.require('goog.asserts.dom');
 
 
 /**
@@ -127,9 +126,15 @@ class CodelabSurvey extends HTMLElement {
    * @private
    */
   handleOptionSelected_(event) {
-    const inputElement = assertIsHtmlInputElement(event.target);
-    const optionWrapperElement = assertIsElement(
-        dom.getAncestorByClass(inputElement, OPTION_WRAPPER_CLASS));
+    if (!(event.target instanceof HTMLInputElement)) {
+      return;
+    }
+    const inputElement = event.target;
+    const optionWrapperElement =
+        dom.getAncestorByClass(inputElement, OPTION_WRAPPER_CLASS);
+    if (!(optionWrapperElement instanceof Element)) {
+      return;
+    }
     const optionTextElement =
         optionWrapperElement.querySelector(`.${RADIO_TEXT_CLASS}`);
     let answer = '';
