@@ -20,11 +20,12 @@ goog.module('googlecodelabs.CodelabSurvey');
 const EventHandler = goog.require('goog.events.EventHandler');
 const HTML5LocalStorage =
     goog.require('goog.storage.mechanism.HTML5LocalStorage');
+const NodeType = goog.require('goog.dom.NodeType');
 const Templates = goog.require('googlecodelabs.CodelabSurvey.Templates');
+const asserts = goog.require('goog.asserts');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.events');
 const soy = goog.require('goog.soy');
-const {assertIsElement, assertIsHtmlInputElement} = goog.require('goog.asserts.dom');
 
 
 /**
@@ -55,13 +56,6 @@ const OPTION_WRAPPER_CLASS = 'survey-option-wrapper';
 
 /** @const {string} */
 const RADIO_TEXT_CLASS = 'option-text';
-
-/** @enum {string} */
-const CssClass = {
-  'OPTIONS_WRAPPER': 'survey-question-options',
-  'RADIO_WRAPPER': 'survey-option-wrapper',
-  'RADIO_TEXT': 'option-text'
-};
 
 
 /**
@@ -127,8 +121,8 @@ class CodelabSurvey extends HTMLElement {
    * @private
    */
   handleOptionSelected_(event) {
-    const inputElement = assertIsHtmlInputElement(event.target);
-    const optionWrapperElement = assertIsElement(
+    const inputElement = this.assertIsHtmlInputElement_(event.target);
+    const optionWrapperElement = this.assertIsElement_(
         dom.getAncestorByClass(inputElement, OPTION_WRAPPER_CLASS));
     const optionTextElement =
         optionWrapperElement.querySelector(`.${RADIO_TEXT_CLASS}`);
@@ -149,36 +143,6 @@ class CodelabSurvey extends HTMLElement {
       }
     });
     document.body.dispatchEvent(codelabEvent);
-  }
-
-  /**
-   * @param {!Element} optionEl
-   * @private
-   */
-  handleOptionSelected_(optionEl) {
-    const optionTextEl = optionEl.querySelector(`.${CssClass.RADIO_TEXT}`);
-    let answer = '';
-    if (optionTextEl) {
-      answer = optionTextEl.textContent;
-    }
-    /** @type {?HTMLInputElement} */
-    const inputEl = /** @type {?HTMLInputElement} */ (
-        optionEl.querySelector('input'));
-    if (inputEl) {
-      inputEl.checked = true;
-      const question = inputEl.name;
-      this.storedData_[this.surveyName_][question] = answer;
-      this.storage_.set(
-        this.storageKey_, JSON.stringify(this.storedData_[this.surveyName_]));
-      const event = new CustomEvent('google-codelab-action', {
-        detail: {
-          'category': 'survey',
-          'action': question.substring(0, 500),
-          'label': answer.substring(0, 500)
-        }
-      });
-      document.body.dispatchEvent(event);
-    }
   }
 
   /** @private */
@@ -252,6 +216,54 @@ class CodelabSurvey extends HTMLElement {
     return `${question}--${answer}`.replace(/\s+/g, '-')
         .replace(/[^a-zA-Z0-9 \-]/g, '').toLowerCase();
   }
+
+  /**
+   * @param {*} el
+   * @return {boolean}
+   * @private
+   */
+  isElement_(el) {
+    return goog.isObject(el) && el.nodeType === NodeType.ELEMENT;
+  };
+
+  /**
+   * @param {*} el
+   * @return {boolean}
+   * @private
+   */
+  isHtmlElement_(el) {
+    return goog.isObject(el) && this.isElement_(el) &&
+        // namespaceURI of old browsers (FF < 3.6, IE < 9) will be null.
+        (!el.namespaceURI ||
+         el.namespaceURI === 'http://www.w3.org/1999/xhtml');
+  };
+
+  /**
+   * @param {*} el
+   * @return {!Element}
+   * @private
+   */
+  assertIsElement_(el) {
+    if (!this.isElement_(el)) {
+      asserts.fail('Argument is not an Element');
+    }
+    return /** @type {!Element} */ (el);
+  }
+
+  /**
+   * @param {*} el
+   * @return {!HTMLInputElement}
+   * @private
+   */
+  assertIsHtmlInputElement_(el) {
+    const definitelyEl = this.assertIsElement_(el);
+    if (!(this.isHtmlElement_(el) &&
+          definitelyEl.tagName.toUpperCase() === 'INPUT')) {
+      asserts.fail('Argument is not an HTML Input Element');
+    }
+    return /** @type {!HTMLInputElement} */ (el);
+  }
+
 
   /**
    * @export
