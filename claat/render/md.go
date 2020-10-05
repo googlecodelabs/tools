@@ -17,7 +17,7 @@ package render
 import (
 	"bytes"
 	"fmt"
-	htmlTemplate "html/template"
+	"html"
 	"io"
 	"path"
 	"sort"
@@ -48,7 +48,7 @@ type mdWriter struct {
 	err                error     // error during any writeXxx methods
 	lineStart          bool
 	isWritingTableCell bool   // used to override lineStart for correct cell formatting
-	isWritingList      bool  // used for override newblock when needed
+	isWritingList      bool   // used for override newblock when needed
 	Prefix             string // prefix for e.g. blockquote content
 }
 
@@ -68,7 +68,7 @@ func (mw *mdWriter) writeString(s string) {
 }
 
 func (mw *mdWriter) writeEscape(s string) {
-	s = htmlTemplate.HTMLEscapeString(s)
+	s = html.EscapeString(s)
 	mw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
 }
 
@@ -154,7 +154,7 @@ func (mw *mdWriter) text(n *types.TextNode) {
 		mw.writeString("`")
 	}
 
-	mw.writeString(t)
+	mw.writeEscape(t)
 
 	if n.Code {
 		mw.writeString("`")
@@ -314,7 +314,7 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 }
 
 func (mw *mdWriter) youtube(n *types.YouTubeNode) {
-	if(!mw.isWritingList){
+	if !mw.isWritingList {
 		mw.newBlock()
 	}
 	mw.writeString(fmt.Sprintf(`<video id="%s"></video>`, n.VideoID))
