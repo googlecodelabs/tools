@@ -154,8 +154,8 @@ func (mw *mdWriter) text(n *types.TextNode) {
 		mw.writeString("`")
 	}
 
-	t = strings.ReplaceAll(t, "<", "&lt;")
-	t = strings.ReplaceAll(t, ">", "&gt;")
+	t = strings.Replace(t, "<", "&lt;", -1)
+	t = strings.Replace(t, ">", "&gt;", -1)
 
 	mw.writeString(t)
 
