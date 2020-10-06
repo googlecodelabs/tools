@@ -154,7 +154,10 @@ func (mw *mdWriter) text(n *types.TextNode) {
 		mw.writeString("`")
 	}
 
-	mw.writeEscape(t)
+	t = strings.Replace(t, "<", "&lt;", -1)
+	t = strings.Replace(t, ">", "&gt;", -1)
+
+	mw.writeString(t)
 
 	if n.Code {
 		mw.writeString("`")
