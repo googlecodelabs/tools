@@ -55,14 +55,6 @@ const OPTION_WRAPPER_CLASS = 'survey-option-wrapper';
 /** @const {string} */
 const RADIO_TEXT_CLASS = 'option-text';
 
-/** @enum {string} */
-const CssClass = {
-  'OPTIONS_WRAPPER': 'survey-question-options',
-  'RADIO_WRAPPER': 'survey-option-wrapper',
-  'RADIO_TEXT': 'option-text'
-};
-
-
 /**
  * @extends {HTMLElement}
  */
