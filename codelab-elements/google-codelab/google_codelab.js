@@ -766,6 +766,11 @@ class Codelab extends HTMLElement {
     if (feedbackLink) {
       this.eventHandler_.listen(feedbackLink, events.EventType.CLICK,
         (e) => {
+          this.fireEvent_(CODELAB_ACTION_EVENT, {
+            'category': 'codelab',
+            'action': 'feedback',
+            'label': this.title_
+          });
           if ('userfeedback' in window) {
             window['userfeedback']['api']['startFeedback']
                 ({'productId': '5143948'});
