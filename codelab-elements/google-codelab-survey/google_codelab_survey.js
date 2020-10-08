@@ -55,14 +55,6 @@ const OPTION_WRAPPER_CLASS = 'survey-option-wrapper';
 /** @const {string} */
 const RADIO_TEXT_CLASS = 'option-text';
 
-/** @enum {string} */
-const CssClass = {
-  'OPTIONS_WRAPPER': 'survey-question-options',
-  'RADIO_WRAPPER': 'survey-option-wrapper',
-  'RADIO_TEXT': 'option-text'
-};
-
-
 /**
  * @extends {HTMLElement}
  */
@@ -154,36 +146,6 @@ class CodelabSurvey extends HTMLElement {
       }
     });
     document.body.dispatchEvent(codelabEvent);
-  }
-
-  /**
-   * @param {!Element} optionEl
-   * @private
-   */
-  handleOptionSelected_(optionEl) {
-    const optionTextEl = optionEl.querySelector(`.${CssClass.RADIO_TEXT}`);
-    let answer = '';
-    if (optionTextEl) {
-      answer = optionTextEl.textContent;
-    }
-    /** @type {?HTMLInputElement} */
-    const inputEl = /** @type {?HTMLInputElement} */ (
-        optionEl.querySelector('input'));
-    if (inputEl) {
-      inputEl.checked = true;
-      const question = inputEl.name;
-      this.storedData_[this.surveyName_][question] = answer;
-      this.storage_.set(
-        this.storageKey_, JSON.stringify(this.storedData_[this.surveyName_]));
-      const event = new CustomEvent('google-codelab-action', {
-        detail: {
-          'category': 'survey',
-          'action': question.substring(0, 500),
-          'label': answer.substring(0, 500)
-        }
-      });
-      document.body.dispatchEvent(event);
-    }
   }
 
   /** @private */
