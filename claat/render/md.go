@@ -30,21 +30,22 @@ import (
 // MD renders nodes as markdown for the target env.
 func MD(ctx Context, nodes ...types.Node) (string, error) {
 	var buf bytes.Buffer
-	if err := WriteMD(&buf, ctx.Env, nodes...); err != nil {
+	if err := WriteMD(&buf, ctx.Env, ctx.Format, nodes...); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
 }
 
 // WriteMD does the same as MD but outputs rendered markup to w.
-func WriteMD(w io.Writer, env string, nodes ...types.Node) error {
-	mw := mdWriter{w: w, env: env, Prefix: []byte("")}
+func WriteMD(w io.Writer, env string, fmt string, nodes ...types.Node) error {
+	mw := mdWriter{w: w, env: env, format: fmt, Prefix: []byte("")}
 	return mw.write(nodes...)
 }
 
 type mdWriter struct {
 	w                  io.Writer // output writer
 	env                string    // target environment
+	format             string    // target template
 	err                error     // error during any writeXxx methods
 	lineStart          bool
 	isWritingTableCell bool   // used to override lineStart for correct cell formatting
@@ -323,6 +324,11 @@ func (mw *mdWriter) youtube(n *types.YouTubeNode) {
 }
 
 func (mw *mdWriter) table(n *types.GridNode) {
+	// If table content is empty, don't output the table.
+	if n.Empty() {
+		return
+	}
+
 	mw.writeBytes(newLine)
 	maxcols := maxColsInTable(n)
 	for rowIndex, row := range n.Rows {
@@ -330,14 +336,25 @@ func (mw *mdWriter) table(n *types.GridNode) {
 		for _, cell := range row {
 			mw.isWritingTableCell = true
 			mw.writeString(" ")
-			for _, cn := range cell.Content.Nodes {
-				cn.MutateBlock(false) // don't treat content as a new block
-				mw.write(cn)
+
+			// Check cell content for newlines and replace with inline HTML if newlines are present.
+			var nw bytes.Buffer
+			WriteMD(&nw, mw.env, mw.format, cell.Content.Nodes...)
+			if bytes.ContainsRune(nw.Bytes(), '\n') {
+				for _, cn := range cell.Content.Nodes {
+					cn.MutateBlock(false) // don't treat content as a new block
+					var nw2 bytes.Buffer
+					WriteHTML(&nw2, mw.env, mw.format, cn)
+					mw.writeBytes(bytes.Replace(nw2.Bytes(), []byte("\n"), []byte(""), -1))
+				}
+			} else {
+				mw.writeBytes(nw.Bytes())
 			}
+
 			mw.writeString(" |")
 		}
 		if rowIndex == 0 && len(row) < maxcols {
-			for i:= 0; i < maxcols - len(row); i++ {
+			for i := 0; i < maxcols-len(row); i++ {
 				mw.writeString(" |")
 			}
 		}
