@@ -657,12 +657,18 @@ func tableRow(ds *docState) []*types.GridCell {
 		nn = parser.BlockNodes(nn)
 		nn = parser.CompactNodes(nn)
 		ds.pop()
-		if len(nn) == 0 {
-			continue
-		}
 		cs, err := strconv.Atoi(nodeAttr(td, "colspan"))
 		if err != nil {
 			cs = 1
+			for ns := td.NextSibling; ns != nil; ns = ns.NextSibling {
+				if ns.DataAtom != atom.Td && ns.DataAtom != atom.Th {
+					continue
+				}
+				if ns.FirstChild != nil {
+					break
+				}
+				cs++
+			}
 		}
 		rs, err := strconv.Atoi(nodeAttr(td, "rowspan"))
 		if err != nil {

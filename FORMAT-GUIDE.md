@@ -9,7 +9,7 @@ Copy [this template doc](https://docs.google.com/document/d/1E6XMcdTexh5O8JwGy42
 To preview a codelab:
 
 -  (optional one-time setup) Install the [Preview Codelab Chrome extension](https://chrome.google.com/webstore/detail/preview-codelab/lhojjnijnkiglhkggagbapfonpdlinji) in your browser.
- 
+
 - Click the Chrome extension's button while you're in your codelab Google Doc tab, or
 - Navigate manually to **https://codelabs-preview.appspot.com/?file_id=[google-doc-id]**.
 
@@ -37,23 +37,23 @@ You can also use this to target specific events, for instance:  \
 "Web, polymer-summit" (without quotes)
     * **Status:** One or more of (Draft, Published, Deprecated, Hidden) to indicate the progress and whether the codelab is ready to be published. 'Hidden' implies the codelab is for restricted use, should be available only by direct URL, and should not appear on the main index page.
     * **Feedback Link:** The URL that the student should be sent to when they click on the feedback link to report a bug in the codelab.
-    * **Analytics Account:** This allows you to specify a custom Google Analytics ID for your codelab. If no ID is specified, it defaults to a global codelabs analytics account. 
+    * **Analytics Account:** This allows you to specify a custom Google Analytics ID for your codelab. If no ID is specified, it defaults to a global codelabs analytics account.
 
 1. Codelab Metadata (Markdown)
 
     You are free to add your own metadata here if you'd like but certain key/value pairs are reserved for specific codelab publishing features. The current list of reserved metadata terms are:
 
     * **summary:** A short summary of the codelab that will be shown in the codelab browser UI.
-    * **id:** The name of the folder that will be generated once you export the markdown file via claat. 
+    * **id:** The name of the folder that will be generated once you export the markdown file via claat.
     * **categories:** A single, top-level category that will be used to group codelabs by platform. Categories are normally curated by an organization (e.g. we have a set we use for the Google Codelabs site) but each publisher is free to use this value at their discretion.
     * **environments**: A tag that allows use to output some codelabs for a specific environment. All codelabs default to the "Web" environment but given some hardware constraints we might only want to generate them for a "Kiosk" environment where we know people will have the right hardware. \
 You can also use this to target specific events, for instance:  \
 "Web, polymer-summit" (without quotes)
     * **status:** One or more of (Draft, Published, Deprecated, Hidden) to indicate the progress and whether the codelab is ready to be published. 'Hidden' implies the codelab is for restricted use, should be available only by direct URL, and should not appear on the main index page.
     * **feedback link:** The URL that the student should be sent to when they click on the feedback link to report a bug in the codelab.
-    * **analytics account:** This allows you to specify a custom Google Analytics ID for your codelab. If no ID is specified, it defaults to a global codelabs analytics account. 
+    * **analytics account:** This allows you to specify a custom Google Analytics ID for your codelab. If no ID is specified, it defaults to a global codelabs analytics account.
     * **tags:** Add relevant tags to make your codelab easily found.
-    * **authors:** Indicate the author(s) of this specific codelab. 
+    * **authors:** Indicate the author(s) of this specific codelab.
 
 1. Headers
 
@@ -64,12 +64,12 @@ You can also use this to target specific events, for instance:  \
 1. Text Styles
 
     For the most part, it doesn't matter which fonts you use in your Google Doc draft; everything will be formatted using Roboto in the final codelab.
-    
+
     There are some simple ways that you can add emphasis to certain parts of the text. Bolded and italicized text will be passed through to the codelab markup as `<strong>` and `<em>` tags respectively. Also, passages of text formatted with the `Courier New` font will be passed through as an inline `<code>` tag in the markup.
 
 1. Responsive Images
 
-    Inline images in your codelab should just work seamlessly. You can re-size them in your codelab document and that width will be applied as a **max-width** on the image in the codelab markup so that images are the same size relative to the text but also scale down appropriately for smaller browsers. 
+    Inline images in your codelab should just work seamlessly. You can re-size them in your codelab document and that width will be applied as a **max-width** on the image in the codelab markup so that images are the same size relative to the text but also scale down appropriately for smaller browsers.
 
 1. Youtube Videos
 
@@ -103,7 +103,7 @@ You can also use this to target specific events, for instance:  \
 1. Code Snippets
 
     Code snippets with syntax highlighting can be added by creating a **single-cell table** and making sure that all the text is formatted using the **`Courier New`** font.
-    
+
     Any additional styles applied to the code will be overridden by the syntax highlighting. This means that you're free to use code highlighting Add-ons in your codelab doc but it will have no effect on how the code is highlighted in the final codelab.
 
     It is also strongly recommended that you provide a **Heading 3** header directly above your code snippet with the file name. This helps students keep track of where the code is coming from. The codelab framework also uses the file extension of the prior header as a clue for how to highlight the code.
@@ -114,7 +114,7 @@ You can also use this to target specific events, for instance:  \
 
     As the author of the codelab, you have developed and tested your code. You've probably run into all sorts of common issues or misconceptions. By linking to frequently asked questions, after each step where they often occur, you will reassure the students that they have everything they need to complete the codelab and avoid having to explain everything inline in your codelab.
     FAQs are easy to add. All the author needs to do is provide an unordered list of hyperlinks and preface it with a **Heading 3** header with the exact text: **Frequently Asked Questions**.
-    
+
     Link icons will be added automatically for stackoverflow.com, developers.google.com, developers.android.com and support.google.com. All links will be configured to open in a new tab.
 
 1. Download Buttons
@@ -136,7 +136,7 @@ You can also use this to target specific events, for instance:  \
     Sometimes it's useful to have different versions of a codelab for different environments. For example, you might have some steps that only apply to students who take the codelab in a classroom setting while other steps only apply to people who are following the instructions at their own pace online.
 
     The format is similar to the duration metadata. You simply specify one or more environments with an Environment: which uses **dark grey 1** text. The Duration and/or Environment fields, when present, should be followed by a blank line and should be set in normal text (not in Heading 1, lest they be considered part of the step title).
-    
+
     If no environment metadata is specified, the default environment is "Web, Kiosk".
 
     When previewing your codelab, you can change environments using the &env=web or &env=kiosk parameters.
@@ -156,7 +156,7 @@ You can also use this to target specific events, for instance:  \
     *   followed by a link to a doc
     *   end with ]] (two square brackets)
 
-    Caveat: The imported doc is limited to content within a step (hence the term "fragment"). Including multiple steps, or even the step title/heading, within the imported doc is not supported. 
+    Caveat: The imported doc is limited to content within a step (hence the term "fragment"). Including multiple steps, or even the step title/heading, within the imported doc is not supported.
 
 1. Resumable Codelabs
 
@@ -166,13 +166,13 @@ You can also use this to target specific events, for instance:  \
 
 1. Feedback Links
 
-    At the bottom of every step of the codelab there is a link for reporting bugs. This link can be configured using the **Feedback Link** setting in your metadata table. 
+    At the bottom of every step of the codelab there is a link for reporting bugs. This link can be configured using the **Feedback Link** setting in your metadata table.
 
 1. Inline Surveys
 
     **NOTE: Surveys cannot be used to collect data that can individually, or in conjunction with other information from this site, help locate and identify a particular user or reveal their sensitive demographics information. Any data collected should be sufficiently anonymized and aggregated. Also, consider that the surveys can possibly send a numerical ID of the selections instead of the actual value itself. Apart from helping on the localization front, this can also help prevent from injecting obvious PII values into GA.**
 
-    As we've seen in previous years, participants consume our codelabs for a wide range of reasons. In order to give us some more insight into how different people consume codelabs, we can ask them some quick multiple choice questions in the early stages of our codelab. 
+    As we've seen in previous years, participants consume our codelabs for a wide range of reasons. In order to give us some more insight into how different people consume codelabs, we can ask them some quick multiple choice questions in the early stages of our codelab.
 
     You can configure these short survey questions to ask whatever you think is relevant to your codelab. In order to include a survey question in your codelab, add a single-cell table with a **light blue 3** background. Format your question with the **Heading 4** paragraph style and provide an **unordered list** of choices.
 
@@ -189,3 +189,7 @@ You can also use this to target specific events, for instance:  \
     Having a header 2 of "What you'll learn" followed by a bullet point list creates a list of check marks.
 
     A title of "What we've covered" has the same effect.
+
+## Things to avoid
+
+- **Footers:** Any characters included in the footer (beyond the default page number) result in parsing bugs. For this reason, page footers are not recommended.

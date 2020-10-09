@@ -106,12 +106,6 @@ class CodelabAnalytics extends HTMLElement {
      */
     this.eventHandler_ = new EventHandler();
 
-    /**
-     * @private {!EventHandler}
-     * @const
-     */
-    this.pageviewEventHandler_ = new EventHandler();
-
     /** @private {?string} */
     this.codelabCategory_ = this.getAttribute(CODELAB_CATEGORY_ATTR) || '';
 
@@ -160,7 +154,7 @@ class CodelabAnalytics extends HTMLElement {
           detail['category'], detail['action'], detail['label']);
       });
 
-    this.pageviewEventHandler_.listen(document.body, PAGEVIEW_EVENT,
+    this.eventHandler_.listen(document.body, PAGEVIEW_EVENT,
       (e) => {
         const detail = /** @type {AnalyticsPageview} */ (
           e.getBrowserEvent().detail);

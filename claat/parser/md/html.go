@@ -147,7 +147,7 @@ func isTable(hn *html.Node) bool {
 	if hn.DataAtom != atom.Table {
 		return false
 	}
-	return countTwo(hn, atom.Tr) > 1 || countTwo(hn, atom.Td) > 1
+	return countTwo(hn, atom.Tr) >= 1 || countTwo(hn, atom.Td) >= 1
 }
 
 func isList(hn *html.Node) bool {

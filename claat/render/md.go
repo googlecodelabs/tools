@@ -17,7 +17,7 @@ package render
 import (
 	"bytes"
 	"fmt"
-	htmlTemplate "html/template"
+	"html"
 	"io"
 	"path"
 	"sort"
@@ -38,7 +38,7 @@ func MD(ctx Context, nodes ...types.Node) (string, error) {
 
 // WriteMD does the same as MD but outputs rendered markup to w.
 func WriteMD(w io.Writer, env string, nodes ...types.Node) error {
-	mw := mdWriter{w: w, env: env, Prefix: ""}
+	mw := mdWriter{w: w, env: env, Prefix: []byte("")}
 	return mw.write(nodes...)
 }
 
@@ -48,26 +48,27 @@ type mdWriter struct {
 	err                error     // error during any writeXxx methods
 	lineStart          bool
 	isWritingTableCell bool   // used to override lineStart for correct cell formatting
-	Prefix             string // prefix for e.g. blockquote content
+	isWritingList      bool   // used for override newblock when needed
+	Prefix             []byte // prefix for e.g. blockquote content
 }
 
 func (mw *mdWriter) writeBytes(b []byte) {
 	if mw.err != nil {
 		return
 	}
+	if mw.lineStart {
+		_, mw.err = mw.w.Write(mw.Prefix)
+	}
 	mw.lineStart = len(b) > 0 && b[len(b)-1] == '\n'
 	_, mw.err = mw.w.Write(b)
 }
 
 func (mw *mdWriter) writeString(s string) {
-	if mw.lineStart {
-		s = mw.Prefix + s
-	}
 	mw.writeBytes([]byte(s))
 }
 
 func (mw *mdWriter) writeEscape(s string) {
-	s = htmlTemplate.HTMLEscapeString(s)
+	s = html.EscapeString(s)
 	mw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
 }
 
@@ -152,6 +153,9 @@ func (mw *mdWriter) text(n *types.TextNode) {
 	if n.Code {
 		mw.writeString("`")
 	}
+
+	t = strings.Replace(t, "<", "&lt;", -1)
+	t = strings.Replace(t, ">", "&gt;", -1)
 
 	mw.writeString(t)
 
@@ -243,6 +247,7 @@ func (mw *mdWriter) list(n *types.ListNode) {
 }
 
 func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
+	mw.isWritingList = true
 	if n.Block() == true {
 		mw.newBlock()
 	}
@@ -257,6 +262,7 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 			mw.writeBytes(newLine)
 		}
 	}
+	mw.isWritingList = false
 }
 
 func (mw *mdWriter) infobox(n *types.InfoboxNode) {
@@ -269,16 +275,15 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 	if n.Kind == types.InfoboxNegative {
 		k = "aside negative"
 	}
-	mw.Prefix = "> "
+	mw.Prefix = []byte("> ")
 	mw.writeString(k)
 	mw.writeString("\n")
 
 	for _, cn := range n.Content.Nodes {
-		cn.MutateBlock(false)
 		mw.write(cn)
 	}
 
-	mw.Prefix = ""
+	mw.Prefix = []byte("")
 }
 
 func (mw *mdWriter) survey(n *types.SurveyNode) {
@@ -311,12 +316,15 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 }
 
 func (mw *mdWriter) youtube(n *types.YouTubeNode) {
-	mw.newBlock()
+	if !mw.isWritingList {
+		mw.newBlock()
+	}
 	mw.writeString(fmt.Sprintf(`<video id="%s"></video>`, n.VideoID))
 }
 
 func (mw *mdWriter) table(n *types.GridNode) {
 	mw.writeBytes(newLine)
+	maxcols := maxColsInTable(n)
 	for rowIndex, row := range n.Rows {
 		mw.writeString("|")
 		for _, cell := range row {
@@ -328,12 +336,17 @@ func (mw *mdWriter) table(n *types.GridNode) {
 			}
 			mw.writeString(" |")
 		}
+		if rowIndex == 0 && len(row) < maxcols {
+			for i:= 0; i < maxcols - len(row); i++ {
+				mw.writeString(" |")
+			}
+		}
 		mw.writeBytes(newLine)
 
 		// Write header bottom border
 		if rowIndex == 0 {
 			mw.writeString("|")
-			for range row {
+			for i := 0; i < maxcols; i++ {
 				mw.writeString(" --- |")
 			}
 			mw.writeBytes(newLine)
@@ -341,4 +354,14 @@ func (mw *mdWriter) table(n *types.GridNode) {
 
 		mw.isWritingTableCell = false
 	}
+}
+
+func maxColsInTable(n *types.GridNode) int {
+	m := 0
+	for _, row := range n.Rows {
+		if len(row) > m {
+			m = len(row)
+		}
+	}
+	return m
 }

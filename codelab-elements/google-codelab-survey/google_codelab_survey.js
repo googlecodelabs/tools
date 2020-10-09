@@ -49,14 +49,11 @@ const SURVEY_UPGRADED_ATTR = 'upgraded';
 /** @const {string} */
 const DEFAULT_SURVEY_NAME = 'default-codelabs-survey';
 
+/** @const {string} */
+const OPTION_WRAPPER_CLASS = 'survey-option-wrapper';
 
-/** @enum {string} */
-const CssClass = {
-  'OPTIONS_WRAPPER': 'survey-question-options',
-  'RADIO_WRAPPER': 'survey-option-wrapper',
-  'RADIO_TEXT': 'option-text'
-};
-
+/** @const {string} */
+const RADIO_TEXT_CLASS = 'option-text';
 
 /**
  * @extends {HTMLElement}
@@ -112,62 +109,43 @@ class CodelabSurvey extends HTMLElement {
 
   /** @private */
   bindEvents_() {
-    this.eventHandler_.listen(document.body, events.EventType.CLICK,
-      (e) => this.handleClick_(e.target));
+    this.eventHandler_.listen(this, events.EventType.CHANGE,
+      (event) => this.handleOptionSelected_(event));
   }
 
   /**
-   * @param {!Element} el
+   * @param {!Event} event
    * @private
    */
-  handleClick_(el) {
-    const isOptionWrapper = el.classList.contains(
-      CssClass.RADIO_WRAPPER);
-    const elParent = el.parentElement;
-    let isOptionChild = false;
-    if (elParent) {
-      isOptionChild = elParent.classList.contains(CssClass.RADIO_WRAPPER);
+  handleOptionSelected_(event) {
+    if (!(event.target instanceof HTMLInputElement)) {
+      return;
     }
-
-    if (isOptionWrapper || isOptionChild) {
-      let optionEl = el;
-      if (isOptionChild) {
-        optionEl = /** @type {!Element} */ (elParent);
-      }
-      if (optionEl) {
-        this.handleOptionSelected_(optionEl);
-      }
+    const inputElement = event.target;
+    const optionWrapperElement =
+        dom.getAncestorByClass(inputElement, OPTION_WRAPPER_CLASS);
+    if (!(optionWrapperElement instanceof Element)) {
+      return;
     }
-  }
-
-  /**
-   * @param {!Element} optionEl
-   * @private
-   */
-  handleOptionSelected_(optionEl) {
-    const optionTextEl = optionEl.querySelector(`.${CssClass.RADIO_TEXT}`);
+    const optionTextElement =
+        optionWrapperElement.querySelector(`.${RADIO_TEXT_CLASS}`);
     let answer = '';
-    if (optionTextEl) {
-      answer = optionTextEl.textContent;
+    if (optionTextElement) {
+      answer = optionTextElement.textContent;
     }
-    /** @type {?HTMLInputElement} */
-    const inputEl = /** @type {?HTMLInputElement} */ (
-        optionEl.querySelector('input'));
-    if (inputEl) {
-      inputEl.checked = true;
-      const question = inputEl.name;
-      this.storedData_[this.surveyName_][question] = answer;
-      this.storage_.set(
-        this.storageKey_, JSON.stringify(this.storedData_[this.surveyName_]));
-      const event = new CustomEvent('google-codelab-action', {
-        detail: {
-          'category': 'survey',
-          'action': question.substring(0, 500),
-          'label': answer.substring(0, 500)
-        }
-      });
-      document.body.dispatchEvent(event);
-    }
+
+    const question = inputElement.name;
+    this.storedData_[this.surveyName_][question] = answer;
+    this.storage_.set(
+      this.storageKey_, JSON.stringify(this.storedData_[this.surveyName_]));
+    const codelabEvent = new CustomEvent('google-codelab-action', {
+      detail: {
+        'category': 'survey',
+        'action': question.substring(0, 500),
+        'label': answer.substring(0, 500)
+      }
+    });
+    document.body.dispatchEvent(codelabEvent);
   }
 
   /** @private */
