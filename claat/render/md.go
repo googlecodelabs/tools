@@ -324,17 +324,8 @@ func (mw *mdWriter) youtube(n *types.YouTubeNode) {
 }
 
 func (mw *mdWriter) table(n *types.GridNode) {
-	// Calculate table inner content length.
-	contentLength := 0
-	for _, row := range n.Rows {
-		for _, cell := range row {
-			var nw bytes.Buffer
-			WriteMD(&nw, mw.env, mw.format, cell.Content.Nodes...)
-			contentLength += len(bytes.Trim(nw.Bytes(), " \t"))
-		}
-	}
 	// If table content is empty, don't output the table.
-	if contentLength == 0 {
+	if n.Empty() {
 		return
 	}
 
