@@ -345,7 +345,7 @@ func (mw *mdWriter) table(n *types.GridNode) {
 					cn.MutateBlock(false) // don't treat content as a new block
 					var nw2 bytes.Buffer
 					WriteHTML(&nw2, mw.env, mw.format, cn)
-					mw.writeBytes(bytes.Replace(nw2.Bytes(), []byte("\n"), []byte("")), -1)
+					mw.writeBytes(bytes.Replace(nw2.Bytes(), []byte("\n"), []byte(""), -1))
 				}
 			} else {
 				mw.writeBytes(nw.Bytes())
