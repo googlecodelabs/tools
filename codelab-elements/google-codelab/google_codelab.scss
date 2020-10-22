@@ -22,6 +22,8 @@ google-codelab {
   padding-top: 64px;
 }
 
+// stylelint-disable selector-max-id
+
 google-codelab #main {
   display: flex;
   flex-direction: column;
@@ -118,7 +120,9 @@ google-codelab #fabs .spacer {
   flex-grow: 1;
 }
 
-#previous-step, #next-step, #done {
+google-codelab #previous-step,
+google-codelab #next-step,
+google-codelab #done {
   border-radius: 4px;
   font-family: 'Google Sans', Arial, sans-serif;
   font-size: 14px;
@@ -140,12 +144,12 @@ google-codelab #fabs .spacer {
   -webkit-font-smoothing: antialiased;
 }
 
-#next-step {
+google-codelab #next-step {
   color: #fff;
   background: #1A73E8;
 }
 
-#done {
+google-codelab #done {
   background: #1E8E3E;
   color: #fff;
 }
@@ -154,7 +158,7 @@ google-codelab #fabs a[disappear] {
   transform: scale(0, 0);
 }
 
-#done {
+google-codelab #done {
   background: #0f9d58;
 }
 
