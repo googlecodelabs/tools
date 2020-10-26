@@ -29,7 +29,6 @@ import (
 // TODO: render HTML using golang/x/net/html or template.
 
 var (
-	doubleQuote = []byte{'"'}
 	lessThan    = []byte{'<'}
 	greaterThan = []byte{'>'}
 	newLine     = []byte{'\n'}
@@ -182,7 +181,7 @@ func (hw *htmlWriter) image(n *types.ImageNode) {
 	}
 	hw.writeString(` src="`)
 	hw.writeString(n.Src)
-	hw.writeBytes(doubleQuote)
+	hw.writeString(`"`)
 	hw.writeBytes(greaterThan)
 }
 
@@ -191,17 +190,17 @@ func (hw *htmlWriter) url(n *types.URLNode) {
 	if n.URL != "" {
 		hw.writeString(` href="`)
 		hw.writeString(n.URL)
-		hw.writeBytes(doubleQuote)
+		hw.writeString(`"`)
 	}
 	if n.Name != "" {
 		hw.writeString(` name="`)
 		hw.writeEscape(n.Name)
-		hw.writeBytes(doubleQuote)
+		hw.writeString(`"`)
 	}
 	if n.Target != "" {
 		hw.writeString(` target="`)
 		hw.writeEscape(n.Target)
-		hw.writeBytes(doubleQuote)
+		hw.writeString(`"`)
 	}
 	hw.writeBytes(greaterThan)
 	hw.write(n.Content.Nodes...)
@@ -295,7 +294,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 		if n.ListType != "" {
 			hw.writeString(` type="`)
 			hw.writeString(n.ListType)
-			hw.writeBytes(doubleQuote)
+			hw.writeString(`"`)
 		}
 		if n.Start > 0 {
 			hw.writeFmt(` start="%d"`, n.Start)
@@ -340,8 +339,7 @@ func (hw *htmlWriter) infobox(n *types.InfoboxNode) {
 func (hw *htmlWriter) survey(n *types.SurveyNode) {
 	hw.writeString(`<google-codelab-survey survey-id="`)
 	hw.writeString(n.ID)
-	hw.writeBytes(doubleQuote)
-	hw.writeString(">\n")
+	hw.writeString("\">\n")
 	for _, g := range n.Groups {
 		hw.writeString("<h4>")
 		hw.writeEscape(g.Name)
