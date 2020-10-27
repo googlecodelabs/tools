@@ -29,7 +29,6 @@ import (
 // TODO: render HTML using golang/x/net/html or template.
 
 var (
-	lessThan    = []byte{'<'}
 	greaterThan = []byte{'>'}
 	newLine     = []byte{'\n'}
 )
@@ -283,7 +282,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 	if n.Type() == types.NodeItemsList && (n.Start > 0 || n.ListType != "") {
 		tag = "ol"
 	}
-	hw.writeBytes(lessThan)
+	hw.writeString("<")
 	hw.writeString(tag)
 	switch n.Type() {
 	case types.NodeItemsCheck:
@@ -356,7 +355,7 @@ func (hw *htmlWriter) survey(n *types.SurveyNode) {
 
 func (hw *htmlWriter) header(n *types.HeaderNode) {
 	tag := "h" + strconv.Itoa(n.Level)
-	hw.writeBytes(lessThan)
+	hw.writeString("<")
 	hw.writeString(tag)
 	switch n.Type() {
 	case types.NodeHeaderCheck:
