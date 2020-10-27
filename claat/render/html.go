@@ -146,6 +146,8 @@ func (hw *htmlWriter) writeEscape(s string) {
 }
 
 func (hw *htmlWriter) text(n *types.TextNode) {
+	s := n.Value
+	shouldEsc := true
 	if n.Bold {
 		hw.writeString("<strong>")
 	}
@@ -154,8 +156,11 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 	}
 	if n.Code {
 		hw.writeString("<code>")
+		shouldEsc = false
 	}
-	s := htmlTemplate.HTMLEscapeString(n.Value)
+	if shouldEsc {
+		s = htmlTemplate.HTMLEscapeString(n.Value)
+	}
 	s = ReplaceDoubleCurlyBracketsWithEntity(s)
 	hw.writeString(strings.Replace(s, "\n", "<br>", -1))
 	if n.Code {
