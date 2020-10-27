@@ -207,6 +207,9 @@ func (mw *mdWriter) url(n *types.URLNode) {
 	}
 	mw.write(n.Content.Nodes...)
 	if n.URL != "" {
+		// escape parentheses
+		strings.Replace(n.URL, "(", "%28", -1)
+		strings.Replace(n.URL, ")", "%29", -1)
 		mw.writeString("](")
 		mw.writeString(n.URL)
 		mw.writeString(")")
