@@ -29,8 +29,7 @@ import (
 // TODO: render HTML using golang/x/net/html or template.
 
 var (
-	greaterThan = []byte{'>'}
-	newLine     = []byte{'\n'}
+	newLine = []byte{'\n'}
 )
 
 // HTML renders nodes as the markup for the target env.
@@ -181,7 +180,7 @@ func (hw *htmlWriter) image(n *types.ImageNode) {
 	hw.writeString(` src="`)
 	hw.writeString(n.Src)
 	hw.writeString(`"`)
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 }
 
 func (hw *htmlWriter) url(n *types.URLNode) {
@@ -201,7 +200,7 @@ func (hw *htmlWriter) url(n *types.URLNode) {
 		hw.writeEscape(n.Target)
 		hw.writeString(`"`)
 	}
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 	hw.write(n.Content.Nodes...)
 	hw.writeString("</a>")
 }
@@ -214,7 +213,7 @@ func (hw *htmlWriter) button(n *types.ButtonNode) {
 	if n.Raised {
 		hw.writeString(" raised")
 	}
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 	if n.Download {
 		hw.writeString(`<iron-icon icon="file-download"></iron-icon>`)
 	}
@@ -229,7 +228,7 @@ func (hw *htmlWriter) code(n *types.CodeNode) {
 		if n.Lang != "" {
 			hw.writeFmt(" language=%q class=%q", n.Lang, n.Lang)
 		}
-		hw.writeBytes(greaterThan)
+		hw.writeString(">")
 	}
 	if hw.format == "devsite" {
 		hw.writeString("{% verbatim %}")
@@ -299,7 +298,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 			hw.writeFmt(` start="%d"`, n.Start)
 		}
 	}
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 	hw.writeBytes(newLine)
 
 	for _, i := range n.Items {
@@ -310,7 +309,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 
 	hw.writeString("</")
 	hw.writeString(tag)
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 }
 
 func (hw *htmlWriter) grid(n *types.GridNode) {
@@ -365,11 +364,11 @@ func (hw *htmlWriter) header(n *types.HeaderNode) {
 
 	}
 	hw.writeString(` is-upgraded`)
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 	hw.write(n.Content.Nodes...)
 	hw.writeString("</")
 	hw.writeString(tag)
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 }
 
 func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
