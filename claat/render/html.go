@@ -173,18 +173,13 @@ func (hw *htmlWriter) image(n *types.ImageNode) {
 	if n.Width > 0 {
 		hw.writeFmt(` style="width: %.2fpx"`, n.Width)
 	}
-	hw.writeString(` src="`)
-	hw.writeString(n.Src)
-	hw.writeString(`"`)
-	hw.writeString(">")
+	hw.writeFmt(" src=%q>", n.Src)
 }
 
 func (hw *htmlWriter) url(n *types.URLNode) {
 	hw.writeString("<a")
 	if n.URL != "" {
-		hw.writeString(` href="`)
-		hw.writeString(n.URL)
-		hw.writeString(`"`)
+		hw.writeFmt(" href=%q", n.URL)
 	}
 	if n.Name != "" {
 		hw.writeString(` name="`)
@@ -286,16 +281,13 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 		hw.writeString(` class="faq"`)
 	default:
 		if n.ListType != "" {
-			hw.writeString(` type="`)
-			hw.writeString(n.ListType)
-			hw.writeString(`"`)
+			hw.writeFmt(" type=%q", n.ListType)
 		}
 		if n.Start > 0 {
-			hw.writeFmt(` start="%d"`, n.Start)
+			hw.writeFmt(` start=%q`, strconv.Itoa(n.Start))
 		}
 	}
-	hw.writeString(">")
-	hw.writeString("\n")
+	hw.writeString(">\n")
 
 	for _, i := range n.Items {
 		hw.writeString("<li>")
@@ -303,9 +295,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 		hw.writeString("</li>\n")
 	}
 
-	hw.writeString("</")
-	hw.writeString(tag)
-	hw.writeString(">")
+	hw.writeFmt("</%s>", tag)
 }
 
 func (hw *htmlWriter) grid(n *types.GridNode) {
@@ -331,9 +321,7 @@ func (hw *htmlWriter) infobox(n *types.InfoboxNode) {
 }
 
 func (hw *htmlWriter) survey(n *types.SurveyNode) {
-	hw.writeString(`<google-codelab-survey survey-id="`)
-	hw.writeString(n.ID)
-	hw.writeString("\">\n")
+	hw.writeString("<google-codelab-survey survey-id=%q>\n", n.ID)
 	for _, g := range n.Groups {
 		hw.writeString("<h4>")
 		hw.writeEscape(g.Name)
@@ -359,12 +347,9 @@ func (hw *htmlWriter) header(n *types.HeaderNode) {
 		hw.writeString(` class="faq"`)
 
 	}
-	hw.writeString(` is-upgraded`)
-	hw.writeString(">")
+	hw.writeString(` is-upgraded>`)
 	hw.write(n.Content.Nodes...)
-	hw.writeString("</")
-	hw.writeString(tag)
-	hw.writeString(">")
+	hw.writeFmt("</%s>", tag)
 }
 
 func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
@@ -375,6 +360,5 @@ func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
 }
 
 func (hw *htmlWriter) iframe(n *types.IframeNode) {
-	hw.writeFmt(`<iframe class="embedded-iframe" src="%s"></iframe>`,
-		n.URL)
+	hw.writeFmt(`<iframe class="embedded-iframe" src=%q></iframe>`, n.URL)
 }
