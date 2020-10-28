@@ -321,7 +321,7 @@ func (hw *htmlWriter) infobox(n *types.InfoboxNode) {
 }
 
 func (hw *htmlWriter) survey(n *types.SurveyNode) {
-	hw.writeString("<google-codelab-survey survey-id=%q>\n", n.ID)
+	hw.writeFmt("<google-codelab-survey survey-id=%q>\n", n.ID)
 	for _, g := range n.Groups {
 		hw.writeString("<h4>")
 		hw.writeEscape(g.Name)
