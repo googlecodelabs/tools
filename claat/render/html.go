@@ -132,10 +132,15 @@ func (hw *htmlWriter) writeFmt(f string, a ...interface{}) {
 	hw.writeString(fmt.Sprintf(f, a...))
 }
 
+func escape(s string) string {
+	s = htmlTemplate.HTMLEscapeString(s)
+	s = ReplaceDoubleCurlyBracketsWithEntity(s)
+	return s
+}
+
 // Same as writeString, but performs HTML escaping and double curly bracket escaping.
 func (hw *htmlWriter) writeEscape(s string) {
-	s = htmlTemplate.HTMLEscapeString(s)
-	hw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
+	hw.writeString(escape(s))
 }
 
 func (hw *htmlWriter) text(n *types.TextNode) {
@@ -182,14 +187,10 @@ func (hw *htmlWriter) url(n *types.URLNode) {
 		hw.writeFmt(" href=%q", n.URL)
 	}
 	if n.Name != "" {
-		hw.writeString(` name="`)
-		hw.writeEscape(n.Name)
-		hw.writeString(`"`)
+		hw.writeFmt(" name=%q", escape(n.Name))
 	}
 	if n.Target != "" {
-		hw.writeString(` target="`)
-		hw.writeEscape(n.Target)
-		hw.writeString(`"`)
+		hw.writeFmt(" target=%q", escape(n.Target))
 	}
 	hw.writeString(">")
 	hw.write(n.Content.Nodes...)
@@ -313,9 +314,7 @@ func (hw *htmlWriter) grid(n *types.GridNode) {
 }
 
 func (hw *htmlWriter) infobox(n *types.InfoboxNode) {
-	hw.writeString(`<aside class="`)
-	hw.writeEscape(string(n.Kind))
-	hw.writeString(`">`)
+	hw.writeFmt("<aside class=%q>", escape(n.Kind))
 	hw.write(n.Content.Nodes...)
 	hw.writeString("</aside>")
 }
@@ -323,13 +322,9 @@ func (hw *htmlWriter) infobox(n *types.InfoboxNode) {
 func (hw *htmlWriter) survey(n *types.SurveyNode) {
 	hw.writeFmt("<google-codelab-survey survey-id=%q>\n", n.ID)
 	for _, g := range n.Groups {
-		hw.writeString("<h4>")
-		hw.writeEscape(g.Name)
-		hw.writeString("</h4>\n<paper-radio-group>\n")
+		hw.writeFmt("<h4>%s</h4>\n<paper-radio-group>\n", g.Name)
 		for _, o := range g.Options {
-			hw.writeString("<paper-radio-button>")
-			hw.writeEscape(o)
-			hw.writeString("</paper-radio-button>\n")
+			hw.writeFmt("<paper-radio-button>%s</paper-radio-button>\n", escape(o))
 		}
 		hw.writeString("</paper-radio-group>\n")
 	}
