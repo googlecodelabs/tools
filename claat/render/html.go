@@ -118,21 +118,21 @@ func (hw *htmlWriter) write(nodes ...types.Node) error {
 	return nil
 }
 
-func (hw *htmlWriter) writeBytes(b []byte) {
+// Writes a string to the htmlWriter unless a write error has occurred on this htmlWriter in the past.
+// Will set a write error on this htmlWriter if the write fails.
+func (hw *htmlWriter) writeString(s string) {
 	if hw.err != nil {
 		return
 	}
-	_, hw.err = hw.w.Write(b)
+	_, hw.err = hw.w.Write([]byte(s))
 }
 
-func (hw *htmlWriter) writeString(s string) {
-	hw.writeBytes([]byte(s))
-}
-
+// Same as writeString, but with fmt.Sprintf arguments/semantics.
 func (hw *htmlWriter) writeFmt(f string, a ...interface{}) {
 	hw.writeString(fmt.Sprintf(f, a...))
 }
 
+// Same as writeString, but performs HTML escaping and double curly bracket escaping.
 func (hw *htmlWriter) writeEscape(s string) {
 	s = htmlTemplate.HTMLEscapeString(s)
 	hw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
