@@ -28,10 +28,6 @@ import (
 
 // TODO: render HTML using golang/x/net/html or template.
 
-var (
-	newLine = []byte{'\n'}
-)
-
 // HTML renders nodes as the markup for the target env.
 func HTML(ctx Context, nodes ...types.Node) (htmlTemplate.HTML, error) {
 	var buf bytes.Buffer
@@ -83,37 +79,37 @@ func (hw *htmlWriter) write(nodes ...types.Node) error {
 			hw.button(n)
 		case *types.CodeNode:
 			hw.code(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.ListNode:
 			hw.list(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.ImportNode:
 			if len(n.Content.Nodes) == 0 {
 				break
 			}
 			hw.list(n.Content)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.ItemsListNode:
 			hw.itemsList(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.GridNode:
 			hw.grid(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.InfoboxNode:
 			hw.infobox(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.SurveyNode:
 			hw.survey(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.HeaderNode:
 			hw.header(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.YouTubeNode:
 			hw.youtube(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.IframeNode:
 			hw.iframe(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		}
 		if hw.err != nil {
 			return hw.err
@@ -299,7 +295,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 		}
 	}
 	hw.writeString(">")
-	hw.writeBytes(newLine)
+	hw.writeString("\n")
 
 	for _, i := range n.Items {
 		hw.writeString("<li>")
