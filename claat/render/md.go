@@ -81,9 +81,9 @@ func (mw *mdWriter) space() {
 
 func (mw *mdWriter) newBlock() {
 	if !mw.lineStart {
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 	}
-	mw.writeBytes(newLine)
+	mw.writeString("\n")
 }
 
 func (mw *mdWriter) matchEnv(v []string) bool {
@@ -222,17 +222,17 @@ func (mw *mdWriter) code(n *types.CodeNode) {
 		return
 	}
 	mw.newBlock()
-	defer mw.writeBytes(newLine)
+	defer mw.writeString("\n")
 	mw.writeString("```")
 	if n.Term {
 		mw.writeString("console")
 	} else {
 		mw.writeString(n.Lang)
 	}
-	mw.writeBytes(newLine)
+	mw.writeString("\n")
 	mw.writeString(n.Value)
 	if !mw.lineStart {
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 	}
 	mw.writeString("```")
 }
@@ -243,7 +243,7 @@ func (mw *mdWriter) list(n *types.ListNode) {
 	}
 	mw.write(n.Nodes...)
 	if !mw.lineStart && !mw.isWritingTableCell {
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 	}
 }
 
@@ -260,7 +260,7 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 		mw.writeString(s)
 		mw.write(item.Nodes...)
 		if !mw.lineStart {
-			mw.writeBytes(newLine)
+			mw.writeString("\n")
 		}
 	}
 	mw.isWritingList = false
@@ -290,17 +290,17 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 func (mw *mdWriter) survey(n *types.SurveyNode) {
 	mw.newBlock()
 	mw.writeString("<form>")
-	mw.writeBytes(newLine)
+	mw.writeString("\n")
 	for _, g := range n.Groups {
 		mw.writeString("<name>")
 		mw.writeEscape(g.Name)
 		mw.writeString("</name>")
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 		for _, o := range g.Options {
 			mw.writeString("<input value=\"")
 			mw.writeEscape(o)
 			mw.writeString("\">")
-			mw.writeBytes(newLine)
+			mw.writeString("\n")
 		}
 	}
 	mw.writeString("</form>")
@@ -312,7 +312,7 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 	mw.writeString(" ")
 	mw.write(n.Content.Nodes...)
 	if !mw.lineStart {
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 	}
 }
 
@@ -329,7 +329,7 @@ func (mw *mdWriter) table(n *types.GridNode) {
 		return
 	}
 
-	mw.writeBytes(newLine)
+	mw.writeString("\n")
 	maxcols := maxColsInTable(n)
 	for rowIndex, row := range n.Rows {
 		mw.writeString("|")
@@ -358,7 +358,7 @@ func (mw *mdWriter) table(n *types.GridNode) {
 				mw.writeString(" |")
 			}
 		}
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 
 		// Write header bottom border
 		if rowIndex == 0 {
@@ -366,7 +366,7 @@ func (mw *mdWriter) table(n *types.GridNode) {
 			for i := 0; i < maxcols; i++ {
 				mw.writeString(" --- |")
 			}
-			mw.writeBytes(newLine)
+			mw.writeString("\n")
 		}
 
 		mw.isWritingTableCell = false

@@ -28,13 +28,6 @@ import (
 
 // TODO: render HTML using golang/x/net/html or template.
 
-var (
-	doubleQuote = []byte{'"'}
-	lessThan    = []byte{'<'}
-	greaterThan = []byte{'>'}
-	newLine     = []byte{'\n'}
-)
-
 // HTML renders nodes as the markup for the target env.
 func HTML(ctx Context, nodes ...types.Node) (htmlTemplate.HTML, error) {
 	var buf bytes.Buffer
@@ -86,37 +79,37 @@ func (hw *htmlWriter) write(nodes ...types.Node) error {
 			hw.button(n)
 		case *types.CodeNode:
 			hw.code(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.ListNode:
 			hw.list(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.ImportNode:
 			if len(n.Content.Nodes) == 0 {
 				break
 			}
 			hw.list(n.Content)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.ItemsListNode:
 			hw.itemsList(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.GridNode:
 			hw.grid(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.InfoboxNode:
 			hw.infobox(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.SurveyNode:
 			hw.survey(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.HeaderNode:
 			hw.header(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.YouTubeNode:
 			hw.youtube(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		case *types.IframeNode:
 			hw.iframe(n)
-			hw.writeBytes(newLine)
+			hw.writeString("\n")
 		}
 		if hw.err != nil {
 			return hw.err
@@ -125,24 +118,29 @@ func (hw *htmlWriter) write(nodes ...types.Node) error {
 	return nil
 }
 
-func (hw *htmlWriter) writeBytes(b []byte) {
+// Writes a string to the htmlWriter unless a write error has occurred on this htmlWriter in the past.
+// Will set a write error on this htmlWriter if the write fails.
+func (hw *htmlWriter) writeString(s string) {
 	if hw.err != nil {
 		return
 	}
-	_, hw.err = hw.w.Write(b)
+	_, hw.err = hw.w.Write([]byte(s))
 }
 
-func (hw *htmlWriter) writeString(s string) {
-	hw.writeBytes([]byte(s))
-}
-
+// Same as writeString, but with fmt.Sprintf arguments/semantics.
 func (hw *htmlWriter) writeFmt(f string, a ...interface{}) {
 	hw.writeString(fmt.Sprintf(f, a...))
 }
 
-func (hw *htmlWriter) writeEscape(s string) {
+func escape(s string) string {
 	s = htmlTemplate.HTMLEscapeString(s)
-	hw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
+	s = ReplaceDoubleCurlyBracketsWithEntity(s)
+	return s
+}
+
+// Same as writeString, but performs HTML escaping and double curly bracket escaping.
+func (hw *htmlWriter) writeEscape(s string) {
+	hw.writeString(escape(s))
 }
 
 func (hw *htmlWriter) text(n *types.TextNode) {
@@ -185,30 +183,21 @@ func (hw *htmlWriter) image(n *types.ImageNode) {
 	if n.Width > 0 {
 		hw.writeFmt(` style="width: %.2fpx"`, n.Width)
 	}
-	hw.writeString(` src="`)
-	hw.writeString(n.Src)
-	hw.writeBytes(doubleQuote)
-	hw.writeBytes(greaterThan)
+	hw.writeFmt(" src=%q>", n.Src)
 }
 
 func (hw *htmlWriter) url(n *types.URLNode) {
 	hw.writeString("<a")
 	if n.URL != "" {
-		hw.writeString(` href="`)
-		hw.writeString(n.URL)
-		hw.writeBytes(doubleQuote)
+		hw.writeFmt(" href=%q", n.URL)
 	}
 	if n.Name != "" {
-		hw.writeString(` name="`)
-		hw.writeEscape(n.Name)
-		hw.writeBytes(doubleQuote)
+		hw.writeFmt(" name=%q", escape(n.Name))
 	}
 	if n.Target != "" {
-		hw.writeString(` target="`)
-		hw.writeEscape(n.Target)
-		hw.writeBytes(doubleQuote)
+		hw.writeFmt(" target=%q", escape(n.Target))
 	}
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 	hw.write(n.Content.Nodes...)
 	hw.writeString("</a>")
 }
@@ -221,7 +210,7 @@ func (hw *htmlWriter) button(n *types.ButtonNode) {
 	if n.Raised {
 		hw.writeString(" raised")
 	}
-	hw.writeBytes(greaterThan)
+	hw.writeString(">")
 	if n.Download {
 		hw.writeString(`<iron-icon icon="file-download"></iron-icon>`)
 	}
@@ -236,7 +225,7 @@ func (hw *htmlWriter) code(n *types.CodeNode) {
 		if n.Lang != "" {
 			hw.writeFmt(" language=%q class=%q", n.Lang, n.Lang)
 		}
-		hw.writeBytes(greaterThan)
+		hw.writeString(">")
 	}
 	if hw.format == "devsite" {
 		hw.writeString("{% verbatim %}")
@@ -289,7 +278,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 	if n.Type() == types.NodeItemsList && (n.Start > 0 || n.ListType != "") {
 		tag = "ol"
 	}
-	hw.writeBytes(lessThan)
+	hw.writeString("<")
 	hw.writeString(tag)
 	switch n.Type() {
 	case types.NodeItemsCheck:
@@ -298,16 +287,13 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 		hw.writeString(` class="faq"`)
 	default:
 		if n.ListType != "" {
-			hw.writeString(` type="`)
-			hw.writeString(n.ListType)
-			hw.writeBytes(doubleQuote)
+			hw.writeFmt(" type=%q", n.ListType)
 		}
 		if n.Start > 0 {
-			hw.writeFmt(` start="%d"`, n.Start)
+			hw.writeFmt(` start=%q`, strconv.Itoa(n.Start))
 		}
 	}
-	hw.writeBytes(greaterThan)
-	hw.writeBytes(newLine)
+	hw.writeString(">\n")
 
 	for _, i := range n.Items {
 		hw.writeString("<li>")
@@ -315,9 +301,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 		hw.writeString("</li>\n")
 	}
 
-	hw.writeString("</")
-	hw.writeString(tag)
-	hw.writeBytes(greaterThan)
+	hw.writeFmt("</%s>", tag)
 }
 
 func (hw *htmlWriter) grid(n *types.GridNode) {
@@ -335,26 +319,17 @@ func (hw *htmlWriter) grid(n *types.GridNode) {
 }
 
 func (hw *htmlWriter) infobox(n *types.InfoboxNode) {
-	hw.writeString(`<aside class="`)
-	hw.writeEscape(string(n.Kind))
-	hw.writeString(`">`)
+	hw.writeFmt("<aside class=%q>", escape(string(n.Kind)))
 	hw.write(n.Content.Nodes...)
 	hw.writeString("</aside>")
 }
 
 func (hw *htmlWriter) survey(n *types.SurveyNode) {
-	hw.writeString(`<google-codelab-survey survey-id="`)
-	hw.writeString(n.ID)
-	hw.writeBytes(doubleQuote)
-	hw.writeString(">\n")
+	hw.writeFmt("<google-codelab-survey survey-id=%q>\n", n.ID)
 	for _, g := range n.Groups {
-		hw.writeString("<h4>")
-		hw.writeEscape(g.Name)
-		hw.writeString("</h4>\n<paper-radio-group>\n")
+		hw.writeFmt("<h4>%s</h4>\n<paper-radio-group>\n", g.Name)
 		for _, o := range g.Options {
-			hw.writeString("<paper-radio-button>")
-			hw.writeEscape(o)
-			hw.writeString("</paper-radio-button>\n")
+			hw.writeFmt("<paper-radio-button>%s</paper-radio-button>\n", escape(o))
 		}
 		hw.writeString("</paper-radio-group>\n")
 	}
@@ -363,7 +338,7 @@ func (hw *htmlWriter) survey(n *types.SurveyNode) {
 
 func (hw *htmlWriter) header(n *types.HeaderNode) {
 	tag := "h" + strconv.Itoa(n.Level)
-	hw.writeBytes(lessThan)
+	hw.writeString("<")
 	hw.writeString(tag)
 	switch n.Type() {
 	case types.NodeHeaderCheck:
@@ -372,12 +347,9 @@ func (hw *htmlWriter) header(n *types.HeaderNode) {
 		hw.writeString(` class="faq"`)
 
 	}
-	hw.writeString(` is-upgraded`)
-	hw.writeBytes(greaterThan)
+	hw.writeString(` is-upgraded>`)
 	hw.write(n.Content.Nodes...)
-	hw.writeString("</")
-	hw.writeString(tag)
-	hw.writeBytes(greaterThan)
+	hw.writeFmt("</%s>", tag)
 }
 
 func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
@@ -388,6 +360,5 @@ func (hw *htmlWriter) youtube(n *types.YouTubeNode) {
 }
 
 func (hw *htmlWriter) iframe(n *types.IframeNode) {
-	hw.writeFmt(`<iframe class="embedded-iframe" src="%s"></iframe>`,
-		n.URL)
+	hw.writeFmt(`<iframe class="embedded-iframe" src=%q></iframe>`, n.URL)
 }
