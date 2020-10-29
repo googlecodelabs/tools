@@ -314,7 +314,7 @@ func (hw *htmlWriter) grid(n *types.GridNode) {
 }
 
 func (hw *htmlWriter) infobox(n *types.InfoboxNode) {
-	hw.writeFmt("<aside class=%q>", escape(n.Kind))
+	hw.writeFmt("<aside class=%q>", escape(string(n.Kind)))
 	hw.write(n.Content.Nodes...)
 	hw.writeString("</aside>")
 }
