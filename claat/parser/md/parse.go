@@ -54,6 +54,7 @@ const (
 	MetaFeedbackLink     = "feedback link"
 	MetaAnalyticsAccount = "analytics account"
 	MetaTags             = "tags"
+	MetaSource           = "source"
 )
 
 const (
