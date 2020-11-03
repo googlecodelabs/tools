@@ -102,6 +102,7 @@ var funcMap = map[string]interface{}{
 		res += kvLine(mdParse.MetaTags, strings.Join(meta.Tags, ","))
 		res += kvLine(mdParse.MetaFeedbackLink, meta.Feedback)
 		res += kvLine(mdParse.MetaAnalyticsAccount, meta.GA)
+		res += kvLine(mdParse.MetaSource, meta.Source)
 
 		return res
 	},

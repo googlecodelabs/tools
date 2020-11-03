@@ -54,6 +54,7 @@ const (
 	MetaFeedbackLink     = "feedback link"
 	MetaAnalyticsAccount = "analytics account"
 	MetaTags             = "tags"
+	MetaSource           = "source"
 )
 
 const (
@@ -453,43 +454,37 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 		case MetaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v
-			break
 		case MetaID:
 			// Directly assign the ID to the codelab field.
 			c.ID = v
-			break
 		case MetaCategories:
 			// Standardize the categories and append to codelab field.
 			c.Categories = append(c.Categories, standardSplit(v)...)
-			break
 		case MetaEnvironments:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
-			break
 		case MetaStatus:
 			// Standardize the statuses and append to the codelab field.
 			statuses := standardSplit(v)
 			statusesAsLegacy := types.LegacyStatus(statuses)
 			c.Status = &statusesAsLegacy
-			break
 		case MetaFeedbackLink:
 			// Directly assign the feedback link to the codelab field.
 			c.Feedback = v
-			break
 		case MetaAnalyticsAccount:
 			// Directly assign the GA id to the codelab field.
 			c.GA = v
-			break
 		case MetaTags:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
-			break
+		case MetaSource:
+			// Standardize the tags and append to the codelab field.
+			c.Source = v
 		default:
 			// If not explicitly parsed, it might be a pass_metadata value.
 			if _, ok := opts.PassMetadata[k]; ok {
 				c.Extra[k] = v
 			}
-			break
 		}
 	}
 	return nil
