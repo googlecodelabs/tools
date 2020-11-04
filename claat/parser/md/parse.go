@@ -55,6 +55,7 @@ const (
 	MetaAnalyticsAccount = "analytics account"
 	MetaTags             = "tags"
 	MetaSource           = "source"
+	MetaDuration         = "duration"
 )
 
 const (
@@ -478,8 +479,14 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
 		case MetaSource:
-			// Standardize the tags and append to the codelab field.
+			// Directly assign the source doc ID to the source field.
 			c.Source = v
+		case MetaDuration:
+			// Convert the duration to an integer and assign to the duration field.
+			duration, err := strconv.Atoi(v)
+			if err == nil {
+				c.Duration = duration
+			}
 		default:
 			// If not explicitly parsed, it might be a pass_metadata value.
 			if _, ok := opts.PassMetadata[k]; ok {
