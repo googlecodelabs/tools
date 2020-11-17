@@ -106,6 +106,10 @@ var funcMap = map[string]interface{}{
 		res += kvLine(mdParse.MetaSource, meta.Source)
 		res += kvLine(mdParse.MetaDuration, strconv.Itoa(meta.Duration))
 
+		for k, v := range meta.Extra {
+			res += kvLine(k, v)
+		}
+
 		return res
 	},
 	"matchEnv": func(tags []string, t string) bool {
