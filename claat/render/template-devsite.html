@@ -31,6 +31,9 @@ the License.
     {{if .Meta.Authors}}
       <meta name="author_name" value="{{.Meta.Authors}}" />
     {{end}}
+    {{if .Meta.Extra.robots}}
+      <meta name="robots" value="{{.Meta.Extra.robots}}">
+    {{end}}
     <style>
       body {
         transition: opacity ease-in 0.2s;
