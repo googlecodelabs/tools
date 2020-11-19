@@ -167,6 +167,10 @@ google-codelab #drawer .codelab-time-container {
 }
 
 @media (max-width: 768px) {
+  google-codelab {
+    padding-top: 0;
+  }
+
   google-codelab #codelab-title .codelab-time-container {
     display: none;
   }
