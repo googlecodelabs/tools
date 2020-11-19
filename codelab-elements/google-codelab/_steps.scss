@@ -48,3 +48,9 @@ google-codelab google-codelab-step[animating] {
   position: absolute;
   overflow: hidden;
 }
+
+@media (max-width: 768px) {
+  google-codelab google-codelab-step {
+    padding-top: 8px;
+  }
+}
