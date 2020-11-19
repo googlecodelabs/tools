@@ -151,6 +151,7 @@ func concatURL(a, b types.Node) bool {
 		return false
 	}
 	u1.Content.Append(u2.Content.Nodes...)
+	u1.Content.Nodes = CompactNodes(u1.Content.Nodes)
 	return true
 }
 
