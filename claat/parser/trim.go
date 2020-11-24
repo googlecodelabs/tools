@@ -168,10 +168,10 @@ func splitSpaceRight(s string) (v string, sp string) {
 	rs := []rune(s)
 	for i := len(rs) - 1; i >= 0; i-- {
 		if !unicode.IsSpace(rs[i]) {
-			return s[:i+1], s[i+1:]
+			return string(rs[:i+1]), string(rs[i+1:])
 		}
 	}
-	return s, ""
+	return string(rs), ""
 }
 
 // nodeBlocks encapsulates all nodes of the same block into a new ListNode
