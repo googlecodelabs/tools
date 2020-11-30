@@ -35,7 +35,11 @@
   {/if}
 
   <div class="about-card">
-    <h2 class="title">About this codelab</h2>
+    <h2 class="title">
+      {msg desc="Text explaining that this card is about this codelab"}
+        About this codelab
+      {/msg}
+    </h2>
 
     {if $lastUpdated}
       <div class="last-updated">
