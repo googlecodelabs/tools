@@ -158,6 +158,8 @@ func (hw *htmlWriter) text(n *types.TextNode) {
 	}
 	if shouldEsc {
 		s = htmlTemplate.HTMLEscapeString(n.Value)
+		// Remove whitespace we added to divide adjacent bold and italic nodes.
+		s = strings.Trim(s, string('\uFEFF'))
 	}
 	s = ReplaceDoubleCurlyBracketsWithEntity(s)
 	hw.writeString(strings.Replace(s, "\n", "<br>", -1))
