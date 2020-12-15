@@ -174,6 +174,17 @@ func splitSpaceRight(s string) (v string, sp string) {
 	return string(rs), ""
 }
 
+func requiresSpacer(a, b types.Node) bool {
+	t1, ok1 := a.(*types.TextNode)
+	t2, ok2 := b.(*types.TextNode)
+
+	if !(ok1 && ok2) {
+		return false
+	}
+
+	return (t1.Bold && t2.Bold) || (t1.Italic && t2.Italic)
+}
+
 // nodeBlocks encapsulates all nodes of the same block into a new ListNode
 // with its B field set to true.
 // Nodes which are not blockSquashable remain as is.
@@ -206,13 +217,18 @@ func CompactNodes(nodes []types.Node) []types.Node {
 			}
 		}
 		if last == nil || !concatNodes(last, n) {
-			last = n
+			if requiresSpacer(last, n) {
+				// Append non-breaking zero-width space.
+				res = append(res, types.NewTextNode(string('\uFEFF')))
+			}
 			res = append(res, n)
 
 			if n.Type() == types.NodeCode {
 				c := n.(*types.CodeNode)
 				c.Value = strings.TrimLeft(c.Value, "\n")
 			}
+
+			last = n
 		}
 	}
 	return res
