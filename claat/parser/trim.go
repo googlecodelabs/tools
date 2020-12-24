@@ -161,7 +161,7 @@ func splitSpaceLeft(s string) (v string, sp string) {
 			return s[i:], s[:i]
 		}
 	}
-	return s, ""
+	return "", s
 }
 
 func splitSpaceRight(s string) (v string, sp string) {
@@ -171,7 +171,7 @@ func splitSpaceRight(s string) (v string, sp string) {
 			return string(rs[:i+1]), string(rs[i+1:])
 		}
 	}
-	return string(rs), ""
+	return "", string(rs)
 }
 
 func requiresSpacer(a, b types.Node) bool {
