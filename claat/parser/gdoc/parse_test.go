@@ -110,8 +110,9 @@ func TestParseTopCodeBlock(t *testing.T) {
 	code := "start func() {\n}\n\nfunc2() {\n} // comment"
 	term := "adb shell am start -a VIEW \\\n-d \"http://host\" app"
 	content := types.NewListNode()
-	content.Append(types.NewCodeNode(code, false))
-	content.Append(types.NewCodeNode(term, true))
+	var lang string
+	content.Append(types.NewCodeNode(code, false, lang))
+	content.Append(types.NewCodeNode(term, true, lang))
 
 	doc, err := html.Parse(markupReader(markup))
 	if err != nil {
@@ -126,9 +127,9 @@ func TestParseTopCodeBlock(t *testing.T) {
 		cur: doc.FirstChild,
 	}
 	parseTop(ds)
-
-	html1, _ := render.HTML("", ds.step.Content)
-	html2, _ := render.HTML("", content)
+	var ctx render.Context
+	html1, _ := render.HTML(ctx, ds.step.Content)
+	html2, _ := render.HTML(ctx, content)
 	s1 := strings.TrimSpace(string(html1))
 	s2 := strings.TrimSpace(string(html2))
 	if s1 != s2 {
@@ -175,7 +176,7 @@ func TestMetaTable(t *testing.T) {
 	`
 
 	p := &Parser{}
-	clab, err := p.Parse(markupReader(markup), *parser.NewOptions())
+	clab, err := p.Parse(markupReader(markup), *parser.NewOptions(parser.Blackfriday))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -251,7 +252,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 	`
 
 	p := &Parser{}
-	opts := *parser.NewOptions()
+	opts := *parser.NewOptions(parser.Blackfriday)
 	opts.PassMetadata = map[string]bool{
 		"extrafieldone": true,
 	}
@@ -378,7 +379,7 @@ func TestParseDoc(t *testing.T) {
 	`
 
 	p := &Parser{}
-	c, err := p.Parse(markupReader(markup), *parser.NewOptions())
+	c, err := p.Parse(markupReader(markup), *parser.NewOptions(parser.Blackfriday))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -491,13 +492,14 @@ func TestParseDoc(t *testing.T) {
 		"http://host/file.java", types.NewTextNode("a file")))
 	content.Append(h)
 
+	var lang string
 	code := "start func() {\n}\n\nfunc2() {\n} // comment"
-	cn := types.NewCodeNode(code, false)
+	cn := types.NewCodeNode(code, false, lang)
 	cn.MutateBlock(1)
 	content.Append(cn)
 
 	term := "adb shell am start -a VIEW \\\n-d \"http://host\" app"
-	tn := types.NewCodeNode(term, true)
+	tn := types.NewCodeNode(term, true, lang)
 	tn.MutateBlock(2)
 	content.Append(tn)
 
@@ -521,8 +523,9 @@ func TestParseDoc(t *testing.T) {
 	})
 	content.Append(sv)
 
-	html1, _ := render.HTML("", step.Content)
-	html2, _ := render.HTML("", content)
+	var ctx render.Context
+	html1, _ := render.HTML(ctx, step.Content)
+	html2, _ := render.HTML(ctx, content)
 	if html1 != html2 {
 		t.Errorf("step.Content:\n\n%s\nwant:\n\n%s", html1, html2)
 	}
@@ -553,7 +556,8 @@ func TestParseFragment(t *testing.T) {
 	`
 
 	p := &Parser{}
-	nodes, err := p.ParseFragment(markupReader(markup))
+	opts := *parser.NewOptions(parser.Blackfriday)
+	nodes, err := p.ParseFragment(markupReader(markup), opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -575,8 +579,9 @@ func TestParseFragment(t *testing.T) {
 	para.MutateBlock(true)
 	want = append(want, para)
 
-	html1, _ := render.HTML("", nodes...)
-	html2, _ := render.HTML("", want...)
+	var ctx render.Context
+	html1, _ := render.HTML(ctx, nodes...)
+	html2, _ := render.HTML(ctx, want...)
 	if html1 != html2 {
 		t.Errorf("nodes:\n\n%s\nwant:\n\n%s", html1, html2)
 	}

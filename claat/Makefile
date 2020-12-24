@@ -25,7 +25,11 @@ RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 	 $(OUTDIR)/claat-windows-amd64.exe \
 	 $(OUTDIR)/claat-windows-386.exe
 
-SRCS = $(shell find . -name '*.go') render/tmpldata.go
+ifeq ($(OS), Windows_NT)
+		SRCS = $(shell dir *.go /b/s) 
+	else
+		SRCS = $(shell find . -name '*.go') 
+endif
 
 all: $(OUTDIR)/claat
 

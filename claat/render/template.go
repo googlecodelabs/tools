@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"sort"
+	"strconv"
 	textTemplate "text/template"
 	"time"
 
@@ -36,6 +37,7 @@ type Context struct {
 	Env      string
 	Prefix   string
 	GlobalGA string
+	Format   string
 	Meta     *types.Meta
 	Steps    []*types.Step
 	Updated  string
@@ -101,6 +103,12 @@ var funcMap = map[string]interface{}{
 		res += kvLine(mdParse.MetaTags, strings.Join(meta.Tags, ","))
 		res += kvLine(mdParse.MetaFeedbackLink, meta.Feedback)
 		res += kvLine(mdParse.MetaAnalyticsAccount, meta.GA)
+		res += kvLine(mdParse.MetaSource, meta.Source)
+		res += kvLine(mdParse.MetaDuration, strconv.Itoa(meta.Duration))
+
+		for k, v := range meta.Extra {
+			res += kvLine(k, v)
+		}
 
 		return res
 	},

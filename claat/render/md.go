@@ -17,6 +17,7 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"html"
 	"io"
 	"path"
 	"sort"
@@ -27,30 +28,37 @@ import (
 )
 
 // MD renders nodes as markdown for the target env.
-func MD(env string, nodes ...types.Node) (string, error) {
+func MD(ctx Context, nodes ...types.Node) (string, error) {
 	var buf bytes.Buffer
-	if err := WriteMD(&buf, env, nodes...); err != nil {
+	if err := WriteMD(&buf, ctx.Env, ctx.Format, nodes...); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
 }
 
 // WriteMD does the same as MD but outputs rendered markup to w.
-func WriteMD(w io.Writer, env string, nodes ...types.Node) error {
-	mw := mdWriter{w: w, env: env}
+func WriteMD(w io.Writer, env string, fmt string, nodes ...types.Node) error {
+	mw := mdWriter{w: w, env: env, format: fmt, Prefix: []byte("")}
 	return mw.write(nodes...)
 }
 
 type mdWriter struct {
-	w         io.Writer // output writer
-	env       string    // target environment
-	err       error     // error during any writeXxx methods
-	lineStart bool
+	w                  io.Writer // output writer
+	env                string    // target environment
+	format             string    // target template
+	err                error     // error during any writeXxx methods
+	lineStart          bool
+	isWritingTableCell bool   // used to override lineStart for correct cell formatting
+	isWritingList      bool   // used for override newblock when needed
+	Prefix             []byte // prefix for e.g. blockquote content
 }
 
 func (mw *mdWriter) writeBytes(b []byte) {
 	if mw.err != nil {
 		return
+	}
+	if mw.lineStart {
+		_, mw.err = mw.w.Write(mw.Prefix)
 	}
 	mw.lineStart = len(b) > 0 && b[len(b)-1] == '\n'
 	_, mw.err = mw.w.Write(b)
@@ -58,6 +66,11 @@ func (mw *mdWriter) writeBytes(b []byte) {
 
 func (mw *mdWriter) writeString(s string) {
 	mw.writeBytes([]byte(s))
+}
+
+func (mw *mdWriter) writeEscape(s string) {
+	s = html.EscapeString(s)
+	mw.writeString(ReplaceDoubleCurlyBracketsWithEntity(s))
 }
 
 func (mw *mdWriter) space() {
@@ -68,9 +81,9 @@ func (mw *mdWriter) space() {
 
 func (mw *mdWriter) newBlock() {
 	if !mw.lineStart {
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 	}
-	mw.writeBytes(newLine)
+	mw.writeString("\n")
 }
 
 func (mw *mdWriter) matchEnv(v []string) bool {
@@ -106,16 +119,16 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 			mw.write(n.Content.Nodes...)
 		case *types.ItemsListNode:
 			mw.itemsList(n)
-		//case *types.GridNode:
-		//	mw.grid(n)
+		case *types.GridNode:
+			mw.table(n)
 		case *types.InfoboxNode:
 			mw.infobox(n)
-		//case *types.SurveyNode:
-		//	mw.survey(n)
+		case *types.SurveyNode:
+			mw.survey(n)
 		case *types.HeaderNode:
 			mw.header(n)
-			//case *types.YouTubeNode:
-			//	mw.youtube(n)
+		case *types.YouTubeNode:
+			mw.youtube(n)
 		}
 		if mw.err != nil {
 			return mw.err
@@ -125,40 +138,54 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 }
 
 func (mw *mdWriter) text(n *types.TextNode) {
+	tr := strings.TrimLeft(n.Value, " \t\n\r\f\v")
+	left := n.Value[0:(len(n.Value) - len(tr))]
+	t := strings.TrimRight(tr, " \t\n\r\f\v")
+	right := tr[len(t):len(tr)]
+
+	mw.writeString(left)
+
 	if n.Bold {
 		mw.writeString("**")
 	}
 	if n.Italic {
-		mw.writeString(" *")
+		mw.writeString("*")
 	}
 	if n.Code {
 		mw.writeString("`")
 	}
-	mw.writeString(n.Value)
+
+	t = strings.Replace(t, "<", "&lt;", -1)
+	t = strings.Replace(t, ">", "&gt;", -1)
+
+	mw.writeString(t)
+
 	if n.Code {
 		mw.writeString("`")
 	}
 	if n.Italic {
-		mw.writeString("* ")
+		mw.writeString("*")
 	}
 	if n.Bold {
 		mw.writeString("**")
 	}
+
+	mw.writeString(right)
 }
 
 func (mw *mdWriter) image(n *types.ImageNode) {
 	mw.space()
 	mw.writeString("<img ")
-	mw.writeString(fmt.Sprintf("src=\"%s\" ", n.Src))
+	mw.writeString(fmt.Sprintf("src=%q ", n.Src))
 
 	if n.Alt != "" {
-		mw.writeString(fmt.Sprintf("alt=\"%s\" ", n.Alt))
+		mw.writeString(fmt.Sprintf("alt=%q ", n.Alt))
 	} else {
-		mw.writeString(fmt.Sprintf("alt=\"%s\" ", path.Base(n.Src)))
+		mw.writeString(fmt.Sprintf("alt=%q ", path.Base(n.Src)))
 	}
 
 	if n.Title != "" {
-		mw.writeString(fmt.Sprintf("title=\"%q\" ", n.Title))
+		mw.writeString(fmt.Sprintf("title=%q ", n.Title))
 	}
 
 	// If available append width to the src string of the image.
@@ -172,43 +199,43 @@ func (mw *mdWriter) image(n *types.ImageNode) {
 func (mw *mdWriter) url(n *types.URLNode) {
 	mw.space()
 	if n.URL != "" {
+		// Look-ahead for button syntax.
+		if _, ok := n.Content.Nodes[0].(*types.ButtonNode); ok {
+			mw.writeString("<button>")
+		}
 		mw.writeString("[")
 	}
-	for _, cn := range n.Content.Nodes {
-		if t, ok := cn.(*types.TextNode); ok {
-			mw.writeString(t.Value)
-		}
-	}
+	mw.write(n.Content.Nodes...)
 	if n.URL != "" {
+		// escape parentheses
+		strings.Replace(n.URL, "(", "%28", -1)
+		strings.Replace(n.URL, ")", "%29", -1)
 		mw.writeString("](")
 		mw.writeString(n.URL)
 		mw.writeString(")")
+		if _, ok := n.Content.Nodes[0].(*types.ButtonNode); ok {
+			// Look-ahead for button syntax.
+			mw.writeString("</button>")
+		}
 	}
 }
 
 func (mw *mdWriter) code(n *types.CodeNode) {
-	mw.newBlock()
-	defer mw.writeBytes(newLine)
-	if n.Term {
-		var buf bytes.Buffer
-		const prefix = "    "
-		lineStart := true
-		for _, r := range n.Value {
-			if lineStart {
-				buf.WriteString(prefix)
-			}
-			buf.WriteRune(r)
-			lineStart = r == '\n'
-		}
-		mw.writeBytes(buf.Bytes())
+	if n.Empty() {
 		return
 	}
+	mw.newBlock()
+	defer mw.writeString("\n")
 	mw.writeString("```")
-	mw.writeString(n.Lang)
-	mw.writeBytes(newLine)
+	if n.Term {
+		mw.writeString("console")
+	} else {
+		mw.writeString(n.Lang)
+	}
+	mw.writeString("\n")
 	mw.writeString(n.Value)
 	if !mw.lineStart {
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 	}
 	mw.writeString("```")
 }
@@ -218,13 +245,16 @@ func (mw *mdWriter) list(n *types.ListNode) {
 		mw.newBlock()
 	}
 	mw.write(n.Nodes...)
-	if !mw.lineStart {
-		mw.writeBytes(newLine)
+	if !mw.lineStart && !mw.isWritingTableCell {
+		mw.writeString("\n")
 	}
 }
 
 func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
-	mw.newBlock()
+	mw.isWritingList = true
+	if n.Block() == true {
+		mw.newBlock()
+	}
 	for i, item := range n.Items {
 		s := "* "
 		if n.Type() == types.NodeItemsList && n.Start > 0 {
@@ -233,24 +263,50 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 		mw.writeString(s)
 		mw.write(item.Nodes...)
 		if !mw.lineStart {
-			mw.writeBytes(newLine)
+			mw.writeString("\n")
 		}
 	}
+	mw.isWritingList = false
 }
 
 func (mw *mdWriter) infobox(n *types.InfoboxNode) {
-	// TODO: This should use the "detail item" syntax so that it can be pure MD and not HTML
-	// kind
-	// : <content>
-	//
-	// The main issue is that when you do write(n.Content.Nodes...) it always adds two newlines
-	// at the beginning.
+	// InfoBoxes are comprised of a ListNode with the contents of the InfoBox.
+	// Writing the ListNode directly results in extra newlines in the md output
+	// which breaks the formatting. So instead, write the ListNode's children
+	// directly and don't write the ListNode itself.
 	mw.newBlock()
-	mw.writeString(`<aside class="`)
-	mw.writeString(string(n.Kind))
-	mw.writeString(`">`)
-	mw.write(n.Content.Nodes...)
-	mw.writeString("</aside>")
+	k := "aside positive"
+	if n.Kind == types.InfoboxNegative {
+		k = "aside negative"
+	}
+	mw.Prefix = []byte("> ")
+	mw.writeString(k)
+	mw.writeString("\n")
+
+	for _, cn := range n.Content.Nodes {
+		mw.write(cn)
+	}
+
+	mw.Prefix = []byte("")
+}
+
+func (mw *mdWriter) survey(n *types.SurveyNode) {
+	mw.newBlock()
+	mw.writeString("<form>")
+	mw.writeString("\n")
+	for _, g := range n.Groups {
+		mw.writeString("<name>")
+		mw.writeEscape(g.Name)
+		mw.writeString("</name>")
+		mw.writeString("\n")
+		for _, o := range g.Options {
+			mw.writeString("<input value=\"")
+			mw.writeEscape(o)
+			mw.writeString("\">")
+			mw.writeString("\n")
+		}
+	}
+	mw.writeString("</form>")
 }
 
 func (mw *mdWriter) header(n *types.HeaderNode) {
@@ -259,6 +315,73 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 	mw.writeString(" ")
 	mw.write(n.Content.Nodes...)
 	if !mw.lineStart {
-		mw.writeBytes(newLine)
+		mw.writeString("\n")
 	}
+}
+
+func (mw *mdWriter) youtube(n *types.YouTubeNode) {
+	if !mw.isWritingList {
+		mw.newBlock()
+	}
+	mw.writeString(fmt.Sprintf(`<video id="%s"></video>`, n.VideoID))
+}
+
+func (mw *mdWriter) table(n *types.GridNode) {
+	// If table content is empty, don't output the table.
+	if n.Empty() {
+		return
+	}
+
+	mw.writeString("\n")
+	maxcols := maxColsInTable(n)
+	for rowIndex, row := range n.Rows {
+		mw.writeString("|")
+		for _, cell := range row {
+			mw.isWritingTableCell = true
+			mw.writeString(" ")
+
+			// Check cell content for newlines and replace with inline HTML if newlines are present.
+			var nw bytes.Buffer
+			WriteMD(&nw, mw.env, mw.format, cell.Content.Nodes...)
+			if bytes.ContainsRune(nw.Bytes(), '\n') {
+				for _, cn := range cell.Content.Nodes {
+					cn.MutateBlock(false) // don't treat content as a new block
+					var nw2 bytes.Buffer
+					WriteHTML(&nw2, mw.env, mw.format, cn)
+					mw.writeBytes(bytes.Replace(nw2.Bytes(), []byte("\n"), []byte(""), -1))
+				}
+			} else {
+				mw.writeBytes(nw.Bytes())
+			}
+
+			mw.writeString(" |")
+		}
+		if rowIndex == 0 && len(row) < maxcols {
+			for i := 0; i < maxcols-len(row); i++ {
+				mw.writeString(" |")
+			}
+		}
+		mw.writeString("\n")
+
+		// Write header bottom border
+		if rowIndex == 0 {
+			mw.writeString("|")
+			for i := 0; i < maxcols; i++ {
+				mw.writeString(" --- |")
+			}
+			mw.writeString("\n")
+		}
+
+		mw.isWritingTableCell = false
+	}
+}
+
+func maxColsInTable(n *types.GridNode) int {
+	m := 0
+	for _, row := range n.Rows {
+		if len(row) > m {
+			m = len(row)
+		}
+	}
+	return m
 }

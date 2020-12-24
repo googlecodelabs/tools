@@ -149,6 +149,9 @@ class Codelab extends HTMLElement {
     /** @private {string} */
     this.title_ = '';
 
+    /** @private {number} */
+    this.setFocusTimeoutId_ = -1;
+
     /** @private {!Array<!Element>} */
     this.steps_ = [];
 
@@ -601,6 +604,9 @@ class Codelab extends HTMLElement {
    * @private
    */
   showSelectedStep_() {
+    // Close drawer if any.
+    this.removeAttribute(DRAWER_OPEN_ATTR);
+
     let selected = 0;
     if (this.hasAttribute(SELECTED_ATTR)) {
       selected = parseInt(this.getAttribute(SELECTED_ATTR), 0);
@@ -627,9 +633,10 @@ class Codelab extends HTMLElement {
       'title': stepTitle.replace(re, '').trim()
     });
 
+    const stepToSelect = this.steps_[selected];
+
     if (this.currentSelectedStep_ === -1) {
       // No previous selected step, so select the correct step with no animation
-      const stepToSelect = this.steps_[selected];
       stepToSelect.setAttribute(SELECTED_ATTR, '');
     } else {
       if (this.transitionIn_) {
@@ -651,7 +658,6 @@ class Codelab extends HTMLElement {
       };
       const transitionOutFinalStyle = {};
 
-      const stepToSelect = this.steps_[selected];
       const currentStep = this.steps_[this.currentSelectedStep_];
       stepToSelect.setAttribute(ANIMATING_ATTR, '');
 
@@ -693,6 +699,13 @@ class Codelab extends HTMLElement {
     }
 
     this.currentSelectedStep_ = selected;
+
+    // Set the focus on the new step after the animation is finished becasue it
+    // messes up the animation.
+    clearTimeout(this.setFocusTimeoutId_);
+    this.setFocusTimeoutId_ = setTimeout(() => {
+      stepToSelect.focus();
+    }, ANIMATION_DURATION * 1000);
 
     if (this.nextStepBtn_ && this.prevStepBtn_ && this.doneBtn_) {
       if (selected === 0) {
@@ -800,6 +813,7 @@ class Codelab extends HTMLElement {
 
   /**
    * Fires events for initial page load.
+   * @private
    */
   firePageLoadEvents_() {
     this.fireEvent_(CODELAB_PAGEVIEW_EVENT, {
@@ -839,10 +853,12 @@ class Codelab extends HTMLElement {
     this.renderDrawer_();
     this.timeContainer_ = this.querySelectorAll('.codelab-time-container');
 
+    let hasLocationHash = false;
     if (document.location.hash) {
       const h = parseInt(document.location.hash.substring(1), 10);
       if (!isNaN(h) && h) {
         this.setAttribute(SELECTED_ATTR, document.location.hash.substring(1));
+        hasLocationHash = true;
       }
     }
 
@@ -850,7 +866,9 @@ class Codelab extends HTMLElement {
     const progress = this.storage_.get(`progress_${this.id_}`);
     if (progress && progress !== '0') {
       this.resumed_ = true;
-      this.setAttribute(SELECTED_ATTR, progress);
+      if (!hasLocationHash) {
+        this.setAttribute(SELECTED_ATTR, progress);
+      }
     }
 
     this.hasSetup_ = true;

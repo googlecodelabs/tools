@@ -72,8 +72,15 @@ perform syntax highlighting on code blocks, but it is not always effective at
 guessing the language to highlight in. Put the name of the code language after
 the first fence to explicitly specify which highlighting plan to use.
 
-    ``` go
+    ```go
     This block will be highlighted as Go source code.
+    ```
+
+If you'd like to disable syntax highlighting, you can specify the language
+hint to "console":
+
+    ```console
+    This block will not be syntax highlighted.
     ```
 
 #### Info Boxes
@@ -92,6 +99,18 @@ Negative
 : This will appear in a negative info box.
 ```
 
+`<aside>` elements work as well:
+
+```
+<aside class="positive">
+This will appear in a positive info box.
+</aside>
+
+<aside class="negative">
+This will appear in a negative info box.
+</aside>
+```
+
 #### Download Buttons
 
 Codelabs sometimes contain links to SDKs or sample code. The codelab renderer
@@ -99,6 +118,8 @@ will apply special button-esque styling to any link that begins with the word
 "Download".
 
 ```
+<button>
   [Download SDK](https://www.google.com)
+</button>
 ```
 

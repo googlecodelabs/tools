@@ -28,7 +28,7 @@ const LAST_UPDATED_ATTR = 'last-updated';
 const AUTHORS_ATTR = 'authors';
 
 /** @const {string} */
-const BADGE_ID_ATTR = 'badge-id';
+const BADGE_PATH_ATTR = 'badge-path';
 
 /** @const {string} */
 const CODELAB_TITLE_ATTR = 'codelab-title';
@@ -57,7 +57,7 @@ class CodelabAbout extends HTMLElement {
     this.lastUpdated_ = null;
 
     /** @private {?string} */
-    this.badgeId_ = null;
+    this.badgePath_ = null;
   }
 
   /**
@@ -103,9 +103,9 @@ class CodelabAbout extends HTMLElement {
           this.codelabTitle_ = this.getAttribute(CODELAB_TITLE_ATTR);
         }
         break;
-      case BADGE_ID_ATTR:
-        if (this.hasAttribute(BADGE_ID_ATTR)) {
-          this.badgeId_ = this.getAttribute(BADGE_ID_ATTR);
+      case BADGE_PATH_ATTR:
+        if (this.hasAttribute(BADGE_PATH_ATTR)) {
+          this.badgePath_ = this.getAttribute(BADGE_PATH_ATTR);
         }
         break;
     }
@@ -137,7 +137,7 @@ class CodelabAbout extends HTMLElement {
       lastUpdated: CodelabAbout.formatDate_(this.lastUpdated_),
       authors: this.authors_,
       codelabTitle: this.codelabTitle_.split(':').join(':||').split('||'),
-      badgeId: this.badgeId_,
+      badgePath: this.badgePath_,
     });
 
     this.hasSetup_ = true;

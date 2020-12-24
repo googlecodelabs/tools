@@ -52,7 +52,7 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 }
 
 // ParseFragment parses a codelab fragment exported in HTML from Google Docs.
-func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
+func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, error) {
 	// TODO: use html.Tokenizer instead
 	doc, err := html.Parse(r)
 	if err != nil {
@@ -249,8 +249,8 @@ func finalizeStep(s *types.Step) {
 	}
 	s.Tags = util.Unique(s.Tags)
 	sort.Strings(s.Tags)
-	s.Content.Nodes = blockNodes(s.Content.Nodes)
-	s.Content.Nodes = compactNodes(s.Content.Nodes)
+	s.Content.Nodes = parser.BlockNodes(s.Content.Nodes)
+	s.Content.Nodes = parser.CompactNodes(s.Content.Nodes)
 	// TODO: find a better place for the code below
 	// find [[directive]] instructions and act accordingly
 	for i, n := range s.Content.Nodes {
@@ -308,7 +308,7 @@ func parseTop(ds *docState) {
 	ds.push(nil, ds.flags)
 	nn := parseSubtree(ds)
 	ds.pop()
-	ds.appendNodes(compactNodes(nn)...)
+	ds.appendNodes(parser.CompactNodes(nn)...)
 }
 
 // parseSubtree parses children of root recursively.
@@ -392,8 +392,8 @@ func metaTable(ds *docState) {
 			ds.clab.ID = s
 		case "author", "authors":
 			ds.clab.Authors = s
-		case "badge", "badge id":
-			ds.clab.BadgeID = s
+		case "badge path":
+			ds.clab.BadgePath = s
 		case "summary":
 			ds.clab.Summary = stringifyNode(tr.FirstChild.NextSibling, true, true)
 		case "category", "categories":
@@ -478,6 +478,9 @@ func header(ds *docState) types.Node {
 		return nil
 	}
 	n := types.NewHeaderNode(headerLevel[ds.cur.DataAtom], nodes...)
+	if n.Empty() {
+		return nil
+	}
 	switch strings.ToLower(stringifyNode(ds.cur, true, false)) {
 	case headerLearn, headerCover:
 		n.MutateType(types.NodeHeaderCheck)
@@ -492,8 +495,8 @@ func header(ds *docState) types.Node {
 func infobox(ds *docState) types.Node {
 	ds.push(nil, ds.flags|fSkipCode|fSkipInfobox|fSkipSurvey)
 	nn := parseSubtree(ds)
-	nn = blockNodes(nn)
-	nn = compactNodes(nn)
+	nn = parser.BlockNodes(nn)
+	nn = parser.CompactNodes(nn)
 	ds.pop()
 	if len(nn) == 0 {
 		return nil
@@ -529,12 +532,9 @@ func tableRow(ds *docState) []*types.GridCell {
 		}
 		ds.push(td, ds.flags|fSkipBlock)
 		nn := parseSubtree(ds)
-		nn = blockNodes(nn)
-		nn = compactNodes(nn)
+		nn = parser.BlockNodes(nn)
+		nn = parser.CompactNodes(nn)
 		ds.pop()
-		if len(nn) == 0 {
-			continue
-		}
 		cs, err := strconv.Atoi(nodeAttr(td, "colspan"))
 		if err != nil {
 			cs = 1
@@ -622,7 +622,8 @@ func code(ds *docState, term bool) types.Node {
 	} else if ds.cur.Parent.FirstChild == ds.cur && ds.cur.Parent.DataAtom != atom.Span {
 		v = "\n" + v
 	}
-	n := types.NewCodeNode(v, term)
+	var lang string
+	n := types.NewCodeNode(v, term, lang)
 	n.MutateBlock(td)
 	return n
 }
@@ -642,7 +643,7 @@ func list(ds *docState) types.Node {
 		}
 		ds.push(hn, ds.flags)
 		nn := parseSubtree(ds)
-		nn = compactNodes(nn)
+		nn = parser.CompactNodes(nn)
 		ds.pop()
 		if len(nn) > 0 {
 			list.NewItem(nn...)
@@ -668,11 +669,15 @@ func list(ds *docState) types.Node {
 // or an IframeNode if the alt property contains a URL other than youtube.
 func image(ds *docState) types.Node {
 	alt := nodeAttr(ds.cur, "alt")
+	// Consecutive newlines aren't supported in markdown images, and
+	// author-added double quotes in attributes break html syntax
+	alt = strings.Replace(alt, "\n", " ", -1)
+	alt = html.EscapeString(alt)
 	errorAlt := ""
 	if strings.Contains(alt, "youtube.com/watch") {
 		return youtube(ds)
 	} else if strings.Contains(alt, "https://") {
-		u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+		u, err := url.Parse(alt)
 		if err != nil {
 			return nil
 		}
@@ -686,10 +691,9 @@ func image(ds *docState) types.Node {
 		}
 		if ok {
 			return iframe(ds)
-		} else {
-			errorAlt = "The domain of the requested iframe (" + u.Hostname() + ") has not been whitelisted."
-			fmt.Fprint(os.Stderr, errorAlt+"\n")
 		}
+		errorAlt = "The domain of the requested iframe (" + u.Hostname() + ") has not been whitelisted."
+		fmt.Fprint(os.Stderr, errorAlt+"\n")
 	}
 	s := nodeAttr(ds.cur, "src")
 	if s == "" {
@@ -701,9 +705,10 @@ func image(ds *docState) types.Node {
 	if errorAlt != "" {
 		n.Alt = errorAlt
 	} else {
-		n.Alt = nodeAttr(ds.cur, "alt")
+		n.Alt = alt
 	}
-	n.Title = nodeAttr(ds.cur, "title")
+	// Author-added double quotes in attributes break html syntax
+	n.Title = html.EscapeString(nodeAttr(ds.cur, "title"))
 	return n
 }
 
@@ -833,9 +838,12 @@ func text(ds *docState) types.Node {
 
 	v := stringifyNode(ds.cur, false, true)
 	n := types.NewTextNode(v)
-	n.Bold = bold
-	n.Italic = italic
-	n.Code = code
+	// Only apply styling if the node contains non-whitespace.
+	if len(strings.TrimSpace(v)) > 0 {
+		n.Bold = bold
+		n.Italic = italic
+		n.Code = code
+	}
 	n.MutateBlock(findBlockParent(ds.cur))
 	return n
 }

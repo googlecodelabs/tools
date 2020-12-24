@@ -241,11 +241,13 @@ func (gn *GridNode) Empty() bool {
 // Provide a positive start to make this a numbered list.
 // NodeItemsCheck and NodeItemsFAQ are always unnumbered.
 func NewItemsListNode(typ string, start int) *ItemsListNode {
-	return &ItemsListNode{
+	iln := ItemsListNode{
 		node:     node{typ: NodeItemsList},
 		ListType: typ,
 		Start:    start,
 	}
+	iln.MutateBlock(true)
+	return &iln
 }
 
 // ItemsListNode containts sets of ListNode.
@@ -298,11 +300,12 @@ func (tn *TextNode) Empty() bool {
 
 // NewCodeNode creates a new Node of type NodeCode.
 // Use term argument to specify a terminal output.
-func NewCodeNode(v string, term bool) *CodeNode {
+func NewCodeNode(v string, term bool, lang string) *CodeNode {
 	return &CodeNode{
 		node:  node{typ: NodeCode},
 		Value: v,
 		Term:  term,
+		Lang: lang,
 	}
 }
 
@@ -535,6 +538,8 @@ var IframeWhitelist = []string{
 	"repl.it",
 	"codepen.io",
 	"glitch.com",
+	"carto.com",
+	"github.com",
 }
 
 // NewIframeNode creates a new embedded iframe.

@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/cmd"
+	"github.com/googlecodelabs/tools/claat/parser"
 
 	// allow parsers to register themselves
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
@@ -45,6 +46,7 @@ var (
 	expenv       = flag.String("e", "web", "codelab environment")
 	extra        = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
 	globalGA     = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
+	mdParser     = flag.String("md_parser", "blackfriday", "Markdown parser to use. Accepted values: \"blackfriday\", \"goldmark\"")
 	output       = flag.String("o", ".", "output directory or '-' for stdout")
 	passMetadata = flag.String("pass_metadata", "", "Metadata fields to pass through to the output. Comma-delimited list of field names.")
 	prefix       = flag.String("prefix", "https://storage.googleapis.com", "URL prefix for html format")
@@ -72,6 +74,16 @@ func main() {
 
 	pm := parsePassMetadata(*passMetadata)
 
+	var mdp parser.MarkdownParser
+	switch *mdParser {
+	case "blackfriday":
+		mdp = parser.Blackfriday
+	case "goldmark":
+		mdp = parser.Goldmark
+	default:
+		log.Fatalf("Unrecognized md_parser value %q", *mdParser)
+	}
+
 	exitCode := 0
 	switch os.Args[1] {
 	case "export":
@@ -80,6 +92,7 @@ func main() {
 			Expenv:       *expenv,
 			ExtraVars:    extraVars,
 			GlobalGA:     *globalGA,
+			MDParser:     mdp,
 			Output:       *output,
 			PassMetadata: pm,
 			Prefix:       *prefix,
@@ -93,6 +106,7 @@ func main() {
 			AuthToken:    *authToken,
 			ExtraVars:    extraVars,
 			GlobalGA:     *globalGA,
+			MDParser:     mdp,
 			PassMetadata: pm,
 			Prefix:       *prefix,
 		})

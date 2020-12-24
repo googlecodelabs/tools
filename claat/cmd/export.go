@@ -16,7 +16,9 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -25,6 +27,7 @@ import (
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/fetch"
+	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/render"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
@@ -40,6 +43,8 @@ type CmdExportOptions struct {
 	ExtraVars map[string]string
 	// GlobalGA is the global Google Analytics account to use.
 	GlobalGA string
+	// MDParser is the underlying Markdown parser to use.
+	MDParser parser.MarkdownParser
 	// Output is the output directory, or "-" for stdout.
 	Output string
 	// PassMetadata are the extra metadata fields to pass along.
@@ -96,7 +101,7 @@ func CmdExport(opts CmdExportOptions) int {
 //
 // An alternate http.RoundTripper may be specified if desired. Leave null for default.
 func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*types.Meta, error) {
-	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, rt)
+	f, err := fetch.NewFetcher(opts.AuthToken, opts.PassMetadata, rt, opts.MDParser)
 	if err != nil {
 		return nil, err
 	}
@@ -130,6 +135,53 @@ func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*ty
 	return meta, writeCodelab(dir, clab.Codelab, opts.ExtraVars, ctx)
 }
 
+func ExportCodelabMemory(src io.ReadCloser, w io.Writer, opts CmdExportOptions) (*types.Meta, error) {
+	m := fetch.NewMemoryFetcher(opts.PassMetadata, opts.MDParser)
+	clab, err := m.SlurpCodelab(src)
+	if err != nil {
+		return nil, err
+	}
+
+	// codelab export context
+	lastmod := types.ContextTime(clab.Mod)
+	meta := &clab.Meta
+	ctx := &types.Context{
+		Env:     opts.Expenv,
+		Format:  opts.Tmplout,
+		Prefix:  opts.Prefix,
+		MainGA:  opts.GlobalGA,
+		Updated: &lastmod,
+	}
+
+	return meta, writeCodelabWriter(w, clab.Codelab, opts.ExtraVars, ctx)
+}
+
+func writeCodelabWriter(w io.Writer, clab *types.Codelab, extraVars map[string]string, ctx *types.Context) error {
+	// main content file(s)
+	data := &struct {
+		render.Context
+		Current *types.Step
+		StepNum int
+		Prev    bool
+		Next    bool
+	}{Context: render.Context{
+		Env:      ctx.Env,
+		Prefix:   ctx.Prefix,
+		Format:   ctx.Format,
+		GlobalGA: ctx.MainGA,
+		Updated:  time.Time(*ctx.Updated).Format(time.RFC3339),
+		Meta:     &clab.Meta,
+		Steps:    clab.Steps,
+		Extra:    extraVars,
+	}}
+
+	if ctx.Format == "offline" {
+		return errors.New("exporting codelab offline is not supported for In-Memory Export")
+	}
+
+	return render.Execute(w, ctx.Format, data)
+}
+
 // writeCodelab stores codelab main content in ctx.Format and its metadata
 // in JSON format on disk.
 // extraVars is extra variables to pass into the template context.
@@ -158,6 +210,7 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 	}{Context: render.Context{
 		Env:      ctx.Env,
 		Prefix:   ctx.Prefix,
+		Format:   ctx.Format,
 		GlobalGA: ctx.MainGA,
 		Updated:  time.Time(*ctx.Updated).Format(time.RFC3339),
 		Meta:     &clab.Meta,

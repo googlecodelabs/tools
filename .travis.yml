@@ -4,8 +4,7 @@ git:
   depth: 3
 language: go
 go:
-- 1.9.x  # need for App Engine
-- 1.11.x # latest release because "master" is dev version
+- 1.11.x  # need for App Engine
 env:
 - BAZEL=0.18.1
 before_install:
@@ -15,7 +14,7 @@ before_install:
   ./install.sh --user
   rm -f install.sh
 install:
-- go get github.com/golang/lint/golint
+- go get golang.org/x/lint/golint
 # Install protobuf dependencies
 - go get -u github.com/golang/protobuf/protoc-gen-go
 - curl -OL https://github.com/google/protobuf/releases/download/v3.7.1/protoc-3.7.1-linux-x86_64.zip
@@ -39,7 +38,7 @@ deploy:
   on:
     repo: googlecodelabs/tools
     tags: true
-    go: 1.10.x # match the above; latest release
+    go: 1.11.x # match the above; latest release
   skip_cleanup: true
   file:
   - claat/bin/claat-darwin-amd64

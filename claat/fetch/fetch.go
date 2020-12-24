@@ -68,19 +68,56 @@ type codelab struct {
 	Mod time.Time // last modified timestamp
 }
 
+type MemoryFetcher struct {
+	passMetadata map[string]bool
+	mdParser     parser.MarkdownParser
+}
+
+func NewMemoryFetcher(pm map[string]bool, mdp parser.MarkdownParser) *MemoryFetcher {
+	return &MemoryFetcher{
+		passMetadata: pm,
+		mdParser:     mdp,
+	}
+}
+
+func (m *MemoryFetcher) SlurpCodelab(rc io.ReadCloser) (*codelab, error) {
+	r := &resource{
+		body: rc,
+		typ:  SrcMarkdown,
+		mod:  time.Now(),
+	}
+	defer r.body.Close()
+
+	opts := *parser.NewOptions(m.mdParser)
+	opts.PassMetadata = m.passMetadata
+
+	clab, err := parser.Parse(string(r.typ), r.body, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &codelab{
+		Codelab: clab,
+		Typ:     r.typ,
+		Mod:     r.mod,
+	}, nil
+}
+
 type Fetcher struct {
 	authHelper   *auth.Helper
 	authToken    string
 	crcTable     *crc64.Table
+	mdParser     parser.MarkdownParser
 	passMetadata map[string]bool
 	roundTripper http.RoundTripper
 }
 
-func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper) (*Fetcher, error) {
+func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper, mdp parser.MarkdownParser) (*Fetcher, error) {
 	return &Fetcher{
 		authHelper:   nil,
 		authToken:    at,
 		crcTable:     crc64.MakeTable(crc64.ECMA),
+		mdParser:     mdp,
 		passMetadata: pm,
 		roundTripper: rt,
 	}, nil
@@ -109,7 +146,7 @@ func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
 	}
 	defer res.body.Close()
 
-	opts := *parser.NewOptions()
+	opts := *parser.NewOptions(f.mdParser)
 	opts.PassMetadata = f.passMetadata
 
 	clab, err := parser.Parse(string(res.typ), res.body, opts)
@@ -238,12 +275,16 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 }
 
 func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
-	res, err := f.fetchRemote(url, true)
+	res, err := f.fetch(url)
 	if err != nil {
 		return nil, err
 	}
 	defer res.body.Close()
-	return parser.ParseFragment(string(res.typ), res.body)
+
+	opts := *parser.NewOptions(f.mdParser)
+	opts.PassMetadata = f.passMetadata
+
+	return parser.ParseFragment(string(res.typ), res.body, opts)
 }
 
 // fetch retrieves codelab doc either from local disk

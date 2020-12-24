@@ -36,13 +36,16 @@ import (
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	gmhtml "github.com/yuin/goldmark/renderer/html"
 	"gopkg.in/russross/blackfriday.v2"
 )
 
 // Metadata constants for the YAML header
 const (
 	MetaAuthors          = "authors"
-	MetaBadgeID          = "badge id"
+	MetaBadgePath        = "badge path"
 	MetaSummary          = "summary"
 	MetaID               = "id"
 	MetaCategories       = "categories"
@@ -51,6 +54,8 @@ const (
 	MetaFeedbackLink     = "feedback link"
 	MetaAnalyticsAccount = "analytics account"
 	MetaTags             = "tags"
+	MetaSource           = "source"
+	MetaDuration         = "duration"
 )
 
 const (
@@ -63,6 +68,13 @@ const (
 	headerLearn = "what you'll learn"
 	headerCover = "what we've covered"
 	headerFAQ   = "frequently asked questions"
+)
+
+var (
+	importsTagRegexp           = regexp.MustCompile("^<<([^<>()]+.md)>>\\s*$")
+	convertedImportsDataPrefix = "__unsupported_import_zmcgv2epyv="
+	convertedImportsPrefix     = []byte("<!--" + convertedImportsDataPrefix)
+	convertedImportsSuffix     = []byte("-->")
 )
 
 var metadataRegexp = regexp.MustCompile(`(.+?):(.+)`)
@@ -81,6 +93,13 @@ var (
 	)
 )
 
+var (
+	// ErrForbiddenFragmentImports means importing another markdown file in a markdown fragment is forbidden.
+	ErrForbiddenFragmentImports = errors.New("importing content in a fragment is forbidden")
+	// ErrForbiddenFragmentSteps means declaring extra codelabs step in a markdown fragment is forbidden.
+	ErrForbiddenFragmentSteps = errors.New("defining steps in a fragment is forbidden")
+)
+
 // init registers this parser so it is available to CLaaT.
 func init() {
 	parser.Register("md", &Parser{})
@@ -97,7 +116,10 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	if err != nil {
 		return nil, err
 	}
-	b = claatMarkdown(b)
+	b, err = renderToHTML(b, opts.MDParser)
+	if err != nil {
+		return nil, err
+	}
 	h := bytes.NewBuffer(b)
 	doc, err := html.Parse(h)
 	if err != nil {
@@ -107,9 +129,50 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	return parseMarkup(doc, opts)
 }
 
-// ParseFragment parses a codelab fragment writtet in Markdown.
-func (p *Parser) ParseFragment(r io.Reader) ([]types.Node, error) {
-	return nil, errors.New("fragment parser not implemented")
+// ParseFragment parses a codelab fragment written in Markdown.
+func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, error) {
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+	b, err = renderToHTML(b, opts.MDParser)
+	if err != nil {
+		return nil, err
+	}
+	h := bytes.NewBuffer(b)
+	doc, err := html.Parse(h)
+	if err != nil {
+		return nil, err
+	}
+
+	return parsePartialMarkup(doc)
+}
+
+func parsePartialMarkup(root *html.Node) ([]types.Node, error) {
+	body := findAtom(root, atom.Body)
+	if body == nil {
+		return nil, fmt.Errorf("document without a body")
+	}
+
+	ds := newDocState()
+	ds.step = ds.clab.NewStep("fragment")
+	for ds.cur = body.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
+		switch {
+		case ds.cur.DataAtom == atom.H1:
+			return nil, ErrForbiddenFragmentSteps
+		case ds.cur.DataAtom == atom.H2:
+			return nil, ErrForbiddenFragmentSteps
+		}
+
+		parseTop(ds)
+	}
+
+	finalizeStep(ds.step)
+	if hasImport(ds) {
+		return nil, ErrForbiddenFragmentImports
+	}
+
+	return ds.step.Content.Nodes, nil
 }
 
 type docState struct {
@@ -164,25 +227,40 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 	ds.lastNode = nn[len(nn)-1]
 }
 
-// claatMarkdown calls the Blackfriday Markdown parser with some special addons selected. It takes a byte slice as a parameter,
-// and returns its result as a byte slice.
-func claatMarkdown(b []byte) []byte {
-	htmlFlags := blackfriday.UseXHTML |
-		blackfriday.Smartypants |
-		blackfriday.SmartypantsFractions |
-		blackfriday.SmartypantsDashes |
-		blackfriday.SmartypantsLatexDashes
+// renderToHTML preprocesses Markdown bytes and then calls a Markdown parser on the Markdown.
+// It takes a raw markdown bytes and output parsed xhtml in bytes.
+func renderToHTML(b []byte, mdp parser.MarkdownParser) ([]byte, error) {
+	b = convertImports(b)
 
-	params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
-	r := blackfriday.NewHTMLRenderer(params)
+	switch mdp {
+	case parser.Blackfriday:
+		htmlFlags := blackfriday.UseXHTML |
+			blackfriday.Smartypants |
+			blackfriday.SmartypantsFractions |
+			blackfriday.SmartypantsDashes |
+			blackfriday.SmartypantsLatexDashes
 
-	extns := blackfriday.FencedCode |
-		blackfriday.NoEmptyLineBeforeBlock |
-		blackfriday.NoIntraEmphasis |
-		blackfriday.DefinitionLists |
-		blackfriday.Tables
+		params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
+		r := blackfriday.NewHTMLRenderer(params)
 
-	return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r))
+		extns := blackfriday.FencedCode |
+			blackfriday.NoEmptyLineBeforeBlock |
+			blackfriday.NoIntraEmphasis |
+			blackfriday.DefinitionLists |
+			blackfriday.Tables
+
+		return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r)), nil
+	case parser.Goldmark:
+		gmParser := goldmark.New(goldmark.WithRendererOptions(gmhtml.WithUnsafe()), goldmark.WithExtensions(extension.Typographer, extension.Table))
+		var out bytes.Buffer
+		if err := gmParser.Convert(b, &out); err != nil {
+			panic(err)
+		}
+		return out.Bytes(), nil
+	default:
+		return nil, fmt.Errorf("unrecognized Markdown parser %d", mdp)
+	}
+
 }
 
 // parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
@@ -230,8 +308,8 @@ func finalizeStep(s *types.Step) {
 	}
 	s.Tags = util.Unique(s.Tags)
 	sort.Strings(s.Tags)
-	s.Content.Nodes = blockNodes(s.Content.Nodes)
-	s.Content.Nodes = compactNodes(s.Content.Nodes)
+	s.Content.Nodes = parser.BlockNodes(s.Content.Nodes)
+	s.Content.Nodes = parser.CompactNodes(s.Content.Nodes)
 }
 
 // parseTop parses nodes tree starting at, and including, ds.cur.
@@ -246,7 +324,7 @@ func parseTop(ds *docState) {
 	ds.push(nil)
 	nn := parseSubtree(ds)
 	ds.pop()
-	ds.appendNodes(compactNodes(nn)...)
+	ds.appendNodes(parser.CompactNodes(nn)...)
 }
 
 // parseSubtree parses children of root recursively.
@@ -277,7 +355,7 @@ func parseSubtree(ds *docState) []types.Node {
 func parseNode(ds *docState) (types.Node, bool) {
 	// we have \n end of line nodes after each tag from the blackfriday parser.
 	// We just want to ignore them as it makes previous node detection fuzzy.
-	if ds.cur.Type == html.TextNode && strings.TrimSpace(ds.cur.Data) == "" {
+	if ds.cur.Type == html.TextNode && ds.cur.Data == "\n" {
 		return nil, true
 	}
 	switch {
@@ -300,12 +378,20 @@ func parseNode(ds *docState) (types.Node, bool) {
 		return code(ds, true), true
 	case isCode(ds.cur):
 		return code(ds, false), true
+	case isAside(ds.cur):
+		return aside(ds), true
+	case isNewAside(ds.cur):
+		return newAside(ds), true
 	case isInfobox(ds.cur):
 		return infobox(ds), true
 	case isSurvey(ds.cur):
 		return survey(ds), true
 	case isTable(ds.cur):
 		return table(ds), true
+	case isYoutube(ds.cur):
+		return youtube(ds), true
+	case isFragmentImport(ds.cur):
+		return fragmentImport(ds), true
 	}
 	return nil, false
 }
@@ -363,49 +449,49 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 		case MetaAuthors:
 			// Directly assign the summary to the codelab field.
 			c.Authors = v
-		case MetaBadgeID:
-			// Directly assign the codelab ID to the codelab field.
-			c.BadgeID = v
+		case MetaBadgePath:
+			// Directly assign the badge Path to the codelab field.
+			c.BadgePath = v
 		case MetaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v
-			break
 		case MetaID:
 			// Directly assign the ID to the codelab field.
 			c.ID = v
-			break
 		case MetaCategories:
 			// Standardize the categories and append to codelab field.
 			c.Categories = append(c.Categories, standardSplit(v)...)
-			break
 		case MetaEnvironments:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
-			break
 		case MetaStatus:
 			// Standardize the statuses and append to the codelab field.
 			statuses := standardSplit(v)
 			statusesAsLegacy := types.LegacyStatus(statuses)
 			c.Status = &statusesAsLegacy
-			break
 		case MetaFeedbackLink:
 			// Directly assign the feedback link to the codelab field.
 			c.Feedback = v
-			break
 		case MetaAnalyticsAccount:
 			// Directly assign the GA id to the codelab field.
 			c.GA = v
-			break
 		case MetaTags:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
-			break
+		case MetaSource:
+			// Directly assign the source doc ID to the source field.
+			c.Source = v
+		case MetaDuration:
+			// Convert the duration to an integer and assign to the duration field.
+			duration, err := strconv.Atoi(v)
+			if err == nil {
+				c.Duration = duration
+			}
 		default:
 			// If not explicitly parsed, it might be a pass_metadata value.
 			if _, ok := opts.PassMetadata[k]; ok {
 				c.Extra[k] = v
 			}
-			break
 		}
 	}
 	return nil
@@ -477,6 +563,49 @@ func header(ds *docState) types.Node {
 	return n
 }
 
+// aside produces an infobox.
+func aside(ds *docState) types.Node {
+	kind := types.InfoboxPositive
+	for _, v := range ds.cur.Attr {
+		// If class "negative" is given, set the infobox type.
+		if v.Key == "class" && v.Val == "negative" {
+			kind = types.InfoboxNegative
+		}
+	}
+
+	ds.push(nil)
+	nn := parseSubtree(ds)
+	nn = parser.BlockNodes(nn)
+	nn = parser.CompactNodes(nn)
+	ds.pop()
+	if len(nn) == 0 {
+		return nil
+	}
+	return types.NewInfoboxNode(kind, nn...)
+}
+
+// new style aside, to produce an infobox
+func newAside(ds *docState) types.Node {
+	kind := types.InfoboxPositive
+	s := ds.cur.FirstChild.NextSibling.FirstChild.Data
+	if strings.HasPrefix(s, "aside negative") {
+		ds.cur.FirstChild.NextSibling.FirstChild.Data = strings.TrimPrefix(s, "aside negative")
+		kind = types.InfoboxNegative
+	} else {
+		ds.cur.FirstChild.NextSibling.FirstChild.Data = strings.TrimPrefix(s, "aside positive")
+	}
+
+	ds.push(nil)
+	nn := parseSubtree(ds)
+	nn = parser.BlockNodes(nn)
+	nn = parser.CompactNodes(nn)
+	ds.pop()
+	if len(nn) == 0 {
+		return nil
+	}
+	return types.NewInfoboxNode(kind, nn...)
+}
+
 // infobox doesn't have a block parent.
 func infobox(ds *docState) types.Node {
 	negativeInfoBox := isInfoboxNegative(ds.cur)
@@ -484,8 +613,8 @@ func infobox(ds *docState) types.Node {
 	ds.cur = ds.cur.NextSibling.NextSibling
 	ds.push(nil)
 	nn := parseSubtree(ds)
-	nn = blockNodes(nn)
-	nn = compactNodes(nn)
+	nn = parser.BlockNodes(nn)
+	nn = parser.CompactNodes(nn)
 	ds.pop()
 	if len(nn) == 0 {
 		return nil
@@ -515,21 +644,33 @@ func table(ds *docState) types.Node {
 
 func tableRow(ds *docState) []*types.GridCell {
 	var row []*types.GridCell
-	for td := findAtom(ds.cur, atom.Td); td != nil; td = td.NextSibling {
-		if td.DataAtom != atom.Td {
+	firstChild := findAtom(ds.cur, atom.Td)
+	// If there is no Td child found, could be table header so look for Th
+	if firstChild == nil {
+		firstChild = findAtom(ds.cur, atom.Th)
+	}
+
+	for td := firstChild; td != nil; td = td.NextSibling {
+		if td.DataAtom != atom.Td && td.DataAtom != atom.Th {
 			continue
 		}
 		ds.push(td)
 		nn := parseSubtree(ds)
-		nn = blockNodes(nn)
-		nn = compactNodes(nn)
+		nn = parser.BlockNodes(nn)
+		nn = parser.CompactNodes(nn)
 		ds.pop()
-		if len(nn) == 0 {
-			continue
-		}
 		cs, err := strconv.Atoi(nodeAttr(td, "colspan"))
 		if err != nil {
 			cs = 1
+			for ns := td.NextSibling; ns != nil; ns = ns.NextSibling {
+				if ns.DataAtom != atom.Td && ns.DataAtom != atom.Th {
+					continue
+				}
+				if ns.FirstChild != nil {
+					break
+				}
+				cs++
+			}
 		}
 		rs, err := strconv.Atoi(nodeAttr(td, "rowspan"))
 		if err != nil {
@@ -545,24 +686,24 @@ func tableRow(ds *docState) []*types.GridCell {
 	return row
 }
 
-// survey expects a title followed by 1 or more lists. They all are in the same dd element.
+// survey expects 1 or more name Nodes followed by 1 or more input Nodes.
+// Each input node is expected to have a value attribute.
 func survey(ds *docState) types.Node {
 	var gg []*types.SurveyGroup
-	hn := ds.cur
-	for hn = hn.NextSibling; hn != nil; hn = hn.NextSibling {
-		ds.cur = ds.cur.NextSibling
-		if hn.DataAtom != atom.Dd {
-			continue
+	ns := findChildAtoms(ds.cur, atom.Name)
+	for _, n := range ns {
+		var inputs []*html.Node
+		for hn := n.NextSibling; hn != nil; hn = hn.NextSibling {
+			if hn.DataAtom == atom.Input {
+				inputs = append(inputs, hn)
+			} else if hn.DataAtom == atom.Name {
+				break
+			}
 		}
-		optionsNode := findAtom(hn, atom.Li)
-		if optionsNode == nil {
-			fmt.Println("No survey results list")
-			continue
-		}
-		opt := surveyOpt(optionsNode)
+		opt := surveyOpt(inputs)
 		if len(opt) > 0 {
 			gg = append(gg, &types.SurveyGroup{
-				Name:    strings.TrimSpace(hn.FirstChild.Data),
+				Name:    strings.TrimSpace(n.FirstChild.Data),
 				Options: opt,
 			})
 		}
@@ -575,13 +716,14 @@ func survey(ds *docState) types.Node {
 	return types.NewSurveyNode(id, gg...)
 }
 
-func surveyOpt(hn *html.Node) []string {
+func surveyOpt(inputs []*html.Node) []string {
 	var opt []string
-	for ; hn != nil; hn = hn.NextSibling {
-		if hn.DataAtom != atom.Li {
-			continue
+	for _, input := range inputs {
+		for _, attr := range input.Attr {
+			if attr.Key == "value" {
+				opt = append(opt, attr.Val)
+			}
 		}
-		opt = append(opt, stringifyNode(hn, true))
 	}
 	return opt
 }
@@ -604,7 +746,16 @@ func code(ds *docState, term bool) types.Node {
 	} else if ds.cur.Parent.FirstChild == ds.cur && ds.cur.Parent.DataAtom != atom.Span {
 		v = "\n" + v
 	}
-	n := types.NewCodeNode(v, term)
+	// get the language hint
+	var lan string
+	if !term {
+		for _, a := range ds.cur.Attr {
+			if a.Key == "class" && strings.HasPrefix(a.Val, "language-") {
+				lan = strings.Replace(a.Val, "language-", "", 0)
+			}
+		}
+	}
+	n := types.NewCodeNode(v, term, lan)
 	n.MutateBlock(elem)
 	return n
 }
@@ -624,7 +775,7 @@ func list(ds *docState) types.Node {
 		}
 		ds.push(hn)
 		nn := parseSubtree(ds)
-		nn = compactNodes(nn)
+		nn = parser.CompactNodes(nn)
 		ds.pop()
 		if len(nn) > 0 {
 			list.NewItem(nn...)
@@ -649,10 +800,12 @@ func list(ds *docState) types.Node {
 // It may also return a YouTubeNode if alt property contains specific substring.
 func image(ds *docState) types.Node {
 	alt := nodeAttr(ds.cur, "alt")
+	// Author-added double quotes in attributes break html syntax
+	alt = html.EscapeString(alt)
 	if strings.Contains(alt, "youtube.com/watch") {
 		return youtube(ds)
 	} else if strings.Contains(alt, "https://") {
-		u, err := url.Parse(nodeAttr(ds.cur, "alt"))
+		u, err := url.Parse(alt)
 		if err != nil {
 			return nil
 		}
@@ -675,12 +828,13 @@ func image(ds *docState) types.Node {
 
 	n := types.NewImageNode(s)
 
-	if alt := nodeAttr(ds.cur, "alt"); alt != "" {
+	if alt != "" {
 		n.Alt = alt
 	}
 
 	if title := nodeAttr(ds.cur, "title"); title != "" {
-		n.Title = title
+		// Author-added double quotes in attributes break html syntax
+		n.Title = html.EscapeString(title)
 	}
 
 	if ws := nodeAttr(ds.cur, "width"); ws != "" {
@@ -696,17 +850,22 @@ func image(ds *docState) types.Node {
 }
 
 func youtube(ds *docState) types.Node {
-	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
-	if err != nil {
-		return nil
+	for _, attr := range ds.cur.Attr {
+		if attr.Key == "id" {
+			n := types.NewYouTubeNode(attr.Val)
+			n.MutateBlock(true)
+			return n
+		}
 	}
-	v := u.Query().Get("v")
-	if v == "" {
-		return nil
+	return nil
+}
+
+func fragmentImport(ds *docState) types.Node {
+	if url := strings.TrimPrefix(ds.cur.Data, convertedImportsDataPrefix); url != "" {
+		return types.NewImportNode(url)
 	}
-	n := types.NewYouTubeNode(v)
-	n.MutateBlock(true)
-	return n
+
+	return nil
 }
 
 func iframe(ds *docState) types.Node {
@@ -758,27 +917,26 @@ func button(ds *docState) types.Node {
 func link(ds *docState) types.Node {
 	href := nodeAttr(ds.cur, "href")
 
-	text := stringifyNode(ds.cur, false)
-	if strings.TrimSpace(text) == "" {
-		return nil
+	ds.push(nil)
+	parsedChildNodes := parseSubtree(ds)
+	ds.pop()
+
+	// Check outside styles
+	outsideBold := isBold(ds.cur.Parent)
+	outsideItalic := isItalic(ds.cur.Parent)
+	if isBoldAndItalic(ds.cur.Parent) {
+		outsideBold = true
+		outsideItalic = true
+	}
+	// Apply outside styles to inside parsed (text) nodes
+	for _, node := range parsedChildNodes {
+		if textNode, ok := node.(*types.TextNode); ok {
+			textNode.Bold = textNode.Bold || outsideBold
+			textNode.Italic = textNode.Italic || outsideItalic
+		}
 	}
 
-	t := types.NewTextNode(text)
-	if isBold(ds.cur.Parent) {
-		t.Bold = true
-	}
-	if isItalic(ds.cur.Parent) {
-		t.Italic = true
-	}
-	if isCode(ds.cur.Parent) {
-		t.Code = true
-	}
-	if href == "" || href[0] == '#' {
-		t.MutateBlock(findBlockParent(ds.cur))
-		return t
-	}
-
-	n := types.NewURLNode(href, t)
+	n := types.NewURLNode(href, parsedChildNodes...)
 	n.Name = nodeAttr(ds.cur, "name")
 	if v := nodeAttr(ds.cur, "target"); v != "" {
 		n.Target = v
@@ -792,6 +950,11 @@ func link(ds *docState) types.Node {
 func text(ds *docState) types.Node {
 	bold := isBold(ds.cur)
 	italic := isItalic(ds.cur)
+	// We must call this to look up an extra level in the node tree to obtain both styles
+	if isBoldAndItalic(ds.cur) {
+		bold = true
+		italic = true
+	}
 	code := isCode(ds.cur) || isConsole(ds.cur)
 
 	// TODO: verify whether this actually does anything
@@ -864,4 +1027,35 @@ func roundDuration(d time.Duration) time.Duration {
 		rd += time.Minute
 	}
 	return rd
+}
+
+func convertImports(content []byte) []byte {
+	slices := bytes.Split(content, []byte("\n"))
+	escaped := [][]byte{}
+	for _, slice := range slices {
+		if matches := importsTagRegexp.FindSubmatch(slice); len(matches) > 0 {
+			if len(matches) > 1 {
+				url := string(matches[1])
+				slice = bytes.Join([][]byte{
+					convertedImportsPrefix,
+					[]byte(html.EscapeString(url)),
+					convertedImportsSuffix,
+				}, []byte(""))
+			}
+		}
+
+		escaped = append(escaped, slice)
+	}
+
+	return bytes.Join(escaped, []byte("\n"))
+}
+
+func hasImport(ds *docState) bool {
+	for _, step := range ds.clab.Steps {
+		if len(types.ImportNodes(step.Content.Nodes)) > 0 {
+			return true
+		}
+	}
+
+	return false
 }

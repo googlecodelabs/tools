@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+licenses(["reciprocal"])
+
+java_import(
+    name = "com_google_javascript_closure_compiler",
+    jars = ["closure-compiler-unshaded-v20180805.jar"],
+    deps = ["@com_google_code_gson", "@com_google_guava", "@com_google_code_findbugs_jsr305", "@com_google_protobuf//:protobuf_java"],
+)
+
+java_binary(
+    name = "main",
+    main_class = "com.google.javascript.jscomp.CommandLineRunner",
+    output_licenses = ["unencumbered"],
+    runtime_deps = [
+        ":com_google_javascript_closure_compiler",
+        "@args4j",
+    ],
+)

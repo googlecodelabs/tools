@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package md
+package parser
 
 import (
 	"strings"
@@ -151,6 +151,7 @@ func concatURL(a, b types.Node) bool {
 		return false
 	}
 	u1.Content.Append(u2.Content.Nodes...)
+	u1.Content.Nodes = CompactNodes(u1.Content.Nodes)
 	return true
 }
 
@@ -160,23 +161,34 @@ func splitSpaceLeft(s string) (v string, sp string) {
 			return s[i:], s[:i]
 		}
 	}
-	return s, ""
+	return "", s
 }
 
 func splitSpaceRight(s string) (v string, sp string) {
 	rs := []rune(s)
 	for i := len(rs) - 1; i >= 0; i-- {
 		if !unicode.IsSpace(rs[i]) {
-			return s[:i+1], s[i+1:]
+			return string(rs[:i+1]), string(rs[i+1:])
 		}
 	}
-	return s, ""
+	return "", string(rs)
+}
+
+func requiresSpacer(a, b types.Node) bool {
+	t1, ok1 := a.(*types.TextNode)
+	t2, ok2 := b.(*types.TextNode)
+
+	if !(ok1 && ok2) {
+		return false
+	}
+
+	return (t1.Bold && t2.Bold) || (t1.Italic && t2.Italic)
 }
 
 // nodeBlocks encapsulates all nodes of the same block into a new ListNode
 // with its B field set to true.
 // Nodes which are not blockSquashable remain as is.
-func blockNodes(nodes []types.Node) []types.Node {
+func BlockNodes(nodes []types.Node) []types.Node {
 	var blocks []types.Node
 	for {
 		if len(nodes) == 0 {
@@ -190,28 +202,33 @@ func blockNodes(nodes []types.Node) []types.Node {
 }
 
 // Although nodes slice is not modified, its elements are.
-func compactNodes(nodes []types.Node) []types.Node {
+func CompactNodes(nodes []types.Node) []types.Node {
 	res := make([]types.Node, 0, len(nodes))
 	var last types.Node
 	for _, n := range nodes {
 		switch {
 		case n.Type() == types.NodeList:
 			l := n.(*types.ListNode)
-			l.Nodes = compactNodes(l.Nodes)
+			l.Nodes = CompactNodes(l.Nodes)
 		case types.IsItemsList(n.Type()):
 			l := n.(*types.ItemsListNode)
 			for _, it := range l.Items {
-				it.Nodes = compactNodes(it.Nodes)
+				it.Nodes = CompactNodes(it.Nodes)
 			}
 		}
 		if last == nil || !concatNodes(last, n) {
-			last = n
+			if requiresSpacer(last, n) {
+				// Append non-breaking zero-width space.
+				res = append(res, types.NewTextNode(string('\uFEFF')))
+			}
 			res = append(res, n)
 
 			if n.Type() == types.NodeCode {
 				c := n.(*types.CodeNode)
 				c.Value = strings.TrimLeft(c.Value, "\n")
 			}
+
+			last = n
 		}
 	}
 	return res

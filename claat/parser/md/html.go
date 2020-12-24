@@ -48,6 +48,15 @@ func isMeta(hn *html.Node) bool {
 func isBold(hn *html.Node) bool {
 	if hn.Type == html.TextNode {
 		hn = hn.Parent
+	} else if hn.DataAtom == atom.Code {
+		// Look up as many as 2 levels, to handle the case of e.g. <bold><em><code>
+		for i:= 0; i < 2; i++ {
+			hn = hn.Parent
+			if hn.DataAtom == atom.Strong || hn.DataAtom == atom.B {
+				return true
+			}
+		}
+		return false
 	}
 	return hn.DataAtom == atom.Strong ||
 		hn.DataAtom == atom.B
@@ -56,28 +65,73 @@ func isBold(hn *html.Node) bool {
 func isItalic(hn *html.Node) bool {
 	if hn.Type == html.TextNode {
 		hn = hn.Parent
+	} else if hn.DataAtom == atom.Code {
+		// Look up as many as 2 levels, to handle the case of e.g. <em><bold><code>
+		for i:= 0; i < 2; i++ {
+			hn = hn.Parent
+			if hn.DataAtom == atom.Em || hn.DataAtom == atom.I {
+				return true
+			}
+		}
+		return false
 	}
 	return hn.DataAtom == atom.Em ||
 		hn.DataAtom == atom.I
 }
 
-func isConsole(hn *html.Node) bool {
+// This is different to calling isBold and isItalic seperately as we must look
+// up an extra level in the tree
+func isBoldAndItalic(hn *html.Node) bool {
+	if hn.Parent == nil || hn.Parent.Parent == nil {
+		return false
+	}
 	if hn.Type == html.TextNode {
 		hn = hn.Parent
 	}
-	return hn.DataAtom == atom.Code && hn.Parent.DataAtom != atom.Pre
+	return (isItalic(hn) && isBold(hn.Parent)) || (isItalic(hn.Parent) && isBold(hn))
+
+}
+
+func isConsole(hn *html.Node) bool {
+    if hn.Type == html.TextNode {
+        hn = hn.Parent
+    }
+    if (hn.DataAtom == atom.Code) {
+        for _, a := range hn.Attr {
+            if (a.Key == "class" && a.Val == "language-console") {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 func isCode(hn *html.Node) bool {
 	if hn.Type == html.TextNode {
 		hn = hn.Parent
 	}
-	return hn.DataAtom == atom.Code && hn.Parent.DataAtom == atom.Pre
+	return hn.DataAtom == atom.Code && !isConsole(hn)
 }
 
 func isButton(hn *html.Node) bool {
-	// TODO: implements
-	return false
+	return hn.DataAtom == atom.Button
+}
+
+func isAside(hn *html.Node) bool {
+	return hn.DataAtom == atom.Aside
+}
+
+func isNewAside(hn *html.Node) bool {
+	if hn.FirstChild == nil ||
+	   hn.FirstChild.NextSibling == nil ||
+	   hn.FirstChild.NextSibling.FirstChild == nil {
+		return false
+	}
+
+	bq := hn.DataAtom == atom.Blockquote
+	apn := strings.HasPrefix(strings.ToLower(hn.FirstChild.NextSibling.FirstChild.Data), "aside positive") ||
+	       strings.HasPrefix(strings.ToLower(hn.FirstChild.NextSibling.FirstChild.Data), "aside negative")
+	return bq && apn
 }
 
 func isInfobox(hn *html.Node) bool {
@@ -95,21 +149,35 @@ func isInfoboxNegative(hn *html.Node) bool {
 }
 
 func isSurvey(hn *html.Node) bool {
-	if hn.DataAtom != atom.Dt {
+	if hn.DataAtom != atom.Form {
 		return false
 	}
-	return strings.ToLower(hn.FirstChild.Data) == "survey"
+	if findAtom(hn, atom.Name) == nil {
+		return false
+	}
+	if len(findChildAtoms(hn, atom.Input)) == 0 {
+		return false
+	}
+	return true
 }
 
 func isTable(hn *html.Node) bool {
 	if hn.DataAtom != atom.Table {
 		return false
 	}
-	return countTwo(hn, atom.Tr) > 1 || countTwo(hn, atom.Td) > 1
+	return countTwo(hn, atom.Tr) >= 1 || countTwo(hn, atom.Td) >= 1
 }
 
 func isList(hn *html.Node) bool {
 	return hn.DataAtom == atom.Ul || hn.DataAtom == atom.Ol
+}
+
+func isYoutube(hn *html.Node) bool {
+	return hn.DataAtom == atom.Video
+}
+
+func isFragmentImport(hn *html.Node) bool {
+	return hn.DataAtom == 0 && strings.HasPrefix(hn.Data, convertedImportsDataPrefix)
 }
 
 // countTwo starts counting the number of a Atom children in hn.
@@ -221,6 +289,7 @@ func nodeAttr(n *html.Node, name string) string {
 func stringifyNode(root *html.Node, trim bool) string {
 	if root.Type == html.TextNode {
 		s := textCleaner.Replace(root.Data)
+		s = strings.Replace(s, "\n", " ", -1)
 		if !trim {
 			return s
 		}
