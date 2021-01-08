@@ -68,7 +68,5 @@ sass_binary(
 closure_js_template_library(
     name = "google_codelab_soy",
     srcs = ["google_codelab.soy"],
-    defs = [
-        "--shouldGenerateGoogMsgDefs=true",
-    ],
+    should_generate_soy_msg_defs = True,
 )
