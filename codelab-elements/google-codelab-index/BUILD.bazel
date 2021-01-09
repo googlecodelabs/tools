@@ -81,4 +81,5 @@ closure_js_template_library(
     name = "google_codelab_index_soy",
     srcs = ["google_codelab_index.soy"],
     should_generate_soy_msg_defs = True,
+    bidi_global_dir = 1,
 )
