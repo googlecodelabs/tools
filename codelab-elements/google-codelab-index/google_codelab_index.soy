@@ -33,14 +33,17 @@
       {if $duration}
         <img src="//codelabs.developers.google.com/images/schedule.svg">
 
-        {msg desc="Expected time remaining for user to complete codelab."}
-          {plural $duration}
-            {case 1}
-              {$duration} min remaining
-            {default}
-              {$duration} mins remaining
-          {/plural}
-        {/msg}
+        {if $duration == 1}
+          {msg desc="Label indicating expected time remaining (1 minute) for user to complete
+              codelab."}
+            {$duration} min remaining
+          {/msg}
+        {else}
+          {msg desc="Label indicating expected time remaining in minutes for user to complete
+              codelab."}
+            {$duration} mins remaining
+          {/msg}
+        {/if}
       {/if}
     </span>
   </div>
