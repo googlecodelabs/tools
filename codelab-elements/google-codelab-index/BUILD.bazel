@@ -79,5 +79,5 @@ sass_binary(
 
 closure_js_template_library(
     name = "google_codelab_index_soy",
-    srcs = ["google_codelab_index.soy"]
+    srcs = ["google_codelab_index.soy"],
 )

@@ -23,5 +23,10 @@
 {template .title}
   {@param step: string}
   {@param label: string}
-  <h2 is-upgraded class="step-title">{$step}. {$label}</h2>
+
+  <h2 is-upgraded class="step-title">
+    {msg desc="Codelab title composed from step number and label."}
+      {$step}. {$label}
+    {/msg}
+  </h2>
 {/template}

@@ -22,7 +22,8 @@
  */
 {template .structure}
   {@param homeUrl: string}
-  <div id="drawer">Drawer</div>
+
+  <div id="drawer"></div>
   <div id="codelab-title">
     <div id="codelab-nav-buttons">
       <a href="{$homeUrl}" id="arrow-back"><i class="material-icons">close</i></a>
@@ -35,40 +36,79 @@
     <div id="steps"></div>
     <div id="controls">
       <div id="fabs">
-        <a href="#" id="previous-step" title="Previous step">Back</a>
+        <a href="#"
+           id="previous-step"
+           title=
+               "{msg desc="Tooltip for button that takes user back to the previous step of the
+                   codelab."}
+                 Previous step
+               {/msg}">
+          {msg desc="Button that takes user back to the previous step of the codelab."}
+            Back
+          {/msg}
+        </a>
         <div class="spacer"></div>
-        <a href="#" id="next-step" title="Next step">Next</a>
-        <a href="{$homeUrl}" id="done" hidden title="Codelab complete">Done</a>
+        <a href="#"
+           id="next-step"
+           title=
+               "{msg desc="Tooltip for button that takes user to the next step of the codelab."}
+                 Next step
+               {/msg}">
+          {msg desc="Button that takes user to the next step of the codelab."}
+            Next
+          {/msg}
+        </a>
+        <a href="{$homeUrl}"
+           id="done"
+           hidden
+           title=
+               "{msg desc="Tooltip for button that indicates the codelab user has completed the
+                   codelab."}
+                 Codelab complete
+               {/msg}">
+          {msg desc="Button that indicates the codelab user has completed the codelab."}
+            Done
+          {/msg}
+        </a>
       </div>
     </div>
   </div>
 {/template}
-
 
 /**
  * Renders the title
  */
 {template .title}
   {@param title: string}
-  <h1 is-upgraded class="title">{$title}</h1>
-{/template}
 
+  <h1 is-upgraded class="title">
+    {$title}
+  </h1>
+{/template}
 
 /**
  * Renders the time remaining
  */
 {template .timeRemaining}
   {@param time: number}
-  <div class="time-remaining" title="Time remaining">
-   <i class="material-icons">access_time</i>
-   {if $time == 1}
-    {$time} min remaining
-   {else}
-    {$time} mins remaining
-   {/if}
+
+  <div class="time-remaining"
+       title=
+           "{msg desc="Label indicating expected time remaining for user to complete codelab."}
+             Time remaining
+           {/msg}">
+    <i class="material-icons">access_time</i>
+    {if $time == 1}
+      {msg desc="Label indicating expected time remaining (1 minute) for user to complete codelab."}
+        {$time} min remaining
+      {/msg}
+    {else}
+      {msg desc="Label indicating expected time remaining in minutes for user to complete codelab."}
+        {$time} mins remaining
+      {/msg}
+    {/if}
   </div>
 {/template}
-
 
 /**
  * Renders the drawer
@@ -76,17 +116,23 @@
 {template .drawer}
   {@param steps: list<string>}
   {@param? feedback: string}
+
   <div class="codelab-time-container"></div>
   <div class="steps">
     <ol>
       {for $step in $steps}
-        <li><a href="#{index($step)}"><span class="step"><span>{$step}</span></span></a></li>
+        <li>
+          <a href="#{index($step)}"><span class="step"><span>{$step}</span></span></a>
+        </li>
       {/for}
     </ol>
   </div>
   <div class="metadata">
     <a {if $feedback}target="_blank" href="{$feedback}"{else}href="#" id="codelab-feedback"{/if}>
-      <i class="material-icons">bug_report</i> Report a mistake
+      <i class="material-icons">bug_report</i> {msg desc="Button that the user can click to report
+          an bug or error."}
+        Report a mistake
+      {/msg}
     </a>
   </div>
 {/template}

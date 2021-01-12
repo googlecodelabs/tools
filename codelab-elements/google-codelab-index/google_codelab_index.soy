@@ -26,12 +26,24 @@
   {@param duration: number}
   {@param updated: string}
   {@param authors: string}
+
   <div class="card-header {$category}-bg">
     <span class="category-icon {$category}-icon"></span>
     <span class="card-duration">
       {if $duration}
         <img src="//codelabs.developers.google.com/images/schedule.svg">
-        {$duration} min
+
+        {if $duration == 1}
+          {msg desc="Label indicating expected time remaining (1 minute) for user to complete
+              codelab."}
+            {$duration} min remaining
+          {/msg}
+        {else}
+          {msg desc="Label indicating expected time remaining in minutes for user to complete
+              codelab."}
+            {$duration} mins remaining
+          {/msg}
+        {/if}
       {/if}
     </span>
   </div>
@@ -41,26 +53,55 @@
   <div class="card-footer {$category}-footer">
     <span class="card-start {$category}-start">Start</span>
     <span class="card-updated">
-      {if $authors}<div>{$authors}</div>{/if}
-      {if $updated}<div>Updated {$updated}</div>{/if}
+      {if $authors}
+        <div>
+          {$authors}
+        </div>
+      {/if}
+      {if $updated}
+        <div>
+          {msg desc="Time when codelab was last updated."}
+            Updated {$updated}
+          {/msg}
+        </div>
+      {/if}
     </span>
   </div>
 {/template}
 
-
 {template .sortby}
   {@param sort: string}
   {@param categories: list<string>}
+
   <div id="sort-by-tabs" class="sort-by-inner">
-    <a href="#" sort="alpha" {if $sort == 'alpha'}selected{/if}>A-Z</a>
-    <a href="#" sort="recent" {if $sort == 'recent'}selected{/if}>Recent</a>
-    <a href="#" sort="duration" {if $sort == 'duration'}selected{/if}>Duration</a>
+    <a href="#" sort="alpha" {if $sort == 'alpha'}selected{/if}>
+      {msg desc="Label for button to sort codelabs alphabetically by title."}
+        A-Z
+      {/msg}
+    </a>
+    <a href="#" sort="recent" {if $sort == 'recent'}selected{/if}>
+      {msg desc="Label for button to sort codelabs by recency."}
+        Recent
+      {/msg}
+    </a>
+    <a href="#" sort="duration" {if $sort == 'duration'}selected{/if}>
+      {msg desc="Label for button to sort codelabs by duration."}
+        Duration
+      {/msg}
+    </a>
   </div>
   <div class="sort-by-inner">
     <select id="codelab-categories">
-      <option value="">Category</option>
+      <option value="">
+
+        {msg desc="Label for dropdown menu used to filter codelabs by category."}
+          Category
+        {/msg}
+      </option>
       {for $i in range(length($categories))}
-        <option value="{$categories[$i]}">{$categories[$i]}</option>
+        <option value="{$categories[$i]}">
+          {$categories[$i]}
+        </option>
       {/for}
     </select>
   </div>
