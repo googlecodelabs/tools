@@ -98,14 +98,15 @@
              Time remaining
            {/msg}">
     <i class="material-icons">access_time</i>
-    {msg desc="Expected time remaining for user to complete codelab."}
-      {plural $time}
-        {case 1}
-          {$time} min remaining
-        {default}
-          {$time} mins remaining
-      {/plural}
-    {/msg}
+    {if $time == 1}
+      {msg desc="Label indicating expected time remaining (1 minute) for user to complete codelab."}
+        {$time} min remaining
+      {/msg}
+    {else}
+      {msg desc="Label indicating expected time remaining in minutes for user to complete codelab."}
+        {$time} mins remaining
+      {/msg}
+    {/if}
   </div>
 {/template}
 
