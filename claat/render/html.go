@@ -307,7 +307,11 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 }
 
 func (hw *htmlWriter) grid(n *types.GridNode) {
-	hw.writeString("<table>\n")
+	if hw.format == "devsite" {
+		hw.writeString(`<table class="vertical-rules">\n`)
+	} else {
+		hw.writeString("<table>\n")
+	}
 	for _, r := range n.Rows {
 		hw.writeString("<tr>")
 		for _, c := range r {
