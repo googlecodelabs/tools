@@ -54,6 +54,7 @@ the License.
                     id="{{.Meta.ID}}"
                     title="{{.Meta.Title}}"
                     environment="{{index .Env}}"
+                    category="{{range  $index, $cat := .Meta.Categories}}{{if $index}},{{end}}{{$cat}}{{end}}"
                     feedback-link="{{.Meta.Feedback}}"
                     {{if $.Meta.BadgePath}}badge-path="{{$.Meta.BadgePath}}"{{end}}>
       {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
