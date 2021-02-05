@@ -308,7 +308,7 @@ func (hw *htmlWriter) itemsList(n *types.ItemsListNode) {
 
 func (hw *htmlWriter) grid(n *types.GridNode) {
 	if hw.format == "devsite" {
-		hw.writeString(`<table class="vertical-rules">\n`)
+		hw.writeString("<table class=\"vertical-rules\">\n")
 	} else {
 		hw.writeString("<table>\n")
 	}
