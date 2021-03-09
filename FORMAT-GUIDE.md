@@ -189,6 +189,10 @@ You can also use this to target specific events, for instance:  \
     Having a header 2 of "What you'll learn" followed by a bullet point list creates a list of check marks.
 
     A title of "What we've covered" has the same effect.
+    
+1. YouTube Video Embeds
+
+    Use a video tag like so `<video id="DWAinkJ54AP8"></video>` to embed a video uploaded to YouTube with the URL https://www.youtube.com/watch?v=DWAinkJ54AP8
 
 ## Things to avoid
 
