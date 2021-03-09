@@ -192,7 +192,7 @@ You can also use this to target specific events, for instance:  \
     
 1. YouTube Video Embeds
 
-    Use a video tag like so `<video id="DWAinkJ54AP8"></video>` to embed a video uploaded to YouTuber with the URL https://www.youtube.com/watch?v=DWAinkJ54AP8
+    Use a video tag like so `<video id="DWAinkJ54AP8"></video>` to embed a video uploaded to YouTube with the URL https://www.youtube.com/watch?v=DWAinkJ54AP8
 
 ## Things to avoid
 
