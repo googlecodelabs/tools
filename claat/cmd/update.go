@@ -26,10 +26,10 @@ import (
 	"strings"
 	"time"
 
-	"google3/third_party/golang/claat/fetch/fetch"
-	"google3/third_party/golang/claat/parser/parser"
-	"google3/third_party/golang/claat/types/types"
-	"google3/third_party/golang/claat/util/util"
+	"github.com/googlecodelabs/tools/claat/fetch"
+	"github.com/googlecodelabs/tools/claat/parser"
+	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
 // Options type to make the CmdUpdate signature succinct.
