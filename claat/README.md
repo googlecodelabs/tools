@@ -34,5 +34,6 @@ Testing is done with `make test` or `go test ./...` if preferred.
 
 Don't forget to run `make lint` or `golint ./...` before creating a new CL.
 
+
 To create cross-compiled versions for all supported OS/Arch, run `make release`.
 It will place the output in `bin/claat-<os>-<arch>`.
