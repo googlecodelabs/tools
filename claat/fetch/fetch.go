@@ -29,10 +29,10 @@ import (
 	"strings"
 	"time"
 
-	"google3/third_party/golang/claat/fetch/drive/auth/auth"
-	"google3/third_party/golang/claat/parser/parser"
-	"google3/third_party/golang/claat/types/types"
-	"google3/third_party/golang/claat/util/util"
+	"github.com/googlecodelabs/tools/claat/fetch/drive/auth"
+	"github.com/googlecodelabs/tools/claat/parser"
+	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/util"
 )
 
 const (
