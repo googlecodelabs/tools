@@ -20,10 +20,13 @@
 package cmd
 
 import (
+	"path/filepath"
+
+	"google3/third_party/golang/claat/types/types"
 
 	// allow parsers to register themselves
-	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
-	_ "github.com/googlecodelabs/tools/claat/parser/md"
+	_ "google3/third_party/golang/claat/parser/gdoc/gdoc"
+	_ "google3/third_party/golang/claat/parser/md/md"
 )
 
 const (
@@ -40,4 +43,10 @@ const (
 // isStdout reports whether filename is stdout.
 func isStdout(filename string) bool {
 	return filename == stdout
+}
+
+// codelabDir returns codelab root directory.
+// The base argument is codelab parent directory.
+func codelabDir(base string, m *types.Meta) string {
+	return filepath.Join(base, m.ID)
 }
