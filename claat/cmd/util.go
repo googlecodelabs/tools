@@ -22,11 +22,11 @@ package cmd
 import (
 	"path/filepath"
 
-	"google3/third_party/golang/claat/types/types"
+	"github.com/googlecodelabs/tools/claat/types/types"
 
 	// allow parsers to register themselves
-	_ "google3/third_party/golang/claat/parser/gdoc/gdoc"
-	_ "google3/third_party/golang/claat/parser/md/md"
+	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
+	_ "github.com/googlecodelabs/tools/claat/parser/md"
 )
 
 const (
