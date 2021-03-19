@@ -22,7 +22,7 @@ package cmd
 import (
 	"path/filepath"
 
-	"github.com/googlecodelabs/tools/claat/types/types"
+	"github.com/googlecodelabs/tools/claat/types"
 
 	// allow parsers to register themselves
 	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
