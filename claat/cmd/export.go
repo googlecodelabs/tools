@@ -121,6 +121,7 @@ func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*ty
 		MainGA:  opts.GlobalGA,
 		Updated: &lastmod,
 	}
+
 	dir := opts.Output // output dir or stdout
 	if !isStdout(dir) {
 		dir = codelabDir(dir, meta)
