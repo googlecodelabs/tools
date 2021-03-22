@@ -21,8 +21,6 @@ install:
 - sudo unzip -o protoc-3.7.1-linux-x86_64.zip -d /usr/local bin/protoc
 - sudo unzip -o protoc-3.7.1-linux-x86_64.zip -d /usr/local include/*
 - rm -f protoc-3.7.1-linux-x86_64.zip
-# Compile protobuf
-- protoc tutorial.proto -I=third_party --go_out=third_party
 # Dynamically get rest of Golang-specific dependencies
 - go get -t -d ./claat/...
 script:
