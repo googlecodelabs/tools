@@ -114,22 +114,16 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 	if err != nil {
 		return nil, err
 	}
-	clab, err := f.SlurpCodelab(meta.Source)
+	basedir := filepath.Join(dir, "..")
+	clab, err := f.SlurpCodelab(meta.Source, basedir)
 	if err != nil {
 		return nil, err
 	}
 	updated := types.ContextTime(clab.Mod)
 	meta.Context.Updated = &updated
 
-	basedir := filepath.Join(dir, "..")
 	newdir := codelabDir(basedir, &clab.Meta)
 	imgdir := filepath.Join(newdir, util.ImgDirname)
-
-	// slurp codelab assets to disk and rewrite image URLs
-	imgmap, err := f.SlurpImages(meta.Source, imgdir, clab.Steps)
-	if err != nil {
-		return nil, err
-	}
 
 	// write codelab and its metadata
 	if err := writeCodelab(newdir, clab.Codelab, opts.ExtraVars, &meta.Context); err != nil {
@@ -150,7 +144,7 @@ func updateCodelab(dir string, opts CmdUpdateOptions) (*types.Meta, error) {
 		if fi.IsDir() {
 			return filepath.SkipDir
 		}
-		if _, ok := imgmap[filepath.Base(p)]; !ok {
+		if _, ok := clab.Imgs[filepath.Base(p)]; !ok {
 			return os.Remove(p)
 		}
 		return nil

@@ -64,8 +64,9 @@ type resource struct {
 // and modified timestamp fields.
 type codelab struct {
 	*types.Codelab
-	Typ srcType   //  source type
-	Mod time.Time // last modified timestamp
+	Typ  srcType           //  source type
+	Mod  time.Time         // last modified timestamp
+	Imgs map[string]string // Slurped local image paths
 }
 
 type MemoryFetcher struct {
@@ -129,7 +130,7 @@ func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper, mdp parser.
 //
 // The function will also fetch and parse fragments included
 // with types.ImportNode.
-func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
+func (f *Fetcher) SlurpCodelab(src string, output string) (*codelab, error) {
 	_, err := os.Stat(src)
 	// Only setup oauth if this source is not a local file.
 	if os.IsNotExist(err) {
@@ -153,6 +154,20 @@ func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
 	if err != nil {
 		return nil, err
 	}
+	images := make(map[string]string)
+	dir := codelabDir(output, &clab.Meta)
+	imgDir := filepath.Join(dir, util.ImgDirname)
+	if !isStdout(output) {
+		// download or copy codelab assets to disk, and rewrite image URLs
+		var nodes []types.Node
+		for _, step := range clab.Steps {
+			nodes = append(nodes, step.Content.Nodes...)
+		}
+		err := f.SlurpImages(src, imgDir, nodes, images)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	// fetch imports and parse them as fragments
 	var imports []*types.ImportNode
@@ -168,6 +183,13 @@ func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
 				ch <- fmt.Errorf("%s: %v", n.URL, err)
 				return
 			}
+			if !isStdout(output) {
+				// download or copy codelab assets to disk, and rewrite image URLs
+				err = f.SlurpImages(gdocID(n.URL), imgDir, frag, images)
+				if err != nil {
+					return
+				}
+			}
 			n.Content.Nodes = frag
 			ch <- nil
 		}(imp)
@@ -182,14 +204,15 @@ func (f *Fetcher) SlurpCodelab(src string) (*codelab, error) {
 		Codelab: clab,
 		Typ:     res.typ,
 		Mod:     res.mod,
+		Imgs:    images,
 	}
 	return v, nil
 }
 
-func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]string, error) {
+func (f *Fetcher) SlurpImages(src, dir string, nodes []types.Node, images map[string]string) error {
 	// make sure img dir exists
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		return nil, err
+		return err
 	}
 
 	type res struct {
@@ -200,35 +223,31 @@ func (f *Fetcher) SlurpImages(src, dir string, steps []*types.Step) (map[string]
 	ch := make(chan *res, 100)
 	defer close(ch)
 	var count int
-	for _, st := range steps {
-		nodes := types.ImageNodes(st.Content.Nodes)
-		count += len(nodes)
-		for _, n := range nodes {
-			go func(n *types.ImageNode) {
-				url := n.Src
-				file, err := f.slurpBytes(src, dir, url)
-				if err == nil {
-					n.Src = filepath.Join(util.ImgDirname, file)
-				}
-				ch <- &res{url, file, err}
-			}(n)
-		}
+	imageNodes := types.ImageNodes(nodes)
+	count += len(imageNodes)
+	for _, imageNode := range imageNodes {
+		go func(imageNode *types.ImageNode) {
+			url := imageNode.Src
+			file, err := f.slurpBytes(src, dir, url)
+			if err == nil {
+				imageNode.Src = filepath.Join(util.ImgDirname, file)
+			}
+			ch <- &res{url, file, err}
+		}(imageNode)
 	}
-
-	imap := make(map[string]string, count)
 	var errStr string
 	for i := 0; i < count; i++ {
 		r := <-ch
-		imap[r.file] = r.url
+		images[r.file] = r.url
 		if r.err != nil {
 			errStr += fmt.Sprintf("%s => %s: %v\n", r.url, r.file, r.err)
 		}
 	}
 	if len(errStr) > 0 {
-		return nil, errors.New(errStr)
+		return errors.New(errStr)
 	}
 
-	return imap, nil
+	return nil
 }
 
 func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
@@ -480,4 +499,16 @@ func restrictPathToParent(assetPath, parent string) (string, error) {
 		return "", fmt.Errorf("%s isn't a subdirectory of %s", assetPath, parent)
 	}
 	return assetPath, nil
+}
+
+// isStdout reports whether filename is stdout.
+func isStdout(filename string) bool {
+	const stdout = "-"
+	return filename == stdout
+}
+
+// codelabDir returns codelab root directory.
+// The base argument is codelab parent directory.
+func codelabDir(base string, m *types.Meta) string {
+	return filepath.Join(base, m.ID)
 }
