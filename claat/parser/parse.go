@@ -19,7 +19,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/v2/types"
 )
 
 // Parser parses a codelab in specific resource format.

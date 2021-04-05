@@ -22,8 +22,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/googlecodelabs/tools/claat/parser"
-	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/v2/parser"
+	"github.com/googlecodelabs/tools/claat/v2/types"
 )
 
 const stdMeta = `---
