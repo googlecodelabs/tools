@@ -38,6 +38,9 @@ const PAGEVIEW_EVENT = 'google-codelab-pageview';
  */
 const GAID_ATTR = 'gaid';
 
+/** @const {string} */
+const CODELAB_ID_ATTR = 'codelab-id';
+
 /**
  * The GAID defined by the current codelab.
  * @const {string}
@@ -99,6 +102,9 @@ class CodelabAnalytics extends HTMLElement {
 
     /** @private {?string} */
     this.gaid_;
+
+    /** @private {?string} */
+    this.codelabId_;
 
     /**
      * @private {!EventHandler}
@@ -167,7 +173,8 @@ class CodelabAnalytics extends HTMLElement {
    * @export
    */
   static get observedAttributes() {
-    return [CODELAB_GAID_ATTR, CODELAB_ENV_ATTR, CODELAB_CATEGORY_ATTR];
+    return [CODELAB_GAID_ATTR, CODELAB_ENV_ATTR, CODELAB_CATEGORY_ATTR,
+            CODELAB_ID_ATTR];
   }
 
   /**
@@ -194,6 +201,10 @@ class CodelabAnalytics extends HTMLElement {
       case CODELAB_CATEGORY_ATTR:
         this.codelabCategory_ = newValue;
         break;
+      case CODELAB_ID_ATTR:
+        this.codelabId_ = newValue;
+        break;
+      default:
     }
   }
 
@@ -210,6 +221,7 @@ class CodelabAnalytics extends HTMLElement {
       'hitType': 'event',
       'dimension1': this.codelabEnv_,
       'dimension2': this.codelabCategory_ || '',
+      'dimension4': this.codelabId_ || undefined,
       'eventCategory': category,
       'eventAction': opt_action || '',
       'eventLabel': opt_label || '',
@@ -227,6 +239,7 @@ class CodelabAnalytics extends HTMLElement {
       'hitType': 'pageview',
       'dimension1': this.codelabEnv_,
       'dimension2': this.codelabCategory_,
+      'dimension4': this.codelabId_ || undefined,
       'page': opt_page || '',
       'title': opt_title || ''
     };
