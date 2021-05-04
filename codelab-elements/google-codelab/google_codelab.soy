@@ -21,6 +21,7 @@
  * Renders the main structure
  */
 {template .structure}
+  {@param? feedback: string}
   {@param homeUrl: string}
 
   <div id="codelab-title">
@@ -73,6 +74,14 @@
       </div>
     </div>
   </div>
+  <div class="metadata">
+    <a {if $feedback}target="_blank" href="{$feedback}"{else}href="#" id="codelab-feedback"{/if}>
+      <i class="material-icons">bug_report</i> {msg desc="Button that the user can click to report
+          an bug or error."}
+        Report a mistake
+      {/msg}
+    </a>
+  </div>
 {/template}
 
 /**
@@ -115,7 +124,6 @@
  */
 {template .drawer}
   {@param steps: list<string>}
-  {@param? feedback: string}
 
   <div class="codelab-time-container"></div>
   <div class="steps">
@@ -126,13 +134,5 @@
         </li>
       {/for}
     </ol>
-  </div>
-  <div class="metadata">
-    <a {if $feedback}target="_blank" href="{$feedback}"{else}href="#" id="codelab-feedback"{/if}>
-      <i class="material-icons">bug_report</i> {msg desc="Button that the user can click to report
-          an bug or error."}
-        Report a mistake
-      {/msg}
-    </a>
   </div>
 {/template}
