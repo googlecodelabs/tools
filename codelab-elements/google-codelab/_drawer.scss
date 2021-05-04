@@ -23,6 +23,7 @@
   display: flex;
   flex-direction: column;
   background: #F8F9FA;
+  overflow: auto;
 }
 
 google-codelab #drawer .steps {
@@ -30,16 +31,10 @@ google-codelab #drawer .steps {
   flex-grow: 1;
   overflow-x: visible;
   display: flex;
-  max-height: calc(100% - 54px);
 }
 
 google-codelab #drawer .steps:only-child {
   max-height: 100%;
-}
-
-google-codelab #drawer .metadata .material-icons {
-  top: 6px;
-  position: relative;
 }
 
 google-codelab #drawer ol {
@@ -133,18 +128,6 @@ google-codelab #drawer ol li[completed] a {
 google-codelab #drawer ol li[completed] .step:before {
   background-color: #1A73E8;
   color: #fff;
-}
-
-google-codelab #drawer .metadata {
-  color: #777;
-  font-size: 14px;
-  padding: 16px;
-  flex-shrink: 0;
-}
-
-google-codelab #drawer .metadata a {
-  color: currentcolor;
-  margin-left: 4px;
 }
 
 google-codelab #codelab-nav-buttons #menu {
