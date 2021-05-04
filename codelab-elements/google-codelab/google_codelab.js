@@ -112,6 +112,12 @@ const CODELAB_PAGEVIEW_EVENT = 'google-codelab-pageview';
  */
 const CODELAB_READY_EVENT = 'google-codelab-ready';
 
+/** @const {string} */
+const ARIA_HIDDEN_ATTR = 'aria-hidden';
+
+/** @const {string} */
+const TAB_INDEX_ATTR = 'tabindex';
+
 /**
  * @extends {HTMLElement}
  */
@@ -715,9 +721,13 @@ class Codelab extends HTMLElement {
 
     if (this.nextStepBtn_ && this.prevStepBtn_ && this.doneBtn_) {
       if (selected === 0) {
+        this.prevStepBtn_.setAttribute(ARIA_HIDDEN_ATTR, '');
         this.prevStepBtn_.setAttribute(DISAPPEAR_ATTR, '');
+        this.prevStepBtn_.setAttribute(TAB_INDEX_ATTR, '-1');
       } else {
+        this.prevStepBtn_.removeAttribute(ARIA_HIDDEN_ATTR);
         this.prevStepBtn_.removeAttribute(DISAPPEAR_ATTR);
+        this.prevStepBtn_.removeAttribute(TAB_INDEX_ATTR);
       }
       if (selected === this.steps_.length - 1) {
         this.nextStepBtn_.setAttribute(HIDDEN_ATTR, '');
@@ -764,21 +774,9 @@ class Codelab extends HTMLElement {
    * @private
    */
   renderDrawer_() {
-    const feedback = this.getAttribute(FEEDBACK_LINK_ATTR);
     const steps = this.steps_.map((step) => step.getAttribute(LABEL_ATTR));
-    soy.renderElement(this.drawer_, Templates.drawer, {steps, feedback});
+    soy.renderElement(this.drawer_, Templates.drawer, {steps});
     // Start Google Feedback when the feedback link is clicked, if it exists.
-    const feedbackLink = this.drawer_.querySelector('#codelab-feedback');
-    if (feedbackLink) {
-      this.eventHandler_.listen(feedbackLink, events.EventType.CLICK,
-        (e) => {
-          if ('userfeedback' in window) {
-            window['userfeedback']['api']['startFeedback']
-                ({'productId': '5143948'});
-            e.preventDefault();
-          }
-        });
-    }
   }
 
   /**
@@ -842,8 +840,10 @@ class Codelab extends HTMLElement {
   setupDom_() {
     this.steps_ = Array.from(this.querySelectorAll('google-codelab-step'));
 
+    const feedback = this.getAttribute(FEEDBACK_LINK_ATTR);
     soy.renderElement(this, Templates.structure, {
-      homeUrl: this.getHomeUrl_()
+      feedback,
+      homeUrl: this.getHomeUrl_(),
     });
 
     this.drawer_ = this.querySelector('#drawer');
@@ -875,6 +875,17 @@ class Codelab extends HTMLElement {
       if (!hasLocationHash) {
         this.setAttribute(SELECTED_ATTR, progress);
       }
+    }
+    const feedbackLink = this.querySelector('#codelab-feedback');
+    if (feedbackLink) {
+      this.eventHandler_.listen(feedbackLink, events.EventType.CLICK,
+        (e) => {
+          if ('userfeedback' in window) {
+            window['userfeedback']['api']['startFeedback']
+                ({'productId': '5143948'});
+            e.preventDefault();
+          }
+        });
     }
 
     this.hasSetup_ = true;
