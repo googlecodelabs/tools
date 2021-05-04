@@ -14,19 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 google-codelab {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template: 64px 1fr / 256px 1fr;
+  grid-template: 64px 1fr 56px/ 256px 1fr;
   grid-template-areas:
     'title title'
-    'drawer  main';
+    'drawer  main'
+    'metadata  main';
 }
-
 // stylelint-disable selector-max-id
-
 google-codelab #main {
   display: flex;
   flex-direction: column;
@@ -34,7 +32,6 @@ google-codelab #main {
   position: relative;
   background: #F8F9FA;
 }
-
 google-codelab #codelab-title {
   background: #FFFFFF;
   box-shadow: 0px 1px 2px 0px rgba(60, 64, 67, .3),
@@ -49,7 +46,6 @@ google-codelab #codelab-title {
   -webkit-font-smoothing: antialiased;
   z-index: 1000;
 }
-
 google-codelab #codelab-title h1 {
   font-size: 20px;
   font-weight: 400;
@@ -63,7 +59,6 @@ google-codelab #codelab-title h1 {
   width: 0;
   display: inline-block;
 }
-
 google-codelab #codelab-title .time-remaining {
   flex-shrink: 0;
   flex-grow: 0;
@@ -73,18 +68,15 @@ google-codelab #codelab-title .time-remaining {
   font-weight: 400;
   white-space: nowrap;
 }
-
 google-codelab #codelab-title .time-remaining i {
   margin-right: 3px;
 }
-
 google-codelab #codelab-nav-buttons {
   display: flex;
   align-items: center;
   flex-grow: 0;
   flex-shrink: 0;
 }
-
 google-codelab #codelab-nav-buttons #arrow-back,
 google-codelab #codelab-nav-buttons #menu {
   display: flex;
@@ -95,7 +87,6 @@ google-codelab #codelab-nav-buttons #menu {
   justify-content: center;
   align-items: center;
 }
-
 google-codelab #controls {
   position: absolute;
   bottom: 32px;
@@ -107,7 +98,6 @@ google-codelab #controls {
   flex-direction: column;
   z-index: 1001;
 }
-
 google-codelab #fabs {
   display: flex;
   flex-grow: 1;
@@ -115,11 +105,9 @@ google-codelab #fabs {
   width: 100%;
   margin: 0 auto;
 }
-
 google-codelab #fabs .spacer {
   flex-grow: 1;
 }
-
 google-codelab #previous-step,
 google-codelab #next-step,
 google-codelab #done {
@@ -143,47 +131,52 @@ google-codelab #done {
   text-decoration: none;
   -webkit-font-smoothing: antialiased;
 }
-
 google-codelab #next-step {
   color: #fff;
   background: #1A73E8;
 }
-
 google-codelab #done {
   background: #1E8E3E;
   color: #fff;
 }
-
 google-codelab #fabs a[disappear] {
   transform: scale(0, 0);
 }
-
 google-codelab #done {
   background: #0f9d58;
 }
-
 google-codelab #drawer .codelab-time-container {
   display: none;
 }
-
+google-codelab .metadata {
+  background: #F8F9FA;
+  color: #777;
+  font-size: 14px;
+  grid-area: metadata;
+  padding: 16px;
+}
+google-codelab .metadata a {
+  color: currentcolor;
+  margin-left: 4px;
+}
+google-codelab .metadata a:hover,
+google-codelab .metadata a:focus {
+  color: #212121;
+}
 @media (max-width: 768px) {
   google-codelab {
     padding-top: 0;
   }
-
   google-codelab #codelab-title .codelab-time-container {
     display: none;
   }
-
   google-codelab #drawer .codelab-time-container {
     display: block;
     padding: 20px 10px 10px 23px;
   }
-
   google-codelab #drawer .time-remaining i {
     margin-right: 9px;
   }
 }
-
 @import "drawer";
 @import "steps";
