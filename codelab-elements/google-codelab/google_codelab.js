@@ -776,7 +776,6 @@ class Codelab extends HTMLElement {
   renderDrawer_() {
     const steps = this.steps_.map((step) => step.getAttribute(LABEL_ATTR));
     soy.renderElement(this.drawer_, Templates.drawer, {steps});
-    // Start Google Feedback when the feedback link is clicked, if it exists.
   }
 
   /**
@@ -876,6 +875,7 @@ class Codelab extends HTMLElement {
         this.setAttribute(SELECTED_ATTR, progress);
       }
     }
+    // Start Google Feedback when the feedback link is clicked, if it exists.
     const feedbackLink = this.querySelector('#codelab-feedback');
     if (feedbackLink) {
       this.eventHandler_.listen(feedbackLink, events.EventType.CLICK,
