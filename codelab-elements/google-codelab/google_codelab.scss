@@ -168,11 +168,21 @@ google-codelab #drawer .codelab-time-container {
 }
 
 google-codelab .metadata {
-  align-items: center;
   background: #F8F9FA;
-  display: flex;
+  color: #777;
+  font-size: 14px;
   grid-area: metadata;
-  justify-content: center;
+  padding: 16px;
+}
+
+google-codelab .metadata a {
+  color: currentcolor;
+  margin-left: 4px;
+}
+
+google-codelab .metadata a:hover,
+google-codelab .metadata a:focus {
+  color: #212121;
 }
 
 @media (max-width: 768px) {
