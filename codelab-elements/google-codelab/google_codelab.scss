@@ -19,10 +19,11 @@ google-codelab {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template: 64px 1fr / 256px 1fr;
+  grid-template: 64px 1fr 56px/ 256px 1fr;
   grid-template-areas:
     'title title'
-    'drawer  main';
+    'drawer  main'
+    'metadata  main';
 }
 
 // stylelint-disable selector-max-id
@@ -164,6 +165,14 @@ google-codelab #done {
 
 google-codelab #drawer .codelab-time-container {
   display: none;
+}
+
+google-codelab .metadata {
+  align-items: center;
+  background: #F8F9FA;
+  display: flex;
+  grid-area: metadata;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
