@@ -19,10 +19,11 @@ google-codelab {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template: 64px 1fr / 256px 1fr;
+  grid-template: 64px 1fr 56px/ 256px 1fr;
   grid-template-areas:
     'title title'
-    'drawer  main';
+    'drawer  main'
+    'metadata  main';
 }
 
 // stylelint-disable selector-max-id
@@ -164,6 +165,24 @@ google-codelab #done {
 
 google-codelab #drawer .codelab-time-container {
   display: none;
+}
+
+google-codelab .metadata {
+  background: #F8F9FA;
+  color: #777;
+  font-size: 14px;
+  grid-area: metadata;
+  padding: 16px;
+}
+
+google-codelab .metadata a {
+  color: currentcolor;
+  margin-left: 4px;
+}
+
+google-codelab .metadata a:hover,
+google-codelab .metadata a:focus {
+  color: #212121;
 }
 
 @media (max-width: 768px) {
