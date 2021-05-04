@@ -47,6 +47,9 @@ const CATEGORY_ATTR = 'category';
 const GAID_ATTR = 'codelab-gaid';
 
 /** @const {string} */
+const CODELAB_ID_ATTR = 'codelab-id';
+
+/** @const {string} */
 const FEEDBACK_LINK_ATTR = 'feedback-link';
 
 /** @const {string} */
@@ -308,6 +311,9 @@ class Codelab extends HTMLElement {
       const gaid = this.getAttribute(GAID_ATTR);
       if (gaid) {
         analytics.setAttribute(GAID_ATTR, gaid);
+      }
+      if (this.id_) {
+        analytics.setAttribute(CODELAB_ID_ATTR, this.id_);
       }
 
       analytics.setAttribute(
