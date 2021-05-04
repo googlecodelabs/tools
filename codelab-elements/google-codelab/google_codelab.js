@@ -47,6 +47,9 @@ const CATEGORY_ATTR = 'category';
 const GAID_ATTR = 'codelab-gaid';
 
 /** @const {string} */
+const CODELAB_ID_ATTR = 'codelab-id';
+
+/** @const {string} */
 const FEEDBACK_LINK_ATTR = 'feedback-link';
 
 /** @const {string} */
@@ -308,6 +311,9 @@ class Codelab extends HTMLElement {
       const gaid = this.getAttribute(GAID_ATTR);
       if (gaid) {
         analytics.setAttribute(GAID_ATTR, gaid);
+      }
+      if (this.id_) {
+        analytics.setAttribute(CODELAB_ID_ATTR, this.id_);
       }
 
       analytics.setAttribute(
@@ -853,12 +859,10 @@ class Codelab extends HTMLElement {
     this.renderDrawer_();
     this.timeContainer_ = this.querySelectorAll('.codelab-time-container');
 
-    let hasLocationHash = false;
     if (document.location.hash) {
       const h = parseInt(document.location.hash.substring(1), 10);
       if (!isNaN(h) && h) {
         this.setAttribute(SELECTED_ATTR, document.location.hash.substring(1));
-        hasLocationHash = true;
       }
     }
 
@@ -866,9 +870,7 @@ class Codelab extends HTMLElement {
     const progress = this.storage_.get(`progress_${this.id_}`);
     if (progress && progress !== '0') {
       this.resumed_ = true;
-      if (!hasLocationHash) {
-        this.setAttribute(SELECTED_ATTR, progress);
-      }
+      this.setAttribute(SELECTED_ATTR, progress);
     }
 
     this.hasSetup_ = true;
