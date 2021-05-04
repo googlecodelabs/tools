@@ -47,6 +47,9 @@ const CATEGORY_ATTR = 'category';
 const GAID_ATTR = 'codelab-gaid';
 
 /** @const {string} */
+const CODELAB_ID_ATTR = 'codelab-id';
+
+/** @const {string} */
 const FEEDBACK_LINK_ATTR = 'feedback-link';
 
 /** @const {string} */
@@ -856,7 +859,7 @@ class Codelab extends HTMLElement {
     this.renderDrawer_();
     this.timeContainer_ = this.querySelectorAll('.codelab-time-container');
 
-        let hasLocationHash = false;
+    let hasLocationHash = false;
     if (document.location.hash) {
       const h = parseInt(document.location.hash.substring(1), 10);
       if (!isNaN(h) && h) {
