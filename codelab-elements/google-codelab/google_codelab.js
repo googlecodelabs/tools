@@ -554,8 +554,10 @@ class Codelab extends HTMLElement {
     if (!this.title_ || !this.titleContainer_) {
       return;
     }
-    const newTitleEl =
-        soy.renderAsElement(Templates.title, {title: this.title_});
+    const url = new URL(document.location.href);
+    url.hash = '';
+    const newTitleEl = soy.renderAsElement(
+        Templates.title, {title: this.title_, url: url.href});
     document.title = this.title_;
     const oldTitleEl = this.titleContainer_.querySelector('h1');
     const buttons = this.titleContainer_.querySelector('#codelab-nav-buttons');
@@ -608,7 +610,7 @@ class Codelab extends HTMLElement {
   setupSteps_() {
     this.steps_.forEach((step, index) => {
       step = /** @type {!Element} */ (step);
-      step.setAttribute('step', index+1);
+      step.setAttribute('step', index);
     });
   }
 
@@ -783,7 +785,7 @@ class Codelab extends HTMLElement {
    * @return {string}
    */
   getHomeUrl_() {
-    const url = new URL(document.location.toString());
+    const url = new URL(document.location.href);
     let index = url.searchParams.get('index');
     if (!index) {
       return '/';
