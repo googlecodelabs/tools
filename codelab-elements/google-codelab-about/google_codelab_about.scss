@@ -51,6 +51,11 @@ google-codelab-about .about-card h2 {
   font-size: 28px;
 }
 
+google-codelab-about .about-card h2:focus,
+google-codelab-about .about-card h2:hover {
+  color: #212121;
+}
+
 google-codelab-about .about-card > *:not(:first-child) {
   padding-top: 30px;
 }
