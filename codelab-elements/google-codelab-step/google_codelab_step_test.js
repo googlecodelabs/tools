@@ -100,17 +100,17 @@ testSuite({
     const codelabStep = new CodelabStep();
 
     document.body.appendChild(codelabStep);
-    
+
     let title = codelabStep.querySelector('h2.step-title');
-    assertEquals('0. ', title.textContent);
+    assertEquals('1. ', title.textContent);
 
     codelabStep.setAttribute('step', '3');
     title = codelabStep.querySelector('h2.step-title');
-    assertEquals('3. ', title.textContent);
+    assertEquals('4. ', title.textContent);
 
     codelabStep.setAttribute('label', 'test label');
     title = codelabStep.querySelector('h2.step-title');
-    assertEquals('3. test label', title.textContent);
+    assertEquals('4. test label', title.textContent);
 
     document.body.removeChild(codelabStep);
   }
