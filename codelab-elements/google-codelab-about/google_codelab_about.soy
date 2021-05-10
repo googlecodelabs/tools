@@ -14,9 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 {namespace googlecodelabs.CodelabAbout.Templates}
-
 /**
  * Renders the step title
  */
@@ -25,7 +23,6 @@
   {@param? lastUpdated: string}
   {@param? authors: string}
   {@param? badgePath: string}
-
   {if $codelabTitle}
     <div class="codelab-title">
     {for $token in $codelabTitle}
@@ -33,14 +30,12 @@
     {/for}
     </div>
   {/if}
-
   <div class="about-card">
-    <h2 class="title">
+    <h2 class="title" tabindex="0">
       {msg desc="Text explaining that this card is about this codelab"}
         About this codelab
       {/msg}
     </h2>
-
     {if $lastUpdated}
       <div class="last-updated">
         <i class="material-icons">subject</i>
@@ -49,7 +44,6 @@
         {/msg}
       </div>
     {/if}
-
     <div class="authors">
       <i class="material-icons">account_circle</i>
       {if $authors}
@@ -60,7 +54,6 @@
         {/msg}
       {/if}
     </div>
-
     {if $badgePath}
       <devsite-badge-to-earn badge-path="$badgePath"></devsite-badge-to-earn>
     {/if}
