@@ -65,6 +65,17 @@ google-codelab #codelab-title h1 {
   display: inline-block;
 }
 
+google-codelab #codelab-title h1 a {
+  color: #3C4043;
+  text-decoration: none;
+}
+
+google-codelab #codelab-title h1 a:focus,
+google-codelab #codelab-title h1 a:hover {
+  color: #212121;
+  text-decoration: underline;
+}
+
 google-codelab #codelab-title .time-remaining {
   flex-shrink: 0;
   flex-grow: 0;
