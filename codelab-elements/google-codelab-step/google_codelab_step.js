@@ -165,7 +165,7 @@ class CodelabStep extends HTMLElement {
     this.instructions_.classList.add('instructions');
     this.inner_ = dom.createElement('div');
     this.inner_.classList.add('inner');
-    dom.copyContents(this.inner_, this);
+    this.inner_.innerHTML = this.innerHTML;
     dom.appendChild(this.instructions_, this.inner_);
     dom.removeChildren(this);
 
