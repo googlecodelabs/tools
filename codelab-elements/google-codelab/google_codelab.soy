@@ -89,9 +89,10 @@
  */
 {template .title}
   {@param title: string}
+  {@param url: string}
 
   <h1 is-upgraded class="title">
-    {$title}
+    <a href="{$url}">{$title}</a>
   </h1>
 {/template}
 
@@ -102,10 +103,20 @@
   {@param time: number}
 
   <div class="time-remaining"
+       tabindex="0"
+       role="timer"
        title=
-           "{msg desc="Label indicating expected time remaining for user to complete codelab."}
-             Time remaining
-           {/msg}">
+           "{if $time == 1}
+             {msg desc="Tooltip indicating expected time remaining (1 minute) for user to complete
+                 codelab."}
+               Estimated time remaining: {$time} minute
+             {/msg}
+           {else}
+             {msg desc="Tooltip indicating expected time remaining in minutes for user to complete
+                 codelab."}
+               Estimated time remaining: {$time} minutes
+             {/msg}
+           {/if}">
     <i class="material-icons">access_time</i>
     {if $time == 1}
       {msg desc="Label indicating expected time remaining (1 minute) for user to complete codelab."}

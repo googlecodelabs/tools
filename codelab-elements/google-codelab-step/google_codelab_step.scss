@@ -50,6 +50,17 @@ google-codelab-step h2.step-title {
   margin: 0 0 30px !important;
 }
 
+google-codelab-step .step-title a {
+  color: #3C4043;
+  text-decoration: none;
+}
+
+google-codelab-step .step-title a:focus,
+google-codelab-step .step-title a:hover {
+  color: #212121;
+  text-decoration: underline;
+}
+
 google-codelab:not([theme="minimal"]) google-codelab-step .instructions {
   box-shadow: 0px 1px 2px 0px rgba(60, 64, 67, 0.3), 0px 2px 6px 2px rgba(60, 64, 67, 0.15);
   background: $google-codelab-step-background;
@@ -74,8 +85,8 @@ google-codelab[theme="minimal"] google-codelab-step .instructions .inner {
   }
 }
 
-google-codelab:not([theme="minimal"]) google-codelab-step .instructions a,
-google-codelab:not([theme="minimal"]) google-codelab-step .instructions a:visited {
+google-codelab:not([theme="minimal"]) google-codelab-step .instructions :not(.step-title) > a,
+google-codelab:not([theme="minimal"]) google-codelab-step .instructions :not(.step-title) > a:visited {
   color: $google-codelab-step-link-color;
 }
 

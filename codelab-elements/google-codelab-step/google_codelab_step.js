@@ -62,9 +62,9 @@ class CodelabStep extends HTMLElement {
     this.hasSetup_ = false;
 
     /**
-     * @private {string}
+     * @private {number}
      */
-    this.step_ = '0';
+    this.step_ = 0;
 
     /**
      * @private {string}
@@ -127,7 +127,7 @@ class CodelabStep extends HTMLElement {
     }
 
     if (this.hasAttribute(STEP_ATTR)) {
-      this.step_ = this.getAttribute(STEP_ATTR);
+      this.step_ = parseInt(this.getAttribute(STEP_ATTR) || '', 10);
     }
 
     if (!this.title_) {
