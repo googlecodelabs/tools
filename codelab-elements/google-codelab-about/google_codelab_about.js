@@ -44,20 +44,20 @@ class CodelabAbout extends HTMLElement {
   constructor() {
     super();
 
-    /** @private {?string} */
-    this.authors_ = null;
+    /** @private {string} */
+    this.authors_ = '';
 
-    /** @private {?string} */
-    this.codelabTitle_ = null;
+    /** @private {string} */
+    this.codelabTitle_ = '';
 
     /** @private {boolean} */
     this.hasSetup_ = false;
 
-    /** @private {?string} */
-    this.lastUpdated_ = null;
+    /** @private {string} */
+    this.lastUpdated_ = '';
 
-    /** @private {?string} */
-    this.badgePath_ = null;
+    /** @private {string} */
+    this.badgePath_ = '';
   }
 
   /**
