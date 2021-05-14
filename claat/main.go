@@ -29,12 +29,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/googlecodelabs/tools/claat/cmd"
-	"github.com/googlecodelabs/tools/claat/parser"
+	"github.com/googlecodelabs/tools/claat/v2/cmd"
+	"github.com/googlecodelabs/tools/claat/v2/parser"
 
 	// allow parsers to register themselves
-	_ "github.com/googlecodelabs/tools/claat/parser/gdoc"
-	_ "github.com/googlecodelabs/tools/claat/parser/md"
+	_ "github.com/googlecodelabs/tools/claat/v2/parser/gdoc"
+	_ "github.com/googlecodelabs/tools/claat/v2/parser/md"
 )
 
 var (
