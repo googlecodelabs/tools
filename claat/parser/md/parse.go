@@ -36,10 +36,10 @@ import (
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
+	"github.com/russross/blackfriday/v2"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	gmhtml "github.com/yuin/goldmark/renderer/html"
-	"gopkg.in/russross/blackfriday.v2"
 )
 
 // Metadata constants for the YAML header
