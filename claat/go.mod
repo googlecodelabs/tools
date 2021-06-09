@@ -10,3 +10,5 @@ require (
 	golang.org/x/net v0.0.0-20210510120150-4163338589ed
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 )
+
+replace github.com/russross/blackfriday/v2 => gopkg.in/russross/blackfriday.v2
