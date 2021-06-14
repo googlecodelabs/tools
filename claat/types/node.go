@@ -305,7 +305,7 @@ func NewCodeNode(v string, term bool, lang string) *CodeNode {
 		node:  node{typ: NodeCode},
 		Value: v,
 		Term:  term,
-		Lang: lang,
+		Lang:  lang,
 	}
 }
 
@@ -525,7 +525,7 @@ type YouTubeNode struct {
 
 // Empty returns true if yt's VideoID field is zero.
 func (yt *YouTubeNode) Empty() bool {
-	return yt.VideoID != ""
+	return yt.VideoID == ""
 }
 
 // iframe whitelist - set of domains allow to embed iframes in a codelab.
@@ -558,5 +558,5 @@ type IframeNode struct {
 
 // Empty returns true if iframe's URL field is empty.
 func (iframe *IframeNode) Empty() bool {
-	return iframe.URL != ""
+	return iframe.URL == ""
 }
