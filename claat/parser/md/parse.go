@@ -809,9 +809,9 @@ func image(ds *docState) types.Node {
 		if err != nil {
 			return nil
 		}
-		// For iframe, make sure URL ends in whitelisted domain.
+		// For iframe, make sure URL ends in allowlisted domain.
 		ok := false
-		for _, domain := range types.IframeWhitelist {
+		for _, domain := range types.IframeAllowlist {
 			if strings.HasSuffix(u.Hostname(), domain) {
 				ok = true
 				break
