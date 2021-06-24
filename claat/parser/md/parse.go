@@ -115,7 +115,7 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	if err != nil {
 		return nil, err
 	}
-	b, err = renderToHTML(b, opts.MDParser)
+	b, err = renderToHTML(b)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, 
 	if err != nil {
 		return nil, err
 	}
-	b, err = renderToHTML(b, opts.MDParser)
+	b, err = renderToHTML(b)
 	if err != nil {
 		return nil, err
 	}
@@ -227,8 +227,8 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 }
 
 // renderToHTML preprocesses Markdown bytes and then calls a Markdown parser on the Markdown.
-// It takes a raw markdown bytes and output parsed xhtml in bytes.
-func renderToHTML(b []byte, mdp parser.MarkdownParser) ([]byte, error) {
+// It takes a raw markdown bytes and outputs parsed xhtml in bytes.
+func renderToHTML(b []byte) ([]byte, error) {
 	b = convertImports(b)
 	gmParser := goldmark.New(goldmark.WithRendererOptions(gmhtml.WithUnsafe()), goldmark.WithExtensions(extension.Typographer, extension.Table))
 	var out bytes.Buffer
