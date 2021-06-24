@@ -46,7 +46,7 @@ var (
 	expenv       = flag.String("e", "web", "codelab environment")
 	extra        = flag.String("extra", "", "Additional arguments to pass to format templates. JSON object of string,string key values.")
 	globalGA     = flag.String("ga", "UA-49880327-14", "global Google Analytics account")
-	mdParser     = flag.String("md_parser", "blackfriday", "Markdown parser to use. Accepted values: \"blackfriday\", \"goldmark\"")
+	mdParser     = flag.String("md_parser", "goldmark", "Markdown parser to use. Accepted values: \"goldmark\", \"blackfriday\"")
 	output       = flag.String("o", ".", "output directory or '-' for stdout")
 	passMetadata = flag.String("pass_metadata", "", "Metadata fields to pass through to the output. Comma-delimited list of field names.")
 	prefix       = flag.String("prefix", "https://storage.googleapis.com", "URL prefix for html format")
