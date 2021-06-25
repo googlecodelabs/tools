@@ -528,8 +528,8 @@ func (yt *YouTubeNode) Empty() bool {
 	return yt.VideoID == ""
 }
 
-// iframe whitelist - set of domains allow to embed iframes in a codelab.
-var IframeWhitelist = []string{
+// iframe allowlist - set of domains allow to embed iframes in a codelab.
+var IframeAllowlist = []string{
 	"google.com",
 	"google.dev",
 	"dartlang.org",
