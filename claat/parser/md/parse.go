@@ -39,7 +39,6 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	gmhtml "github.com/yuin/goldmark/renderer/html"
-	"gopkg.in/russross/blackfriday.v2"
 )
 
 // Metadata constants for the YAML header
@@ -116,7 +115,7 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 	if err != nil {
 		return nil, err
 	}
-	b, err = renderToHTML(b, opts.MDParser)
+	b, err = renderToHTML(b)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +134,7 @@ func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, 
 	if err != nil {
 		return nil, err
 	}
-	b, err = renderToHTML(b, opts.MDParser)
+	b, err = renderToHTML(b)
 	if err != nil {
 		return nil, err
 	}
@@ -228,39 +227,15 @@ func (ds *docState) appendNodes(nn ...types.Node) {
 }
 
 // renderToHTML preprocesses Markdown bytes and then calls a Markdown parser on the Markdown.
-// It takes a raw markdown bytes and output parsed xhtml in bytes.
-func renderToHTML(b []byte, mdp parser.MarkdownParser) ([]byte, error) {
+// It takes a raw markdown bytes and outputs parsed xhtml in bytes.
+func renderToHTML(b []byte) ([]byte, error) {
 	b = convertImports(b)
-
-	switch mdp {
-	case parser.Blackfriday:
-		htmlFlags := blackfriday.UseXHTML |
-			blackfriday.Smartypants |
-			blackfriday.SmartypantsFractions |
-			blackfriday.SmartypantsDashes |
-			blackfriday.SmartypantsLatexDashes
-
-		params := blackfriday.HTMLRendererParameters{Flags: htmlFlags}
-		r := blackfriday.NewHTMLRenderer(params)
-
-		extns := blackfriday.FencedCode |
-			blackfriday.NoEmptyLineBeforeBlock |
-			blackfriday.NoIntraEmphasis |
-			blackfriday.DefinitionLists |
-			blackfriday.Tables
-
-		return blackfriday.Run(b, blackfriday.WithExtensions(extns), blackfriday.WithRenderer(r)), nil
-	case parser.Goldmark:
-		gmParser := goldmark.New(goldmark.WithRendererOptions(gmhtml.WithUnsafe()), goldmark.WithExtensions(extension.Typographer, extension.Table))
-		var out bytes.Buffer
-		if err := gmParser.Convert(b, &out); err != nil {
-			panic(err)
-		}
-		return out.Bytes(), nil
-	default:
-		return nil, fmt.Errorf("unrecognized Markdown parser %d", mdp)
+	gmParser := goldmark.New(goldmark.WithRendererOptions(gmhtml.WithUnsafe()), goldmark.WithExtensions(extension.Typographer, extension.Table))
+	var out bytes.Buffer
+	if err := gmParser.Convert(b, &out); err != nil {
+		panic(err)
 	}
-
+	return out.Bytes(), nil
 }
 
 // parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
