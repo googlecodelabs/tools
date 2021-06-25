@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/googlecodelabs/tools/claat/nodes"
 )
 
 // Meta contains a single codelab metadata.
@@ -74,17 +76,17 @@ func NewCodelab() *Codelab {
 
 // NewStep creates a new codelab step, adding it to c.Steps slice.
 func (c *Codelab) NewStep(title string) *Step {
-	s := &Step{Title: title, Content: NewListNode()}
+	s := &Step{Title: title, Content: nodes.NewListNode()}
 	c.Steps = append(c.Steps, s)
 	return s
 }
 
 // Step is a single codelab step, containing metadata and actual content.
 type Step struct {
-	Title    string        // Step title
-	Tags     []string      // Step environments
-	Duration time.Duration // Duration
-	Content  *ListNode     // Root node of the step nodes tree
+	Title    string          // Step title
+	Tags     []string        // Step environments
+	Duration time.Duration   // Duration
+	Content  *nodes.ListNode // Root node of the step nodes tree
 }
 
 // ContextTime is codelab metadata timestamp.

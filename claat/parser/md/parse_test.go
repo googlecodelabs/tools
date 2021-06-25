@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/googlecodelabs/tools/claat/nodes"
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 )
@@ -52,7 +53,7 @@ func parseCodelab(markup string, opts parser.Options) (*types.Codelab, error) {
 	return p.Parse(r, opts)
 }
 
-func parseFragment(markup string) ([]types.Node, error) {
+func parseFragment(markup string) ([]nodes.Node, error) {
 	r := strings.NewReader(markup)
 	p := &Parser{}
 
@@ -60,21 +61,21 @@ func parseFragment(markup string) ([]types.Node, error) {
 	return p.ParseFragment(r, opts)
 }
 
-func stringify(nodes []types.Node, level string) string {
+func stringify(nodesToStringify []nodes.Node, level string) string {
 	var content []string
-	for _, node := range nodes {
+	for _, node := range nodesToStringify {
 		base := fmt.Sprintf("%+v", node)
-		if node.Type() == types.NodeItemsList {
-			children := []types.Node{}
-			for _, list := range node.(*types.ItemsListNode).Items {
+		if node.Type() == nodes.NodeItemsList {
+			children := []nodes.Node{}
+			for _, list := range node.(*nodes.ItemsListNode).Items {
 				children = append(children, list)
 			}
 
 			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(children, level+">") + "\n" + level + " Child Nodes: ^^^^"
 		}
 
-		if node.Type() == types.NodeList {
-			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(node.(*types.ListNode).Nodes, level+">") + "\n" + level + " Child Nodes: ^^^^"
+		if node.Type() == nodes.NodeList {
+			base += "\n" + level + " Child Nodes: vvvv \n" + stringify(node.(*nodes.ListNode).Nodes, level+">") + "\n" + level + " Child Nodes: ^^^^"
 		}
 
 		content = append(content, base)
@@ -396,7 +397,7 @@ I'm going to inject some HTML
 			lab := mustParseCodelab(test.input, *parser.NewOptions())
 			var got []string
 			for _, s := range lab.Steps {
-				for _, n := range types.ImportNodes(s.Content.Nodes) {
+				for _, n := range nodes.ImportNodes(s.Content.Nodes) {
 					got = append(got, n.URL)
 				}
 			}

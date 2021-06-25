@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"github.com/googlecodelabs/tools/claat/fetch/drive/auth"
+	"github.com/googlecodelabs/tools/claat/nodes"
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
@@ -125,7 +126,7 @@ func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper) (*Fetcher, 
 // It returns parsed codelab and its source type.
 //
 // The function will also fetch and parse fragments included
-// with types.ImportNode.
+// with nodes.ImportNode.
 func (f *Fetcher) SlurpCodelab(src string, output string) (*codelab, error) {
 	_, err := os.Stat(src)
 	// Only setup oauth if this source is not a local file.
@@ -155,7 +156,7 @@ func (f *Fetcher) SlurpCodelab(src string, output string) (*codelab, error) {
 	imgDir := filepath.Join(dir, util.ImgDirname)
 	if !isStdout(output) {
 		// download or copy codelab assets to disk, and rewrite image URLs
-		var nodes []types.Node
+		var nodes []nodes.Node
 		for _, step := range clab.Steps {
 			nodes = append(nodes, step.Content.Nodes...)
 		}
@@ -166,14 +167,14 @@ func (f *Fetcher) SlurpCodelab(src string, output string) (*codelab, error) {
 	}
 
 	// fetch imports and parse them as fragments
-	var imports []*types.ImportNode
+	var imports []*nodes.ImportNode
 	for _, st := range clab.Steps {
-		imports = append(imports, types.ImportNodes(st.Content.Nodes)...)
+		imports = append(imports, nodes.ImportNodes(st.Content.Nodes)...)
 	}
 	ch := make(chan error, len(imports))
 	defer close(ch)
 	for _, imp := range imports {
-		go func(n *types.ImportNode) {
+		go func(n *nodes.ImportNode) {
 			frag, err := f.slurpFragment(n.URL)
 			if err != nil {
 				ch <- fmt.Errorf("%s: %v", n.URL, err)
@@ -205,7 +206,7 @@ func (f *Fetcher) SlurpCodelab(src string, output string) (*codelab, error) {
 	return v, nil
 }
 
-func (f *Fetcher) SlurpImages(src, dir string, nodes []types.Node, images map[string]string) error {
+func (f *Fetcher) SlurpImages(src, dir string, n []nodes.Node, images map[string]string) error {
 	// make sure img dir exists
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
@@ -219,10 +220,10 @@ func (f *Fetcher) SlurpImages(src, dir string, nodes []types.Node, images map[st
 	ch := make(chan *res, 100)
 	defer close(ch)
 	var count int
-	imageNodes := types.ImageNodes(nodes)
+	imageNodes := nodes.ImageNodes(n)
 	count += len(imageNodes)
 	for _, imageNode := range imageNodes {
-		go func(imageNode *types.ImageNode) {
+		go func(imageNode *nodes.ImageNode) {
 			url := imageNode.Src
 			file, err := f.slurpBytes(src, dir, url)
 			if err == nil {
@@ -289,7 +290,7 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 	return file, ioutil.WriteFile(dst, b, 0644)
 }
 
-func (f *Fetcher) slurpFragment(url string) ([]types.Node, error) {
+func (f *Fetcher) slurpFragment(url string) ([]nodes.Node, error) {
 	res, err := f.fetch(url)
 	if err != nil {
 		return nil, err
