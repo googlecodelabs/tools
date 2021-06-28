@@ -19,7 +19,7 @@ the License.
     <meta name="project_path" value="/_project.yaml" />
     <meta name="book_path" value="/_book.yaml" />
     <meta name="full_width" value="true" />
-    <meta name="keywords" value='"{{range $index, $tag := .Meta.Tags}}{{if $index}},{{end}}tag_{{$tag}}{{end}}{{range $index, $cat := .Meta.Categories}},category_{{$cat}}{{end}}"' />
+    <meta name="keywords" value="{{range $index, $tag := .Meta.Tags}}{{if $index}},{{end}}tag_{{$tag}}{{end}}{{range $index, $cat := .Meta.Categories}},category_{{$cat}}{{end}}" />
     {{if .Meta.Summary}}
       <meta name="description" content="{{.Meta.Summary}}" />
     {{end}}
