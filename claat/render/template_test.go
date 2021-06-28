@@ -18,13 +18,14 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/googlecodelabs/tools/claat/nodes"
 	"github.com/googlecodelabs/tools/claat/types"
 )
 
 func TestExecuteBuiltin(t *testing.T) {
 	step := &types.Step{
 		Title:   "Test step",
-		Content: types.NewListNode(types.NewTextNode("text")),
+		Content: nodes.NewListNode(nodes.NewTextNode("text")),
 	}
 	data := &struct {
 		Context

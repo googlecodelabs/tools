@@ -23,14 +23,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/googlecodelabs/tools/claat/nodes"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
-
-	"github.com/googlecodelabs/tools/claat/types"
 )
 
 // Lite renders nodes as a standard HTML markup, without Custom Elements.
-func Lite(ctx Context, nodes ...types.Node) (htmlTemplate.HTML, error) {
+func Lite(ctx Context, nodes ...nodes.Node) (htmlTemplate.HTML, error) {
 	var buf bytes.Buffer
 	if err := WriteLite(&buf, ctx.Env, nodes...); err != nil {
 		return "", err
@@ -39,7 +38,7 @@ func Lite(ctx Context, nodes ...types.Node) (htmlTemplate.HTML, error) {
 }
 
 // WriteLite does the same as Lite but outputs rendered markup to w.
-func WriteLite(w io.Writer, env string, nodes ...types.Node) error {
+func WriteLite(w io.Writer, env string, nodes ...nodes.Node) error {
 	lw := liteWriter{w: w, env: env}
 	return lw.write(nodes...)
 }
@@ -58,7 +57,7 @@ func (lw *liteWriter) matchEnv(v []string) bool {
 	return i < len(v) && v[i] == lw.env
 }
 
-func (lw *liteWriter) write(nodes ...types.Node) error {
+func (lw *liteWriter) write(nodes ...nodes.Node) error {
 	doc := &html.Node{Type: html.DocumentNode}
 	for _, n := range nodes {
 		if hn := lw.htmlnode(n); hn != nil {
@@ -68,45 +67,45 @@ func (lw *liteWriter) write(nodes ...types.Node) error {
 	return html.Render(lw.w, doc)
 }
 
-func (lw *liteWriter) htmlnode(n types.Node) *html.Node {
+func (lw *liteWriter) htmlnode(n nodes.Node) *html.Node {
 	if !lw.matchEnv(n.Env()) {
 		return nil
 	}
 	var hn *html.Node
 	switch n := n.(type) {
-	case *types.TextNode:
+	case *nodes.TextNode:
 		hn = lw.text(n)
-	case *types.ImageNode:
+	case *nodes.ImageNode:
 		hn = lw.image(n)
-	case *types.URLNode:
+	case *nodes.URLNode:
 		hn = lw.alink(n)
-	case *types.ButtonNode:
+	case *nodes.ButtonNode:
 		hn = lw.button(n)
-	case *types.CodeNode:
+	case *nodes.CodeNode:
 		hn = lw.code(n)
-	case *types.ListNode:
+	case *nodes.ListNode:
 		hn = lw.list(n)
-	case *types.ImportNode:
+	case *nodes.ImportNode:
 		if len(n.Content.Nodes) > 0 {
 			hn = lw.list(n.Content)
 		}
-	case *types.ItemsListNode:
+	case *nodes.ItemsListNode:
 		hn = lw.itemsList(n)
-	case *types.GridNode:
+	case *nodes.GridNode:
 		hn = lw.grid(n)
-	case *types.InfoboxNode:
+	case *nodes.InfoboxNode:
 		hn = lw.infobox(n)
-	case *types.SurveyNode:
+	case *nodes.SurveyNode:
 		hn = lw.survey(n)
-	case *types.HeaderNode:
+	case *nodes.HeaderNode:
 		hn = lw.header(n)
-	case *types.YouTubeNode:
+	case *nodes.YouTubeNode:
 		hn = lw.youtube(n)
 	}
 	return hn
 }
 
-func (lw *liteWriter) text(n *types.TextNode) *html.Node {
+func (lw *liteWriter) text(n *nodes.TextNode) *html.Node {
 	top := &html.Node{Type: html.TextNode, Data: n.Value}
 	if n.Bold {
 		hn := &html.Node{Type: html.ElementNode, Data: atom.Strong.String()}
@@ -126,7 +125,7 @@ func (lw *liteWriter) text(n *types.TextNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) image(n *types.ImageNode) *html.Node {
+func (lw *liteWriter) image(n *nodes.ImageNode) *html.Node {
 	hn := &html.Node{
 		Type: html.ElementNode,
 		Data: atom.Img.String(),
@@ -141,7 +140,7 @@ func (lw *liteWriter) image(n *types.ImageNode) *html.Node {
 	return hn
 }
 
-func (lw *liteWriter) alink(n *types.URLNode) *html.Node {
+func (lw *liteWriter) alink(n *nodes.URLNode) *html.Node {
 	top := &html.Node{Type: html.ElementNode, Data: atom.A.String()}
 	if n.URL != "" {
 		top.Attr = append(top.Attr, html.Attribute{Key: "href", Val: n.URL})
@@ -160,7 +159,7 @@ func (lw *liteWriter) alink(n *types.URLNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) button(n *types.ButtonNode) *html.Node {
+func (lw *liteWriter) button(n *nodes.ButtonNode) *html.Node {
 	cls := []string{"step__button"}
 	if n.Colored {
 		cls = append(cls, "button--colored")
@@ -184,7 +183,7 @@ func (lw *liteWriter) button(n *types.ButtonNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) code(n *types.CodeNode) *html.Node {
+func (lw *liteWriter) code(n *nodes.CodeNode) *html.Node {
 	top := &html.Node{Type: html.TextNode, Data: n.Value}
 
 	if !n.Term {
@@ -210,7 +209,7 @@ func (lw *liteWriter) code(n *types.CodeNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) list(n *types.ListNode) *html.Node {
+func (lw *liteWriter) list(n *nodes.ListNode) *html.Node {
 	a := atom.P
 	if n.Block() != true {
 		a = atom.Div
@@ -224,21 +223,21 @@ func (lw *liteWriter) list(n *types.ListNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) itemsList(n *types.ItemsListNode) *html.Node {
+func (lw *liteWriter) itemsList(n *nodes.ItemsListNode) *html.Node {
 	a := atom.Ul
-	if n.Type() == types.NodeItemsList && n.Start > 0 {
+	if n.Type() == nodes.NodeItemsList && n.Start > 0 {
 		a = atom.Ol
 	}
 	top := &html.Node{Type: html.ElementNode, Data: a.String()}
 	var itemCls string
 	switch n.Type() {
-	case types.NodeItemsCheck:
+	case nodes.NodeItemsCheck:
 		itemCls = "checklist__item"
 		top.Attr = append(top.Attr, html.Attribute{
 			Key: "class",
 			Val: "step__checklist",
 		})
-	case types.NodeItemsFAQ:
+	case nodes.NodeItemsFAQ:
 		itemCls = "faq__item"
 		top.Attr = append(top.Attr, html.Attribute{
 			Key: "class",
@@ -273,7 +272,7 @@ func (lw *liteWriter) itemsList(n *types.ItemsListNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) grid(n *types.GridNode) *html.Node {
+func (lw *liteWriter) grid(n *nodes.GridNode) *html.Node {
 	top := &html.Node{Type: html.ElementNode, Data: atom.Table.String()}
 	for _, r := range n.Rows {
 		tr := &html.Node{Type: html.ElementNode, Data: atom.Tr.String()}
@@ -298,7 +297,7 @@ func (lw *liteWriter) grid(n *types.GridNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) infobox(n *types.InfoboxNode) *html.Node {
+func (lw *liteWriter) infobox(n *nodes.InfoboxNode) *html.Node {
 	top := &html.Node{
 		Type: html.ElementNode,
 		Data: atom.Div.String(),
@@ -315,7 +314,7 @@ func (lw *liteWriter) infobox(n *types.InfoboxNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) survey(n *types.SurveyNode) *html.Node {
+func (lw *liteWriter) survey(n *nodes.SurveyNode) *html.Node {
 	top := &html.Node{
 		Type: html.ElementNode,
 		Data: atom.Div.String(),
@@ -356,12 +355,12 @@ func (lw *liteWriter) survey(n *types.SurveyNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) header(n *types.HeaderNode) *html.Node {
+func (lw *liteWriter) header(n *nodes.HeaderNode) *html.Node {
 	var cls string
 	switch n.Type() {
-	case types.NodeHeaderCheck:
+	case nodes.NodeHeaderCheck:
 		cls = "checklist"
-	case types.NodeHeaderFAQ:
+	case nodes.NodeHeaderFAQ:
 		cls = "faq"
 	}
 	top := &html.Node{
@@ -379,7 +378,7 @@ func (lw *liteWriter) header(n *types.HeaderNode) *html.Node {
 	return top
 }
 
-func (lw *liteWriter) youtube(n *types.YouTubeNode) *html.Node {
+func (lw *liteWriter) youtube(n *nodes.YouTubeNode) *html.Node {
 	top := &html.Node{
 		Type: html.ElementNode,
 		Data: atom.Div.String(),

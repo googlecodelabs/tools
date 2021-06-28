@@ -19,6 +19,7 @@ import (
 	"io"
 	"sync"
 
+	"github.com/googlecodelabs/tools/claat/nodes"
 	"github.com/googlecodelabs/tools/claat/types"
 )
 
@@ -29,7 +30,7 @@ type Parser interface {
 	Parse(r io.Reader, opts Options) (*types.Codelab, error)
 
 	// ParseFragment is similar to Parse except it doesn't parse codelab metadata.
-	ParseFragment(r io.Reader, opts Options) ([]types.Node, error)
+	ParseFragment(r io.Reader, opts Options) ([]nodes.Node, error)
 }
 
 // Container for parsing options.
@@ -89,7 +90,7 @@ func Parse(name string, r io.Reader, opts Options) (*types.Codelab, error) {
 
 // ParseFragment parses a codelab fragment provided in r, using a parser
 // registered with the specified name.
-func ParseFragment(name string, r io.Reader, opts Options) ([]types.Node, error) {
+func ParseFragment(name string, r io.Reader, opts Options) ([]nodes.Node, error) {
 	parsersMu.Lock()
 	p, ok := parsers[name]
 	parsersMu.Unlock()

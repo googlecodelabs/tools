@@ -33,6 +33,7 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 
+	"github.com/googlecodelabs/tools/claat/nodes"
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
@@ -129,7 +130,7 @@ func (p *Parser) Parse(r io.Reader, opts parser.Options) (*types.Codelab, error)
 }
 
 // ParseFragment parses a codelab fragment written in Markdown.
-func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, error) {
+func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]nodes.Node, error) {
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -147,7 +148,7 @@ func (p *Parser) ParseFragment(r io.Reader, opts parser.Options) ([]types.Node, 
 	return parsePartialMarkup(doc)
 }
 
-func parsePartialMarkup(root *html.Node) ([]types.Node, error) {
+func parsePartialMarkup(root *html.Node) ([]nodes.Node, error) {
 	body := findAtom(root, atom.Body)
 	if body == nil {
 		return nil, fmt.Errorf("document without a body")
@@ -179,7 +180,7 @@ type docState struct {
 	totdur   time.Duration  // total codelab duration
 	survey   int            // last used survey ID
 	step     *types.Step    // current codelab step
-	lastNode types.Node     // last appended node
+	lastNode nodes.Node     // last appended node
 	env      []string       // current enviornment
 	cur      *html.Node     // current HTML node
 	stack    []*stackItem   // cur and flags stack
@@ -213,7 +214,7 @@ func (ds *docState) pop() {
 	ds.cur = item.cur
 }
 
-func (ds *docState) appendNodes(nn ...types.Node) {
+func (ds *docState) appendNodes(nn ...nodes.Node) {
 	if ds.step == nil || len(nn) == 0 {
 		return
 	}
@@ -305,8 +306,8 @@ func parseTop(ds *docState) {
 // parseSubtree parses children of root recursively.
 // It may modify ds.cur, so the caller is responsible for wrapping
 // this function in ds.push and ds.pop.
-func parseSubtree(ds *docState) []types.Node {
-	var nodes []types.Node
+func parseSubtree(ds *docState) []nodes.Node {
+	var nodes []nodes.Node
 	for ds.cur = ds.cur.FirstChild; ds.cur != nil; ds.cur = ds.cur.NextSibling {
 		if n, ok := parseNode(ds); ok {
 			if n != nil {
@@ -324,10 +325,10 @@ func parseSubtree(ds *docState) []types.Node {
 // parseNode parses html node hn if it is a recognized node construction.
 // It returns a bool indicating that hn has been accepted and parsed.
 // Some nodes result in metadata parsing, in which case the returned bool is still true,
-// but resuling types.Node is nil.
+// but resuling nodes.Node is nil.
 //
 // The flag argument modifies default behavour of the func.
-func parseNode(ds *docState) (types.Node, bool) {
+func parseNode(ds *docState) (nodes.Node, bool) {
 	// we have \n end of line nodes after each tag from the blackfriday parser.
 	// We just want to ignore them as it makes previous node detection fuzzy.
 	if ds.cur.Type == html.TextNode && ds.cur.Data == "\n" {
@@ -508,7 +509,7 @@ func metaStep(ds *docState) {
 		toLowerSlice(ds.env)
 		ds.step.Tags = append(ds.step.Tags, ds.env...)
 		ds.clab.Tags = append(ds.clab.Tags, ds.env...)
-		if ds.lastNode != nil && types.IsHeader(ds.lastNode.Type()) {
+		if ds.lastNode != nil && nodes.IsHeader(ds.lastNode.Type()) {
 			ds.lastNode.MutateEnv(ds.env)
 		}
 	}
@@ -520,31 +521,31 @@ func metaStep(ds *docState) {
 //
 // Given that headers do not belong to any block, the returned node's B
 // field is always nil.
-func header(ds *docState) types.Node {
+func header(ds *docState) nodes.Node {
 	ds.push(nil)
-	nodes := parseSubtree(ds)
+	n := parseSubtree(ds)
 	ds.pop()
-	if len(nodes) == 0 {
+	if len(n) == 0 {
 		return nil
 	}
-	n := types.NewHeaderNode(headerLevel[ds.cur.DataAtom], nodes...)
+	nn := nodes.NewHeaderNode(headerLevel[ds.cur.DataAtom], n...)
 	switch strings.ToLower(stringifyNode(ds.cur, true)) {
 	case headerLearn, headerCover:
-		n.MutateType(types.NodeHeaderCheck)
+		nn.MutateType(nodes.NodeHeaderCheck)
 	case headerFAQ:
-		n.MutateType(types.NodeHeaderFAQ)
+		nn.MutateType(nodes.NodeHeaderFAQ)
 	}
 	ds.env = nil
-	return n
+	return nn
 }
 
 // aside produces an infobox.
-func aside(ds *docState) types.Node {
-	kind := types.InfoboxPositive
+func aside(ds *docState) nodes.Node {
+	kind := nodes.InfoboxPositive
 	for _, v := range ds.cur.Attr {
 		// If class "negative" is given, set the infobox type.
 		if v.Key == "class" && v.Val == "negative" {
-			kind = types.InfoboxNegative
+			kind = nodes.InfoboxNegative
 		}
 	}
 
@@ -556,16 +557,16 @@ func aside(ds *docState) types.Node {
 	if len(nn) == 0 {
 		return nil
 	}
-	return types.NewInfoboxNode(kind, nn...)
+	return nodes.NewInfoboxNode(kind, nn...)
 }
 
 // new style aside, to produce an infobox
-func newAside(ds *docState) types.Node {
-	kind := types.InfoboxPositive
+func newAside(ds *docState) nodes.Node {
+	kind := nodes.InfoboxPositive
 	s := ds.cur.FirstChild.NextSibling.FirstChild.Data
 	if strings.HasPrefix(s, "aside negative") {
 		ds.cur.FirstChild.NextSibling.FirstChild.Data = strings.TrimPrefix(s, "aside negative")
-		kind = types.InfoboxNegative
+		kind = nodes.InfoboxNegative
 	} else {
 		ds.cur.FirstChild.NextSibling.FirstChild.Data = strings.TrimPrefix(s, "aside positive")
 	}
@@ -578,11 +579,11 @@ func newAside(ds *docState) types.Node {
 	if len(nn) == 0 {
 		return nil
 	}
-	return types.NewInfoboxNode(kind, nn...)
+	return nodes.NewInfoboxNode(kind, nn...)
 }
 
 // infobox doesn't have a block parent.
-func infobox(ds *docState) types.Node {
+func infobox(ds *docState) nodes.Node {
 	negativeInfoBox := isInfoboxNegative(ds.cur)
 	// iterate twice on next sibling as there is a \n node in between
 	ds.cur = ds.cur.NextSibling.NextSibling
@@ -594,17 +595,17 @@ func infobox(ds *docState) types.Node {
 	if len(nn) == 0 {
 		return nil
 	}
-	kind := types.InfoboxPositive
+	kind := nodes.InfoboxPositive
 	if negativeInfoBox {
-		kind = types.InfoboxNegative
+		kind = nodes.InfoboxNegative
 	}
-	return types.NewInfoboxNode(kind, nn...)
+	return nodes.NewInfoboxNode(kind, nn...)
 }
 
 // table parses an arbitrary <table> element and its children.
 // It may return other elements if the table is just a wrap.
-func table(ds *docState) types.Node {
-	var rows [][]*types.GridCell
+func table(ds *docState) nodes.Node {
+	var rows [][]*nodes.GridCell
 	for _, tr := range findChildAtoms(ds.cur, atom.Tr) {
 		ds.push(tr)
 		r := tableRow(ds)
@@ -614,11 +615,11 @@ func table(ds *docState) types.Node {
 	if len(rows) == 0 {
 		return nil
 	}
-	return types.NewGridNode(rows...)
+	return nodes.NewGridNode(rows...)
 }
 
-func tableRow(ds *docState) []*types.GridCell {
-	var row []*types.GridCell
+func tableRow(ds *docState) []*nodes.GridCell {
+	var row []*nodes.GridCell
 	firstChild := findAtom(ds.cur, atom.Td)
 	// If there is no Td child found, could be table header so look for Th
 	if firstChild == nil {
@@ -651,10 +652,10 @@ func tableRow(ds *docState) []*types.GridCell {
 		if err != nil {
 			rs = 1
 		}
-		cell := &types.GridCell{
+		cell := &nodes.GridCell{
 			Colspan: cs,
 			Rowspan: rs,
-			Content: types.NewListNode(nn...),
+			Content: nodes.NewListNode(nn...),
 		}
 		row = append(row, cell)
 	}
@@ -663,8 +664,8 @@ func tableRow(ds *docState) []*types.GridCell {
 
 // survey expects 1 or more name Nodes followed by 1 or more input Nodes.
 // Each input node is expected to have a value attribute.
-func survey(ds *docState) types.Node {
-	var gg []*types.SurveyGroup
+func survey(ds *docState) nodes.Node {
+	var gg []*nodes.SurveyGroup
 	ns := findChildAtoms(ds.cur, atom.Name)
 	for _, n := range ns {
 		var inputs []*html.Node
@@ -677,7 +678,7 @@ func survey(ds *docState) types.Node {
 		}
 		opt := surveyOpt(inputs)
 		if len(opt) > 0 {
-			gg = append(gg, &types.SurveyGroup{
+			gg = append(gg, &nodes.SurveyGroup{
 				Name:    strings.TrimSpace(n.FirstChild.Data),
 				Options: opt,
 			})
@@ -688,7 +689,7 @@ func survey(ds *docState) types.Node {
 	}
 	ds.survey++
 	id := fmt.Sprintf("%s-%d", ds.clab.ID, ds.survey)
-	return types.NewSurveyNode(id, gg...)
+	return nodes.NewSurveyNode(id, gg...)
 }
 
 func surveyOpt(inputs []*html.Node) []string {
@@ -705,7 +706,7 @@ func surveyOpt(inputs []*html.Node) []string {
 
 // code parses hn as inline or block codes.
 // Inline code node will be of type NodeText.
-func code(ds *docState, term bool) types.Node {
+func code(ds *docState, term bool) nodes.Node {
 	elem := findParent(ds.cur, atom.Pre)
 	// inline <code> text
 	if elem == nil {
@@ -730,20 +731,20 @@ func code(ds *docState, term bool) types.Node {
 			}
 		}
 	}
-	n := types.NewCodeNode(v, term, lan)
+	n := nodes.NewCodeNode(v, term, lan)
 	n.MutateBlock(elem)
 	return n
 }
 
 // list parses <ul> and <ol> lists.
 // It returns nil if the list has no items.
-func list(ds *docState) types.Node {
+func list(ds *docState) nodes.Node {
 	typ := nodeAttr(ds.cur, "type")
 	if ds.cur.DataAtom == atom.Ol && typ == "" {
 		typ = "1"
 	}
 	start, _ := strconv.Atoi(nodeAttr(ds.cur, "start"))
-	list := types.NewItemsListNode(typ, start)
+	list := nodes.NewItemsListNode(typ, start)
 	for hn := findAtom(ds.cur, atom.Li); hn != nil; hn = hn.NextSibling {
 		if hn.DataAtom != atom.Li {
 			continue
@@ -761,10 +762,10 @@ func list(ds *docState) types.Node {
 	}
 	if ds.lastNode != nil {
 		switch ds.lastNode.Type() {
-		case types.NodeHeaderCheck:
-			list.MutateType(types.NodeItemsCheck)
-		case types.NodeHeaderFAQ:
-			list.MutateType(types.NodeItemsFAQ)
+		case nodes.NodeHeaderCheck:
+			list.MutateType(nodes.NodeItemsCheck)
+		case nodes.NodeHeaderFAQ:
+			list.MutateType(nodes.NodeItemsFAQ)
 		}
 	}
 	return list
@@ -773,7 +774,7 @@ func list(ds *docState) types.Node {
 // image creates a new ImageNode out of hn, parsing its src attribute.
 // It returns nil if src is empty.
 // It may also return a YouTubeNode if alt property contains specific substring.
-func image(ds *docState) types.Node {
+func image(ds *docState) nodes.Node {
 	alt := nodeAttr(ds.cur, "alt")
 	// Author-added double quotes in attributes break html syntax
 	alt = html.EscapeString(alt)
@@ -786,7 +787,7 @@ func image(ds *docState) types.Node {
 		}
 		// For iframe, make sure URL ends in allowlisted domain.
 		ok := false
-		for _, domain := range types.IframeAllowlist {
+		for _, domain := range nodes.IframeAllowlist {
 			if strings.HasSuffix(u.Hostname(), domain) {
 				ok = true
 				break
@@ -801,7 +802,7 @@ func image(ds *docState) types.Node {
 		return nil
 	}
 
-	n := types.NewImageNode(s)
+	n := nodes.NewImageNode(s)
 
 	if alt != "" {
 		n.Alt = alt
@@ -824,10 +825,10 @@ func image(ds *docState) types.Node {
 	return n
 }
 
-func youtube(ds *docState) types.Node {
+func youtube(ds *docState) nodes.Node {
 	for _, attr := range ds.cur.Attr {
 		if attr.Key == "id" {
-			n := types.NewYouTubeNode(attr.Val)
+			n := nodes.NewYouTubeNode(attr.Val)
 			n.MutateBlock(true)
 			return n
 		}
@@ -835,15 +836,15 @@ func youtube(ds *docState) types.Node {
 	return nil
 }
 
-func fragmentImport(ds *docState) types.Node {
+func fragmentImport(ds *docState) nodes.Node {
 	if url := strings.TrimPrefix(ds.cur.Data, convertedImportsDataPrefix); url != "" {
-		return types.NewImportNode(url)
+		return nodes.NewImportNode(url)
 	}
 
 	return nil
 }
 
-func iframe(ds *docState) types.Node {
+func iframe(ds *docState) nodes.Node {
 	u, err := url.Parse(nodeAttr(ds.cur, "alt"))
 	if err != nil {
 		return nil
@@ -852,7 +853,7 @@ func iframe(ds *docState) types.Node {
 	if u.Scheme != "https" {
 		return nil
 	}
-	n := types.NewIframeNode(u.String())
+	n := nodes.NewIframeNode(u.String())
 	n.MutateBlock(true)
 	return n
 }
@@ -860,7 +861,7 @@ func iframe(ds *docState) types.Node {
 // button returns either a text node, if no <a> child element is present,
 // or link node, containing the button.
 // It returns nil if no content nodes are present.
-func button(ds *docState) types.Node {
+func button(ds *docState) nodes.Node {
 	a := findAtom(ds.cur, atom.A)
 	if a == nil {
 		return text(ds)
@@ -871,17 +872,17 @@ func button(ds *docState) types.Node {
 	}
 
 	ds.push(a)
-	nodes := parseSubtree(ds)
+	n := parseSubtree(ds)
 	ds.pop()
-	if len(nodes) == 0 {
+	if len(n) == 0 {
 		return nil
 	}
 
 	s := strings.ToLower(stringifyNode(a, true))
 	dl := strings.HasPrefix(s, "download ")
-	btn := types.NewButtonNode(true, true, dl, nodes...)
+	btn := nodes.NewButtonNode(true, true, dl, n...)
 
-	ln := types.NewURLNode(href, btn)
+	ln := nodes.NewURLNode(href, btn)
 	ln.MutateBlock(findBlockParent(ds.cur))
 	return ln
 }
@@ -889,7 +890,7 @@ func button(ds *docState) types.Node {
 // Link creates a URLNode out of hn, parsing href and name attributes.
 // It returns nil if hn contents is empty.
 // The resuling link's content is always a single text node.
-func link(ds *docState) types.Node {
+func link(ds *docState) nodes.Node {
 	href := nodeAttr(ds.cur, "href")
 
 	ds.push(nil)
@@ -905,13 +906,13 @@ func link(ds *docState) types.Node {
 	}
 	// Apply outside styles to inside parsed (text) nodes
 	for _, node := range parsedChildNodes {
-		if textNode, ok := node.(*types.TextNode); ok {
+		if textNode, ok := node.(*nodes.TextNode); ok {
 			textNode.Bold = textNode.Bold || outsideBold
 			textNode.Italic = textNode.Italic || outsideItalic
 		}
 	}
 
-	n := types.NewURLNode(href, parsedChildNodes...)
+	n := nodes.NewURLNode(href, parsedChildNodes...)
 	n.Name = nodeAttr(ds.cur, "name")
 	if v := nodeAttr(ds.cur, "target"); v != "" {
 		n.Target = v
@@ -922,7 +923,7 @@ func link(ds *docState) types.Node {
 
 // text creates a TextNode using hn.Data as contents.
 // It returns nil if hn.Data is empty or contains only space runes.
-func text(ds *docState) types.Node {
+func text(ds *docState) nodes.Node {
 	bold := isBold(ds.cur)
 	italic := isItalic(ds.cur)
 	// We must call this to look up an extra level in the node tree to obtain both styles
@@ -944,7 +945,7 @@ func text(ds *docState) types.Node {
 	}
 
 	v := stringifyNode(ds.cur, false)
-	n := types.NewTextNode(v)
+	n := nodes.NewTextNode(v)
 	n.Bold = bold
 	n.Italic = italic
 	n.Code = code
@@ -1027,7 +1028,7 @@ func convertImports(content []byte) []byte {
 
 func hasImport(ds *docState) bool {
 	for _, step := range ds.clab.Steps {
-		if len(types.ImportNodes(step.Content.Nodes)) > 0 {
+		if len(nodes.ImportNodes(step.Content.Nodes)) > 0 {
 			return true
 		}
 	}

@@ -18,45 +18,45 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/nodes"
 )
 
 // blockSquashable returns true if a node of type t can be squash in a block.
-func blockSquashable(n types.Node) bool {
+func blockSquashable(n nodes.Node) bool {
 	if n.Block() == nil {
 		return false
 	}
-	return types.IsInline(n.Type())
+	return nodes.IsInline(n.Type())
 }
 
-func squashHeadBlock(nodes []types.Node) (squash, remainder []types.Node) {
-	first := nodes[0]
+func squashHeadBlock(nodesToSquash []nodes.Node) (squash, remainder []nodes.Node) {
+	first := nodesToSquash[0]
 	if !blockSquashable(first) {
-		return nodes[:1], nodes[1:]
+		return nodesToSquash[:1], nodesToSquash[1:]
 	}
-	hnodes := []types.Node{first}
-	for _, n := range nodes[1:] {
+	hnodes := []nodes.Node{first}
+	for _, n := range nodesToSquash[1:] {
 		if !blockSquashable(n) || n.Block() != first.Block() {
 			break
 		}
 		hnodes = append(hnodes, n)
 	}
-	next := nodes[len(hnodes):]
+	next := nodesToSquash[len(hnodes):]
 	hnodes = trimNodes(hnodes)
 	if len(hnodes) == 0 {
 		return nil, next
 	}
-	head := types.NewListNode(hnodes...)
+	head := nodes.NewListNode(hnodes...)
 	head.MutateBlock(true)
 	head.MutateEnv(first.Env())
-	return []types.Node{head}, next
+	return []nodes.Node{head}, next
 }
 
-func trimNodes(nodes []types.Node) []types.Node {
-	trim := make([]types.Node, 0, len(nodes))
-	for i, n := range nodes {
-		if n.Type() == types.NodeCode && i == 0 {
-			cn := n.(*types.CodeNode)
+func trimNodes(nodesToTrim []nodes.Node) []nodes.Node {
+	trim := make([]nodes.Node, 0, len(nodesToTrim))
+	for i, n := range nodesToTrim {
+		if n.Type() == nodes.NodeCode && i == 0 {
+			cn := n.(*nodes.CodeNode)
 			cn.Value = strings.TrimLeft(cn.Value, "\n")
 		}
 		if !n.Empty() || len(trim) > 0 {
@@ -67,28 +67,28 @@ func trimNodes(nodes []types.Node) []types.Node {
 	return trim
 }
 
-func concatNodes(a, b types.Node) bool {
+func concatNodes(a, b nodes.Node) bool {
 	switch {
-	case a.Type() == types.NodeText && b.Type() == types.NodeText:
+	case a.Type() == nodes.NodeText && b.Type() == nodes.NodeText:
 		return concatText(a, b)
-	case a.Type() == types.NodeCode && b.Type() == types.NodeCode:
+	case a.Type() == nodes.NodeCode && b.Type() == nodes.NodeCode:
 		return concatCode(a, b)
-	case a.Type() == types.NodeCode && b.Type() == types.NodeText:
-		t := b.(*types.TextNode)
+	case a.Type() == nodes.NodeCode && b.Type() == nodes.NodeText:
+		t := b.(*nodes.TextNode)
 		if strings.TrimSpace(t.Value) == "" {
 			return true
 		}
-	case a.Type() == types.NodeURL && b.Type() == types.NodeURL:
+	case a.Type() == nodes.NodeURL && b.Type() == nodes.NodeURL:
 		return concatURL(a, b)
-	case types.IsItemsList(a.Type()) && types.IsItemsList(b.Type()):
+	case nodes.IsItemsList(a.Type()) && nodes.IsItemsList(b.Type()):
 		return concatItemsList(a, b)
 	}
 	return false
 }
 
-func concatItemsList(a, b types.Node) bool {
-	l1 := a.(*types.ItemsListNode)
-	l2 := b.(*types.ItemsListNode)
+func concatItemsList(a, b nodes.Node) bool {
+	l1 := a.(*nodes.ItemsListNode)
+	l2 := b.(*nodes.ItemsListNode)
 	if l1.ListType != l2.ListType {
 		return false
 	}
@@ -99,9 +99,9 @@ func concatItemsList(a, b types.Node) bool {
 	return true
 }
 
-func concatText(a, b types.Node) bool {
-	t1 := a.(*types.TextNode)
-	t2 := b.(*types.TextNode)
+func concatText(a, b nodes.Node) bool {
+	t1 := a.(*nodes.TextNode)
+	t2 := b.(*nodes.TextNode)
 
 	if t1.Block() != t2.Block() {
 		return false
@@ -134,9 +134,9 @@ func concatText(a, b types.Node) bool {
 	return true
 }
 
-func concatCode(a, b types.Node) bool {
-	c1 := a.(*types.CodeNode)
-	c2 := b.(*types.CodeNode)
+func concatCode(a, b nodes.Node) bool {
+	c1 := a.(*nodes.CodeNode)
+	c2 := b.(*nodes.CodeNode)
 	if c1.Block() != c2.Block() || c1.Term != c2.Term || c1.Lang != c2.Lang {
 		return false
 	}
@@ -144,9 +144,9 @@ func concatCode(a, b types.Node) bool {
 	return true
 }
 
-func concatURL(a, b types.Node) bool {
-	u1 := a.(*types.URLNode)
-	u2 := b.(*types.URLNode)
+func concatURL(a, b nodes.Node) bool {
+	u1 := a.(*nodes.URLNode)
+	u2 := b.(*nodes.URLNode)
 	if u1.Block() != u2.Block() || u1.URL != u2.URL || u1.Name != u2.Name {
 		return false
 	}
@@ -174,9 +174,9 @@ func splitSpaceRight(s string) (v string, sp string) {
 	return "", string(rs)
 }
 
-func requiresSpacer(a, b types.Node) bool {
-	t1, ok1 := a.(*types.TextNode)
-	t2, ok2 := b.(*types.TextNode)
+func requiresSpacer(a, b nodes.Node) bool {
+	t1, ok1 := a.(*nodes.TextNode)
+	t2, ok2 := b.(*nodes.TextNode)
 
 	if !(ok1 && ok2) {
 		return false
@@ -188,30 +188,30 @@ func requiresSpacer(a, b types.Node) bool {
 // nodeBlocks encapsulates all nodes of the same block into a new ListNode
 // with its B field set to true.
 // Nodes which are not blockSquashable remain as is.
-func BlockNodes(nodes []types.Node) []types.Node {
-	var blocks []types.Node
+func BlockNodes(nodesToEncapsulate []nodes.Node) []nodes.Node {
+	var blocks []nodes.Node
 	for {
-		if len(nodes) == 0 {
+		if len(nodesToEncapsulate) == 0 {
 			break
 		}
-		var head []types.Node
-		head, nodes = squashHeadBlock(nodes)
+		var head []nodes.Node
+		head, nodesToEncapsulate = squashHeadBlock(nodesToEncapsulate)
 		blocks = append(blocks, head...)
 	}
 	return blocks
 }
 
-// Although nodes slice is not modified, its elements are.
-func CompactNodes(nodes []types.Node) []types.Node {
-	res := make([]types.Node, 0, len(nodes))
-	var last types.Node
-	for _, n := range nodes {
+// Although the input slice is not modified, its elements are.
+func CompactNodes(nodesToCompact []nodes.Node) []nodes.Node {
+	res := make([]nodes.Node, 0, len(nodesToCompact))
+	var last nodes.Node
+	for _, n := range nodesToCompact {
 		switch {
-		case n.Type() == types.NodeList:
-			l := n.(*types.ListNode)
+		case n.Type() == nodes.NodeList:
+			l := n.(*nodes.ListNode)
 			l.Nodes = CompactNodes(l.Nodes)
-		case types.IsItemsList(n.Type()):
-			l := n.(*types.ItemsListNode)
+		case nodes.IsItemsList(n.Type()):
+			l := n.(*nodes.ItemsListNode)
 			for _, it := range l.Items {
 				it.Nodes = CompactNodes(it.Nodes)
 			}
@@ -219,12 +219,12 @@ func CompactNodes(nodes []types.Node) []types.Node {
 		if last == nil || !concatNodes(last, n) {
 			if requiresSpacer(last, n) {
 				// Append non-breaking zero-width space.
-				res = append(res, types.NewTextNode(string('\uFEFF')))
+				res = append(res, nodes.NewTextNode(string('\uFEFF')))
 			}
 			res = append(res, n)
 
-			if n.Type() == types.NodeCode {
-				c := n.(*types.CodeNode)
+			if n.Type() == nodes.NodeCode {
+				c := n.(*nodes.CodeNode)
 				c.Value = strings.TrimLeft(c.Value, "\n")
 			}
 

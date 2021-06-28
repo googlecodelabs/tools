@@ -24,11 +24,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/nodes"
 )
 
 // MD renders nodes as markdown for the target env.
-func MD(ctx Context, nodes ...types.Node) (string, error) {
+func MD(ctx Context, nodes ...nodes.Node) (string, error) {
 	var buf bytes.Buffer
 	if err := WriteMD(&buf, ctx.Env, ctx.Format, nodes...); err != nil {
 		return "", err
@@ -37,7 +37,7 @@ func MD(ctx Context, nodes ...types.Node) (string, error) {
 }
 
 // WriteMD does the same as MD but outputs rendered markup to w.
-func WriteMD(w io.Writer, env string, fmt string, nodes ...types.Node) error {
+func WriteMD(w io.Writer, env string, fmt string, nodes ...nodes.Node) error {
 	mw := mdWriter{w: w, env: env, format: fmt, Prefix: []byte("")}
 	return mw.write(nodes...)
 }
@@ -94,40 +94,40 @@ func (mw *mdWriter) matchEnv(v []string) bool {
 	return i < len(v) && v[i] == mw.env
 }
 
-func (mw *mdWriter) write(nodes ...types.Node) error {
-	for _, n := range nodes {
+func (mw *mdWriter) write(nodesToWrite ...nodes.Node) error {
+	for _, n := range nodesToWrite {
 		if !mw.matchEnv(n.Env()) {
 			continue
 		}
 		switch n := n.(type) {
-		case *types.TextNode:
+		case *nodes.TextNode:
 			mw.text(n)
-		case *types.ImageNode:
+		case *nodes.ImageNode:
 			mw.image(n)
-		case *types.URLNode:
+		case *nodes.URLNode:
 			mw.url(n)
-		case *types.ButtonNode:
+		case *nodes.ButtonNode:
 			mw.write(n.Content.Nodes...)
-		case *types.CodeNode:
+		case *nodes.CodeNode:
 			mw.code(n)
-		case *types.ListNode:
+		case *nodes.ListNode:
 			mw.list(n)
-		case *types.ImportNode:
+		case *nodes.ImportNode:
 			if len(n.Content.Nodes) == 0 {
 				break
 			}
 			mw.write(n.Content.Nodes...)
-		case *types.ItemsListNode:
+		case *nodes.ItemsListNode:
 			mw.itemsList(n)
-		case *types.GridNode:
+		case *nodes.GridNode:
 			mw.table(n)
-		case *types.InfoboxNode:
+		case *nodes.InfoboxNode:
 			mw.infobox(n)
-		case *types.SurveyNode:
+		case *nodes.SurveyNode:
 			mw.survey(n)
-		case *types.HeaderNode:
+		case *nodes.HeaderNode:
 			mw.header(n)
-		case *types.YouTubeNode:
+		case *nodes.YouTubeNode:
 			mw.youtube(n)
 		}
 		if mw.err != nil {
@@ -137,7 +137,7 @@ func (mw *mdWriter) write(nodes ...types.Node) error {
 	return nil
 }
 
-func (mw *mdWriter) text(n *types.TextNode) {
+func (mw *mdWriter) text(n *nodes.TextNode) {
 	tr := strings.TrimLeft(n.Value, " \t\n\r\f\v")
 	left := n.Value[0:(len(n.Value) - len(tr))]
 	t := strings.TrimRight(tr, " \t\n\r\f\v")
@@ -173,7 +173,7 @@ func (mw *mdWriter) text(n *types.TextNode) {
 	mw.writeString(right)
 }
 
-func (mw *mdWriter) image(n *types.ImageNode) {
+func (mw *mdWriter) image(n *nodes.ImageNode) {
 	mw.space()
 	mw.writeString("<img ")
 	mw.writeString(fmt.Sprintf("src=%q ", n.Src))
@@ -196,11 +196,11 @@ func (mw *mdWriter) image(n *types.ImageNode) {
 	mw.writeString("/>")
 }
 
-func (mw *mdWriter) url(n *types.URLNode) {
+func (mw *mdWriter) url(n *nodes.URLNode) {
 	mw.space()
 	if n.URL != "" {
 		// Look-ahead for button syntax.
-		if _, ok := n.Content.Nodes[0].(*types.ButtonNode); ok {
+		if _, ok := n.Content.Nodes[0].(*nodes.ButtonNode); ok {
 			mw.writeString("<button>")
 		}
 		mw.writeString("[")
@@ -213,14 +213,14 @@ func (mw *mdWriter) url(n *types.URLNode) {
 		mw.writeString("](")
 		mw.writeString(n.URL)
 		mw.writeString(")")
-		if _, ok := n.Content.Nodes[0].(*types.ButtonNode); ok {
+		if _, ok := n.Content.Nodes[0].(*nodes.ButtonNode); ok {
 			// Look-ahead for button syntax.
 			mw.writeString("</button>")
 		}
 	}
 }
 
-func (mw *mdWriter) code(n *types.CodeNode) {
+func (mw *mdWriter) code(n *nodes.CodeNode) {
 	if n.Empty() {
 		return
 	}
@@ -240,7 +240,7 @@ func (mw *mdWriter) code(n *types.CodeNode) {
 	mw.writeString("```")
 }
 
-func (mw *mdWriter) list(n *types.ListNode) {
+func (mw *mdWriter) list(n *nodes.ListNode) {
 	if n.Block() == true {
 		mw.newBlock()
 	}
@@ -250,14 +250,14 @@ func (mw *mdWriter) list(n *types.ListNode) {
 	}
 }
 
-func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
+func (mw *mdWriter) itemsList(n *nodes.ItemsListNode) {
 	mw.isWritingList = true
 	if n.Block() == true {
 		mw.newBlock()
 	}
 	for i, item := range n.Items {
 		s := "* "
-		if n.Type() == types.NodeItemsList && n.Start > 0 {
+		if n.Type() == nodes.NodeItemsList && n.Start > 0 {
 			s = strconv.Itoa(i+n.Start) + ". "
 		}
 		mw.writeString(s)
@@ -269,14 +269,14 @@ func (mw *mdWriter) itemsList(n *types.ItemsListNode) {
 	mw.isWritingList = false
 }
 
-func (mw *mdWriter) infobox(n *types.InfoboxNode) {
+func (mw *mdWriter) infobox(n *nodes.InfoboxNode) {
 	// InfoBoxes are comprised of a ListNode with the contents of the InfoBox.
 	// Writing the ListNode directly results in extra newlines in the md output
 	// which breaks the formatting. So instead, write the ListNode's children
 	// directly and don't write the ListNode itself.
 	mw.newBlock()
 	k := "aside positive"
-	if n.Kind == types.InfoboxNegative {
+	if n.Kind == nodes.InfoboxNegative {
 		k = "aside negative"
 	}
 	mw.Prefix = []byte("> ")
@@ -290,7 +290,7 @@ func (mw *mdWriter) infobox(n *types.InfoboxNode) {
 	mw.Prefix = []byte("")
 }
 
-func (mw *mdWriter) survey(n *types.SurveyNode) {
+func (mw *mdWriter) survey(n *nodes.SurveyNode) {
 	mw.newBlock()
 	mw.writeString("<form>")
 	mw.writeString("\n")
@@ -309,7 +309,7 @@ func (mw *mdWriter) survey(n *types.SurveyNode) {
 	mw.writeString("</form>")
 }
 
-func (mw *mdWriter) header(n *types.HeaderNode) {
+func (mw *mdWriter) header(n *nodes.HeaderNode) {
 	mw.newBlock()
 	mw.writeString(strings.Repeat("#", n.Level+1))
 	mw.writeString(" ")
@@ -319,14 +319,14 @@ func (mw *mdWriter) header(n *types.HeaderNode) {
 	}
 }
 
-func (mw *mdWriter) youtube(n *types.YouTubeNode) {
+func (mw *mdWriter) youtube(n *nodes.YouTubeNode) {
 	if !mw.isWritingList {
 		mw.newBlock()
 	}
 	mw.writeString(fmt.Sprintf(`<video id="%s"></video>`, n.VideoID))
 }
 
-func (mw *mdWriter) table(n *types.GridNode) {
+func (mw *mdWriter) table(n *nodes.GridNode) {
 	// If table content is empty, don't output the table.
 	if n.Empty() {
 		return
@@ -376,7 +376,7 @@ func (mw *mdWriter) table(n *types.GridNode) {
 	}
 }
 
-func maxColsInTable(n *types.GridNode) int {
+func maxColsInTable(n *nodes.GridNode) int {
 	m := 0
 	for _, row := range n.Rows {
 		if len(row) > m {

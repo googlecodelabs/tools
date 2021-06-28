@@ -17,15 +17,15 @@ package render
 import (
 	"testing"
 
-	"github.com/googlecodelabs/tools/claat/types"
+	"github.com/googlecodelabs/tools/claat/nodes"
 )
 
 func TestHTMLEnv(t *testing.T) {
-	one := types.NewTextNode("one ")
+	one := nodes.NewTextNode("one ")
 	one.MutateEnv([]string{"one"})
-	two := types.NewTextNode("two ")
+	two := nodes.NewTextNode("two ")
 	two.MutateEnv([]string{"two"})
-	three := types.NewTextNode("three ")
+	three := nodes.NewTextNode("three ")
 	three.MutateEnv([]string{"one", "three"})
 
 	tests := []struct {
