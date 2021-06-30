@@ -1,6 +1,7 @@
 package nodes
 
 // iframe allowlist - set of domains allow to embed iframes in a codelab.
+// TODO make this configurable somehow
 var IframeAllowlist = []string{
 	"carto.com",
 	"codepen.io",
