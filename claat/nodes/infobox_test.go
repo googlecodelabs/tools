@@ -1,0 +1,109 @@
+package nodes
+
+import (
+	"testing"
+
+	"github.com/google/go-cmp/cmp"
+)
+
+// AllowUnexported option for cmp to make sure we can diff properly.
+var cmpOpt = cmp.AllowUnexported(InfoboxNode{}, node{}, ListNode{}, TextNode{})
+
+func TestNewInfoboxNode(t *testing.T) {
+	tests := []struct {
+		name      string
+		inKind    InfoboxKind
+		inContent []Node
+		out       *InfoboxNode
+	}{
+		{
+			name:   "PositiveEmpty",
+			inKind: InfoboxPositive,
+			out: &InfoboxNode{
+				node: node{typ: NodeInfobox},
+				Kind: InfoboxPositive,
+				// TODO: Do we really want this to not be nil?
+				Content: NewListNode(),
+			},
+		},
+		{
+			name:      "PositiveOneContent",
+			inKind:    InfoboxPositive,
+			inContent: []Node{NewTextNode("hello")},
+			out: &InfoboxNode{
+				node:    node{typ: NodeInfobox},
+				Kind:    InfoboxPositive,
+				Content: NewListNode(NewTextNode("hello")),
+			},
+		},
+		{
+			name:      "PositiveMultiContent",
+			inKind:    InfoboxPositive,
+			inContent: []Node{NewTextNode("orange"), NewTextNode("strawberry"), NewTextNode("pineapple")},
+			out: &InfoboxNode{
+				node:    node{typ: NodeInfobox},
+				Kind:    InfoboxPositive,
+				Content: NewListNode(NewTextNode("orange"), NewTextNode("strawberry"), NewTextNode("pineapple")),
+			},
+		},
+		{
+			name:   "NegativeEmpty",
+			inKind: InfoboxNegative,
+			out: &InfoboxNode{
+				node: node{typ: NodeInfobox},
+				Kind: InfoboxNegative,
+				// TODO: Do we really want this to not be nil?
+				Content: NewListNode(),
+			},
+		},
+		{
+			name:      "NegativeOneContent",
+			inKind:    InfoboxNegative,
+			inContent: []Node{NewTextNode("hello")},
+			out: &InfoboxNode{
+				node:    node{typ: NodeInfobox},
+				Kind:    InfoboxNegative,
+				Content: NewListNode(NewTextNode("hello")),
+			},
+		},
+		{
+			name:      "NegativeMultiContent",
+			inKind:    InfoboxNegative,
+			inContent: []Node{NewTextNode("orange"), NewTextNode("strawberry"), NewTextNode("pineapple")},
+			out: &InfoboxNode{
+				node:    node{typ: NodeInfobox},
+				Kind:    InfoboxNegative,
+				Content: NewListNode(NewTextNode("orange"), NewTextNode("strawberry"), NewTextNode("pineapple")),
+			},
+		},
+		{
+			// TODO: Should we set a default value?
+			name:      "NoKind",
+			inContent: []Node{NewTextNode("orange")},
+			out: &InfoboxNode{
+				node:    node{typ: NodeInfobox},
+				Content: NewListNode(NewTextNode("orange")),
+			},
+		},
+		{
+			// TODO: Should a list of exactly one list be flattened?
+			name:      "ListOfOneList",
+			inKind:    InfoboxPositive,
+			inContent: []Node{NewListNode(NewTextNode("a"), NewTextNode("b"))},
+			out: &InfoboxNode{
+				node:    node{typ: NodeInfobox},
+				Kind:    InfoboxPositive,
+				Content: NewListNode(NewListNode(NewTextNode("a"), NewTextNode("b"))),
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out := NewInfoboxNode(tc.inKind, tc.inContent...)
+			if diff := cmp.Diff(tc.out, out, cmpOpt); diff != "" {
+				t.Errorf("NewInfoboxNode(%q, %v) got diff (-want +got): %s", tc.inKind, tc.inContent, diff)
+				return
+			}
+		})
+	}
+}
