@@ -18,6 +18,9 @@ jobs:
       with:
         go-version: 1.16
 
+    - name: Go to module directory
+      run: cd claat
+
     - name: Build
       run: go build -v ./...
 
