@@ -407,16 +407,6 @@ func parseMetadata(ds *docState, opts parser.Options) error {
 	return addMetadataToCodelab(m, ds.clab, opts)
 }
 
-// standardSplit takes a string, splits it along a comma delimiter, then on each fragment, trims Unicode spaces
-// from both ends and converts them to lowercase. It returns a slice of the processed strings.
-func standardSplit(s string) []string {
-	strs := strings.Split(s, ",")
-	for k, v := range strs {
-		strs[k] = strings.ToLower(strings.TrimSpace(v))
-	}
-	return strs
-}
-
 // addMetadataToCodelab takes a map of strings to strings, a pointer to a Codelab, and an options struct. It reads the keys of the map,
 // and assigns the values to any keys that match a codelab metadata field as defined by the meta* constants.
 func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Options) error {
@@ -436,13 +426,13 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 			c.ID = v
 		case MetaCategories:
 			// Standardize the categories and append to codelab field.
-			c.Categories = append(c.Categories, standardSplit(v)...)
+			c.Categories = append(c.Categories, util.NormalizedSplit(v)...)
 		case MetaEnvironments:
 			// Standardize the tags and append to the codelab field.
-			c.Tags = append(c.Tags, standardSplit(v)...)
+			c.Tags = append(c.Tags, util.NormalizedSplit(v)...)
 		case MetaStatus:
 			// Standardize the statuses and append to the codelab field.
-			statuses := standardSplit(v)
+			statuses := util.NormalizedSplit(v)
 			statusesAsLegacy := types.LegacyStatus(statuses)
 			c.Status = &statusesAsLegacy
 		case MetaFeedbackLink:
@@ -453,7 +443,7 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 			c.GA = v
 		case MetaTags:
 			// Standardize the tags and append to the codelab field.
-			c.Tags = append(c.Tags, standardSplit(v)...)
+			c.Tags = append(c.Tags, util.NormalizedSplit(v)...)
 		case MetaSource:
 			// Directly assign the source doc ID to the source field.
 			c.Source = v
