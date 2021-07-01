@@ -37,3 +37,55 @@ func TestUnique(t *testing.T) {
 		})
 	}
 }
+
+func TestNormalizedSplit(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		out  []string
+	}{
+		{
+			name: "none",
+			in:   "",
+			out:  []string{},
+		},
+		{
+			name: "one",
+			in:   "peach",
+			out:  []string{"peach"},
+		},
+		{
+			name: "split",
+			in:   "peach,pear",
+			out:  []string{"peach", "pear"},
+		},
+		{
+			name: "split and trim space",
+			in:   "peach , pear",
+			out:  []string{"peach", "pear"},
+		},
+		{
+			name: "split and collapse space",
+			in:   "p e a c h,pear",
+			out:  []string{"peach", "pear"},
+		},
+		{
+			name: "split and remove duplicates",
+			in:   "peach,pear",
+			out:  []string{"peach", "pear"},
+		},
+		{
+			name: "split and lowercase",
+			in:   "PEACH,pear",
+			out:  []string{"peach", "pear"},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out := NormalizedSplit(tc.in)
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("NormalizedSplit(%+v) got diff (-want, +got)=\n%s", tc.in, diff)
+			}
+		})
+	}
+}
