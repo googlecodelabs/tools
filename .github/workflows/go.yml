@@ -18,17 +18,10 @@ jobs:
       with:
         go-version: 1.16
 
-    - name: ls
-      run: ls
-
-    - name: Go to module directory
-      run: cd claat
-
-    - name: ls2
-      run: ls
-
     - name: Build
+      working-directory: claat
       run: go build -v ./...
 
     - name: Test
+      working-directory: claat
       run: go test -v ./...
