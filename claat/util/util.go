@@ -34,10 +34,11 @@ func Unique(a []string) []string {
 // NormalizedSplit takes a string, removes spaces, splits it along a comma delimiter, then on each fragment, trims Unicode spaces
 // from both ends and converts them to lowercase. It returns a slice of the unique processed strings.
 func NormalizedSplit(s string) []string {
+	s = stripSpaces(s)
+	s = strings.Trim(s, ",")
 	if s == "" {
 		return []string{}
 	}
-	s = stripSpaces(s)
 	strs := strings.Split(s, ",")
 	for k, v := range strs {
 		strs[k] = strings.ToLower(v)
