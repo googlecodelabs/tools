@@ -55,6 +55,16 @@ func TestNormalizedSplit(t *testing.T) {
 			out:  []string{"peach"},
 		},
 		{
+			name: "whitespace",
+			in:   "   ",
+			out:  []string{},
+		},
+		{
+			name: "commas",
+			in:   ",,,",
+			out:  []string{},
+		},
+		{
 			name: "split",
 			in:   "peach,pear",
 			out:  []string{"peach", "pear"},
@@ -65,18 +75,38 @@ func TestNormalizedSplit(t *testing.T) {
 			out:  []string{"peach", "pear"},
 		},
 		{
+			name: "split and trim consequtive spaces",
+			in:   "peach  ,  pear",
+			out:  []string{"peach", "pear"},
+		},
+		{
 			name: "split and collapse space",
 			in:   "p e a c h,pear",
 			out:  []string{"peach", "pear"},
 		},
 		{
 			name: "split and remove duplicates",
-			in:   "peach,pear",
+			in:   "peach,pear,pear",
 			out:  []string{"peach", "pear"},
 		},
 		{
 			name: "split and lowercase",
 			in:   "PEACH,pear",
+			out:  []string{"peach", "pear"},
+		},
+		{
+			name: "split and strip new lines",
+			in:   "pea\nch,pear\n",
+			out:  []string{"peach", "pear"},
+		},
+		{
+			name: "split and strip tabs",
+			in:   "pea\tch,pear\t",
+			out:  []string{"peach", "pear"},
+		},
+		{
+			name: "split and strip whitespace",
+			in:   "pea\tch, pear\n",
 			out:  []string{"peach", "pear"},
 		},
 	}
