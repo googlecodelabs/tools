@@ -16,13 +16,12 @@ fi
 
 NB=$1
 TITLE=$2
-TMP=$NB.md.$$
-MD=$NB.md
-HTML=$NB.html
+NAME=$(basename $1 .ipynb)
+MD=$NAME.md
+HTML=$NAME.html
 
-jupyter nbconvert --to markdown $TMP
-echo "Id: $TITLE" | cat - $TMP >$MD
-rm -f $TMP
+jupyter nbconvert --to markdown $NB
+sed -i -e "1s/^/Id: $TITLE\n/" $MD
 claat export -o - $MD >$HTML
 
-echo "markdown version in $MD, web version in $HTML"
+echo -e "markdown version: $MD\nhtml version:     $HTML"
