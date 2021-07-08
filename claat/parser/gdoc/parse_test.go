@@ -166,7 +166,7 @@ func TestMetaTable(t *testing.T) {
 	meta := types.Meta{
 		Summary:    "Test summary",
 		Authors:    "John Smith <user@example.com>",
-		Categories: []string{"Foo", "Bar"},
+		Categories: []string{"foo", "bar"},
 		Theme:      "foo",
 		Status:     clab.Meta.Status, // verified separately
 		Feedback:   "https://example.com/issues",
@@ -247,7 +247,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 	meta := types.Meta{
 		Summary:    "Test summary",
 		Authors:    "John Smith <user@example.com>",
-		Categories: []string{"Foo", "Bar"},
+		Categories: []string{"foo", "bar"},
 		Theme:      "foo",
 		Status:     clab.Meta.Status, // verified separately
 		Feedback:   "https://example.com/issues",
