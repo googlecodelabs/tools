@@ -13,6 +13,11 @@
 // limitations under the License.
 package util
 
+import (
+	"strings"
+	"unicode"
+)
+
 // ImgDirname is where a codelab images are stored,
 // relative to the codelab dir.
 const ImgDirname = "img"
