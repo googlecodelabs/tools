@@ -19,6 +19,10 @@ jobs:
       with:
         go-version: 1.16
 
+    - name: Vet
+      working-directory: claat
+      run: go vet ./...
+
     - name: Build
       working-directory: claat
       run: go build -v ./...
