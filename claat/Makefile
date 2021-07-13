@@ -48,12 +48,8 @@ release: $(RELEASES)
 	echo $(VERSION) > $(OUTDIR)/VERSION
 	cd $(OUTDIR) && sha1sum claat* > sha1sum.txt
 
-test: .test
-.test: $(SRCS)
-	go test ./... && touch .test
-
 clean:
-	rm -rf $(OUTDIR) render/tmpldata.go .test
+	rm -rf $(OUTDIR) render/tmpldata.go 
 
 $(OUTDIR)/claat-%: GOOS=$(firstword $(subst -, ,$*))
 $(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
