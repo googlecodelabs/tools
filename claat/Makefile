@@ -52,13 +52,8 @@ test: .test
 .test: $(SRCS)
 	go test ./... && touch .test
 
-lint: .lint
-.lint: $(SRCS)
-	go vet ./...
-	golint ./... && touch .lint
-
 clean:
-	rm -rf $(OUTDIR) render/tmpldata.go .test .lint
+	rm -rf $(OUTDIR) render/tmpldata.go .test
 
 $(OUTDIR)/claat-%: GOOS=$(firstword $(subst -, ,$*))
 $(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
