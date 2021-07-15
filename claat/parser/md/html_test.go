@@ -7,6 +7,82 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+func TestIsHeader(t *testing.T) {
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "LabTitle",
+			in: &html.Node{
+				Type:     html.ElementNode,
+				DataAtom: atom.H1,
+				Data:     "h1",
+			},
+		},
+		{
+			name: "StepTitle",
+			in: &html.Node{
+				Type:     html.ElementNode,
+				DataAtom: atom.H2,
+				Data:     "h2",
+			},
+		},
+		{
+			name: "FirstLevel",
+			in: &html.Node{
+				Type:     html.ElementNode,
+				DataAtom: atom.H3,
+				Data:     "h3",
+			},
+			out: true,
+		},
+		{
+			name: "SecondLevel",
+			in: &html.Node{
+				Type:     html.ElementNode,
+				DataAtom: atom.H4,
+				Data:     "h4",
+			},
+			out: true,
+		},
+		{
+			name: "ThirdLevel",
+			in: &html.Node{
+				Type:     html.ElementNode,
+				DataAtom: atom.H5,
+				Data:     "h5",
+			},
+			out: true,
+		},
+		{
+			name: "FourthLevel",
+			in: &html.Node{
+				Type:     html.ElementNode,
+				DataAtom: atom.H6,
+				Data:     "h6",
+			},
+			out: true,
+		},
+		{
+			name: "NotAHeader",
+			in: &html.Node{
+				Type:     html.ElementNode,
+				DataAtom: atom.Blink,
+				Data:     "blink",
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isHeader(tc.in); out != tc.out {
+				t.Errorf("isHeader(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
 func TestIsBold(t *testing.T) {
 	// <strong>foobar</strong>
 	a1 := &html.Node{
