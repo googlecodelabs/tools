@@ -83,6 +83,8 @@ func TestIsHeader(t *testing.T) {
 	}
 }
 
+// TODO TestIsMeta
+
 func TestIsBold(t *testing.T) {
 	// <strong>foobar</strong>
 	a1 := &html.Node{
