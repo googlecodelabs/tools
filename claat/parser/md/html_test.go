@@ -85,77 +85,90 @@ func TestIsHeader(t *testing.T) {
 
 // TODO TestIsMeta
 
-func TestIsBold(t *testing.T) {
-	// <strong>foobar</strong>
-	a1 := &html.Node{
+func makeStrongNode() *html.Node {
+	return &html.Node{
 		Type:     html.ElementNode,
 		DataAtom: atom.Strong,
 		Data:     "strong",
 	}
-	a2 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
-	a1.AppendChild(a2)
+}
 
-	// <b>foobar</b>
-	b1 := &html.Node{
+func makeBNode() *html.Node {
+	return &html.Node{
 		Type:     html.ElementNode,
 		DataAtom: atom.B,
 		Data:     "b",
 	}
-	b2 := &html.Node{
+}
+
+func makeEmNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Em,
+		Data:     "em",
+	}
+}
+
+// <i>, not the filesystem abstraction.
+func makeINode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.I,
+		Data:     "i",
+	}
+}
+
+func makeTextNode() *html.Node {
+	return &html.Node{
 		Type: html.TextNode,
 		Data: "foobar",
 	}
-	b1.AppendChild(b2)
+}
 
-	// <strong><code>foobar</code></strong>
-	c1 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Strong,
-		Data:     "strong",
-	}
-	c2 := &html.Node{
+func makeCodeNode() *html.Node {
+	return &html.Node{
 		Type:     html.ElementNode,
 		DataAtom: atom.Code,
 		Data:     "code",
 	}
-	c3 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
-	c1.AppendChild(c2)
-	c2.AppendChild(c3)
+}
 
-	// <b><code>foobar</code></b>
-	d1 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.B,
-		Data:     "b",
-	}
-	d2 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Code,
-		Data:     "code",
-	}
-	d3 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
-	d1.AppendChild(d2)
-	d2.AppendChild(d3)
-
-	// <p>foobar</p>
-	e1 := &html.Node{
+func makePNode() *html.Node {
+	return &html.Node{
 		Type:     html.ElementNode,
 		DataAtom: atom.P,
 		Data:     "p",
 	}
-	e2 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
+}
+
+func TestIsBold(t *testing.T) {
+	// <strong>foobar</strong>
+	a1 := makeStrongNode()
+	a2 := makeTextNode()
+	a1.AppendChild(a2)
+
+	// <b>foobar</b>
+	b1 := makeBNode()
+	b2 := makeTextNode()
+	b1.AppendChild(b2)
+
+	// <strong><code>foobar</code></strong>
+	c1 := makeStrongNode()
+	c2 := makeCodeNode()
+	c3 := makeTextNode()
+	c1.AppendChild(c2)
+	c2.AppendChild(c3)
+
+	// <b><code>foobar</code></b>
+	d1 := makeBNode()
+	d2 := makeCodeNode()
+	d3 := makeTextNode()
+	d1.AppendChild(d2)
+	d2.AppendChild(d3)
+
+	// <p>foobar</p>
+	e1 := makePNode()
+	e2 := makeTextNode()
 	e1.AppendChild(e2)
 
 	tests := []struct {
@@ -239,75 +252,32 @@ func TestIsBold(t *testing.T) {
 
 func TestIsItalic(t *testing.T) {
 	// <em>foobar</em>
-	a1 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Em,
-		Data:     "em",
-	}
-	a2 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
+	a1 := makeEmNode()
+	a2 := makeTextNode()
 	a1.AppendChild(a2)
 
 	// <i>foobar</i>
-	b1 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.I,
-		Data:     "i",
-	}
-	b2 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
+	b1 := makeINode()
+	b2 := makeTextNode()
 	b1.AppendChild(b2)
 
 	// <em><code>foobar</code></em>
-	c1 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Em,
-		Data:     "em",
-	}
-	c2 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Code,
-		Data:     "code",
-	}
-	c3 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
+	c1 := makeEmNode()
+	c2 := makeCodeNode()
+	c3 := makeTextNode()
 	c1.AppendChild(c2)
 	c2.AppendChild(c3)
 
 	// <i><code>foobar</code></i>
-	d1 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.I,
-		Data:     "i",
-	}
-	d2 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Code,
-		Data:     "code",
-	}
-	d3 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
+	d1 := makeINode()
+	d2 := makeCodeNode()
+	d3 := makeTextNode()
 	d1.AppendChild(d2)
 	d2.AppendChild(d3)
 
 	// <p>foobar</p>
-	e1 := &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.P,
-		Data:     "p",
-	}
-	e2 := &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
+	e1 := makePNode()
+	e2 := makeTextNode()
 	e1.AppendChild(e2)
 
 	tests := []struct {
