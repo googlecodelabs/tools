@@ -358,3 +358,183 @@ func TestIsItalic(t *testing.T) {
 		})
 	}
 }
+
+func TestIsBoldAndItalic(t *testing.T) {
+	// <em><strong>foobar</strong></em>
+	a1 := makeEmNode()
+	a2 := makeStrongNode()
+	a3 := makeTextNode()
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+
+	// <i><strong>foobar</strong></i>
+	b1 := makeINode()
+	b2 := makeStrongNode()
+	b3 := makeTextNode()
+	b1.AppendChild(b2)
+	b2.AppendChild(b3)
+
+	// <em><b>foobar</b></em>
+	c1 := makeEmNode()
+	c2 := makeBNode()
+	c3 := makeTextNode()
+	c1.AppendChild(c2)
+	c2.AppendChild(c3)
+
+	// <i><b>foobar</b></i>
+	d1 := makeINode()
+	d2 := makeBNode()
+	d3 := makeTextNode()
+	d1.AppendChild(d2)
+	d2.AppendChild(d3)
+
+	// <em><strong><code>foobar</code></strong></em>
+	e1 := makeEmNode()
+	e2 := makeStrongNode()
+	e3 := makeCodeNode()
+	e4 := makeTextNode()
+	e1.AppendChild(e2)
+	e2.AppendChild(e3)
+	e3.AppendChild(e4)
+
+	// <em><code><strong>foobar</strong></code></em>
+	f1 := makeEmNode()
+	f2 := makeCodeNode()
+	f3 := makeStrongNode()
+	f4 := makeTextNode()
+	f1.AppendChild(f2)
+	f2.AppendChild(f3)
+	f3.AppendChild(f4)
+
+	// <strong><em>foobar</em></strong>
+	g1 := makeStrongNode()
+	g2 := makeEmNode()
+	g3 := makeTextNode()
+	g1.AppendChild(g2)
+	g2.AppendChild(g3)
+
+	// <strong><i>foobar</i></strong>
+	// <b><em>foobar</em></b>
+	// <b><i>foobar</i></b>
+	// <strong><em><code>foobar</code></em></strong>
+	// <strong><code><em>foobar</em></code></strong>
+
+	// <p>foobar</p>
+	// <p><strong>foobar</strong></p>
+	// <p><em>foobar</em></p>
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		/*
+			// TODO: I think this should work but it doesn't
+			// Specifically, without loss of generality, passing <em> in <em>foobar</em> returns true, but this behaves differently
+			{
+				name: "EmStrongText_Strong",
+				in:   a2,
+				out:  true,
+			},
+		*/
+		{
+			name: "EmStrongText_Text",
+			in:   a3,
+			out:  true,
+		},
+		/*
+			// TODO: I think this should work but it doesn't
+			{
+				name: "IStrongText_Strong",
+				in:   b2,
+				out:  true,
+			},
+		*/
+		{
+			name: "IStrongText_Text",
+			in:   b3,
+			out:  true,
+		},
+		/*
+			// TODO: I think this should work but it doesn't
+			{
+				name: "EmBText_B",
+				in:   c2,
+				out:  true,
+			},
+		*/
+		{
+			name: "EmBText_Text",
+			in:   c3,
+			out:  true,
+		},
+		/*
+			// TODO: I think this should work but it doesn't
+			{
+				name: "IBText_B",
+				in:   d2,
+				out:  true,
+			},
+		*/
+		{
+			name: "IBText_Text",
+			in:   d3,
+			out:  true,
+		},
+		/*
+			// TODO: I (maybe) think this should work but it doesn't
+			{
+				name: "EmStrongCodeText_Strong",
+				in:   e2,
+				out:  true,
+			},
+		*/
+		{
+			name: "EmStrongCodeText_Code",
+			in:   e3,
+			out:  true,
+		},
+		{
+			name: "EmStrongCodeText_Text",
+			in:   e4,
+			out:  true,
+		},
+		/*
+			// TODO: I (maybe) think this should work but it doesn't
+			{
+				name: "EmCodeStrongText_Code",
+				in:   f2,
+				out:  true,
+			},
+		*/
+		{
+			name: "EmCodeStrongText_Strong",
+			in:   f3,
+			out:  true,
+		},
+		{
+			name: "EmCodeStrongText_Text",
+			in:   f4,
+			out:  true,
+		},
+		/*
+			// TODO: I (maybe) think this should work but it doesn't
+			{
+				name: "StrongEmText_Em",
+				in:   g2,
+				out:  true,
+			},
+		*/
+		{
+			name: "strongEmText_Text",
+			in:   g3,
+			out:  true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isBoldAndItalic(tc.in); out != tc.out {
+				t.Errorf("isBoldAndItalic(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
