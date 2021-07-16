@@ -67,11 +67,7 @@ func TestIsHeader(t *testing.T) {
 		},
 		{
 			name: "NotAHeader",
-			in: &html.Node{
-				Type:     html.ElementNode,
-				DataAtom: atom.Blink,
-				Data:     "blink",
-			},
+			in:   makeBlinkNode(),
 		},
 	}
 	for _, tc := range tests {
@@ -138,6 +134,22 @@ func makePNode() *html.Node {
 		Type:     html.ElementNode,
 		DataAtom: atom.P,
 		Data:     "p",
+	}
+}
+
+func makeButtonNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Button,
+		Data:     "button",
+	}
+}
+
+func makeBlinkNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Blink,
+		Data:     "blink",
 	}
 }
 
@@ -851,6 +863,44 @@ func TestIsCode(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if out := isCode(tc.in); out != tc.out {
 				t.Errorf("isCode(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+func TestIsButton(t *testing.T) {
+	a1 := makeButtonNode()
+	a2 := makeTextNode()
+	a1.AppendChild(a2)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "Button",
+			in:   makeButtonNode(),
+			out:  true,
+		},
+		{
+			name: "ButtonWithText",
+			in:   a1,
+			out:  true,
+		},
+		{
+			name: "TextInButton",
+			in:   a2,
+		},
+		{
+			name: "NotAButton",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isButton(tc.in); out != tc.out {
+				t.Errorf("isButton(%v) = %t, want %t", tc.in, out, tc.out)
 			}
 		})
 	}
