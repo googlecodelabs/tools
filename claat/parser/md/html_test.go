@@ -7,6 +7,78 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+func makeStrongNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Strong,
+		Data:     "strong",
+	}
+}
+
+func makeBNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.B,
+		Data:     "b",
+	}
+}
+
+func makeEmNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Em,
+		Data:     "em",
+	}
+}
+
+// <i>, not the filesystem abstraction.
+func makeINode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.I,
+		Data:     "i",
+	}
+}
+
+func makeTextNode() *html.Node {
+	return &html.Node{
+		Type: html.TextNode,
+		Data: "foobar",
+	}
+}
+
+func makeCodeNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Code,
+		Data:     "code",
+	}
+}
+
+func makePNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.P,
+		Data:     "p",
+	}
+}
+
+func makeButtonNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Button,
+		Data:     "button",
+	}
+}
+
+func makeBlinkNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Blink,
+		Data:     "blink",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -80,78 +152,6 @@ func TestIsHeader(t *testing.T) {
 }
 
 // TODO TestIsMeta
-
-func makeStrongNode() *html.Node {
-	return &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Strong,
-		Data:     "strong",
-	}
-}
-
-func makeBNode() *html.Node {
-	return &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.B,
-		Data:     "b",
-	}
-}
-
-func makeEmNode() *html.Node {
-	return &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Em,
-		Data:     "em",
-	}
-}
-
-// <i>, not the filesystem abstraction.
-func makeINode() *html.Node {
-	return &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.I,
-		Data:     "i",
-	}
-}
-
-func makeTextNode() *html.Node {
-	return &html.Node{
-		Type: html.TextNode,
-		Data: "foobar",
-	}
-}
-
-func makeCodeNode() *html.Node {
-	return &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Code,
-		Data:     "code",
-	}
-}
-
-func makePNode() *html.Node {
-	return &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.P,
-		Data:     "p",
-	}
-}
-
-func makeButtonNode() *html.Node {
-	return &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Button,
-		Data:     "button",
-	}
-}
-
-func makeBlinkNode() *html.Node {
-	return &html.Node{
-		Type:     html.ElementNode,
-		DataAtom: atom.Blink,
-		Data:     "blink",
-	}
-}
 
 func TestIsBold(t *testing.T) {
 	// <strong>foobar</strong>
