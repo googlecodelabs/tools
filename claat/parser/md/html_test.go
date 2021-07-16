@@ -7,6 +7,8 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+// The utility functions for these tests are purposefully kept very simple to make it easy to understand what the tests are doing.
+
 func makeStrongNode() *html.Node {
 	return &html.Node{
 		Type:     html.ElementNode,
