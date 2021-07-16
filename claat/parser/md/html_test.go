@@ -81,6 +81,14 @@ func makeBlinkNode() *html.Node {
 	}
 }
 
+func makeAsideNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Aside,
+		Data:     "aside",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -903,6 +911,44 @@ func TestIsButton(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if out := isButton(tc.in); out != tc.out {
 				t.Errorf("isButton(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+func TestIsAside(t *testing.T) {
+	a1 := makeAsideNode()
+	a2 := makeTextNode()
+	a1.AppendChild(a2)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "Aside",
+			in:   makeAsideNode(),
+			out:  true,
+		},
+		{
+			name: "AsideWithText",
+			in:   a1,
+			out:  true,
+		},
+		{
+			name: "TextInAside",
+			in:   a2,
+		},
+		{
+			name: "NotAnAside",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isAside(tc.in); out != tc.out {
+				t.Errorf("isAside(%v) = %t, want %t", tc.in, out, tc.out)
 			}
 		})
 	}
