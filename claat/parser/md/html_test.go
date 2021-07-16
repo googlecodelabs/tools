@@ -980,6 +980,10 @@ func TestIsInfobox(t *testing.T) {
 	b1.AppendChild(b2)
 	b1.AppendChild(b3)
 
+	c1 := makeInfoboxNode()
+	c2 := makeTextNode("foobar")
+	c1.AppendChild(c2)
+
 	tests := []struct {
 		name string
 		in   *html.Node
@@ -1006,6 +1010,11 @@ func TestIsInfobox(t *testing.T) {
 		{
 			name: "NotAnInfobox",
 			in:   makeBlinkNode(),
+		},
+		// TODO: Is this how this function should work?
+		{
+			name: "InfoboxNoKind",
+			in:   c1,
 		},
 	}
 	for _, tc := range tests {
