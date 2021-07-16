@@ -50,7 +50,7 @@ func isBold(hn *html.Node) bool {
 		hn = hn.Parent
 	} else if hn.DataAtom == atom.Code {
 		// Look up as many as 2 levels, to handle the case of e.g. <bold><em><code>
-		for i:= 0; i < 2; i++ {
+		for i := 0; i < 2; i++ {
 			hn = hn.Parent
 			if hn.DataAtom == atom.Strong || hn.DataAtom == atom.B {
 				return true
@@ -67,7 +67,7 @@ func isItalic(hn *html.Node) bool {
 		hn = hn.Parent
 	} else if hn.DataAtom == atom.Code {
 		// Look up as many as 2 levels, to handle the case of e.g. <em><bold><code>
-		for i:= 0; i < 2; i++ {
+		for i := 0; i < 2; i++ {
 			hn = hn.Parent
 			if hn.DataAtom == atom.Em || hn.DataAtom == atom.I {
 				return true
@@ -79,7 +79,7 @@ func isItalic(hn *html.Node) bool {
 		hn.DataAtom == atom.I
 }
 
-// This is different to calling isBold and isItalic seperately as we must look
+// This is different to calling isBold and isItalic separately as we must look
 // up an extra level in the tree
 func isBoldAndItalic(hn *html.Node) bool {
 	if hn.Parent == nil || hn.Parent.Parent == nil {
@@ -93,17 +93,17 @@ func isBoldAndItalic(hn *html.Node) bool {
 }
 
 func isConsole(hn *html.Node) bool {
-    if hn.Type == html.TextNode {
-        hn = hn.Parent
-    }
-    if (hn.DataAtom == atom.Code) {
-        for _, a := range hn.Attr {
-            if (a.Key == "class" && a.Val == "language-console") {
-                return true;
-            }
-        }
-    }
-    return false;
+	if hn.Type == html.TextNode {
+		hn = hn.Parent
+	}
+	if hn.DataAtom == atom.Code {
+		for _, a := range hn.Attr {
+			if a.Key == "class" && a.Val == "language-console" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func isCode(hn *html.Node) bool {
@@ -123,14 +123,14 @@ func isAside(hn *html.Node) bool {
 
 func isNewAside(hn *html.Node) bool {
 	if hn.FirstChild == nil ||
-	   hn.FirstChild.NextSibling == nil ||
-	   hn.FirstChild.NextSibling.FirstChild == nil {
+		hn.FirstChild.NextSibling == nil ||
+		hn.FirstChild.NextSibling.FirstChild == nil {
 		return false
 	}
 
 	bq := hn.DataAtom == atom.Blockquote
 	apn := strings.HasPrefix(strings.ToLower(hn.FirstChild.NextSibling.FirstChild.Data), "aside positive") ||
-	       strings.HasPrefix(strings.ToLower(hn.FirstChild.NextSibling.FirstChild.Data), "aside negative")
+		strings.HasPrefix(strings.ToLower(hn.FirstChild.NextSibling.FirstChild.Data), "aside negative")
 	return bq && apn
 }
 
