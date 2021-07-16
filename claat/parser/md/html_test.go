@@ -171,6 +171,11 @@ func TestIsBold(t *testing.T) {
 	e2 := makeTextNode()
 	e1.AppendChild(e2)
 
+	// <i>foobar</i>
+	f1 := makeINode()
+	f2 := makeTextNode()
+	f1.AppendChild(f2)
+
 	tests := []struct {
 		name string
 		in   *html.Node
@@ -240,6 +245,14 @@ func TestIsBold(t *testing.T) {
 			name: "PText_Text",
 			in:   e2,
 		},
+		{
+			name: "IText_I",
+			in:   f1,
+		},
+		{
+			name: "IText_Text",
+			in:   f2,
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -279,6 +292,11 @@ func TestIsItalic(t *testing.T) {
 	e1 := makePNode()
 	e2 := makeTextNode()
 	e1.AppendChild(e2)
+
+	// <b>foobar</b>
+	f1 := makeBNode()
+	f2 := makeTextNode()
+	f1.AppendChild(f2)
 
 	tests := []struct {
 		name string
@@ -349,6 +367,14 @@ func TestIsItalic(t *testing.T) {
 			name: "PText_Text",
 			in:   e2,
 		},
+		{
+			name: "BText_B",
+			in:   f1,
+		},
+		{
+			name: "BText_Text",
+			in:   f2,
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -414,14 +440,60 @@ func TestIsBoldAndItalic(t *testing.T) {
 	g2.AppendChild(g3)
 
 	// <strong><i>foobar</i></strong>
+	h1 := makeStrongNode()
+	h2 := makeINode()
+	h3 := makeTextNode()
+	h1.AppendChild(h2)
+	h2.AppendChild(h3)
+
 	// <b><em>foobar</em></b>
+	// Skipped i and j due to widespread use of <i>
+	k1 := makeBNode()
+	k2 := makeEmNode()
+	k3 := makeTextNode()
+	k1.AppendChild(k2)
+	k2.AppendChild(k3)
+
 	// <b><i>foobar</i></b>
+	l1 := makeBNode()
+	l2 := makeINode()
+	l3 := makeTextNode()
+	l1.AppendChild(l2)
+	l2.AppendChild(l3)
+
 	// <strong><em><code>foobar</code></em></strong>
+	m1 := makeStrongNode()
+	m2 := makeEmNode()
+	m3 := makeCodeNode()
+	m4 := makeTextNode()
+	m1.AppendChild(m2)
+	m2.AppendChild(m3)
+	m3.AppendChild(m4)
+
 	// <strong><code><em>foobar</em></code></strong>
+	n1 := makeStrongNode()
+	n2 := makeCodeNode()
+	n3 := makeEmNode()
+	n4 := makeTextNode()
+	n1.AppendChild(n2)
+	n2.AppendChild(n3)
+	n3.AppendChild(n4)
 
 	// <p>foobar</p>
-	// <p><strong>foobar</strong></p>
-	// <p><em>foobar</em></p>
+	o1 := makePNode()
+	o2 := makeTextNode()
+	o1.AppendChild(o2)
+
+	// <em>foobar</em>
+	p1 := makeEmNode()
+	p2 := makeTextNode()
+	p1.AppendChild(p2)
+
+	// <strong>foobar</strong>
+	q1 := makeStrongNode()
+	q2 := makeTextNode()
+	q1.AppendChild(q2)
+
 	tests := []struct {
 		name string
 		in   *html.Node
@@ -525,9 +597,108 @@ func TestIsBoldAndItalic(t *testing.T) {
 			},
 		*/
 		{
-			name: "strongEmText_Text",
+			name: "StrongEmText_Text",
 			in:   g3,
 			out:  true,
+		},
+		/*
+			// TODO: I (maybe) think this should work but it doesn't
+			{
+				name: "StrongIText_I",
+				in:   h2,
+				out:  true,
+			},
+		*/
+		{
+			name: "strongIText_Text",
+			in:   h3,
+			out:  true,
+		},
+		/*
+			// TODO: I (maybe) think this should work but it doesn't
+			{
+				name: "BEmText_Em",
+				in:   k2,
+				out:  true,
+			},
+		*/
+		{
+			name: "BEmText_Text",
+			in:   k3,
+			out:  true,
+		},
+		/*
+			// TODO: I (maybe) think this should work but it doesn't
+			{
+				name: "BIText_I",
+				in:   l2,
+				out:  true,
+			},
+		*/
+		{
+			name: "BIText_Text",
+			in:   l3,
+			out:  true,
+		},
+		/*
+			// TODO: I (maybe) think this should work but it doesn't
+			{
+				name: "StrongEmCodeText_Em",
+				in:   m2,
+				out:  true,
+			},
+		*/
+		{
+			name: "StrongEmCodeText_Code",
+			in:   m3,
+			out:  true,
+		},
+		{
+			name: "StrongEmCodeText_Text",
+			in:   m4,
+			out:  true,
+		},
+		/*
+			// TODO: I (maybe) think this should work but it doesn't
+			{
+				name: "StrongCodeEmText_Code",
+				in:   m2,
+				out:  true,
+			},
+		*/
+		{
+			name: "StrongCodeEmText_Em",
+			in:   n3,
+			out:  true,
+		},
+		{
+			name: "StrongCodeEmText_Text",
+			in:   n4,
+			out:  true,
+		},
+		{
+			name: "PText_P",
+			in:   o1,
+		},
+		{
+			name: "PText_Text",
+			in:   o2,
+		},
+		{
+			name: "EmText_Em",
+			in:   p1,
+		},
+		{
+			name: "EmText_Text",
+			in:   p2,
+		},
+		{
+			name: "StrongText_Strong",
+			in:   q1,
+		},
+		{
+			name: "StrongText_Text",
+			in:   q2,
 		},
 	}
 	for _, tc := range tests {
