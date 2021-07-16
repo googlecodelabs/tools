@@ -781,3 +781,77 @@ func TestIsConsole(t *testing.T) {
 		})
 	}
 }
+
+func TestIsCode(t *testing.T) {
+	// <code class="language-console">foobar</code>
+	a1 := makeCodeNode()
+	a1.Attr = append(a1.Attr, html.Attribute{Key: "class", Val: "language-console"})
+	a2 := makeTextNode()
+	a1.AppendChild(a2)
+
+	// <code class="language-js">foobar</code>
+	b1 := makeCodeNode()
+	b1.Attr = append(b1.Attr, html.Attribute{Key: "class", Val: "language-js"})
+	b2 := makeTextNode()
+	b1.AppendChild(b2)
+
+	// <code>foobar</code>
+	c1 := makeCodeNode()
+	c2 := makeTextNode()
+	c1.AppendChild(c2)
+
+	// <p>foobar</p>
+	d1 := makePNode()
+	d2 := makeTextNode()
+	d1.AppendChild(d2)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "ConsoleText_Console",
+			in:   a1,
+		},
+		{
+			name: "ConsoleText_Text",
+			in:   a2,
+		},
+		{
+			name: "JavascriptText_Javascript",
+			in:   b1,
+			out:  true,
+		},
+		{
+			name: "JavascriptText_Text",
+			in:   b2,
+			out:  true,
+		},
+		{
+			name: "CodeText_Code",
+			in:   c1,
+			out:  true,
+		},
+		{
+			name: "CodeText_Text",
+			in:   c2,
+			out:  true,
+		},
+		{
+			name: "PText_P",
+			in:   d1,
+		},
+		{
+			name: "PText_Text",
+			in:   d2,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isCode(tc.in); out != tc.out {
+				t.Errorf("isCode(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
