@@ -90,6 +90,14 @@ func makeAsideNode() *html.Node {
 	}
 }
 
+func makeInfoboxNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Dt,
+		Data:     "dt",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -950,6 +958,60 @@ func TestIsAside(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if out := isAside(tc.in); out != tc.out {
 				t.Errorf("isAside(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+// TODO: test isNewAside
+
+func TestIsInfobox(t *testing.T) {
+	a1 := makeInfoboxNode()
+	a2 := makeTextNode("positive")
+	a3 := makeTextNode("foobar")
+	// The text nodes should be siblings.
+	a1.AppendChild(a2)
+	a1.AppendChild(a3)
+
+	b1 := makeInfoboxNode()
+	b2 := makeTextNode("negative")
+	b3 := makeTextNode("foobar")
+	// The text nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "InfoboxPositive",
+			in:   a1,
+			out:  true,
+		},
+		{
+			name: "TextInInfoboxPositive",
+			in:   a3,
+		},
+		{
+			name: "InfoboxNegative",
+			in:   b1,
+			out:  true,
+		},
+		{
+			name: "TextInInfoboxNegative",
+			in:   b3,
+		},
+		{
+			name: "NotAnInfobox",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isInfobox(tc.in); out != tc.out {
+				t.Errorf("isInfobox(%v) = %t, want %t", tc.in, out, tc.out)
 			}
 		})
 	}
