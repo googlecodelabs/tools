@@ -1016,3 +1016,54 @@ func TestIsInfobox(t *testing.T) {
 		})
 	}
 }
+
+func TestIsInfoboxNegative(t *testing.T) {
+	a1 := makeInfoboxNode()
+	a2 := makeTextNode("positive")
+	a3 := makeTextNode("foobar")
+	// The text nodes should be siblings.
+	a1.AppendChild(a2)
+	a1.AppendChild(a3)
+
+	b1 := makeInfoboxNode()
+	b2 := makeTextNode("negative")
+	b3 := makeTextNode("foobar")
+	// The text nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "InfoboxPositive",
+			in:   a1,
+		},
+		{
+			name: "TextInInfoboxPositive",
+			in:   a3,
+		},
+		{
+			name: "InfoboxNegative",
+			in:   b1,
+			out:  true,
+		},
+		{
+			name: "TextInInfoboxNegative",
+			in:   b3,
+		},
+		{
+			name: "NotAnInfobox",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isInfoboxNegative(tc.in); out != tc.out {
+				t.Errorf("isInfoboxNegative(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
