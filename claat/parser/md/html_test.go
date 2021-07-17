@@ -98,6 +98,30 @@ func makeInfoboxNode() *html.Node {
 	}
 }
 
+func makeFormNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Form,
+		Data:     "form",
+	}
+}
+
+func makeNameNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Name,
+		Data:     "name",
+	}
+}
+
+func makeInputNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Input,
+		Data:     "input",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -1072,6 +1096,54 @@ func TestIsInfoboxNegative(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if out := isInfoboxNegative(tc.in); out != tc.out {
 				t.Errorf("isInfoboxNegative(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+func TestIsSurvey(t *testing.T) {
+	a1 := makeFormNode()
+	a2 := makeNameNode()
+	a3 := makeInputNode()
+	// The name and input nodes should be siblings.
+	a1.AppendChild(a2)
+	a1.AppendChild(a3)
+
+	b1 := makeFormNode()
+	b2 := makeInputNode()
+	b1.AppendChild(b2)
+
+	c1 := makeFormNode()
+	c2 := makeNameNode()
+	c1.AppendChild(c2)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "ValidSurvey",
+			in:   a1,
+			out:  true,
+		},
+		{
+			name: "NoName",
+			in:   b1,
+		},
+		{
+			name: "NoInputs",
+			in:   c1,
+		},
+		{
+			name: "NotAForm",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isSurvey(tc.in); out != tc.out {
+				t.Errorf("isSurvey(%v) = %t, want %t", tc.in, out, tc.out)
 			}
 		})
 	}
