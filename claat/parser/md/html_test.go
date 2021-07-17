@@ -90,7 +90,7 @@ func makeAsideNode() *html.Node {
 	}
 }
 
-func makeInfoboxNode() *html.Node {
+func makeDtNode() *html.Node {
 	return &html.Node{
 		Type:     html.ElementNode,
 		DataAtom: atom.Dt,
@@ -990,21 +990,21 @@ func TestIsAside(t *testing.T) {
 // TODO: test isNewAside
 
 func TestIsInfobox(t *testing.T) {
-	a1 := makeInfoboxNode()
+	a1 := makeDtNode()
 	a2 := makeTextNode("positive")
 	a3 := makeTextNode("foobar")
 	// The text nodes should be siblings.
 	a1.AppendChild(a2)
 	a1.AppendChild(a3)
 
-	b1 := makeInfoboxNode()
+	b1 := makeDtNode()
 	b2 := makeTextNode("negative")
 	b3 := makeTextNode("foobar")
 	// The text nodes should be siblings.
 	b1.AppendChild(b2)
 	b1.AppendChild(b3)
 
-	c1 := makeInfoboxNode()
+	c1 := makeDtNode()
 	c2 := makeTextNode("foobar")
 	c1.AppendChild(c2)
 
@@ -1051,14 +1051,14 @@ func TestIsInfobox(t *testing.T) {
 }
 
 func TestIsInfoboxNegative(t *testing.T) {
-	a1 := makeInfoboxNode()
+	a1 := makeDtNode()
 	a2 := makeTextNode("positive")
 	a3 := makeTextNode("foobar")
 	// The text nodes should be siblings.
 	a1.AppendChild(a2)
 	a1.AppendChild(a3)
 
-	b1 := makeInfoboxNode()
+	b1 := makeDtNode()
 	b2 := makeTextNode("negative")
 	b3 := makeTextNode("foobar")
 	// The text nodes should be siblings.
