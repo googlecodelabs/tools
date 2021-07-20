@@ -479,36 +479,6 @@ func (sn *SurveyNode) Empty() bool {
 	return true
 }
 
-// NewInfoboxNode creates a new infobox node with specified kind and optional content.
-func NewInfoboxNode(k InfoboxKind, n ...Node) *InfoboxNode {
-	return &InfoboxNode{
-		node:    node{typ: NodeInfobox},
-		Kind:    k,
-		Content: NewListNode(n...),
-	}
-}
-
-// InfoboxKind defines kind type for InfoboxNode.
-type InfoboxKind string
-
-// InfoboxNode variations.
-const (
-	InfoboxPositive InfoboxKind = "special"
-	InfoboxNegative InfoboxKind = "warning"
-)
-
-// InfoboxNode is any regular header, a checklist header, or an FAQ header.
-type InfoboxNode struct {
-	node
-	Kind    InfoboxKind
-	Content *ListNode
-}
-
-// Empty returns true if ib content is empty.
-func (ib *InfoboxNode) Empty() bool {
-	return ib.Content.Empty()
-}
-
 // NewYouTubeNode creates a new YouTube video node.
 func NewYouTubeNode(vid string) *YouTubeNode {
 	return &YouTubeNode{
