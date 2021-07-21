@@ -1272,3 +1272,38 @@ func testIsYoutube(t *testing.T) {
 		})
 	}
 }
+
+func TestIsFragmentImport(t *testing.T) {
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "FragmentImport",
+			in: &html.Node{
+				Type: html.ElementNode,
+				Data: convertedImportsDataPrefix + "foobar",
+			},
+			out: true,
+		},
+		{
+			name: "NoAtomMissingPrefix",
+			in: &html.Node{
+				Type: html.ElementNode,
+				Data: "foobar",
+			},
+		},
+		{
+			name: "HasAtom",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isFragmentImport(tc.in); out != tc.out {
+				t.Errorf("isFragmentImport(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
