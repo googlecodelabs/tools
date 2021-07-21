@@ -1396,3 +1396,59 @@ func TestCountTwo(t *testing.T) {
 		})
 	}
 }
+
+// TODO rename countDirect, it doesn't make sense particularly in light of countTwo
+func TestCountDirect(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+
+	b1 := makePNode()
+	b2 := makeTextNode("foobar")
+	b3 := makeTextNode("foobar2")
+	b4 := makeTextNode("foobar3")
+	// The nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b4)
+
+	c1 := makePNode()
+	c2 := makeBlinkNode()
+	c3 := makeTextNode("foobar")
+	c1.AppendChild(c2)
+	c2.AppendChild(c3)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  int
+	}{
+		{
+			name: "Zero",
+			in:   makePNode(),
+			out:  0,
+		},
+		{
+			name: "One",
+			in:   a1,
+			out:  1,
+		},
+		{
+			name: "MoreThanOne",
+			in:   b1,
+			out:  3,
+		},
+		{
+			name: "NonRecursive",
+			in:   c1,
+			out:  1,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := countDirect(tc.in); out != tc.out {
+				t.Errorf("countDirect(%+v) = %d, want %d", tc.in, out, tc.out)
+			}
+		})
+	}
+}
