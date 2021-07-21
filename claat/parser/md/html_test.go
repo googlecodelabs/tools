@@ -160,6 +160,14 @@ func makeVideoNode() *html.Node {
 	}
 }
 
+func makeMarqueeNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Marquee,
+		Data:     "marquee",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -1303,6 +1311,87 @@ func TestIsFragmentImport(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if out := isFragmentImport(tc.in); out != tc.out {
 				t.Errorf("isFragmentImport(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+// TODO countTwo feels unintuitive to me -- I struggle with the name and return type, and its mere existence feels like a needless optimization.
+func TestCountTwo(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeBlinkNode()
+	a3 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+
+	b1 := makePNode()
+	b2 := makeTextNode("foobar")
+	b3 := makeMarqueeNode()
+	// The nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+
+	c1 := makePNode()
+	c2 := makeTextNode("foobar")
+	c3 := makeMarqueeNode()
+	c4 := makeTextNode("foobar2")
+	c5 := makeMarqueeNode()
+	// The nodes should be siblings.
+	c1.AppendChild(c2)
+	c1.AppendChild(c3)
+	c1.AppendChild(c4)
+	c1.AppendChild(c5)
+
+	d1 := makePNode()
+	d2 := makeTextNode("foobar")
+	d3 := makeMarqueeNode()
+	d4 := makeTextNode("foobar2")
+	d5 := makeMarqueeNode()
+	d6 := makeMarqueeNode()
+	d7 := makeMarqueeNode()
+	// The nodes should be siblings.
+	d1.AppendChild(d2)
+	d1.AppendChild(d3)
+	d1.AppendChild(d4)
+	d1.AppendChild(d5)
+	d1.AppendChild(d6)
+	d1.AppendChild(d7)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inAtom atom.Atom
+		out    int
+	}{
+		{
+			name:   "Zero",
+			inNode: a1,
+			inAtom: atom.Marquee,
+			out:    0,
+		},
+		{
+			name:   "One",
+			inNode: b1,
+			inAtom: atom.Marquee,
+			out:    1,
+		},
+		{
+			name:   "Two",
+			inNode: c1,
+			inAtom: atom.Marquee,
+			out:    2,
+		},
+		{
+			name:   "MoreThanTwo",
+			inNode: d1,
+			inAtom: atom.Marquee,
+			out:    2,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := countTwo(tc.inNode, tc.inAtom); out != tc.out {
+				t.Errorf("countTwo(%+v, %+v) = %d, want %d", tc.inNode, tc.inAtom, out, tc.out)
 			}
 		})
 	}
