@@ -1452,3 +1452,81 @@ func TestCountDirect(t *testing.T) {
 		})
 	}
 }
+
+// TODO review name
+func TestFindAtom(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeEmNode()
+	a3 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+
+	b1 := makePNode()
+	b2 := makeMarqueeNode()
+	b3 := makeMarqueeNode()
+	b4 := makeBlinkNode()
+	// The nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b4)
+
+	c1 := makePNode()
+	c2 := makeEmNode()
+	c3 := makeStrongNode()
+	c4 := makeTextNode("foobar")
+	c1.AppendChild(c2)
+	c2.AppendChild(c3)
+	c3.AppendChild(c4)
+
+	d1 := makeBlinkNode()
+
+	e1 := makeEmNode()
+	e2 := makeStrongNode()
+	e3 := makeTextNode("foobar")
+	e1.AppendChild(e2)
+	e2.AppendChild(e3)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inAtom atom.Atom
+		out    *html.Node
+	}{
+		{
+			name:   "OneMatch",
+			inNode: a1,
+			inAtom: atom.Em,
+			out:    a2,
+		},
+		{
+			name:   "MultipleMatches",
+			inNode: b1,
+			inAtom: atom.Marquee,
+			out:    b2,
+		},
+		{
+			name:   "Recursive",
+			inNode: c1,
+			inAtom: atom.Strong,
+			out:    c3,
+		},
+		{
+			name:   "Self",
+			inNode: d1,
+			inAtom: atom.Blink,
+			out:    d1,
+		},
+		{
+			name:   "NoMatches",
+			inNode: e1,
+			inAtom: atom.Div,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := findAtom(tc.inNode, tc.inAtom); out != tc.out {
+				t.Errorf("findAtom(%+v, %+v) = %+v, want %v", tc.inNode, tc.inAtom, out, tc.out)
+			}
+		})
+	}
+}
