@@ -146,6 +146,20 @@ func makeLiNode() *html.Node {
 	}
 }
 
+func makeVideoNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Video,
+		Data:     "video",
+		Attr: []html.Attribute{
+			html.Attribute{
+				Key: "id",
+				Val: "Mlk888FiI8A",
+			},
+		},
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -1229,6 +1243,31 @@ func TestIsList(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if out := isList(tc.in); out != tc.out {
 				t.Errorf("isList(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+func testIsYoutube(t *testing.T) {
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "IsYoutube",
+			in:   makeVideoNode(),
+			out:  true,
+		},
+		{
+			name: "IsNotYoutube",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isYoutube(tc.in); out != tc.out {
+				t.Errorf("isYoutube(%v) = %t, want %t", tc.in, out, tc.out)
 			}
 		})
 	}
