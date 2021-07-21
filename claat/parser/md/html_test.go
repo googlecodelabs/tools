@@ -90,11 +90,81 @@ func makeAsideNode() *html.Node {
 	}
 }
 
-func makeInfoboxNode() *html.Node {
+func makeDtNode() *html.Node {
 	return &html.Node{
 		Type:     html.ElementNode,
 		DataAtom: atom.Dt,
 		Data:     "dt",
+	}
+}
+
+func makeFormNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Form,
+		Data:     "form",
+	}
+}
+
+func makeNameNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Name,
+		Data:     "name",
+	}
+}
+
+func makeInputNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Input,
+		Data:     "input",
+	}
+}
+
+func makeOlNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Ol,
+		Data:     "ol",
+	}
+}
+
+func makeUlNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Ul,
+		Data:     "ul",
+	}
+}
+
+func makeLiNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Li,
+		Data:     "li",
+	}
+}
+
+func makeVideoNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Video,
+		Data:     "video",
+		Attr: []html.Attribute{
+			html.Attribute{
+				Key: "id",
+				Val: "Mlk888FiI8A",
+			},
+		},
+	}
+}
+
+func makeMarqueeNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Marquee,
+		Data:     "marquee",
 	}
 }
 
@@ -966,21 +1036,21 @@ func TestIsAside(t *testing.T) {
 // TODO: test isNewAside
 
 func TestIsInfobox(t *testing.T) {
-	a1 := makeInfoboxNode()
+	a1 := makeDtNode()
 	a2 := makeTextNode("positive")
 	a3 := makeTextNode("foobar")
 	// The text nodes should be siblings.
 	a1.AppendChild(a2)
 	a1.AppendChild(a3)
 
-	b1 := makeInfoboxNode()
+	b1 := makeDtNode()
 	b2 := makeTextNode("negative")
 	b3 := makeTextNode("foobar")
 	// The text nodes should be siblings.
 	b1.AppendChild(b2)
 	b1.AppendChild(b3)
 
-	c1 := makeInfoboxNode()
+	c1 := makeDtNode()
 	c2 := makeTextNode("foobar")
 	c1.AppendChild(c2)
 
@@ -1027,14 +1097,14 @@ func TestIsInfobox(t *testing.T) {
 }
 
 func TestIsInfoboxNegative(t *testing.T) {
-	a1 := makeInfoboxNode()
+	a1 := makeDtNode()
 	a2 := makeTextNode("positive")
 	a3 := makeTextNode("foobar")
 	// The text nodes should be siblings.
 	a1.AppendChild(a2)
 	a1.AppendChild(a3)
 
-	b1 := makeInfoboxNode()
+	b1 := makeDtNode()
 	b2 := makeTextNode("negative")
 	b3 := makeTextNode("foobar")
 	// The text nodes should be siblings.
@@ -1072,6 +1142,256 @@ func TestIsInfoboxNegative(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if out := isInfoboxNegative(tc.in); out != tc.out {
 				t.Errorf("isInfoboxNegative(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+func TestIsSurvey(t *testing.T) {
+	a1 := makeFormNode()
+	a2 := makeNameNode()
+	a3 := makeInputNode()
+	// The name and input nodes should be siblings.
+	a1.AppendChild(a2)
+	a1.AppendChild(a3)
+
+	b1 := makeFormNode()
+	b2 := makeInputNode()
+	b1.AppendChild(b2)
+
+	c1 := makeFormNode()
+	c2 := makeNameNode()
+	c1.AppendChild(c2)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "ValidSurvey",
+			in:   a1,
+			out:  true,
+		},
+		{
+			name: "NoName",
+			in:   b1,
+		},
+		{
+			name: "NoInputs",
+			in:   c1,
+		},
+		{
+			name: "NotAForm",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isSurvey(tc.in); out != tc.out {
+				t.Errorf("isSurvey(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+// TODO: Test isTable
+
+func TestIsList(t *testing.T) {
+	a1 := makeOlNode()
+	a2 := makeTextNode("aaa")
+	a3 := makeTextNode("bbb")
+	a4 := makeTextNode("ccc")
+	// The name and input nodes should be siblings.
+	a1.AppendChild(a2)
+	a1.AppendChild(a3)
+	a1.AppendChild(a4)
+
+	b1 := makeUlNode()
+	b2 := makeTextNode("aaa")
+	b3 := makeTextNode("bbb")
+	b4 := makeTextNode("ccc")
+	// The name and input nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b4)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "OrderedListWithElements",
+			in:   a1,
+			out:  true,
+		},
+		{
+			name: "UnorderedListWithElements",
+			in:   b1,
+			out:  true,
+		},
+		// TODO: Should a list of no elements be considered an error?
+		{
+			name: "OrderedListWithoutElements",
+			in:   makeOlNode(),
+			out:  true,
+		},
+		{
+			name: "UnorderedListWithoutElements",
+			in:   makeUlNode(),
+			out:  true,
+		},
+		{
+			name: "NotAList",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isList(tc.in); out != tc.out {
+				t.Errorf("isList(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+func testIsYoutube(t *testing.T) {
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "IsYoutube",
+			in:   makeVideoNode(),
+			out:  true,
+		},
+		{
+			name: "IsNotYoutube",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isYoutube(tc.in); out != tc.out {
+				t.Errorf("isYoutube(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+func TestIsFragmentImport(t *testing.T) {
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "FragmentImport",
+			in: &html.Node{
+				Type: html.ElementNode,
+				Data: convertedImportsDataPrefix + "foobar",
+			},
+			out: true,
+		},
+		{
+			name: "NoAtomMissingPrefix",
+			in: &html.Node{
+				Type: html.ElementNode,
+				Data: "foobar",
+			},
+		},
+		{
+			name: "HasAtom",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isFragmentImport(tc.in); out != tc.out {
+				t.Errorf("isFragmentImport(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+// TODO countTwo feels unintuitive to me -- I struggle with the name and return type, and its mere existence feels like a needless optimization.
+func TestCountTwo(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeBlinkNode()
+	a3 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+
+	b1 := makePNode()
+	b2 := makeTextNode("foobar")
+	b3 := makeMarqueeNode()
+	// The nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+
+	c1 := makePNode()
+	c2 := makeTextNode("foobar")
+	c3 := makeMarqueeNode()
+	c4 := makeTextNode("foobar2")
+	c5 := makeMarqueeNode()
+	// The nodes should be siblings.
+	c1.AppendChild(c2)
+	c1.AppendChild(c3)
+	c1.AppendChild(c4)
+	c1.AppendChild(c5)
+
+	d1 := makePNode()
+	d2 := makeTextNode("foobar")
+	d3 := makeMarqueeNode()
+	d4 := makeTextNode("foobar2")
+	d5 := makeMarqueeNode()
+	d6 := makeMarqueeNode()
+	d7 := makeMarqueeNode()
+	// The nodes should be siblings.
+	d1.AppendChild(d2)
+	d1.AppendChild(d3)
+	d1.AppendChild(d4)
+	d1.AppendChild(d5)
+	d1.AppendChild(d6)
+	d1.AppendChild(d7)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inAtom atom.Atom
+		out    int
+	}{
+		{
+			name:   "Zero",
+			inNode: a1,
+			inAtom: atom.Marquee,
+			out:    0,
+		},
+		{
+			name:   "One",
+			inNode: b1,
+			inAtom: atom.Marquee,
+			out:    1,
+		},
+		{
+			name:   "Two",
+			inNode: c1,
+			inAtom: atom.Marquee,
+			out:    2,
+		},
+		{
+			name:   "MoreThanTwo",
+			inNode: d1,
+			inAtom: atom.Marquee,
+			out:    2,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := countTwo(tc.inNode, tc.inAtom); out != tc.out {
+				t.Errorf("countTwo(%+v, %+v) = %d, want %d", tc.inNode, tc.inAtom, out, tc.out)
 			}
 		})
 	}
