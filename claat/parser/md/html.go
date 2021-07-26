@@ -274,6 +274,7 @@ func findBlockParent(hn *html.Node) *html.Node {
 	return nil
 }
 
+// TODO change name to key
 // nodeAttr returns node attribute value of the key name.
 // Attribute keys are case insensitive.
 func nodeAttr(n *html.Node, name string) string {
