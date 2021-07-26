@@ -1745,3 +1745,5 @@ func TestNodeAttr(t *testing.T) {
 		})
 	}
 }
+
+// TODO test stringifyNode
