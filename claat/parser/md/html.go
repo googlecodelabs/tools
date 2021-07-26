@@ -223,6 +223,7 @@ func findAtom(root *html.Node, a atom.Atom) *html.Node {
 	return nil
 }
 
+// TODO reuse code with findAtom?
 func findChildAtoms(root *html.Node, a atom.Atom) []*html.Node {
 	var nodes []*html.Node
 	for hn := root.FirstChild; hn != nil; hn = hn.NextSibling {
@@ -260,6 +261,7 @@ var blockParents = map[atom.Atom]struct{}{
 	atom.Div: {},
 }
 
+// TODO reuse code with findParent?
 // findBlockParent looks up nearest block parent node of hn.
 // For instance, block parent of "text" in <ul><li>text</li></ul> is <li>,
 // while block parent of "text" in <p><span>text</span></p> is <p>.
