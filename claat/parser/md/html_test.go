@@ -3,6 +3,7 @@ package md
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
@@ -1396,3 +1397,353 @@ func TestCountTwo(t *testing.T) {
 		})
 	}
 }
+
+// TODO rename countDirect, it doesn't make sense particularly in light of countTwo
+func TestCountDirect(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+
+	b1 := makePNode()
+	b2 := makeTextNode("foobar")
+	b3 := makeTextNode("foobar2")
+	b4 := makeTextNode("foobar3")
+	// The nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b4)
+
+	c1 := makePNode()
+	c2 := makeBlinkNode()
+	c3 := makeTextNode("foobar")
+	c1.AppendChild(c2)
+	c2.AppendChild(c3)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  int
+	}{
+		{
+			name: "Zero",
+			in:   makePNode(),
+			out:  0,
+		},
+		{
+			name: "One",
+			in:   a1,
+			out:  1,
+		},
+		{
+			name: "MoreThanOne",
+			in:   b1,
+			out:  3,
+		},
+		{
+			name: "NonRecursive",
+			in:   c1,
+			out:  1,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := countDirect(tc.in); out != tc.out {
+				t.Errorf("countDirect(%+v) = %d, want %d", tc.in, out, tc.out)
+			}
+		})
+	}
+}
+
+// TODO review name
+func TestFindAtom(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeEmNode()
+	a3 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+
+	b1 := makePNode()
+	b2 := makeMarqueeNode()
+	b3 := makeMarqueeNode()
+	b4 := makeBlinkNode()
+	// The nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b4)
+
+	c1 := makePNode()
+	c2 := makeEmNode()
+	c3 := makeStrongNode()
+	c4 := makeTextNode("foobar")
+	c1.AppendChild(c2)
+	c2.AppendChild(c3)
+	c3.AppendChild(c4)
+
+	d1 := makeBlinkNode()
+
+	e1 := makeEmNode()
+	e2 := makeStrongNode()
+	e3 := makeTextNode("foobar")
+	e1.AppendChild(e2)
+	e2.AppendChild(e3)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inAtom atom.Atom
+		out    *html.Node
+	}{
+		{
+			name:   "OneMatch",
+			inNode: a1,
+			inAtom: atom.Em,
+			out:    a2,
+		},
+		{
+			name:   "MultipleMatches",
+			inNode: b1,
+			inAtom: atom.Marquee,
+			out:    b2,
+		},
+		{
+			name:   "Recursive",
+			inNode: c1,
+			inAtom: atom.Strong,
+			out:    c3,
+		},
+		{
+			name:   "Self",
+			inNode: d1,
+			inAtom: atom.Blink,
+			out:    d1,
+		},
+		{
+			name:   "NoMatches",
+			inNode: e1,
+			inAtom: atom.Div,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := findAtom(tc.inNode, tc.inAtom); out != tc.out {
+				t.Errorf("findAtom(%+v, %+v) = %+v, want %v", tc.inNode, tc.inAtom, out, tc.out)
+			}
+		})
+	}
+}
+
+// TODO rename, this function finds all descendants
+func TestFindChildAtoms(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeEmNode()
+	a3 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+
+	b1 := makePNode()
+	b2 := makeCodeNode()
+	b3 := makeEmNode()
+	b4 := makeStrongNode()
+	b5 := makeTextNode("foobar")
+	b1.AppendChild(b2)
+	b2.AppendChild(b3)
+	b3.AppendChild(b4)
+	b4.AppendChild(b5)
+
+	c1 := makePNode()
+	c2 := makeCodeNode()
+	c3 := makeTextNode("foobar1")
+	c4 := makeEmNode()
+	c5 := makeTextNode("foobar2")
+	c6 := makeStrongNode()
+	c7 := makeCodeNode()
+	c8 := makeTextNode("foobar3")
+	//<p><code>foobar1</code><em>foobar2</em><strong><code>foobar3</code></strong></p>
+	c1.AppendChild(c2)
+	c2.AppendChild(c3)
+	c1.AppendChild(c4)
+	c4.AppendChild(c5)
+	c1.AppendChild(c6)
+	c6.AppendChild(c7)
+	c7.AppendChild(c8)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inAtom atom.Atom
+		out    []*html.Node
+	}{
+		{
+			name:   "One",
+			inNode: a1,
+			inAtom: atom.Em,
+			out:    []*html.Node{a2},
+		},
+		{
+			name:   "DistantDescendant",
+			inNode: b1,
+			inAtom: atom.Strong,
+			out:    []*html.Node{b4},
+		},
+		{
+			name:   "Multi",
+			inNode: c1,
+			inAtom: atom.Code,
+			out:    []*html.Node{c2, c7},
+		},
+		{
+			name:   "None",
+			inNode: a1,
+			inAtom: atom.Marquee,
+		},
+		{
+			name:   "Self",
+			inNode: a1,
+			inAtom: atom.P,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, findChildAtoms(tc.inNode, tc.inAtom)); diff != "" {
+				t.Errorf("findChildAtoms(%+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtom, diff)
+			}
+		})
+	}
+}
+
+// TODO rename function, it finds nearest ancestor
+func TestFindParent(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeStrongNode()
+	a3 := makeEmNode()
+	a4 := makeCodeNode()
+	a5 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+	a3.AppendChild(a4)
+	a4.AppendChild(a5)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inAtom atom.Atom
+		out    *html.Node
+	}{
+		{
+			name:   "Parent",
+			inNode: a4,
+			inAtom: atom.Em,
+			out:    a3,
+		},
+		{
+			name:   "DistantAncestor",
+			inNode: a4,
+			inAtom: atom.P,
+			out:    a1,
+		},
+		{
+			name:   "Self",
+			inNode: a4,
+			inAtom: atom.Code,
+			out:    a4,
+		},
+		{
+			name:   "NotFound",
+			inNode: a4,
+			inAtom: atom.Blink,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, findParent(tc.inNode, tc.inAtom)); diff != "" {
+				t.Errorf("findParent(%+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtom, diff)
+			}
+		})
+	}
+}
+
+func TestFindBlockParent(t *testing.T) {
+	// Choice of <p> from blockParents is arbitrary.
+	a1 := makePNode()
+	a2 := makeBNode()
+	a3 := makeINode()
+	a4 := makeCodeNode()
+	a5 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+	a3.AppendChild(a4)
+	a4.AppendChild(a5)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  *html.Node
+	}{
+		{
+			name: "Parent",
+			in:   a2,
+			out:  a1,
+		},
+		{
+			name: "DistantAncestor",
+			in:   a5,
+			out:  a1,
+		},
+		{
+			name: "Self",
+			in:   a1,
+		},
+		{
+			name: "None",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, findBlockParent(tc.in)); diff != "" {
+				t.Errorf("findBlockParent(%+v) got diff (-want +got):\n%s", tc.in, diff)
+			}
+		})
+	}
+}
+
+func TestNodeAttr(t *testing.T) {
+	a1 := makeBlinkNode()
+	a1.Attr = append(a1.Attr, html.Attribute{Key: "keyone", Val: "valone"})
+	a1.Attr = append(a1.Attr, html.Attribute{Key: "keytwo", Val: "valtwo"})
+	a1.Attr = append(a1.Attr, html.Attribute{Key: "keythree", Val: "valthree"})
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inKey  string
+		out    string
+	}{
+		{
+			name:   "Simple",
+			inNode: a1,
+			inKey:  "keyone",
+			out:    "valone",
+		},
+		{
+			name:   "MixedCase",
+			inNode: a1,
+			inKey:  "KEytWO",
+			out:    "valtwo",
+		},
+		{
+			name:   "NotFound",
+			inNode: a1,
+			inKey:  "nokey",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, nodeAttr(tc.inNode, tc.inKey)); diff != "" {
+				t.Errorf("nodeAttr(%+v, %s) got diff (-want +got):\n%s", tc.inNode, tc.inKey, diff)
+			}
+		})
+	}
+}
+
+// TODO test stringifyNode
