@@ -124,26 +124,30 @@ func TestNewSurveyNode(t *testing.T) {
 
 func TestSurveyNodeEmpty(t *testing.T) {
 	tests := []struct {
-		name string
-		in   *SurveyNode
-		out  bool
+		name     string
+		inID     string
+		inGroups []*SurveyGroup
+		out      bool
 	}{
 		{
 			name: "NoGroups",
-			in:   NewSurveyNode("id"),
+			inID: "id",
 			out:  true,
 		},
 		{
 			name: "OneGroupEmpty",
-			in: NewSurveyNode("id",
+			inID: "id",
+			inGroups: []*SurveyGroup{
 				&SurveyGroup{
 					Name: "one",
-				}),
+				},
+			},
 			out: true,
 		},
 		{
 			name: "MultiGroupsEmpty",
-			in: NewSurveyNode("id",
+			inID: "id",
+			inGroups: []*SurveyGroup{
 				&SurveyGroup{
 					Name: "one",
 				},
@@ -153,20 +157,23 @@ func TestSurveyNodeEmpty(t *testing.T) {
 				&SurveyGroup{
 					Name: "three",
 				},
-			),
+			},
 			out: true,
 		},
 		{
 			name: "OneGroupNonEmpty",
-			in: NewSurveyNode("id",
+			inID: "id",
+			inGroups: []*SurveyGroup{
 				&SurveyGroup{
 					Name:    "one",
 					Options: []string{"two", "three"},
-				}),
+				},
+			},
 		},
 		{
 			name: "MultiGroupsNonEmpty",
-			in: NewSurveyNode("id",
+			inID: "id",
+			inGroups: []*SurveyGroup{
 				&SurveyGroup{
 					Name:    "one",
 					Options: []string{"two", "three"},
@@ -179,11 +186,12 @@ func TestSurveyNodeEmpty(t *testing.T) {
 					Name:    "seven",
 					Options: []string{"eight", "nine"},
 				},
-			),
+			},
 		},
 		{
 			name: "MultiGroupsNonEmptySomeNoOptions",
-			in: NewSurveyNode("id",
+			inID: "id",
+			inGroups: []*SurveyGroup{
 				&SurveyGroup{
 					Name:    "one",
 					Options: []string{"two", "three"},
@@ -195,12 +203,13 @@ func TestSurveyNodeEmpty(t *testing.T) {
 				&SurveyGroup{
 					Name: "seven",
 				},
-			),
+			},
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out := tc.in.Empty()
+			n := NewSurveyNode(tc.inID, tc.inGroups...)
+			out := n.Empty()
 			if out != tc.out {
 				t.Errorf("SurveyNode.Empty() = %t, want %t", out, tc.out)
 				return
