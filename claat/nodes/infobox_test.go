@@ -86,6 +86,17 @@ func TestNewInfoboxNode(t *testing.T) {
 			},
 		},
 		{
+			// TODO: Should this return an error instead?
+			name:      "UnsupportedKind",
+			inKind:    "this is not a valid kind of infobox",
+			inContent: []Node{NewTextNode("orange")},
+			out: &InfoboxNode{
+				node:    node{typ: NodeInfobox},
+				Kind:    "this is not a valid kind of infobox",
+				Content: NewListNode(NewTextNode("orange")),
+			},
+		},
+		{
 			name:      "ListOfOneList",
 			inKind:    InfoboxPositive,
 			inContent: []Node{NewListNode(NewTextNode("a"), NewTextNode("b"))},
