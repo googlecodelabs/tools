@@ -124,3 +124,33 @@ func TestNewInfoboxNode(t *testing.T) {
 		})
 	}
 }
+
+func TestInfoboxNodeEmpty(t *testing.T) {
+	tests := []struct {
+		name      string
+		inKind    InfoboxKind
+		inContent []Node
+		out       bool
+	}{
+		{
+			name:   "Empty",
+			inKind: InfoboxPositive,
+			out:    true,
+		},
+		{
+			name:      "NonEmpty",
+			inKind:    InfoboxPositive,
+			inContent: []Node{NewTextNode("a")},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			n := NewInfoboxNode(tc.inKind, tc.inContent...)
+			out := n.Empty()
+			if out != tc.out {
+				t.Errorf("InfoboxNode.Empty() = %t, want %t", out, tc.out)
+				return
+			}
+		})
+	}
+}
