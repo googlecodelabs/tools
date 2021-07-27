@@ -8,9 +8,9 @@ import (
 
 func TestNewIframeNode(t *testing.T) {
 	tests := []struct {
-		name string
-		in   string
-		out  *IframeNode
+		name  string
+		inURL string
+		out   *IframeNode
 	}{
 		{
 			name: "Empty",
@@ -19,8 +19,8 @@ func TestNewIframeNode(t *testing.T) {
 			},
 		},
 		{
-			name: "Simple",
-			in:   "google.com",
+			name:  "Simple",
+			inURL: "google.com",
 			out: &IframeNode{
 				node: node{typ: NodeIframe},
 				URL:  "google.com",
@@ -29,9 +29,9 @@ func TestNewIframeNode(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out := NewIframeNode(tc.in)
+			out := NewIframeNode(tc.inURL)
 			if diff := cmp.Diff(tc.out, out, cmp.AllowUnexported(IframeNode{}, node{})); diff != "" {
-				t.Errorf("NewIframeNode(%q) got diff (-want +got): %s", tc.in, diff)
+				t.Errorf("NewIframeNode(%q) got diff (-want +got): %s", tc.inURL, diff)
 				return
 			}
 		})
@@ -40,28 +40,23 @@ func TestNewIframeNode(t *testing.T) {
 
 func TestIframeNodeEmpty(t *testing.T) {
 	tests := []struct {
-		name string
-		in   *IframeNode
-		out  bool
+		name  string
+		inURL string
+		out   bool
 	}{
 		{
 			name: "Empty",
-			in: &IframeNode{
-				node: node{typ: NodeIframe},
-			},
-			out: true,
+			out:  true,
 		},
 		{
-			name: "NonEmpty",
-			in: &IframeNode{
-				node: node{typ: NodeIframe},
-				URL:  "google.com",
-			},
+			name:  "NonEmpty",
+			inURL: "google.com",
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out := tc.in.Empty()
+			n := NewIframeNode(tc.inURL)
+			out := n.Empty()
 			if out != tc.out {
 				t.Errorf("IframeNode.Empty() = %t, want %t", out, tc.out)
 				return
