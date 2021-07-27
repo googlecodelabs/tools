@@ -86,7 +86,6 @@ func TestNewInfoboxNode(t *testing.T) {
 			},
 		},
 		{
-			// TODO: Should a list of exactly one list be flattened?
 			name:      "ListOfOneList",
 			inKind:    InfoboxPositive,
 			inContent: []Node{NewListNode(NewTextNode("a"), NewTextNode("b"))},
