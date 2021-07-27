@@ -8,9 +8,9 @@ import (
 
 func TestNewYouTubeNode(t *testing.T) {
 	tests := []struct {
-		name string
-		in   string
-		out  *YouTubeNode
+		name      string
+		inVideoID string
+		out       *YouTubeNode
 	}{
 		{
 			name: "Empty",
@@ -19,8 +19,8 @@ func TestNewYouTubeNode(t *testing.T) {
 			},
 		},
 		{
-			name: "NonEmpty",
-			in:   "Mlk888FiI8A",
+			name:      "NonEmpty",
+			inVideoID: "Mlk888FiI8A",
 			out: &YouTubeNode{
 				node:    node{typ: NodeYouTube},
 				VideoID: "Mlk888FiI8A",
@@ -29,9 +29,9 @@ func TestNewYouTubeNode(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out := NewYouTubeNode(tc.in)
+			out := NewYouTubeNode(tc.inVideoID)
 			if diff := cmp.Diff(tc.out, out, cmp.AllowUnexported(YouTubeNode{}, node{})); diff != "" {
-				t.Errorf("NewYouTubeNode(%q) got diff (-want +got): %s", tc.in, diff)
+				t.Errorf("NewYouTubeNode(%q) got diff (-want +got): %s", tc.inVideoID, diff)
 				return
 			}
 		})
@@ -40,28 +40,23 @@ func TestNewYouTubeNode(t *testing.T) {
 
 func TestYouTubeNodeEmpty(t *testing.T) {
 	tests := []struct {
-		name string
-		in   *YouTubeNode
-		out  bool
+		name      string
+		inVideoID string
+		out       bool
 	}{
 		{
 			name: "Empty",
-			in: &YouTubeNode{
-				node: node{typ: NodeYouTube},
-			},
-			out: true,
+			out:  true,
 		},
 		{
-			name: "NonEmpty",
-			in: &YouTubeNode{
-				node:    node{typ: NodeYouTube},
-				VideoID: "Mlk888FiI8A",
-			},
+			name:      "NonEmpty",
+			inVideoID: "Mlk888FiI8A",
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out := tc.in.Empty()
+			n := NewYouTubeNode(tc.inVideoID)
+			out := n.Empty()
 			if out != tc.out {
 				t.Errorf("YouTubeNode.Empty() = %t, want %t", out, tc.out)
 				return
