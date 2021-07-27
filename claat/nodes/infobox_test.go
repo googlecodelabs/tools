@@ -106,6 +106,13 @@ func TestNewInfoboxNode(t *testing.T) {
 				Content: NewListNode(NewListNode(NewTextNode("a"), NewTextNode("b"))),
 			},
 		},
+		{
+			name: "Empty",
+			out: &InfoboxNode{
+				node:    node{typ: NodeInfobox},
+				Content: NewListNode(),
+			},
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
