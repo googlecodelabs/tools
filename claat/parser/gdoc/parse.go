@@ -398,13 +398,12 @@ func metaTable(ds *docState) {
 		case "summary":
 			ds.clab.Summary = stringifyNode(tr.FirstChild.NextSibling, true, true)
 		case "category", "categories":
-			ds.clab.Categories = util.Unique(stringSlice(s))
+			ds.clab.Categories = util.NormalizedSplit(s)
+			toLowerSlice(ds.clab.Categories)
 		case "environment", "environments", "tags":
-			ds.clab.Tags = stringSlice(s)
-			toLowerSlice(ds.clab.Tags)
+			ds.clab.Tags = util.NormalizedSplit(s)
 		case "status", "state":
-			v := stringSlice(s)
-			toLowerSlice(v)
+			v := util.NormalizedSplit(s)
 			sv := types.LegacyStatus(v)
 			ds.clab.Status = &sv
 		case "feedback", "feedback link":
@@ -455,7 +454,7 @@ func metaStep(ds *docState) {
 		ds.step.Duration = roundDuration(d)
 		ds.totdur += ds.step.Duration
 	case metaEnvironment:
-		ds.env = util.Unique(stringSlice(value))
+		ds.env = util.NormalizedSplit(value)
 		toLowerSlice(ds.env)
 		ds.step.Tags = append(ds.step.Tags, ds.env...)
 		ds.clab.Tags = append(ds.clab.Tags, ds.env...)
@@ -882,19 +881,6 @@ func slug(s string) string {
 		}
 	}
 	return buf.String()
-}
-
-// stringSlice splits v by comma "," while ignoring empty elements.
-func stringSlice(v string) []string {
-	f := strings.Split(v, ",")
-	a := f[0:0]
-	for _, s := range f {
-		s = strings.TrimSpace(s)
-		if s != "" {
-			a = append(a, s)
-		}
-	}
-	return a
 }
 
 func toLowerSlice(a []string) {

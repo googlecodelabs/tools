@@ -43,24 +43,6 @@ func markupReader(s string) io.Reader {
 	return strings.NewReader(s)
 }
 
-func TestStringSlice(t *testing.T) {
-	tests := []struct {
-		in  string
-		out []string
-	}{
-		{"one", []string{"one"}},
-		{" two ", []string{"two"}},
-		{" one, two", []string{"one", "two"}},
-		{" one, two and a half, three", []string{"one", "two and a half", "three"}},
-	}
-	for i, test := range tests {
-		v := stringSlice(test.in)
-		if !reflect.DeepEqual(v, test.out) {
-			t.Errorf("%d: stringSlice(%q): %v; want %v", i, test.in, v, test.out)
-		}
-	}
-}
-
 func TestParseStepDuration(t *testing.T) {
 	tests := []struct {
 		markup string
@@ -184,7 +166,7 @@ func TestMetaTable(t *testing.T) {
 	meta := types.Meta{
 		Summary:    "Test summary",
 		Authors:    "John Smith <user@example.com>",
-		Categories: []string{"Foo", "Bar"},
+		Categories: []string{"foo", "bar"},
 		Theme:      "foo",
 		Status:     clab.Meta.Status, // verified separately
 		Feedback:   "https://example.com/issues",
@@ -265,7 +247,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 	meta := types.Meta{
 		Summary:    "Test summary",
 		Authors:    "John Smith <user@example.com>",
-		Categories: []string{"Foo", "Bar"},
+		Categories: []string{"foo", "bar"},
 		Theme:      "foo",
 		Status:     clab.Meta.Status, // verified separately
 		Feedback:   "https://example.com/issues",
