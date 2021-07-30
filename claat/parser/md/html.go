@@ -40,6 +40,7 @@ func isHeader(hn *html.Node) bool {
 	return ok
 }
 
+// TODO rename, it only captures some meta. Maybe redo the meta system?
 func isMeta(hn *html.Node) bool {
 	elem := strings.ToLower(hn.Data)
 	return strings.HasPrefix(elem, metaDuration+metaSep) || strings.HasPrefix(elem, metaEnvironment+metaSep)

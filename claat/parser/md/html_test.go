@@ -242,6 +242,61 @@ func TestIsHeader(t *testing.T) {
 }
 
 // TODO TestIsMeta
+func TestIsMeta(t *testing.T) {
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "Duration",
+			in:   makeTextNode("duration: 60"),
+			out:  true,
+		},
+		{
+			name: "Environment",
+			in:   makeTextNode("environment: web"),
+			out:  true,
+		},
+		{
+			name: "DurationMixedCase",
+			in:   makeTextNode("DURAtion: 60"),
+			out:  true,
+		},
+		{
+			name: "EnvironmentMixedCase",
+			in:   makeTextNode("ENVIROnment: web"),
+			out:  true,
+		},
+		{
+			name: "TextNonMeta",
+			in:   makeTextNode("foobar"),
+		},
+		{
+			name: "NonText",
+			in:   makeBlinkNode(),
+		},
+		{
+			name: "NoSeparator",
+			in:   makeTextNode("duration 60"),
+		},
+		{
+			name: "NoMetaKey",
+			in:   makeTextNode(": 60"),
+		},
+		{
+			name: "UnsupportedMetaKey",
+			in:   makeTextNode("summary: foobar"),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isMeta(tc.in); out != tc.out {
+				t.Errorf("isMeta(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
 
 func TestIsBold(t *testing.T) {
 	// <strong>foobar</strong>
