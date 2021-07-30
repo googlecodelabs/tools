@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+USAGE="$0 notebook-file title\n
+\t- notebook file should end with the .ipynb extension\n
+\t- title must be quoted if it contains whitespace\n
+\t- example: $0 test-notebook.ipynb \"This is a test\"\n
+\nDependencies:\n
+\t- jupyter (https://jupyter.org/install)\n
+\t- claat (https://github.com/googlecodelabs/tools)\n
+"
+if [ "$#" != 2 ]
+then
+    echo -e $USAGE
+    exit 1
+fi
+
+NB=$1
+TITLE=$2
+NAME=$(basename $1 .ipynb)
+MD=$NAME.md
+HTML=$NAME.html
+
+jupyter nbconvert --to markdown $NB
+sed -i -e "1s/^/Id: $TITLE\n/" $MD
+claat export -o - $MD >$HTML
+
+echo -e "markdown version: $MD\nhtml version:     $HTML"
