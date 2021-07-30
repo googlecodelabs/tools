@@ -445,38 +445,3 @@ type ButtonNode struct {
 func (bn *ButtonNode) Empty() bool {
 	return bn.Content.Empty()
 }
-
-
-
-// iframe allowlist - set of domains allow to embed iframes in a codelab.
-var IframeAllowlist = []string{
-	"google.com",
-	"google.dev",
-	"dartlang.org",
-	"web.dev",
-	"observablehq.com",
-	"repl.it",
-	"codepen.io",
-	"glitch.com",
-	"carto.com",
-	"github.com",
-}
-
-// NewIframeNode creates a new embedded iframe.
-func NewIframeNode(url string) *IframeNode {
-	return &IframeNode{
-		node: node{typ: NodeIframe},
-		URL:  url,
-	}
-}
-
-// IframeNode is an embeddes iframe.
-type IframeNode struct {
-	node
-	URL string
-}
-
-// Empty returns true if iframe's URL field is empty.
-func (iframe *IframeNode) Empty() bool {
-	return iframe.URL == ""
-}
