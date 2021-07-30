@@ -241,7 +241,6 @@ func TestIsHeader(t *testing.T) {
 	}
 }
 
-// TODO TestIsMeta
 func TestIsMeta(t *testing.T) {
 	tests := []struct {
 		name string
