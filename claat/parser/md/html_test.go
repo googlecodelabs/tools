@@ -169,6 +169,30 @@ func makeMarqueeNode() *html.Node {
 	}
 }
 
+func makeTableNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Table,
+		Data:     "table",
+	}
+}
+
+func makeTrNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Tr,
+		Data:     "tr",
+	}
+}
+
+func makeTdNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Td,
+		Data:     "td",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -1250,7 +1274,95 @@ func TestIsSurvey(t *testing.T) {
 	}
 }
 
-// TODO: Test isTable
+func TestIsTable(t *testing.T) {
+	a := makeTableNode()
+	a.AppendChild(makeTrNode())
+	a.AppendChild(makeTrNode())
+	a.AppendChild(makeTdNode())
+	a.AppendChild(makeTdNode())
+
+	b := makeTableNode()
+	b.AppendChild(makeTrNode())
+	b.AppendChild(makeTdNode())
+	b.AppendChild(makeTdNode())
+
+	c := makeTableNode()
+	c.AppendChild(makeTrNode())
+	c.AppendChild(makeTrNode())
+	c.AppendChild(makeTdNode())
+
+	d := makeTableNode()
+	d.AppendChild(makeTrNode())
+	d.AppendChild(makeTdNode())
+
+	e := makeTableNode()
+	e.AppendChild(makeTdNode())
+
+	f := makeTableNode()
+	f.AppendChild(makeTrNode())
+
+	g := makeMarqueeNode()
+	g.AppendChild(makeTrNode())
+	g.AppendChild(makeTrNode())
+	g.AppendChild(makeTdNode())
+	g.AppendChild(makeTdNode())
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "Table2Rows2Data",
+			in:   a,
+			out:  true,
+		},
+		{
+			name: "Table1Row2Data",
+			in:   b,
+			out:  true,
+		},
+		{
+			name: "Table2Rows1Data",
+			in:   c,
+			out:  true,
+		},
+		{
+			name: "Table1Row1Data",
+			in:   d,
+			out:  true,
+		},
+		{
+			name: "Table0Rows1Data",
+			in:   e,
+			out:  true,
+		},
+		{
+			name: "Table1Row0Data",
+			in:   f,
+			out:  true,
+		},
+		{
+			name: "TableNone",
+			in:   makeTableNode(),
+		},
+		{
+			name: "NonTableAtom",
+			in:   makeMarqueeNode(),
+		},
+		{
+			name: "NonTableAtomRowsAndData",
+			in:   g,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isTable(tc.in); out != tc.out {
+				t.Errorf("isTable(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
 
 func TestIsList(t *testing.T) {
 	a1 := makeOlNode()

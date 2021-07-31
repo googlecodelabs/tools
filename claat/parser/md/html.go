@@ -162,10 +162,12 @@ func isSurvey(hn *html.Node) bool {
 	return true
 }
 
+// TODO Write an explanation for why the countTwo checks are necessary.
 func isTable(hn *html.Node) bool {
 	if hn.DataAtom != atom.Table {
 		return false
 	}
+	// TODO if =1 is fine, can we sub findAtom?
 	return countTwo(hn, atom.Tr) >= 1 || countTwo(hn, atom.Td) >= 1
 }
 
