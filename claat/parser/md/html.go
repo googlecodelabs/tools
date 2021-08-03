@@ -122,6 +122,7 @@ func isAside(hn *html.Node) bool {
 	return hn.DataAtom == atom.Aside
 }
 
+// TODO refactor for simplicity
 func isNewAside(hn *html.Node) bool {
 	if hn.FirstChild == nil ||
 		hn.FirstChild.NextSibling == nil ||

@@ -193,6 +193,14 @@ func makeTdNode() *html.Node {
 	}
 }
 
+func makeBlockquoteNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Blockquote,
+		Data:     "blockquote",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -1112,7 +1120,96 @@ func TestIsAside(t *testing.T) {
 	}
 }
 
-// TODO: test isNewAside
+func TestIsNewAside(t *testing.T) {
+	a1 := makeBlockquoteNode()
+	a2 := makeTextNode("\n")
+	a1.AppendChild(a2)
+
+	b1 := makeBlockquoteNode()
+	b2 := makeTextNode("\n")
+	b3 := makePNode()
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+
+	c1 := makeBlockquoteNode()
+	c2 := makeTextNode("\n")
+	c3 := makePNode()
+	c4 := makeStrongNode()
+	c5 := makeTextNode("aside positive")
+	c1.AppendChild(c2)
+	c1.AppendChild(c3)
+	c3.AppendChild(c4)
+	c4.AppendChild(c5)
+
+	d1 := makeBlockquoteNode()
+	d2 := makeTextNode("\n")
+	d3 := makePNode()
+	d4 := makeTextNode("aside positive")
+	d1.AppendChild(d2)
+	d1.AppendChild(d3)
+	d3.AppendChild(d4)
+
+	e1 := makeBlockquoteNode()
+	e2 := makeTextNode("\n")
+	e3 := makePNode()
+	e4 := makeTextNode("aside negative")
+	e1.AppendChild(e2)
+	e1.AppendChild(e3)
+	e3.AppendChild(e4)
+
+	f1 := makeMarqueeNode()
+	f2 := makeTextNode("\n")
+	f3 := makePNode()
+	f4 := makeTextNode("aside positive")
+	f1.AppendChild(f2)
+	f1.AppendChild(f3)
+	f3.AppendChild(f4)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "NoChildNodes",
+			in:   makeBlockquoteNode(),
+		},
+		{
+			name: "OnlyOneChildNode",
+			in:   a1,
+		},
+		{
+			name: "SecondChildNodeNoGrandchildNodes",
+			in:   b1,
+		},
+		{
+			name: "SecondChildNodeGrandchildNotText",
+			in:   c1,
+		},
+		{
+			name: "AsidePositive",
+			in:   d1,
+			out:  true,
+		},
+		{
+			name: "AsideNegative",
+			in:   e1,
+			out:  true,
+		},
+		{
+			name: "NotBlockquote",
+			in:   f1,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isNewAside(tc.in); out != tc.out {
+				t.Errorf("isNewAside(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+
+}
 
 func TestIsInfobox(t *testing.T) {
 	a1 := makeDtNode()
