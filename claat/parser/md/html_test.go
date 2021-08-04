@@ -1914,8 +1914,7 @@ func TestFindChildAtoms(t *testing.T) {
 	}
 }
 
-// TODO rename function, it finds nearest ancestor
-func TestFindParent(t *testing.T) {
+func TestFindNearestAncestor(t *testing.T) {
 	a1 := makePNode()
 	a2 := makeStrongNode()
 	a3 := makeEmNode()
@@ -1958,8 +1957,8 @@ func TestFindParent(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if diff := cmp.Diff(tc.out, findParent(tc.inNode, tc.inAtom)); diff != "" {
-				t.Errorf("findParent(%+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtom, diff)
+			if diff := cmp.Diff(tc.out, findNearestAncestor(tc.inNode, tc.inAtom)); diff != "" {
+				t.Errorf("findNearestAncestor(%+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtom, diff)
 			}
 		})
 	}

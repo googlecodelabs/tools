@@ -237,9 +237,10 @@ func findChildAtoms(root *html.Node, a atom.Atom) []*html.Node {
 	return nodes
 }
 
-// findParent is like findAtom but search is in the opposite direction.
-// It is faster to look for parent than child lookup in findAtom.
-func findParent(root *html.Node, a atom.Atom) *html.Node {
+// findNearestAncestor finds the nearest ancestor of the given node of the given atom.
+// A pointer to the ancestor is returned, or nil if none are found.
+// The given node itself counts as an ancestor for our purposes.
+func findNearestAncestor(root *html.Node, a atom.Atom) *html.Node {
 	if root.DataAtom == a {
 		return root
 	}
@@ -263,7 +264,7 @@ var blockParents = map[atom.Atom]struct{}{
 	atom.Div: {},
 }
 
-// TODO reuse code with findParent?
+// TODO reuse code with findNearestAncestor?
 // findBlockParent looks up nearest block parent node of hn.
 // For instance, block parent of "text" in <ul><li>text</li></ul> is <li>,
 // while block parent of "text" in <p><span>text</span></p> is <p>.
