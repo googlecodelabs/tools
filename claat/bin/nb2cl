@@ -63,13 +63,19 @@ NAME=$(basename $1 .ipynb)
 MD=$NAME.md
 HTML=$NAME.html
 
+# insert_list must be sorted!
+# then keep a count of inserted steps (in an env var)
+# and increment that count every time you insert a step
+# then in the awk comparison (x==stepnum) add the count,
+# i.e. (x == stepnum+count).
+
 jupyter nbconvert --to markdown $NB
 sed -i -e "1s/^/Id: $TITLE\n/" $MD
 for i in ${insert_list[@]}
 do
     stepnum=$(echo $i | cut -d: -f1)
     file=$(echo $i | cut -d: -f2)
-    awk -v file="$file" -v stepnum="$stepnum" \
+    awk -v file="$file" -v stepnum="$stepnum" -v increment=$increment \
         '/^## / || /^##$/ {x++} x==stepnum {system("cat " file);print("\n");x++} {print}' $MD >$MD.tmp
     #mv $MD.tmp $MD
 done
