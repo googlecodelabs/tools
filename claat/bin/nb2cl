@@ -69,10 +69,11 @@ for i in ${insert_list[@]}
 do
     stepnum=$(echo $i | cut -d: -f1)
     file=$(echo $i | cut -d: -f2)
-    content=$(cat $file)
-    awk '/^## /{x++} x==$stepnum {sub("/$/\n$content/")}' $MD >$MD.tmp
+    awk -v file="$file" -v stepnum="$stepnum" \
+        '/^## / || /^##$/ {x++} x==stepnum {system("cat " file);print("\n");x++} {print}' $MD >$MD.tmp
     #mv $MD.tmp $MD
 done
+exit 0
 claat export -o - $MD >$HTML
 
 echo -e "markdown version: $MD\nhtml version:     $HTML"
