@@ -201,6 +201,46 @@ func makeBlockquoteNode() *html.Node {
 	}
 }
 
+func makeBrNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Br,
+		Data:     "br",
+	}
+}
+
+func makeH3Node() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.H3,
+		Data:     "h3",
+	}
+}
+
+func makeANode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.A,
+		Data:     "a",
+	}
+}
+
+func makeH1Node() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.H1,
+		Data:     "h1",
+	}
+}
+
+func makeSpanNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Span,
+		Data:     "span",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -2009,4 +2049,149 @@ func TestNodeAttr(t *testing.T) {
 	}
 }
 
-// TODO test stringifyNode
+func TestStringifyNode(t *testing.T) {
+	a1 := makeH3Node()
+	a2 := makeTextNode("foobar ")
+	a1.AppendChild(a2)
+
+	b1 := makeButtonNode()
+	b2 := makeTextNode("some ")
+	b3 := makeEmNode()
+	b4 := makeTextNode("italic")
+	b5 := makeTextNode(" text and some ")
+	b6 := makeStrongNode()
+	b7 := makeTextNode("bold")
+	b8 := makeTextNode(" text. ")
+	// <button>some <em>italic</em> text and some <strong>bold</strong> text. </button>
+	b3.AppendChild(b4)
+	b6.AppendChild(b7)
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b5)
+	b1.AppendChild(b6)
+	b1.AppendChild(b8)
+
+	c1 := makeButtonNode()
+	c2 := makeTextNode(" aaa")
+	c3 := makeANode()
+	c3.Attr = append(c3.Attr, html.Attribute{Key: "href", Val: "google.com"})
+	c4 := makeTextNode("bbb")
+	c5 := makeTextNode("ccc")
+	// <button> aaa<a href="google.com>bbb</a>ccc</button>
+	c1.AppendChild(c2)
+	c1.AppendChild(c3)
+	c3.AppendChild(c4)
+	c1.AppendChild(c5)
+
+	d1 := makeButtonNode()
+	d2 := makeTextNode("foo")
+	d3 := makeBrNode()
+	d4 := makeTextNode("bar")
+	d1.AppendChild(d2)
+	d1.AppendChild(d3)
+	d1.AppendChild(d4)
+
+	e1 := makeButtonNode()
+	e2 := makeTextNode("foo")
+	e3 := makeSpanNode()
+	e4 := makeTextNode("bar")
+	e1.AppendChild(e2)
+	e1.AppendChild(e3)
+	e1.AppendChild(e4)
+
+	f1 := makeButtonNode()
+	f2 := makeTextNode("foo")
+	f3 := makeANode()
+	f4 := makeTextNode("bar")
+	f1.AppendChild(f2)
+	f1.AppendChild(f3)
+	f1.AppendChild(f4)
+
+	g1 := makeButtonNode()
+	g2 := makeTextNode("aaa\u00A0bbb")
+	g1.AppendChild(g2)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inTrim bool
+		out    string
+	}{
+		{
+			name:   "TextRootTrim",
+			inNode: makeTextNode(" ’a“b”c\u00A0d\u0085e\nf\n"),
+			inTrim: true,
+			out:    `'a"b"c d e f`,
+		},
+		{
+			name:   "TextRootNoTrim",
+			inNode: makeTextNode(" ’a“b”c\u00A0d\u0085e\nf\n"),
+			out:    ` 'a"b"c d e f `,
+		},
+		{
+			name:   "BrRootNoTrim",
+			inNode: makeBrNode(),
+			out:    "\n",
+		},
+		{
+			name:   "HeaderTrim",
+			inNode: a1,
+			inTrim: true,
+			out:    "foobar",
+		},
+		{
+			name:   "HeaderNoTrim",
+			inNode: a1,
+			out:    "foobar ",
+		},
+		{
+			name:   "ButtonStyledTextTrim",
+			inNode: b1,
+			inTrim: true,
+			out:    "some \nitalic text and some \nbold text.",
+		},
+		{
+			name:   "ButtonStyledTextNoTrim",
+			inNode: b1,
+			out:    "some \nitalic text and some \nbold text. ",
+		},
+		{
+			name:   "ButtonWithAnchorTrim",
+			inNode: c1,
+			inTrim: true,
+			out:    "aaabbbccc",
+		},
+		{
+			name:   "ButtonWithAnchorNoTrim",
+			inNode: c1,
+			out:    " aaabbbccc",
+		},
+		{
+			name:   "BrNonRoot",
+			inNode: d1,
+			out:    "foo\nbar",
+		},
+		{
+			name:   "SpanNonRoot",
+			inNode: e1,
+			out:    "foobar",
+		},
+		{
+			name:   "ANonRoot",
+			inNode: f1,
+			out:    "foobar",
+		},
+		{
+			name:   "ReplaceInButon",
+			inNode: g1,
+			out:    "aaa bbb",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, stringifyNode(tc.inNode, tc.inTrim)); diff != "" {
+				t.Errorf("stringifyNode(%+v, %t) got diff (-want +got):\n%s", tc.inNode, tc.inTrim, diff)
+			}
+		})
+	}
+}

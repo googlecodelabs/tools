@@ -294,6 +294,7 @@ func nodeAttr(n *html.Node, name string) string {
 // TODO divide into smaller functions
 // TODO redo comment, more than just text nodes are handled and atom.A
 // TODO should we really have trim?
+// TODO part of why this is weird is because the processing is split across root and child nodes. could restructure
 // stringifyNode extracts and concatenates all text nodes starting with root.
 // Line breaks are inserted at <br> and any non-<span> elements.
 func stringifyNode(root *html.Node, trim bool) string {
