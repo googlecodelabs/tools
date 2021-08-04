@@ -237,15 +237,15 @@ func findChildAtoms(root *html.Node, a atom.Atom) []*html.Node {
 	return nodes
 }
 
-// findNearestAncestor finds the nearest ancestor of the given node of the given atom.
+// findNearestAncestor finds the nearest ancestor of the given node of any of the given atoms.
 // A pointer to the ancestor is returned, or nil if none are found.
 // The given node itself counts as an ancestor for our purposes.
-func findNearestAncestor(root *html.Node, a atom.Atom) *html.Node {
-	if root.DataAtom == a {
+func findNearestAncestor(root *html.Node, a map[atom.Atom]struct{}) *html.Node {
+	if _, ok := a[root.DataAtom]; ok {
 		return root
 	}
 	for c := root.Parent; c != nil; c = c.Parent {
-		if c.DataAtom == a {
+		if _, ok := a[c.DataAtom]; ok {
 			return c
 		}
 	}
