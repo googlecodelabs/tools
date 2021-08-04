@@ -11,20 +11,68 @@ USAGE="$0 [-i stepnum:file,...] notebook-file title\n
 \t- jupyter (https://jupyter.org/install)
 \t- claat (https://github.com/googlecodelabs/tools)
 "
-if [ "$#" != 2 ]
+
+if [[ ! (("$1" = "-i" && "$#" == 4) || ("$#" == 2)) ]]
 then
+    echo "ERROR: invalid number of arguments"
     echo -e "$USAGE"
     exit 1
 fi
 
+insert_list=""
+if [ "$1" = "-i" ]
+then
+    insert_list=(${2//,/ })
+    shift; shift
+fi
+
+for i in ${insert_list[@]}
+do
+    if [[ !($i == *":"*) ]]
+    then
+        echo "ERROR: missing colon in -i option"
+        echo -e "$USAGE"
+        exit 1
+    fi
+    stepnum=$(echo $i | cut -d: -f1)
+    re='^[0-9]+$'
+    if ! [[ $stepnum =~ $re ]] ; then
+        echo "ERROR: -i option stepnum $stepnum not a number"
+        echo -e "$USAGE"
+        exit 1
+    fi
+    file=$(echo $i | cut -d: -f2)
+    if [ ! -r $file ]
+    then
+        echo "ERROR: -i option file $file not readable"
+        echo -e "$USAGE"
+        exit 1
+    fi
+    echo stepnum=$stepnum
+    echo file=$file
+done
+
 NB=$1
 TITLE=$2
+if [ ! -r $NB ]
+then
+    echo "ERROR: notebook file $NB not readable"
+    echo -e "$USAGE"
+    exit 1
+fi
+echo NB=$NB TITLE=$TITLE 
+exit 0
+
 NAME=$(basename $1 .ipynb)
 MD=$NAME.md
 HTML=$NAME.html
 
 jupyter nbconvert --to markdown $NB
 sed -i -e "1s/^/Id: $TITLE\n/" $MD
+for i in insert_list
+do
+    echo $i
+done
 claat export -o - $MD >$HTML
 
 echo -e "markdown version: $MD\nhtml version:     $HTML"
