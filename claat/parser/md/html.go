@@ -122,18 +122,16 @@ func isAside(hn *html.Node) bool {
 	return hn.DataAtom == atom.Aside
 }
 
-// TODO refactor for simplicity
 func isNewAside(hn *html.Node) bool {
-	if hn.FirstChild == nil ||
+	if hn.DataAtom != atom.Blockquote ||
+		hn.FirstChild == nil ||
 		hn.FirstChild.NextSibling == nil ||
 		hn.FirstChild.NextSibling.FirstChild == nil {
 		return false
 	}
 
-	bq := hn.DataAtom == atom.Blockquote
-	apn := strings.HasPrefix(strings.ToLower(hn.FirstChild.NextSibling.FirstChild.Data), "aside positive") ||
-		strings.HasPrefix(strings.ToLower(hn.FirstChild.NextSibling.FirstChild.Data), "aside negative")
-	return bq && apn
+	asideText := strings.ToLower(hn.FirstChild.NextSibling.FirstChild.Data)
+	return strings.HasPrefix(asideText, "aside positive") || strings.HasPrefix(asideText, "aside negative")
 }
 
 func isInfobox(hn *html.Node) bool {
