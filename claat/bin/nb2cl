@@ -26,7 +26,12 @@ then
     shift; shift
 fi
 
-for i in ${insert_list[@]}
+sorted=()
+while IFS= read -rd '' item; do
+    sorted+=("$item")
+done < <(printf '%s\0' "${insert_list[@]}" | sort -z)
+
+for i in ${sorted[@]}
 do
     if [[ !($i == *":"*) ]]
     then
@@ -48,6 +53,7 @@ do
         echo -e "$USAGE"
         exit 1
     fi
+    echo $stepnum:$file
 done
 
 NB=$1
@@ -63,23 +69,19 @@ NAME=$(basename $1 .ipynb)
 MD=$NAME.md
 HTML=$NAME.html
 
-# insert_list must be sorted!
-# then keep a count of inserted steps (in an env var)
-# and increment that count every time you insert a step
-# then in the awk comparison (x==stepnum) add the count,
-# i.e. (x == stepnum+count).
-
 jupyter nbconvert --to markdown $NB
 sed -i -e "1s/^/Id: $TITLE\n/" $MD
-for i in ${insert_list[@]}
+echo 0 >count
+mv $MD $MD.tmp1
+for i in ${sorted[@]}
 do
     stepnum=$(echo $i | cut -d: -f1)
     file=$(echo $i | cut -d: -f2)
-    awk -v file="$file" -v stepnum="$stepnum" -v increment=$increment \
-        '/^## / || /^##$/ {x++} x==stepnum {system("cat " file);print("\n");x++} {print}' $MD >$MD.tmp
-    #mv $MD.tmp $MD
+    awk -v file="$file" -v stepnum="$stepnum" -v count=$(cat count) \
+        '/^## / || /^##$/ {x++} x==(stepnum+count) {system("echo " count+1 " >count");system("cat " file);print("\n");x++} {print}' $MD.tmp1 >$MD.tmp2
+    mv $MD.tmp2 $MD.tmp1
 done
-exit 0
+mv $MD.tmp1 $MD
 claat export -o - $MD >$HTML
 
 echo -e "markdown version: $MD\nhtml version:     $HTML"
