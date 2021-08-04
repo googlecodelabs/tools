@@ -276,13 +276,13 @@ func findBlockParent(hn *html.Node) *html.Node {
 	return nil
 }
 
-// TODO change name to key
-// nodeAttr returns node attribute value of the key name.
-// Attribute keys are case insensitive.
-func nodeAttr(n *html.Node, name string) string {
-	name = strings.ToLower(name)
+// nodeAttr checks the given node's HTML attributes for the given key.
+// The corresponding value is returned, or the empty string if the key is not found.
+// Keys are case insensitive.
+func nodeAttr(n *html.Node, key string) string {
+	key = strings.ToLower(key)
 	for _, a := range n.Attr {
-		if strings.ToLower(a.Key) == name {
+		if strings.ToLower(a.Key) == key {
 			return a.Val
 		}
 	}
