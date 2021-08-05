@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x 
+
 USAGE="$0 [-i stepnum:file,...] notebook-file title\n
 \t- the -i (insert) option specifies a comma separated list
 \t  of stepnum:file pairs, causing the contents of the specified
