@@ -247,12 +247,12 @@ const (
 // findNearestAncestor finds the nearest ancestor of the given node of any of the given atoms.
 // A pointer to the ancestor is returned, or nil if none are found.
 // If doConsiderSelf is passed, the given node itself counts as an ancestor for our purposes.
-func findNearestAncestor(n *html.Node, a map[atom.Atom]struct{}, cs considerSelf) *html.Node {
-	if _, ok := a[n.DataAtom]; cs == doConsiderSelf && ok {
+func findNearestAncestor(n *html.Node, atoms map[atom.Atom]struct{}, cs considerSelf) *html.Node {
+	if _, ok := atoms[n.DataAtom]; cs == doConsiderSelf && ok {
 		return n
 	}
 	for p := n.Parent; p != nil; p = p.Parent {
-		if _, ok := a[p.DataAtom]; ok {
+		if _, ok := atoms[p.DataAtom]; ok {
 			return p
 		}
 	}
@@ -289,9 +289,9 @@ func findBlockParent(hn *html.Node) *html.Node {
 // Keys are case insensitive.
 func nodeAttr(n *html.Node, key string) string {
 	key = strings.ToLower(key)
-	for _, a := range n.Attr {
-		if strings.ToLower(a.Key) == key {
-			return a.Val
+	for _, attr := range n.Attr {
+		if strings.ToLower(attr.Key) == key {
+			return attr.Val
 		}
 	}
 	return ""
