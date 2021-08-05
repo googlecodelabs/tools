@@ -1926,10 +1926,11 @@ func TestFindNearestAncestor(t *testing.T) {
 	a4.AppendChild(a5)
 
 	tests := []struct {
-		name    string
-		inNode  *html.Node
-		inAtoms map[atom.Atom]struct{}
-		out     *html.Node
+		name           string
+		inNode         *html.Node
+		inAtoms        map[atom.Atom]struct{}
+		inConsiderSelf considerSelf
+		out            *html.Node
 	}{
 		{
 			name:    "Parent",
@@ -1944,10 +1945,16 @@ func TestFindNearestAncestor(t *testing.T) {
 			out:     a1,
 		},
 		{
-			name:    "Self",
+			name:           "SelfDoConsiderSelf",
+			inNode:         a4,
+			inAtoms:        map[atom.Atom]struct{}{atom.Code: {}},
+			inConsiderSelf: doConsiderSelf,
+			out:            a4,
+		},
+		{
+			name:    "SelfDoNotConsiderSelf",
 			inNode:  a4,
 			inAtoms: map[atom.Atom]struct{}{atom.Code: {}},
-			out:     a4,
 		},
 		{
 			name:    "NotFound",
@@ -1963,8 +1970,8 @@ func TestFindNearestAncestor(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if diff := cmp.Diff(tc.out, findNearestAncestor(tc.inNode, tc.inAtoms)); diff != "" {
-				t.Errorf("findNearestAncestor(%+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtoms, diff)
+			if diff := cmp.Diff(tc.out, findNearestAncestor(tc.inNode, tc.inAtoms, tc.inConsiderSelf)); diff != "" {
+				t.Errorf("findNearestAncestor(%+v, %+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtoms, tc.inConsiderSelf, diff)
 			}
 		})
 	}

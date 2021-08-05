@@ -237,16 +237,23 @@ func findChildAtoms(root *html.Node, a atom.Atom) []*html.Node {
 	return nodes
 }
 
+type considerSelf int
+
+const (
+	doNotConsiderSelf considerSelf = iota
+	doConsiderSelf
+)
+
 // findNearestAncestor finds the nearest ancestor of the given node of any of the given atoms.
 // A pointer to the ancestor is returned, or nil if none are found.
-// The given node itself counts as an ancestor for our purposes.
-func findNearestAncestor(root *html.Node, a map[atom.Atom]struct{}) *html.Node {
-	if _, ok := a[root.DataAtom]; ok {
-		return root
+// If doConsiderSelf is passed, the given node itself counts as an ancestor for our purposes.
+func findNearestAncestor(n *html.Node, a map[atom.Atom]struct{}, cs considerSelf) *html.Node {
+	if _, ok := a[n.DataAtom]; cs == doConsiderSelf && ok {
+		return n
 	}
-	for c := root.Parent; c != nil; c = c.Parent {
-		if _, ok := a[c.DataAtom]; ok {
-			return c
+	for p := n.Parent; p != nil; p = p.Parent {
+		if _, ok := a[p.DataAtom]; ok {
+			return p
 		}
 	}
 	return nil

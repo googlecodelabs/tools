@@ -698,7 +698,7 @@ func surveyOpt(inputs []*html.Node) []string {
 // code parses hn as inline or block codes.
 // Inline code node will be of type NodeText.
 func code(ds *docState, term bool) nodes.Node {
-	elem := findNearestAncestor(ds.cur, map[atom.Atom]struct{}{atom.Pre: {}})
+	elem := findNearestAncestor(ds.cur, map[atom.Atom]struct{}{atom.Pre: {}}, doConsiderSelf)
 	// inline <code> text
 	if elem == nil {
 		return text(ds)
