@@ -1977,7 +1977,7 @@ func TestFindNearestAncestor(t *testing.T) {
 	}
 }
 
-func TestFindBlockParent(t *testing.T) {
+func TestFindNearestBlockAncestor(t *testing.T) {
 	// Choice of <p> from blockParents is arbitrary.
 	a1 := makePNode()
 	a2 := makeBNode()
@@ -2015,8 +2015,8 @@ func TestFindBlockParent(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if diff := cmp.Diff(tc.out, findBlockParent(tc.in)); diff != "" {
-				t.Errorf("findBlockParent(%+v) got diff (-want +got):\n%s", tc.in, diff)
+			if diff := cmp.Diff(tc.out, findNearestBlockAncestor(tc.in)); diff != "" {
+				t.Errorf("findNearestBlockAncestor(%+v) got diff (-want +got):\n%s", tc.in, diff)
 			}
 		})
 	}

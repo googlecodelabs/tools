@@ -271,17 +271,13 @@ var blockParents = map[atom.Atom]struct{}{
 	atom.Div: {},
 }
 
-// TODO reuse code with findNearestAncestor?
-// findBlockParent looks up nearest block parent node of hn.
+// findNearestBlockAncestor finds the nearest ancestor node of a block atom.
 // For instance, block parent of "text" in <ul><li>text</li></ul> is <li>,
 // while block parent of "text" in <p><span>text</span></p> is <p>.
-func findBlockParent(hn *html.Node) *html.Node {
-	for p := hn.Parent; p != nil; p = p.Parent {
-		if _, ok := blockParents[p.DataAtom]; ok {
-			return p
-		}
-	}
-	return nil
+// The node passed in itself is never considered.
+// A pointer to the ancestor is returned, or nil if none are found.
+func findNearestBlockAncestor(n *html.Node) *html.Node {
+	return findNearestAncestor(n, blockParents, doNotConsiderSelf)
 }
 
 // nodeAttr checks the given node's HTML attributes for the given key.
