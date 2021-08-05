@@ -80,6 +80,7 @@ update the single source of truth (the .ipynb file), not this file.
 !
 cat warning $MD >$MD.tmp
 mv $MD.tmp $MD
+rm -f warning
 sed -i -e "1s/^/Id: $TITLE\n/" $MD
 echo 0 >count
 mv $MD $MD.tmp1
