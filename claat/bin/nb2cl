@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 
 USAGE="$0 [-i stepnum:file,...] notebook-file title\n
 \t- the -i (insert) option specifies a comma separated list
@@ -89,6 +90,7 @@ do
         '/^## / || /^##$/ {x++} x==(stepnum+count) {system("echo " count+1 " >count");system("cat " file);print("\n");x++} {print}' $MD.tmp1 >$MD.tmp2
     mv $MD.tmp2 $MD.tmp1
 done
+rm -f count
 mv $MD.tmp1 $MD
 claat export -o - $MD >$HTML
 
