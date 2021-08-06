@@ -17,7 +17,6 @@ package parser
 import (
 	"fmt"
 	"io"
-	"sync"
 
 	"github.com/googlecodelabs/tools/claat/nodes"
 	"github.com/googlecodelabs/tools/claat/types"
@@ -44,16 +43,11 @@ func NewOptions() *Options {
 	}
 }
 
-var (
-	parsersMu sync.Mutex // guards parsers
-	parsers   = map[string]Parser{}
-)
+var parsers = map[string]Parser{}
 
 // Register registers a new parser f under specified name.
 // It panics if another parser is already registered under the same name.
 func Register(name string, p Parser) {
-	parsersMu.Lock()
-	defer parsersMu.Unlock()
 	if _, exists := parsers[name]; exists {
 		panic(fmt.Sprintf("parser %q already registered", name))
 	}
@@ -62,8 +56,6 @@ func Register(name string, p Parser) {
 
 // Parsers returns a slice of all registered parser names.
 func Parsers() []string {
-	parsersMu.Lock()
-	defer parsersMu.Unlock()
 	p := make([]string, 0, len(parsers))
 	for k := range parsers {
 		p = append(p, k)
@@ -74,9 +66,7 @@ func Parsers() []string {
 // Parse parses source r into a Codelab using a parser registered with
 // the specified name.
 func Parse(name string, r io.Reader, opts Options) (*types.Codelab, error) {
-	parsersMu.Lock()
 	p, ok := parsers[name]
-	parsersMu.Unlock()
 	if !ok {
 		return nil, fmt.Errorf("no parser named %q", name)
 	}
@@ -91,9 +81,7 @@ func Parse(name string, r io.Reader, opts Options) (*types.Codelab, error) {
 // ParseFragment parses a codelab fragment provided in r, using a parser
 // registered with the specified name.
 func ParseFragment(name string, r io.Reader, opts Options) ([]nodes.Node, error) {
-	parsersMu.Lock()
 	p, ok := parsers[name]
-	parsersMu.Unlock()
 	if !ok {
 		return nil, fmt.Errorf("no parser named %q", name)
 	}
