@@ -14,6 +14,8 @@
 
 package nodes
 
+// TODO be consistent between Node/*Node
+
 import (
 	"sort"
 	"strings"
@@ -419,29 +421,4 @@ func ImageNodes(nodes []Node) []*ImageNode {
 		}
 	}
 	return imgs
-}
-
-// NewButtonNode creates a new button with optional content nodes n.
-func NewButtonNode(raised, colored, download bool, n ...Node) *ButtonNode {
-	return &ButtonNode{
-		node:     node{typ: NodeButton},
-		Raised:   raised,
-		Colored:  colored,
-		Download: download,
-		Content:  NewListNode(n...),
-	}
-}
-
-// ButtonNode represents a button, e.g. "Download Zip".
-type ButtonNode struct {
-	node
-	Raised   bool
-	Colored  bool
-	Download bool
-	Content  *ListNode
-}
-
-// Empty returns true if its content is empty.
-func (bn *ButtonNode) Empty() bool {
-	return bn.Content.Empty()
 }
