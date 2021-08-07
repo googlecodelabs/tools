@@ -76,9 +76,10 @@ type executer interface {
 
 // funcMap are exposted to the templates.
 var funcMap = map[string]interface{}{
-	"renderLite": Lite,
-	"renderHTML": HTML,
-	"renderMD":   MD,
+	"renderLite":       Lite,
+	"renderHTML":       HTML,
+	"renderMD":         MD,
+	"renderQwiklabsMD": QwiklabsMD,
 	"durationStr": func(d time.Duration) string {
 		m := d / time.Minute
 		return fmt.Sprintf("%02d:00", m)
