@@ -244,7 +244,8 @@ func (gn *GridNode) Empty() bool {
 // NodeItemsCheck and NodeItemsFAQ are always unnumbered.
 func NewItemsListNode(typ string, start int) *ItemsListNode {
 	iln := ItemsListNode{
-		node:     node{typ: NodeItemsList},
+		node: node{typ: NodeItemsList},
+		// TODO document this
 		ListType: typ,
 		Start:    start,
 	}
@@ -367,58 +368,4 @@ type URLNode struct {
 // Empty returns true if un content is empty.
 func (un *URLNode) Empty() bool {
 	return un.Content.Empty()
-}
-
-// NewImageNode creates a new ImageNode  with the give src.
-func NewImageNode(src string) *ImageNode {
-	return &ImageNode{
-		node: node{typ: NodeImage},
-		Src:  src,
-	}
-}
-
-// ImageNode represents a single image.
-type ImageNode struct {
-	node
-	Src   string
-	Width float32
-	Alt   string
-	Title string
-}
-
-// Empty returns true if its Src is zero, excluding space runes.
-func (in *ImageNode) Empty() bool {
-	return strings.TrimSpace(in.Src) == ""
-}
-
-// ImageNodes extracts everything except NodeImage nodes, recursively.
-func ImageNodes(nodes []Node) []*ImageNode {
-	var imgs []*ImageNode
-	for _, n := range nodes {
-		switch n := n.(type) {
-		case *ImageNode:
-			imgs = append(imgs, n)
-		case *ListNode:
-			imgs = append(imgs, ImageNodes(n.Nodes)...)
-		case *ItemsListNode:
-			for _, i := range n.Items {
-				imgs = append(imgs, ImageNodes(i.Nodes)...)
-			}
-		case *HeaderNode:
-			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
-		case *URLNode:
-			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
-		case *ButtonNode:
-			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
-		case *InfoboxNode:
-			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
-		case *GridNode:
-			for _, r := range n.Rows {
-				for _, c := range r {
-					imgs = append(imgs, ImageNodes(c.Content.Nodes)...)
-				}
-			}
-		}
-	}
-	return imgs
 }
