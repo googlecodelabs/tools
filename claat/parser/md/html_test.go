@@ -169,6 +169,78 @@ func makeMarqueeNode() *html.Node {
 	}
 }
 
+func makeTableNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Table,
+		Data:     "table",
+	}
+}
+
+func makeTrNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Tr,
+		Data:     "tr",
+	}
+}
+
+func makeTdNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Td,
+		Data:     "td",
+	}
+}
+
+func makeBlockquoteNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Blockquote,
+		Data:     "blockquote",
+	}
+}
+
+func makeBrNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Br,
+		Data:     "br",
+	}
+}
+
+func makeH3Node() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.H3,
+		Data:     "h3",
+	}
+}
+
+func makeANode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.A,
+		Data:     "a",
+	}
+}
+
+func makeH1Node() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.H1,
+		Data:     "h1",
+	}
+}
+
+func makeSpanNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Span,
+		Data:     "span",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -241,7 +313,61 @@ func TestIsHeader(t *testing.T) {
 	}
 }
 
-// TODO TestIsMeta
+func TestIsMeta(t *testing.T) {
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "Duration",
+			in:   makeTextNode("duration: 60"),
+			out:  true,
+		},
+		{
+			name: "Environment",
+			in:   makeTextNode("environment: web"),
+			out:  true,
+		},
+		{
+			name: "DurationMixedCase",
+			in:   makeTextNode("DURAtion: 60"),
+			out:  true,
+		},
+		{
+			name: "EnvironmentMixedCase",
+			in:   makeTextNode("ENVIROnment: web"),
+			out:  true,
+		},
+		{
+			name: "TextNonMeta",
+			in:   makeTextNode("foobar"),
+		},
+		{
+			name: "NonText",
+			in:   makeBlinkNode(),
+		},
+		{
+			name: "NoSeparator",
+			in:   makeTextNode("duration 60"),
+		},
+		{
+			name: "NoMetaKey",
+			in:   makeTextNode(": 60"),
+		},
+		{
+			name: "UnsupportedMetaKey",
+			in:   makeTextNode("summary: foobar"),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isMeta(tc.in); out != tc.out {
+				t.Errorf("isMeta(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
 
 func TestIsBold(t *testing.T) {
 	// <strong>foobar</strong>
@@ -1034,7 +1160,96 @@ func TestIsAside(t *testing.T) {
 	}
 }
 
-// TODO: test isNewAside
+func TestIsNewAside(t *testing.T) {
+	a1 := makeBlockquoteNode()
+	a2 := makeTextNode("\n")
+	a1.AppendChild(a2)
+
+	b1 := makeBlockquoteNode()
+	b2 := makeTextNode("\n")
+	b3 := makePNode()
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+
+	c1 := makeBlockquoteNode()
+	c2 := makeTextNode("\n")
+	c3 := makePNode()
+	c4 := makeStrongNode()
+	c5 := makeTextNode("aside positive")
+	c1.AppendChild(c2)
+	c1.AppendChild(c3)
+	c3.AppendChild(c4)
+	c4.AppendChild(c5)
+
+	d1 := makeBlockquoteNode()
+	d2 := makeTextNode("\n")
+	d3 := makePNode()
+	d4 := makeTextNode("aside positive")
+	d1.AppendChild(d2)
+	d1.AppendChild(d3)
+	d3.AppendChild(d4)
+
+	e1 := makeBlockquoteNode()
+	e2 := makeTextNode("\n")
+	e3 := makePNode()
+	e4 := makeTextNode("aside negative")
+	e1.AppendChild(e2)
+	e1.AppendChild(e3)
+	e3.AppendChild(e4)
+
+	f1 := makeMarqueeNode()
+	f2 := makeTextNode("\n")
+	f3 := makePNode()
+	f4 := makeTextNode("aside positive")
+	f1.AppendChild(f2)
+	f1.AppendChild(f3)
+	f3.AppendChild(f4)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "NoChildNodes",
+			in:   makeBlockquoteNode(),
+		},
+		{
+			name: "OnlyOneChildNode",
+			in:   a1,
+		},
+		{
+			name: "SecondChildNodeNoGrandchildNodes",
+			in:   b1,
+		},
+		{
+			name: "SecondChildNodeGrandchildNotText",
+			in:   c1,
+		},
+		{
+			name: "AsidePositive",
+			in:   d1,
+			out:  true,
+		},
+		{
+			name: "AsideNegative",
+			in:   e1,
+			out:  true,
+		},
+		{
+			name: "NotBlockquote",
+			in:   f1,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isNewAside(tc.in); out != tc.out {
+				t.Errorf("isNewAside(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+
+}
 
 func TestIsInfobox(t *testing.T) {
 	a1 := makeDtNode()
@@ -1196,7 +1411,95 @@ func TestIsSurvey(t *testing.T) {
 	}
 }
 
-// TODO: Test isTable
+func TestIsTable(t *testing.T) {
+	a := makeTableNode()
+	a.AppendChild(makeTrNode())
+	a.AppendChild(makeTrNode())
+	a.AppendChild(makeTdNode())
+	a.AppendChild(makeTdNode())
+
+	b := makeTableNode()
+	b.AppendChild(makeTrNode())
+	b.AppendChild(makeTdNode())
+	b.AppendChild(makeTdNode())
+
+	c := makeTableNode()
+	c.AppendChild(makeTrNode())
+	c.AppendChild(makeTrNode())
+	c.AppendChild(makeTdNode())
+
+	d := makeTableNode()
+	d.AppendChild(makeTrNode())
+	d.AppendChild(makeTdNode())
+
+	e := makeTableNode()
+	e.AppendChild(makeTdNode())
+
+	f := makeTableNode()
+	f.AppendChild(makeTrNode())
+
+	g := makeMarqueeNode()
+	g.AppendChild(makeTrNode())
+	g.AppendChild(makeTrNode())
+	g.AppendChild(makeTdNode())
+	g.AppendChild(makeTdNode())
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "Table2Rows2Data",
+			in:   a,
+			out:  true,
+		},
+		{
+			name: "Table1Row2Data",
+			in:   b,
+			out:  true,
+		},
+		{
+			name: "Table2Rows1Data",
+			in:   c,
+			out:  true,
+		},
+		{
+			name: "Table1Row1Data",
+			in:   d,
+			out:  true,
+		},
+		{
+			name: "Table0Rows1Data",
+			in:   e,
+			out:  true,
+		},
+		{
+			name: "Table1Row0Data",
+			in:   f,
+			out:  true,
+		},
+		{
+			name: "TableNone",
+			in:   makeTableNode(),
+		},
+		{
+			name: "NonTableAtom",
+			in:   makeMarqueeNode(),
+		},
+		{
+			name: "NonTableAtomRowsAndData",
+			in:   g,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isTable(tc.in); out != tc.out {
+				t.Errorf("isTable(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
 
 func TestIsList(t *testing.T) {
 	a1 := makeOlNode()
@@ -1746,4 +2049,149 @@ func TestNodeAttr(t *testing.T) {
 	}
 }
 
-// TODO test stringifyNode
+func TestStringifyNode(t *testing.T) {
+	a1 := makeH3Node()
+	a2 := makeTextNode("foobar ")
+	a1.AppendChild(a2)
+
+	b1 := makeButtonNode()
+	b2 := makeTextNode("some ")
+	b3 := makeEmNode()
+	b4 := makeTextNode("italic")
+	b5 := makeTextNode(" text and some ")
+	b6 := makeStrongNode()
+	b7 := makeTextNode("bold")
+	b8 := makeTextNode(" text. ")
+	// <button>some <em>italic</em> text and some <strong>bold</strong> text. </button>
+	b3.AppendChild(b4)
+	b6.AppendChild(b7)
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b5)
+	b1.AppendChild(b6)
+	b1.AppendChild(b8)
+
+	c1 := makeButtonNode()
+	c2 := makeTextNode(" aaa")
+	c3 := makeANode()
+	c3.Attr = append(c3.Attr, html.Attribute{Key: "href", Val: "google.com"})
+	c4 := makeTextNode("bbb")
+	c5 := makeTextNode("ccc")
+	// <button> aaa<a href="google.com>bbb</a>ccc</button>
+	c1.AppendChild(c2)
+	c1.AppendChild(c3)
+	c3.AppendChild(c4)
+	c1.AppendChild(c5)
+
+	d1 := makeButtonNode()
+	d2 := makeTextNode("foo")
+	d3 := makeBrNode()
+	d4 := makeTextNode("bar")
+	d1.AppendChild(d2)
+	d1.AppendChild(d3)
+	d1.AppendChild(d4)
+
+	e1 := makeButtonNode()
+	e2 := makeTextNode("foo")
+	e3 := makeSpanNode()
+	e4 := makeTextNode("bar")
+	e1.AppendChild(e2)
+	e1.AppendChild(e3)
+	e1.AppendChild(e4)
+
+	f1 := makeButtonNode()
+	f2 := makeTextNode("foo")
+	f3 := makeANode()
+	f4 := makeTextNode("bar")
+	f1.AppendChild(f2)
+	f1.AppendChild(f3)
+	f1.AppendChild(f4)
+
+	g1 := makeButtonNode()
+	g2 := makeTextNode("aaa\u00A0bbb")
+	g1.AppendChild(g2)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inTrim bool
+		out    string
+	}{
+		{
+			name:   "TextRootTrim",
+			inNode: makeTextNode(" ’a“b”c\u00A0d\u0085e\nf\n"),
+			inTrim: true,
+			out:    `'a"b"c d e f`,
+		},
+		{
+			name:   "TextRootNoTrim",
+			inNode: makeTextNode(" ’a“b”c\u00A0d\u0085e\nf\n"),
+			out:    ` 'a"b"c d e f `,
+		},
+		{
+			name:   "BrRootNoTrim",
+			inNode: makeBrNode(),
+			out:    "\n",
+		},
+		{
+			name:   "HeaderTrim",
+			inNode: a1,
+			inTrim: true,
+			out:    "foobar",
+		},
+		{
+			name:   "HeaderNoTrim",
+			inNode: a1,
+			out:    "foobar ",
+		},
+		{
+			name:   "ButtonStyledTextTrim",
+			inNode: b1,
+			inTrim: true,
+			out:    "some \nitalic text and some \nbold text.",
+		},
+		{
+			name:   "ButtonStyledTextNoTrim",
+			inNode: b1,
+			out:    "some \nitalic text and some \nbold text. ",
+		},
+		{
+			name:   "ButtonWithAnchorTrim",
+			inNode: c1,
+			inTrim: true,
+			out:    "aaabbbccc",
+		},
+		{
+			name:   "ButtonWithAnchorNoTrim",
+			inNode: c1,
+			out:    " aaabbbccc",
+		},
+		{
+			name:   "BrNonRoot",
+			inNode: d1,
+			out:    "foo\nbar",
+		},
+		{
+			name:   "SpanNonRoot",
+			inNode: e1,
+			out:    "foobar",
+		},
+		{
+			name:   "ANonRoot",
+			inNode: f1,
+			out:    "foobar",
+		},
+		{
+			name:   "ReplaceInButon",
+			inNode: g1,
+			out:    "aaa bbb",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, stringifyNode(tc.inNode, tc.inTrim)); diff != "" {
+				t.Errorf("stringifyNode(%+v, %t) got diff (-want +got):\n%s", tc.inNode, tc.inTrim, diff)
+			}
+		})
+	}
+}

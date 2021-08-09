@@ -40,6 +40,7 @@ func isHeader(hn *html.Node) bool {
 	return ok
 }
 
+// TODO rename, it only captures some meta. Maybe redo the meta system?
 func isMeta(hn *html.Node) bool {
 	elem := strings.ToLower(hn.Data)
 	return strings.HasPrefix(elem, metaDuration+metaSep) || strings.HasPrefix(elem, metaEnvironment+metaSep)
@@ -121,6 +122,7 @@ func isAside(hn *html.Node) bool {
 	return hn.DataAtom == atom.Aside
 }
 
+// TODO refactor for simplicity
 func isNewAside(hn *html.Node) bool {
 	if hn.FirstChild == nil ||
 		hn.FirstChild.NextSibling == nil ||
@@ -161,10 +163,12 @@ func isSurvey(hn *html.Node) bool {
 	return true
 }
 
+// TODO Write an explanation for why the countTwo checks are necessary.
 func isTable(hn *html.Node) bool {
 	if hn.DataAtom != atom.Table {
 		return false
 	}
+	// TODO if =1 is fine, can we sub findAtom?
 	return countTwo(hn, atom.Tr) >= 1 || countTwo(hn, atom.Td) >= 1
 }
 
@@ -287,6 +291,10 @@ func nodeAttr(n *html.Node, name string) string {
 	return ""
 }
 
+// TODO divide into smaller functions
+// TODO redo comment, more than just text nodes are handled and atom.A
+// TODO should we really have trim?
+// TODO part of why this is weird is because the processing is split across root and child nodes. could restructure
 // stringifyNode extracts and concatenates all text nodes starting with root.
 // Line breaks are inserted at <br> and any non-<span> elements.
 func stringifyNode(root *html.Node, trim bool) string {

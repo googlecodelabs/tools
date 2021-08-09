@@ -85,6 +85,7 @@ var (
 	// ordered after the usage in codelab docs
 	durFactor = []time.Duration{time.Hour, time.Minute, time.Second}
 
+	// TODO make more readable
 	// textCleaner replaces "smart quotes" and other unicode runes
 	// with their respective ascii versions.
 	textCleaner = strings.NewReplacer(
