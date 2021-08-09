@@ -75,7 +75,7 @@ func TestURLNodeEmpty(t *testing.T) {
 			n := NewURLNode(tc.inURL, tc.inContent...)
 			out := n.Empty()
 			if out != tc.out {
-				t.Errorf("ButtonNode.Empty() = %t, want %t", out, tc.out)
+				t.Errorf("URLNode.Empty() = %t, want %t", out, tc.out)
 				return
 			}
 		})
