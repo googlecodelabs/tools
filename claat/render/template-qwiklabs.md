@@ -1,7 +1,3 @@
----
-{{metaHeaderYaml .Meta}}
----
-
 # {{.Meta.Title}}
 
 My **Local** MD Template!
