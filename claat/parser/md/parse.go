@@ -828,7 +828,7 @@ func youtube(ds *docState) nodes.Node {
 
 func fragmentImport(ds *docState) nodes.Node {
 	if url := strings.TrimPrefix(ds.cur.Data, convertedImportsDataPrefix); url != "" {
-		return nodes.NewImportNode(url)
+		return nodes.NewImportNode(url, "")
 	}
 
 	return nil

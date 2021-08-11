@@ -374,9 +374,14 @@ func (mw *qwiklabsMdWriter) table(n *nodes.GridNode) {
 }
 
 func (mw *qwiklabsMdWriter) importElem(n *nodes.ImportNode) {
+	title := n.Title
+	if title == "" {
+		title = n.URL
+	}
+
 	mw.newBlock()
 	mw.writeString("[[import ")
-	mw.writeString(n.URL)
+	mw.writeString(title)
 	mw.writeString("]]")
 }
 
