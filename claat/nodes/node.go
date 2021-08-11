@@ -155,11 +155,12 @@ func (l *ListNode) Prepend(n ...Node) {
 
 // NewImportNode creates a new Node of type NodeImport,
 // with initialized ImportNode.Content.
-func NewImportNode(url string) *ImportNode {
+func NewImportNode(url string, title string) *ImportNode {
 	return &ImportNode{
 		node:    node{typ: NodeImport},
 		Content: NewListNode(),
 		URL:     url,
+		Title:   title,
 	}
 }
 
@@ -167,6 +168,7 @@ func NewImportNode(url string) *ImportNode {
 type ImportNode struct {
 	node
 	URL     string
+	Title   string
 	Content *ListNode
 }
 

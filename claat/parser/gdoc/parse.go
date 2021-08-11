@@ -292,7 +292,16 @@ func transformNodes(name string, nodesToTransform []nodes.Node) nodes.Node {
 		if !ok {
 			return nil
 		}
-		return nodes.NewImportNode(u.URL)
+
+		title := ""
+		for _, n := range u.Content.Nodes {
+			switch n := n.(type) {
+			case *nodes.TextNode:
+				title = title + n.Value
+			}
+		}
+
+		return nodes.NewImportNode(u.URL, title)
 	}
 	return nil
 }

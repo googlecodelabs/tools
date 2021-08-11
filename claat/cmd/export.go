@@ -212,11 +212,16 @@ func writeCodelab(dir string, clab *types.Codelab, extraVars map[string]string, 
 	if ctx.Format != "offline" {
 		w := os.Stdout
 		if !isStdout(dir) {
-			ext := ctx.Format
-			if ext != "md" {
-				ext = "html"
+			var indexFilename string
+			switch ctx.Format {
+			case "qwiklabs-md":
+				indexFilename = "en.md"
+			case "md":
+				indexFilename = "index.md"
+			default:
+				indexFilename = "index.html"
 			}
-			f, err := os.Create(filepath.Join(dir, "index."+ext))
+			f, err := os.Create(filepath.Join(dir, indexFilename))
 			if err != nil {
 				return err
 			}

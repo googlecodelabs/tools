@@ -1,0 +1,13 @@
+
+<div class="codelab">
+  <h1 class="lab-title">{{.Meta.Title}}</h1>
+  {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
+  <div class="lab-step">
+    <h2 id="step-{{$i}}">{{.Title}}</h2>
+    {{if .Duration.Minutes}}
+    <p><em>Duration is {{.Duration.Minutes}} min</em></p>
+    {{end}}
+    {{.Content | renderLite $.Context}}
+  </div>
+  {{end}}{{end}}
+</div>
