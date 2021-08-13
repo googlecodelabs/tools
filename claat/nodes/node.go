@@ -14,9 +14,10 @@
 
 package nodes
 
+// TODO be consistent between Node/*Node
+
 import (
 	"sort"
-	"strings"
 )
 
 // NodeType is type for parsed codelab nodes tree.
@@ -203,46 +204,14 @@ func ImportNodes(nodes []Node) []*ImportNode {
 	return imps
 }
 
-// NewGridNode creates a new grid with optional content.
-func NewGridNode(rows ...[]*GridCell) *GridNode {
-	return &GridNode{
-		node: node{typ: NodeGrid},
-		Rows: rows,
-	}
-}
-
-// GridNode is a 2d matrix.
-type GridNode struct {
-	node
-	Rows [][]*GridCell
-}
-
-// GridCell is a cell of GridNode.
-type GridCell struct {
-	Colspan int
-	Rowspan int
-	Content *ListNode
-}
-
-// Empty returns true when every cell has empty content.
-func (gn *GridNode) Empty() bool {
-	for _, r := range gn.Rows {
-		for _, c := range r {
-			if !c.Content.Empty() {
-				return false
-			}
-		}
-	}
-	return true
-}
-
 // NewItemsListNode creates a new ItemsListNode of type NodeItemsList,
 // which defaults to an unordered list.
 // Provide a positive start to make this a numbered list.
 // NodeItemsCheck and NodeItemsFAQ are always unnumbered.
 func NewItemsListNode(typ string, start int) *ItemsListNode {
 	iln := ItemsListNode{
-		node:     node{typ: NodeItemsList},
+		node: node{typ: NodeItemsList},
+		// TODO document this
 		ListType: typ,
 		Start:    start,
 	}
@@ -274,174 +243,4 @@ func (il *ItemsListNode) NewItem(nodes ...Node) *ListNode {
 	n := NewListNode(nodes...)
 	il.Items = append(il.Items, n)
 	return n
-}
-
-// NewTextNode creates a new Node of type NodeText.
-func NewTextNode(v string) *TextNode {
-	return &TextNode{
-		node:  node{typ: NodeText},
-		Value: v,
-	}
-}
-
-// TextNode is a simple node containing text as a string value.
-type TextNode struct {
-	node
-	Bold   bool
-	Italic bool
-	Code   bool
-	Value  string
-}
-
-// Empty returns true if tn.Value is zero, excluding space runes.
-func (tn *TextNode) Empty() bool {
-	return strings.TrimSpace(tn.Value) == ""
-}
-
-// NewCodeNode creates a new Node of type NodeCode.
-// Use term argument to specify a terminal output.
-func NewCodeNode(v string, term bool, lang string) *CodeNode {
-	return &CodeNode{
-		node:  node{typ: NodeCode},
-		Value: v,
-		Term:  term,
-		Lang:  lang,
-	}
-}
-
-// CodeNode is either a source code snippet or a terminal output.
-type CodeNode struct {
-	node
-	Term  bool
-	Lang  string
-	Value string
-}
-
-// Empty returns true if cn.Value is zero, exluding space runes.
-func (cn *CodeNode) Empty() bool {
-	return strings.TrimSpace(cn.Value) == ""
-}
-
-// NewHeaderNode creates a new HeaderNode with optional content nodes n.
-func NewHeaderNode(level int, n ...Node) *HeaderNode {
-	return &HeaderNode{
-		node:    node{typ: NodeHeader},
-		Level:   level,
-		Content: NewListNode(n...),
-	}
-}
-
-// HeaderNode is any regular header, a checklist header, or an FAQ header.
-type HeaderNode struct {
-	node
-	Level   int
-	Content *ListNode
-}
-
-// Empty returns true if header content is empty.
-func (hn *HeaderNode) Empty() bool {
-	return hn.Content.Empty()
-}
-
-// NewURLNode creates a new Node of type NodeURL with optinal content n.
-func NewURLNode(url string, n ...Node) *URLNode {
-	return &URLNode{
-		node:    node{typ: NodeURL},
-		URL:     url,
-		Target:  "_blank",
-		Content: NewListNode(n...),
-	}
-}
-
-// URLNode represents elements such as <a href="...">
-type URLNode struct {
-	node
-	URL     string
-	Name    string
-	Target  string
-	Content *ListNode
-}
-
-// Empty returns true if un content is empty.
-func (un *URLNode) Empty() bool {
-	return un.Content.Empty()
-}
-
-// NewImageNode creates a new ImageNode  with the give src.
-func NewImageNode(src string) *ImageNode {
-	return &ImageNode{
-		node: node{typ: NodeImage},
-		Src:  src,
-	}
-}
-
-// ImageNode represents a single image.
-type ImageNode struct {
-	node
-	Src   string
-	Width float32
-	Alt   string
-	Title string
-}
-
-// Empty returns true if its Src is zero, excluding space runes.
-func (in *ImageNode) Empty() bool {
-	return strings.TrimSpace(in.Src) == ""
-}
-
-// ImageNodes extracts everything except NodeImage nodes, recursively.
-func ImageNodes(nodes []Node) []*ImageNode {
-	var imgs []*ImageNode
-	for _, n := range nodes {
-		switch n := n.(type) {
-		case *ImageNode:
-			imgs = append(imgs, n)
-		case *ListNode:
-			imgs = append(imgs, ImageNodes(n.Nodes)...)
-		case *ItemsListNode:
-			for _, i := range n.Items {
-				imgs = append(imgs, ImageNodes(i.Nodes)...)
-			}
-		case *HeaderNode:
-			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
-		case *URLNode:
-			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
-		case *ButtonNode:
-			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
-		case *InfoboxNode:
-			imgs = append(imgs, ImageNodes(n.Content.Nodes)...)
-		case *GridNode:
-			for _, r := range n.Rows {
-				for _, c := range r {
-					imgs = append(imgs, ImageNodes(c.Content.Nodes)...)
-				}
-			}
-		}
-	}
-	return imgs
-}
-
-// NewButtonNode creates a new button with optional content nodes n.
-func NewButtonNode(raised, colored, download bool, n ...Node) *ButtonNode {
-	return &ButtonNode{
-		node:     node{typ: NodeButton},
-		Raised:   raised,
-		Colored:  colored,
-		Download: download,
-		Content:  NewListNode(n...),
-	}
-}
-
-// ButtonNode represents a button, e.g. "Download Zip".
-type ButtonNode struct {
-	node
-	Raised   bool
-	Colored  bool
-	Download bool
-	Content  *ListNode
-}
-
-// Empty returns true if its content is empty.
-func (bn *ButtonNode) Empty() bool {
-	return bn.Content.Empty()
 }

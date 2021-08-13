@@ -7,7 +7,7 @@ import (
 )
 
 // AllowUnexported option for cmp to make sure we can diff properly.
-var cmpOpt = cmp.AllowUnexported(InfoboxNode{}, node{}, ListNode{}, TextNode{})
+var cmpOptInfobox = cmp.AllowUnexported(InfoboxNode{}, node{}, ListNode{}, TextNode{})
 
 func TestNewInfoboxNode(t *testing.T) {
 	tests := []struct {
@@ -117,7 +117,7 @@ func TestNewInfoboxNode(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			out := NewInfoboxNode(tc.inKind, tc.inContent...)
-			if diff := cmp.Diff(tc.out, out, cmpOpt); diff != "" {
+			if diff := cmp.Diff(tc.out, out, cmpOptInfobox); diff != "" {
 				t.Errorf("NewInfoboxNode(%q, %v) got diff (-want +got): %s", tc.inKind, tc.inContent, diff)
 				return
 			}
