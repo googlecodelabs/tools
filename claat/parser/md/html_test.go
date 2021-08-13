@@ -1914,8 +1914,7 @@ func TestFindChildAtoms(t *testing.T) {
 	}
 }
 
-// TODO rename function, it finds nearest ancestor
-func TestFindParent(t *testing.T) {
+func TestFindNearestAncestor(t *testing.T) {
 	a1 := makePNode()
 	a2 := makeStrongNode()
 	a3 := makeEmNode()
@@ -1927,45 +1926,58 @@ func TestFindParent(t *testing.T) {
 	a4.AppendChild(a5)
 
 	tests := []struct {
-		name   string
-		inNode *html.Node
-		inAtom atom.Atom
-		out    *html.Node
+		name           string
+		inNode         *html.Node
+		inAtoms        map[atom.Atom]struct{}
+		inConsiderSelf considerSelf
+		out            *html.Node
 	}{
 		{
-			name:   "Parent",
-			inNode: a4,
-			inAtom: atom.Em,
-			out:    a3,
+			name:    "Parent",
+			inNode:  a4,
+			inAtoms: map[atom.Atom]struct{}{atom.Em: {}},
+			out:     a3,
 		},
 		{
-			name:   "DistantAncestor",
-			inNode: a4,
-			inAtom: atom.P,
-			out:    a1,
+			name:    "DistantAncestor",
+			inNode:  a4,
+			inAtoms: map[atom.Atom]struct{}{atom.P: {}},
+			out:     a1,
 		},
 		{
-			name:   "Self",
-			inNode: a4,
-			inAtom: atom.Code,
-			out:    a4,
+			name:           "SelfDoConsiderSelf",
+			inNode:         a4,
+			inAtoms:        map[atom.Atom]struct{}{atom.Code: {}},
+			inConsiderSelf: doConsiderSelf,
+			out:            a4,
 		},
 		{
-			name:   "NotFound",
-			inNode: a4,
-			inAtom: atom.Blink,
+			name:    "SelfDoNotConsiderSelf",
+			inNode:  a4,
+			inAtoms: map[atom.Atom]struct{}{atom.Code: {}},
+		},
+		{
+			name:    "NotFound",
+			inNode:  a4,
+			inAtoms: map[atom.Atom]struct{}{atom.Blink: {}},
+		},
+		{
+			name:    "MultipleAtomsMatch",
+			inNode:  a4,
+			inAtoms: map[atom.Atom]struct{}{atom.P: {}, atom.Strong: {}, atom.Em: {}},
+			out:     a3,
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if diff := cmp.Diff(tc.out, findParent(tc.inNode, tc.inAtom)); diff != "" {
-				t.Errorf("findParent(%+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtom, diff)
+			if diff := cmp.Diff(tc.out, findNearestAncestor(tc.inNode, tc.inAtoms, tc.inConsiderSelf)); diff != "" {
+				t.Errorf("findNearestAncestor(%+v, %+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtoms, tc.inConsiderSelf, diff)
 			}
 		})
 	}
 }
 
-func TestFindBlockParent(t *testing.T) {
+func TestFindNearestBlockAncestor(t *testing.T) {
 	// Choice of <p> from blockParents is arbitrary.
 	a1 := makePNode()
 	a2 := makeBNode()
@@ -2003,8 +2015,8 @@ func TestFindBlockParent(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if diff := cmp.Diff(tc.out, findBlockParent(tc.in)); diff != "" {
-				t.Errorf("findBlockParent(%+v) got diff (-want +got):\n%s", tc.in, diff)
+			if diff := cmp.Diff(tc.out, findNearestBlockAncestor(tc.in)); diff != "" {
+				t.Errorf("findNearestBlockAncestor(%+v) got diff (-want +got):\n%s", tc.in, diff)
 			}
 		})
 	}
