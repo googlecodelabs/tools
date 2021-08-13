@@ -126,34 +126,6 @@ func (b *node) MutateEnv(e []string) {
 	sort.Strings(b.env)
 }
 
-// NewListNode creates a new Node of type NodeList.
-func NewListNode(nodes ...Node) *ListNode {
-	n := &ListNode{node: node{typ: NodeList}}
-	n.Append(nodes...)
-	return n
-}
-
-// ListNode contains other nodes.
-type ListNode struct {
-	node
-	Nodes []Node
-}
-
-// Empty returns true if all l.Nodes are empty.
-func (l *ListNode) Empty() bool {
-	return EmptyNodes(l.Nodes)
-}
-
-// Append appends nodes n to the end of l.Nodes slice.
-func (l *ListNode) Append(n ...Node) {
-	l.Nodes = append(l.Nodes, n...)
-}
-
-// Prepend prepends nodes n at the beginning of l.Nodes slice.
-func (l *ListNode) Prepend(n ...Node) {
-	l.Nodes = append(n, l.Nodes...)
-}
-
 // NewImportNode creates a new Node of type NodeImport,
 // with initialized ImportNode.Content.
 func NewImportNode(url string) *ImportNode {
