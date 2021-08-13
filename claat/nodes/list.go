@@ -23,9 +23,3 @@ func (l *ListNode) Empty() bool {
 func (l *ListNode) Append(n ...Node) {
 	l.Nodes = append(l.Nodes, n...)
 }
-
-// TODO remove
-// Prepend prepends nodes n at the beginning of l.Nodes slice.
-func (l *ListNode) Prepend(n ...Node) {
-	l.Nodes = append(n, l.Nodes...)
-}
