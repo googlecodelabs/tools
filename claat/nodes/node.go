@@ -14,8 +14,6 @@
 
 package nodes
 
-// TODO be consistent between Node/*Node
-
 import (
 	"sort"
 )
