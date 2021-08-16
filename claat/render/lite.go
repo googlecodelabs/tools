@@ -161,10 +161,10 @@ func (lw *liteWriter) alink(n *nodes.URLNode) *html.Node {
 
 func (lw *liteWriter) button(n *nodes.ButtonNode) *html.Node {
 	cls := []string{"step__button"}
-	if n.Colored {
+	if n.Color {
 		cls = append(cls, "button--colored")
 	}
-	if n.Raised {
+	if n.Raise {
 		cls = append(cls, "button--raised")
 	}
 	if n.Download {

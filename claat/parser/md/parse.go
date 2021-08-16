@@ -698,7 +698,7 @@ func surveyOpt(inputs []*html.Node) []string {
 // code parses hn as inline or block codes.
 // Inline code node will be of type NodeText.
 func code(ds *docState, term bool) nodes.Node {
-	elem := findParent(ds.cur, atom.Pre)
+	elem := findNearestAncestor(ds.cur, map[atom.Atom]struct{}{atom.Pre: {}}, doConsiderSelf)
 	// inline <code> text
 	if elem == nil {
 		return text(ds)
@@ -812,7 +812,7 @@ func image(ds *docState) nodes.Node {
 		n.Width = float32(w)
 	}
 
-	n.MutateBlock(findBlockParent(ds.cur))
+	n.MutateBlock(findNearestBlockAncestor(ds.cur))
 	return n
 }
 
@@ -874,7 +874,7 @@ func button(ds *docState) nodes.Node {
 	btn := nodes.NewButtonNode(true, true, dl, n...)
 
 	ln := nodes.NewURLNode(href, btn)
-	ln.MutateBlock(findBlockParent(ds.cur))
+	ln.MutateBlock(findNearestBlockAncestor(ds.cur))
 	return ln
 }
 
@@ -908,7 +908,7 @@ func link(ds *docState) nodes.Node {
 	if v := nodeAttr(ds.cur, "target"); v != "" {
 		n.Target = v
 	}
-	n.MutateBlock(findBlockParent(ds.cur))
+	n.MutateBlock(findNearestBlockAncestor(ds.cur))
 	return n
 }
 
@@ -930,7 +930,7 @@ func text(ds *docState) nodes.Node {
 		l := link(ds)
 		ds.pop()
 		if l != nil {
-			l.MutateBlock(findBlockParent(ds.cur))
+			l.MutateBlock(findNearestBlockAncestor(ds.cur))
 			return l
 		}
 	}
@@ -940,7 +940,7 @@ func text(ds *docState) nodes.Node {
 	n.Bold = bold
 	n.Italic = italic
 	n.Code = code
-	n.MutateBlock(findBlockParent(ds.cur))
+	n.MutateBlock(findNearestBlockAncestor(ds.cur))
 	return n
 }
 

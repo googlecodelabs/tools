@@ -206,10 +206,10 @@ func (hw *htmlWriter) url(n *nodes.URLNode) {
 
 func (hw *htmlWriter) button(n *nodes.ButtonNode) {
 	hw.writeString("<paper-button")
-	if n.Colored {
+	if n.Color {
 		hw.writeString(` class="colored"`)
 	}
-	if n.Raised {
+	if n.Raise {
 		hw.writeString(" raised")
 	}
 	hw.writeString(">")
