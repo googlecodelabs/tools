@@ -95,6 +95,7 @@ func (b *node) Type() NodeType {
 	return b.typ
 }
 
+// TODO test
 func (b *node) MutateType(t NodeType) {
 	if IsItemsList(b.typ) && IsItemsList(t) || IsHeader(b.typ) && IsHeader(t) {
 		b.typ = t
@@ -113,12 +114,14 @@ func (b *node) Env() []string {
 	return b.env
 }
 
+// TODO test
 func (b *node) MutateEnv(e []string) {
 	b.env = make([]string, len(e))
 	copy(b.env, e)
 	sort.Strings(b.env)
 }
 
+// TODO test ItemsList related code
 // NewItemsListNode creates a new ItemsListNode of type NodeItemsList,
 // which defaults to an unordered list.
 // Provide a positive start to make this a numbered list.
