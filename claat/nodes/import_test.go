@@ -90,6 +90,20 @@ func TestImportNodeEmpty(t *testing.T) {
 	}
 }
 
+func TestImportNodeMutateBlock(t *testing.T) {
+	n := NewImportNode("")
+	mValue := "foobar"
+
+	n.MutateBlock(mValue)
+
+	if n.node.block != mValue {
+		t.Errorf("ImportNode.node.block = %+v, want %q", n.node.block, mValue)
+	}
+	if n.Content.node.block != mValue {
+		t.Errorf("ImportNode.Content.node.block = %+v, want %q", n.Content.node.block, mValue)
+	}
+}
+
 func TestImportNodes(t *testing.T) {
 	a1 := NewImportNode("google.com")
 	a2 := NewImportNode("youtube.com")
