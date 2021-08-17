@@ -26,6 +26,7 @@ func IsHeader(t NodeType) bool {
 	return t&(NodeHeader|NodeHeaderCheck|NodeHeaderFAQ) != 0
 }
 
+// MutateType sets the header's node type if the given type is a header type.
 func (hn *HeaderNode) MutateType(t NodeType) {
 	if IsHeader(t) {
 		hn.typ = t
