@@ -40,3 +40,8 @@ func (il *ItemsListNode) NewItem(nodes ...Node) *ListNode {
 	il.Items = append(il.Items, n)
 	return n
 }
+
+// IsItemsList returns true if t is one of ItemsListNode types.
+func IsItemsList(t NodeType) bool {
+	return t&(NodeItemsList|NodeItemsCheck|NodeItemsFAQ) != 0
+}

@@ -65,11 +65,6 @@ type Node interface {
 	MutateEnv(env []string)
 }
 
-// IsItemsList returns true if t is one of ItemsListNode types.
-func IsItemsList(t NodeType) bool {
-	return t&(NodeItemsList|NodeItemsCheck|NodeItemsFAQ) != 0
-}
-
 // IsInline returns true if t is an inline node type.
 func IsInline(t NodeType) bool {
 	return t&(NodeText|NodeURL|NodeImage|NodeButton) != 0
