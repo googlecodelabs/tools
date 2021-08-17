@@ -45,3 +45,10 @@ func (il *ItemsListNode) NewItem(nodes ...Node) *ListNode {
 func IsItemsList(t NodeType) bool {
 	return t&(NodeItemsList|NodeItemsCheck|NodeItemsFAQ) != 0
 }
+
+// MutateType sets the items list's node type if the given type is an items list type.
+func (il *ItemsListNode) MutateType(t NodeType) {
+	if IsItemsList(t) {
+		il.typ = t
+	}
+}

@@ -90,11 +90,9 @@ func (b *node) Type() NodeType {
 	return b.typ
 }
 
-// TODO test
+// Default implementation is a no op.
 func (b *node) MutateType(t NodeType) {
-	if IsItemsList(b.typ) && IsItemsList(t) {
-		b.typ = t
-	}
+	return
 }
 
 func (b *node) Block() interface{} {

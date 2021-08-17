@@ -119,3 +119,37 @@ func TestItemsListNewItem(t *testing.T) {
 		t.Errorf("ItemsListNode after NewItem got diff ((-want +got): %s", diff)
 	}
 }
+
+func TestItemsListMutateType(t *testing.T) {
+	tests := []struct {
+		name   string
+		inType NodeType
+		out    NodeType
+	}{
+		{
+			name:   "ItemsList",
+			inType: NodeItemsList,
+			out:    NodeItemsList,
+		},
+		{
+			name:   "AlternateItemsListType",
+			inType: NodeItemsCheck,
+			out:    NodeItemsCheck,
+		},
+		{
+			name:   "NotAItemsList",
+			inType: NodeButton,
+			out:    NodeItemsList,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			n := NewItemsListNode("foobar", 0) // Args chosen arbitrarily.
+			n.MutateType(tc.inType)
+			if n.typ != tc.out {
+				t.Errorf("ItemsListNode.typ after MutateType = %v, want %v", n.typ, tc.out)
+				return
+			}
+		})
+	}
+}
