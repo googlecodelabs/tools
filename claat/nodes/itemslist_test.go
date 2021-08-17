@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-var cmpOptItemsList = cmp.AllowUnexported(ItemsListNode{}, node{})
+var cmpOptItemsList = cmp.AllowUnexported(ItemsListNode{}, node{}, ListNode{}, TextNode{})
 
 func TestNewItemsListNode(t *testing.T) {
 	// Only one code path, so this is not a tabular test.
@@ -84,5 +84,38 @@ func TestItemsListNodeEmpty(t *testing.T) {
 				return
 			}
 		})
+	}
+}
+
+func TestItemsListNewItem(t *testing.T) {
+	// Only one code path, so this is not a tabular test.
+	a := NewTextNode("a")
+	b := NewTextNode("b")
+	c := NewTextNode("c")
+
+	iln := NewItemsListNode("foobar", 0)
+
+	got := iln.NewItem(a, b, c)
+	want := NewListNode(a, b, c)
+
+	if diff := cmp.Diff(want, got, cmpOptItemsList); diff != "" {
+		t.Errorf("ItemsListNode.NewItem() got diff (-want +got): %s", diff)
+	}
+
+	wantItemsListNode := &ItemsListNode{
+		node: node{
+			typ:   NodeItemsList,
+			block: true,
+		},
+		ListType: "foobar",
+		Items: []*ListNode{
+			&ListNode{
+				node:  node{typ: NodeList},
+				Nodes: []Node{a, b, c},
+			},
+		},
+	}
+	if diff := cmp.Diff(wantItemsListNode, iln, cmpOptItemsList); diff != "" {
+		t.Errorf("ItemsListNode after NewItem got diff ((-want +got): %s", diff)
 	}
 }
