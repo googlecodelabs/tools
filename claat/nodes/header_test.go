@@ -117,3 +117,37 @@ func TestHeaderNodeEmpty(t *testing.T) {
 		})
 	}
 }
+
+func TestHeaderMutateType(t *testing.T) {
+	tests := []struct {
+		name   string
+		inType NodeType
+		out    NodeType
+	}{
+		{
+			name:   "Header",
+			inType: NodeHeader,
+			out:    NodeHeader,
+		},
+		{
+			name:   "AlternateHeaderType",
+			inType: NodeHeaderFAQ,
+			out:    NodeHeaderFAQ,
+		},
+		{
+			name:   "NotAHeader",
+			inType: NodeButton,
+			out:    NodeHeader,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			n := NewHeaderNode(1) // 1 chosen arbitrarily.
+			n.MutateType(tc.inType)
+			if n.typ != tc.out {
+				t.Errorf("HeaderNode.typ after MutateType = %v, want %v", n.typ, tc.out)
+				return
+			}
+		})
+	}
+}

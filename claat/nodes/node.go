@@ -97,7 +97,7 @@ func (b *node) Type() NodeType {
 
 // TODO test
 func (b *node) MutateType(t NodeType) {
-	if IsItemsList(b.typ) && IsItemsList(t) || IsHeader(b.typ) && IsHeader(t) {
+	if IsItemsList(b.typ) && IsItemsList(t) {
 		b.typ = t
 	}
 }
