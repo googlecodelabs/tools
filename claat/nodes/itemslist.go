@@ -1,6 +1,5 @@
 package nodes
 
-// TODO test ItemsList related code
 // NewItemsListNode creates a new ItemsListNode of type NodeItemsList,
 // which defaults to an unordered list.
 // Provide a positive start to make this a numbered list.
