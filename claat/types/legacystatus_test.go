@@ -20,7 +20,7 @@ import (
 	"testing"
 )
 
-func TestLegacyStatus(t *testing.T) {
+func TestLegacyStatusUnmarshal(t *testing.T) {
 	tests := []struct {
 		s string
 		v []string
@@ -40,8 +40,10 @@ func TestLegacyStatus(t *testing.T) {
 			t.Errorf("%d: v = %v; want %v", i, v, test.v)
 		}
 	}
+}
 
-	tests = []struct {
+func TestLegacyStatusMarshal(t *testing.T) {
+	tests := []struct {
 		s string
 		v []string
 	}{
