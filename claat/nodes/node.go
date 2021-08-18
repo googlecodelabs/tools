@@ -14,8 +14,6 @@
 
 package nodes
 
-// TODO be consistent between Node/*Node
-
 import (
 	"sort"
 )
@@ -72,11 +70,6 @@ func IsItemsList(t NodeType) bool {
 	return t&(NodeItemsList|NodeItemsCheck|NodeItemsFAQ) != 0
 }
 
-// IsHeader returns true if t is one of header types.
-func IsHeader(t NodeType) bool {
-	return t&(NodeHeader|NodeHeaderCheck|NodeHeaderFAQ) != 0
-}
-
 // IsInline returns true if t is an inline node type.
 func IsInline(t NodeType) bool {
 	return t&(NodeText|NodeURL|NodeImage|NodeButton) != 0
@@ -102,6 +95,7 @@ func (b *node) Type() NodeType {
 	return b.typ
 }
 
+// TODO test
 func (b *node) MutateType(t NodeType) {
 	if IsItemsList(b.typ) && IsItemsList(t) || IsHeader(b.typ) && IsHeader(t) {
 		b.typ = t
@@ -120,127 +114,9 @@ func (b *node) Env() []string {
 	return b.env
 }
 
+// TODO test
 func (b *node) MutateEnv(e []string) {
 	b.env = make([]string, len(e))
 	copy(b.env, e)
 	sort.Strings(b.env)
-}
-
-// NewListNode creates a new Node of type NodeList.
-func NewListNode(nodes ...Node) *ListNode {
-	n := &ListNode{node: node{typ: NodeList}}
-	n.Append(nodes...)
-	return n
-}
-
-// ListNode contains other nodes.
-type ListNode struct {
-	node
-	Nodes []Node
-}
-
-// Empty returns true if all l.Nodes are empty.
-func (l *ListNode) Empty() bool {
-	return EmptyNodes(l.Nodes)
-}
-
-// Append appends nodes n to the end of l.Nodes slice.
-func (l *ListNode) Append(n ...Node) {
-	l.Nodes = append(l.Nodes, n...)
-}
-
-// Prepend prepends nodes n at the beginning of l.Nodes slice.
-func (l *ListNode) Prepend(n ...Node) {
-	l.Nodes = append(n, l.Nodes...)
-}
-
-// NewImportNode creates a new Node of type NodeImport,
-// with initialized ImportNode.Content.
-func NewImportNode(url string) *ImportNode {
-	return &ImportNode{
-		node:    node{typ: NodeImport},
-		Content: NewListNode(),
-		URL:     url,
-	}
-}
-
-// ImportNode indicates a remote resource available at ImportNode.URL.
-type ImportNode struct {
-	node
-	URL     string
-	Content *ListNode
-}
-
-// Empty returns the result of in.Content.Empty method.
-func (in *ImportNode) Empty() bool {
-	return in.Content.Empty()
-}
-
-// MutateBlock mutates both in's block marker and that of in.Content.
-func (in *ImportNode) MutateBlock(v interface{}) {
-	in.node.MutateBlock(v)
-	in.Content.MutateBlock(v)
-}
-
-// ImportNodes extracts everything except NodeImport nodes, recursively.
-func ImportNodes(nodes []Node) []*ImportNode {
-	var imps []*ImportNode
-	for _, n := range nodes {
-		switch n := n.(type) {
-		case *ImportNode:
-			imps = append(imps, n)
-		case *ListNode:
-			imps = append(imps, ImportNodes(n.Nodes)...)
-		case *InfoboxNode:
-			imps = append(imps, ImportNodes(n.Content.Nodes)...)
-		case *GridNode:
-			for _, r := range n.Rows {
-				for _, c := range r {
-					imps = append(imps, ImportNodes(c.Content.Nodes)...)
-				}
-			}
-		}
-	}
-	return imps
-}
-
-// NewItemsListNode creates a new ItemsListNode of type NodeItemsList,
-// which defaults to an unordered list.
-// Provide a positive start to make this a numbered list.
-// NodeItemsCheck and NodeItemsFAQ are always unnumbered.
-func NewItemsListNode(typ string, start int) *ItemsListNode {
-	iln := ItemsListNode{
-		node: node{typ: NodeItemsList},
-		// TODO document this
-		ListType: typ,
-		Start:    start,
-	}
-	iln.MutateBlock(true)
-	return &iln
-}
-
-// ItemsListNode containts sets of ListNode.
-// Non-zero ListType indicates an ordered list.
-type ItemsListNode struct {
-	node
-	ListType string
-	Start    int
-	Items    []*ListNode
-}
-
-// Empty returns true if every item has empty content.
-func (il *ItemsListNode) Empty() bool {
-	for _, i := range il.Items {
-		if !i.Empty() {
-			return false
-		}
-	}
-	return true
-}
-
-// NewItem creates a new ListNode and adds it to il.Items.
-func (il *ItemsListNode) NewItem(nodes ...Node) *ListNode {
-	n := NewListNode(nodes...)
-	il.Items = append(il.Items, n)
-	return n
 }

@@ -20,3 +20,8 @@ type HeaderNode struct {
 func (hn *HeaderNode) Empty() bool {
 	return hn.Content.Empty()
 }
+
+// IsHeader returns true if t is one of header types.
+func IsHeader(t NodeType) bool {
+	return t&(NodeHeader|NodeHeaderCheck|NodeHeaderFAQ) != 0
+}
