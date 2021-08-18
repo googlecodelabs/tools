@@ -20,7 +20,7 @@ import (
 	"testing"
 )
 
-func TestLegacyStatus(t *testing.T) {
+func TestLegacyStatusUnmarshal(t *testing.T) {
 	tests := []struct {
 		s string
 		v []string
@@ -40,8 +40,10 @@ func TestLegacyStatus(t *testing.T) {
 			t.Errorf("%d: v = %v; want %v", i, v, test.v)
 		}
 	}
+}
 
-	tests = []struct {
+func TestLegacyStatusMarshal(t *testing.T) {
+	tests := []struct {
 		s string
 		v []string
 	}{
@@ -59,5 +61,41 @@ func TestLegacyStatus(t *testing.T) {
 		if string(b) != test.s {
 			t.Errorf("%d: b = %s; want %s", i, b, test.s)
 		}
+	}
+}
+
+func TestString(t *testing.T) {
+	tests := []struct {
+		name     string
+		inStatus LegacyStatus
+		out      string
+	}{
+		{
+			name: "Empty",
+		},
+		{
+			name:     "One",
+			inStatus: LegacyStatus{"foo"},
+			out:      "[foo]",
+		},
+		{
+			name:     "Multiple",
+			inStatus: LegacyStatus{"foo", "bar", "baz"},
+			out:      "[foo,bar,baz]",
+		},
+		{
+			name:     "Duplicates",
+			inStatus: LegacyStatus{"foo", "bar", "baz", "foo"},
+			out:      "[foo,bar,baz,foo]",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out := tc.inStatus.String()
+			if out != tc.out {
+				t.Errorf("LegacyStatus.String() = %q, want %q", out, tc.out)
+				return
+			}
+		})
 	}
 }
