@@ -107,7 +107,6 @@ func (b *node) Env() []string {
 	return b.env
 }
 
-// TODO test
 func (b *node) MutateEnv(e []string) {
 	b.env = make([]string, len(e))
 	copy(b.env, e)
