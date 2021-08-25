@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -15,7 +16,7 @@ func TestContextTimeMarshalJSON(t *testing.T) {
 	}{
 		{
 			name: "Epoch",
-			in:   ContextTime(time.Unix(0, 0)),
+			in:   ContextTime(time.Unix(0, 0).UTC()),
 			out:  []byte(`"1970-01-01T00:00:00Z"`),
 		},
 		{
