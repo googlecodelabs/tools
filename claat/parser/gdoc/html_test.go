@@ -3,6 +3,7 @@ package gdoc
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
@@ -193,6 +194,43 @@ func TestCountDirect(t *testing.T) {
 
 // TODO: test findBlockParent
 
-// TODO: test nodeAttr
+func TestNodeAttr(t *testing.T) {
+	a1 := makeBlinkNode()
+	a1.Attr = append(a1.Attr, html.Attribute{Key: "keyone", Val: "valone"})
+	a1.Attr = append(a1.Attr, html.Attribute{Key: "keytwo", Val: "valtwo"})
+	a1.Attr = append(a1.Attr, html.Attribute{Key: "keythree", Val: "valthree"})
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inKey  string
+		out    string
+	}{
+		{
+			name:   "Simple",
+			inNode: a1,
+			inKey:  "keyone",
+			out:    "valone",
+		},
+		{
+			name:   "MixedCase",
+			inNode: a1,
+			inKey:  "KEytWO",
+			out:    "valtwo",
+		},
+		{
+			name:   "NotFound",
+			inNode: a1,
+			inKey:  "nokey",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, nodeAttr(tc.inNode, tc.inKey)); diff != "" {
+				t.Errorf("nodeAttr(%+v, %s) got diff (-want +got):\n%s", tc.inNode, tc.inKey, diff)
+			}
+		})
+	}
+}
 
 // TODO: test stringifyNode
