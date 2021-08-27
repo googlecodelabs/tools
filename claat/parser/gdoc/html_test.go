@@ -87,3 +87,43 @@ func TestIsHeader(t *testing.T) {
 		})
 	}
 }
+
+// TODO: test isMeta
+
+// TODO: test isBold
+
+// TODO: test isItalic
+
+// TODO: test isConsole
+
+// TODO: test isCode
+
+// TODO: test isButton
+
+// TODO: test isInfobox
+
+// TODO: test isInfoboxNegative
+
+// TODO: test isSurvey
+
+// TODO: test isComment
+
+// TODO: test isTable
+
+// TODO: test isList
+
+// TODO: test countTwo
+
+// TODO: test countDirect
+
+// TODO: test findAtom
+
+// TODO: test findChildAtoms
+
+// TODO: test findParent
+
+// TODO: test findBlockParent
+
+// TODO: test nodeAttr
+
+// TODO: test stringifyNode
