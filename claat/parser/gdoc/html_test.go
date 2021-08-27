@@ -48,6 +48,14 @@ func makeStrongNode() *html.Node {
 	}
 }
 
+func makeCodeNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Code,
+		Data:     "code",
+	}
+}
+
 // data is the text in the node.
 func makeTextNode(data string) *html.Node {
 	return &html.Node{
@@ -289,7 +297,55 @@ func TestFindAtom(t *testing.T) {
 
 // TODO: test findChildAtoms
 
-// TODO: test findParent
+func TestFindParent(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeStrongNode()
+	a3 := makeEmNode()
+	a4 := makeCodeNode()
+	a5 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+	a3.AppendChild(a4)
+	a4.AppendChild(a5)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inAtom atom.Atom
+		out    *html.Node
+	}{
+		{
+			name:   "Parent",
+			inNode: a4,
+			inAtom: atom.Em,
+			out:    a3,
+		},
+		{
+			name:   "DistantAncestor",
+			inNode: a4,
+			inAtom: atom.P,
+			out:    a1,
+		},
+		{
+			name:   "Self",
+			inNode: a4,
+			inAtom: atom.Code,
+			out:    a4,
+		},
+		{
+			name:   "NotFound",
+			inNode: a4,
+			inAtom: atom.Blink,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, findParent(tc.inNode, tc.inAtom)); diff != "" {
+				t.Errorf("findParent(%+v, %+v) got diff (-want +got):\n%s", tc.inNode, tc.inAtom, diff)
+			}
+		})
+	}
+}
 
 // TODO: test findBlockParent
 
