@@ -56,6 +56,23 @@ func makeCodeNode() *html.Node {
 	}
 }
 
+func makeBNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.B,
+		Data:     "b",
+	}
+}
+
+// <i>, not the filesystem abstraction.
+func makeINode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.I,
+		Data:     "i",
+	}
+}
+
 // data is the text in the node.
 func makeTextNode(data string) *html.Node {
 	return &html.Node{
@@ -347,7 +364,50 @@ func TestFindParent(t *testing.T) {
 	}
 }
 
-// TODO: test findBlockParent
+func TestFindBlockParent(t *testing.T) {
+	// Choice of <p> from blockParents is arbitrary.
+	a1 := makePNode()
+	a2 := makeBNode()
+	a3 := makeINode()
+	a4 := makeCodeNode()
+	a5 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+	a2.AppendChild(a3)
+	a3.AppendChild(a4)
+	a4.AppendChild(a5)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  *html.Node
+	}{
+		{
+			name: "Parent",
+			in:   a2,
+			out:  a1,
+		},
+		{
+			name: "DistantAncestor",
+			in:   a5,
+			out:  a1,
+		},
+		{
+			name: "Self",
+			in:   a1,
+		},
+		{
+			name: "None",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, findBlockParent(tc.in)); diff != "" {
+				t.Errorf("findBlockParent(%+v) got diff (-want +got):\n%s", tc.in, diff)
+			}
+		})
+	}
+}
 
 func TestNodeAttr(t *testing.T) {
 	a1 := makeBlinkNode()
