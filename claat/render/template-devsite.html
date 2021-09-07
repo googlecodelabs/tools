@@ -18,7 +18,6 @@ the License.
     <title>{{.Meta.Title}}</title>
     <meta name="project_path" value="/_project.yaml" />
     <meta name="book_path" value="/_book.yaml" />
-    <meta name="full_width" value="true" />
     <meta name="keywords" value="{{range $index, $tag := .Meta.Tags}}{{if $index}},{{end}}tag_{{$tag}}{{end}}{{range $index, $cat := .Meta.Categories}},category_{{$cat}}{{end}}" />
     {{if .Meta.Summary}}
       <meta name="description" content="{{.Meta.Summary}}" />
@@ -47,7 +46,7 @@ the License.
       }
     </style>
   </head>
-  <body class="devsite-full-width-page">
+  <body>
     <google-codelab-analytics gaid="{{.GlobalGA}}"></google-codelab-analytics>
     <google-codelab codelab-gaid="{{.Meta.GA}}"
                     doc-id="{{.Meta.Source}}"
