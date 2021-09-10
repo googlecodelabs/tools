@@ -498,12 +498,10 @@ class Codelab extends HTMLElement {
    * @private
    */
   handlePopStateChanged_(e) {
-    const step = this.getStepFromHash_();
-    if (step) {
-      this.setAttribute(DONT_SET_HISTORY_ATTR, '');
-      this.setAttribute(SELECTED_ATTR, `${step}`);
-      this.removeAttribute(DONT_SET_HISTORY_ATTR);
-    }
+    const step = this.getStepFromHash_(document.location);
+    this.setAttribute(DONT_SET_HISTORY_ATTR, '');
+    this.setAttribute(SELECTED_ATTR, `${step}`);
+    this.removeAttribute(DONT_SET_HISTORY_ATTR);
   }
 
   /**
@@ -540,7 +538,7 @@ class Codelab extends HTMLElement {
       return;
     }
 
-    const step = this.getStepFromHash_();
+    const step = this.getStepFromHash_(new URL(target.getAttribute('href'), document.location.origin));
     this.setAttribute(SELECTED_ATTR, `${step}`);
   }
 
@@ -854,11 +852,12 @@ class Codelab extends HTMLElement {
 
   /**
    * @private
+   * @param {Url} url
    * @return {number}
    */
-  getStepFromHash_() {
-    if (document.location.hash) {
-      const step = parseInt(document.location.hash.substring(1), 10);
+  getStepFromHash_(url) {
+    if (url.hash) {
+      const step = parseInt(url.hash.substring(1), 10);
       if (!isNaN(step) && step) {
         return step;
       }
@@ -883,7 +882,7 @@ class Codelab extends HTMLElement {
    */
   init_() {
     this.id_ = this.getAttribute(ID_ATTR);
-    let step = this.getStepFromHash_() || this.getStepFromStorage_();
+    let step = this.getStepFromHash_(document.location) || this.getStepFromStorage_();
     this.setAttribute(SELECTED_ATTR, `${step}`);
     this.eventHandler_.listen(
         dom.getWindow(), events.EventType.POPSTATE, (e) => {
@@ -895,12 +894,12 @@ class Codelab extends HTMLElement {
    * @private
    */
   saveStep_() {
+    if (!this.hasAttribute(DONT_SET_HISTORY_ATTR)) {
+      this.updateHistoryState(`#${this.currentSelectedStep_}`, true);
+    }
     if (this.id_) {
       this.storage_.set(
           `progress_${this.id_}`, String(this.currentSelectedStep_));
-    }
-    if (!this.hasAttribute(DONT_SET_HISTORY_ATTR)) {
-      this.updateHistoryState(`#${this.currentSelectedStep_}`, true);
     }
   }
 }
