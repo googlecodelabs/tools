@@ -498,7 +498,7 @@ class Codelab extends HTMLElement {
    * @private
    */
   handlePopStateChanged_(e) {
-    const step = this.getStepFromHash_(document.location);
+    const step = this.getStepFromHash_(document.location.hash);
     this.setAttribute(DONT_SET_HISTORY_ATTR, '');
     this.setAttribute(SELECTED_ATTR, `${step}`);
     this.removeAttribute(DONT_SET_HISTORY_ATTR);
@@ -538,7 +538,9 @@ class Codelab extends HTMLElement {
       return;
     }
 
-    const step = this.getStepFromHash_(new URL(target.getAttribute('href'), document.location.origin));
+    const hash =
+        new URL(target.getAttribute('href'), document.location.origin).hash;
+    const step = this.getStepFromHash_(hash);
     this.setAttribute(SELECTED_ATTR, `${step}`);
   }
 
@@ -852,12 +854,12 @@ class Codelab extends HTMLElement {
 
   /**
    * @private
-   * @param {Url} url
+   * @param {string} hash
    * @return {number}
    */
-  getStepFromHash_(url) {
-    if (url.hash) {
-      const step = parseInt(url.hash.substring(1), 10);
+  getStepFromHash_(hash) {
+    if (hash) {
+      const step = parseInt(hash.substring(1), 10);
       if (!isNaN(step) && step) {
         return step;
       }
@@ -882,7 +884,8 @@ class Codelab extends HTMLElement {
    */
   init_() {
     this.id_ = this.getAttribute(ID_ATTR);
-    let step = this.getStepFromHash_(document.location) || this.getStepFromStorage_();
+    let step = this.getStepFromHash_(document.location.hash) ||
+        this.getStepFromStorage_();
     this.setAttribute(SELECTED_ATTR, `${step}`);
     this.eventHandler_.listen(
         dom.getWindow(), events.EventType.POPSTATE, (e) => {
