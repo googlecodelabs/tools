@@ -153,7 +153,7 @@ google-codelab #drawer ol {
   }
 
   google-codelab #main {
-    height: 100%;
+    height: calc(100% - 64px);
   }
 
   google-codelab #codelab-nav-buttons #arrow-back {
