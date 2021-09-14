@@ -163,11 +163,11 @@ class Codelab extends HTMLElement {
     /** @private {number} */
     this.setFocusTimeoutId_ = -1;
 
-    /** @private {!Array<!Element>} */
-    this.steps_ = [];
+    /** @protected {!Array<!Element>} */
+    this.steps = [];
 
-    /** @private {number}  */
-    this.currentSelectedStep_ = -1;
+    /** @protected {number}  */
+    this.currentSelectedStep = -1;
 
     /**
      * @private {!EventHandler}
@@ -203,9 +203,9 @@ class Codelab extends HTMLElement {
    */
   connectedCallback() {
     this.init_();
-    this.setupDom_();
-    this.addEvents_();
-    this.saveStep_();
+    this.setupDom();
+    this.addEvents();
+    this.saveStep();
 
     if (!this.ready_) {
       this.ready_ = true;
@@ -258,7 +258,7 @@ class Codelab extends HTMLElement {
         break;
       case SELECTED_ATTR:
         this.showSelectedStep_();
-        this.saveStep_();
+        this.saveStep();
         break;
       case NO_TOOLBAR_ATTR:
         this.toggleToolbar_();
@@ -288,14 +288,6 @@ class Codelab extends HTMLElement {
   }
 
   /**
-   * @return {!Array<!Element>}
-   * @export
-   */
-  get steps() {
-    return this.steps_;
-  }
-
-  /**
    * @private
    */
   configureAnalytics_() {
@@ -319,14 +311,14 @@ class Codelab extends HTMLElement {
    * @export
    */
   selectNext() {
-    this.setAttribute(SELECTED_ATTR, this.currentSelectedStep_ + 1);
+    this.setAttribute(SELECTED_ATTR, this.currentSelectedStep + 1);
   }
 
   /**
    * @export
    */
   selectPrevious() {
-    this.setAttribute(SELECTED_ATTR, this.currentSelectedStep_ - 1);
+    this.setAttribute(SELECTED_ATTR, this.currentSelectedStep - 1);
   }
 
   /**
@@ -338,9 +330,9 @@ class Codelab extends HTMLElement {
   }
 
   /**
-   * @private
+   * @protected
    */
-  addEvents_() {
+  addEvents() {
     if (this.prevStepBtn_) {
       this.eventHandler_.listen(
           this.prevStepBtn_, events.EventType.CLICK, (e) => {
@@ -575,8 +567,8 @@ class Codelab extends HTMLElement {
 
 
     let time = 0;
-    for (let i = this.currentSelectedStep_; i < this.steps_.length; i++) {
-      const step = /** @type {!Element} */ (this.steps_[i]);
+    for (let i = this.currentSelectedStep; i < this.steps.length; i++) {
+      const step = /** @type {!Element} */ (this.steps[i]);
       let n = parseInt(step.getAttribute(DURATION_ATTR), 10);
       if (n) {
         time += n;
@@ -605,7 +597,7 @@ class Codelab extends HTMLElement {
    * @private
    */
   setupSteps_() {
-    this.steps_.forEach((step, index) => {
+    this.steps.forEach((step, index) => {
       step = /** @type {!Element} */ (step);
       step.setAttribute('step', index);
     });
@@ -626,27 +618,17 @@ class Codelab extends HTMLElement {
       return;
     }
 
-    selected =
-        Math.min(Math.max(0, parseInt(selected, 10)), this.steps_.length - 1);
+    selected = Math.min(Math.max(0, selected), this.steps.length - 1);
 
-    if (this.currentSelectedStep_ === selected || isNaN(selected)) {
+    if (this.currentSelectedStep === selected || isNaN(selected)) {
       // Either the current step is already selected or an invalid option was
       // provided do nothing and return.
       return;
     }
 
-    const stepTitleEl = this.steps_[selected].querySelector('.step-title');
-    const stepTitle = stepTitleEl ? stepTitleEl.textContent : '';
-    const stepTitlePrefix = (selected + 1) + '.';
-    const re = new RegExp(stepTitlePrefix, 'g');
-    this.fireEvent_(CODELAB_PAGEVIEW_EVENT, {
-      'page': location.pathname + '#' + selected,
-      'title': stepTitle.replace(re, '').trim()
-    });
+    const stepToSelect = this.steps[selected];
 
-    const stepToSelect = this.steps_[selected];
-
-    if (this.currentSelectedStep_ === -1) {
+    if (this.currentSelectedStep === -1) {
       // No previous selected step, so select the correct step with no animation
       stepToSelect.setAttribute(SELECTED_ATTR, '');
     } else {
@@ -665,10 +647,10 @@ class Codelab extends HTMLElement {
       const transitionOutInitialStyle = {transform: 'translate3d(0, 0, 0)'};
       const transitionOutFinalStyle = {};
 
-      const currentStep = this.steps_[this.currentSelectedStep_];
+      const currentStep = this.steps[this.currentSelectedStep];
       stepToSelect.setAttribute(ANIMATING_ATTR, '');
 
-      if (this.currentSelectedStep_ < selected) {
+      if (this.currentSelectedStep < selected) {
         // Move new step in from the right
         transitionInInitialStyle['transform'] = 'translate3d(110%, 0, 0)';
         transitionOutFinalStyle['transform'] = 'translate3d(-110%, 0, 0)';
@@ -709,7 +691,8 @@ class Codelab extends HTMLElement {
           });
     }
 
-    this.currentSelectedStep_ = selected;
+    this.currentSelectedStep = selected;
+    this.firePageViewEvent();
 
     // Set the focus on the new step after the animation is finished becasue it
     // messes up the animation.
@@ -728,7 +711,7 @@ class Codelab extends HTMLElement {
         this.prevStepBtn_.removeAttribute(DISAPPEAR_ATTR);
         this.prevStepBtn_.removeAttribute(TAB_INDEX_ATTR);
       }
-      if (selected === this.steps_.length - 1) {
+      if (selected === this.steps.length - 1) {
         this.nextStepBtn_.setAttribute(HIDDEN_ATTR, '');
         this.doneBtn_.removeAttribute(HIDDEN_ATTR);
         this.fireEvent_(CODELAB_ACTION_EVENT, {
@@ -765,7 +748,7 @@ class Codelab extends HTMLElement {
    * @private
    */
   renderDrawer_() {
-    const steps = this.steps_.map((step) => step.getAttribute(LABEL_ATTR));
+    const steps = this.steps.map((step) => step.getAttribute(LABEL_ATTR));
     soy.renderElement(this.drawer_, Templates.drawer, {steps});
   }
 
@@ -810,10 +793,7 @@ class Codelab extends HTMLElement {
    * @private
    */
   firePageLoadEvents_() {
-    this.fireEvent_(CODELAB_PAGEVIEW_EVENT, {
-      'page': location.pathname + '#' + this.currentSelectedStep_,
-      'title': this.steps_[this.currentSelectedStep_].getAttribute(LABEL_ATTR)
-    });
+    this.firePageViewEvent();
 
     window.requestAnimationFrame(() => {
       document.body.removeAttribute('unresolved');
@@ -823,10 +803,10 @@ class Codelab extends HTMLElement {
   }
 
   /**
-   * @private
+   * @protected
    */
-  setupDom_() {
-    this.steps_ = Array.from(this.querySelectorAll('google-codelab-step'));
+  setupDom() {
+    this.steps = Array.from(this.querySelectorAll('google-codelab-step'));
 
     const feedback = this.getAttribute(FEEDBACK_LINK_ATTR);
     soy.renderElement(this, Templates.structure, {
@@ -841,7 +821,7 @@ class Codelab extends HTMLElement {
     this.prevStepBtn_ = this.querySelector('#controls #previous-step');
     this.nextStepBtn_ = this.querySelector('#controls #next-step');
     this.doneBtn_ = this.querySelector('#controls #done');
-    this.steps_.forEach((step) => dom.appendChild(this.stepsContainer_, step));
+    this.steps.forEach((step) => dom.appendChild(this.stepsContainer_, step));
     this.setupSteps_();
     this.renderDrawer_();
     this.timeContainer_ = this.querySelectorAll('.codelab-time-container');
@@ -894,16 +874,26 @@ class Codelab extends HTMLElement {
   }
 
   /**
-   * @private
+   * @protected
    */
-  saveStep_() {
+  saveStep() {
     if (!this.hasAttribute(DONT_SET_HISTORY_ATTR)) {
-      this.updateHistoryState(`#${this.currentSelectedStep_}`, true);
+      this.updateHistoryState(`#${this.currentSelectedStep}`, true);
     }
     if (this.id_) {
       this.storage_.set(
-          `progress_${this.id_}`, String(this.currentSelectedStep_));
+          `progress_${this.id_}`, String(this.currentSelectedStep));
     }
+  }
+
+  /**
+   * @protected
+   */
+  firePageViewEvent() {
+    this.fireEvent_(CODELAB_PAGEVIEW_EVENT, {
+      'page': location.pathname + '#' + this.currentSelectedStep,
+      'title': this.steps[this.currentSelectedStep].getAttribute(LABEL_ATTR)
+    });
   }
 }
 
