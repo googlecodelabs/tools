@@ -8,9 +8,7 @@ import (
 )
 
 func nodeWithStyle(s string) *html.Node {
-	n := makePNode()
-	n.Attr = append(n.Attr, html.Attribute{Key: "style", Val: s})
-	return n
+	return nodeWithAttrs(map[string]string{"style": s})
 }
 
 func nodeWithAttrs(attrs map[string]string) *html.Node {
