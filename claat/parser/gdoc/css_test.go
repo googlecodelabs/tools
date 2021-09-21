@@ -3,6 +3,7 @@ package gdoc
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"golang.org/x/net/html"
 )
 
@@ -12,9 +13,70 @@ func nodeWithStyle(s string) *html.Node {
 	return n
 }
 
+func nodeWithAttrs(attrs map[string]string) *html.Node {
+	n := makePNode()
+	for k, v := range attrs {
+		n.Attr = append(n.Attr, html.Attribute{Key: k, Val: v})
+	}
+	return n
+}
+
 // TODO: test parseStyle
 
-// TODO: test classList
+func TestClassList(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    []string
+	}{
+		{
+			name:   "Simple",
+			inNode: nodeWithAttrs(map[string]string{"class": "foo"}),
+			out:    []string{"foo"},
+		},
+		{
+			name:   "MultipleClassesPresorted",
+			inNode: nodeWithAttrs(map[string]string{"class": "bar baz foo"}),
+			out:    []string{"bar", "baz", "foo"},
+		},
+		{
+			name:   "MultipleClassesUnsorted",
+			inNode: nodeWithAttrs(map[string]string{"class": "foo bar baz"}),
+			out:    []string{"bar", "baz", "foo"},
+		},
+		{
+			name:   "OtherAttrs",
+			inNode: nodeWithAttrs(map[string]string{"style": "margin-left: 2em", "class": "bar baz foo", "data-something": "a value"}),
+			out:    []string{"bar", "baz", "foo"},
+		},
+		{
+			// TODO should this just return nil?
+			name:   "NoAttrs",
+			inNode: makePNode(),
+			out:    []string{""},
+		},
+		{
+			// TODO should this just return nil?
+			// TODO should capitalization be handled?
+			name:   "CapitalizationKey",
+			inNode: nodeWithAttrs(map[string]string{"Class": "bar baz foo"}),
+			out:    []string{""},
+		},
+		{
+			// TODO should this just return nil?
+			name:   "NoClass",
+			inNode: nodeWithAttrs(map[string]string{"data-whatever": "lol"}),
+			out:    []string{""},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, classList(tc.inNode)); diff != "" {
+				t.Errorf("classList(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 // TODO: test hasClass
 
