@@ -43,10 +43,22 @@ func TestStyleValue(t *testing.T) {
 			out:    "absolute",
 		},
 		{
-			name:   "Capitalization",
+			name:   "CapitalizationKeyStyle",
+			inNode: nodeWithStyle("Position: relative"),
+			inName: "position",
+			out:    "relative",
+		},
+		{
+			name:   "CapitalizationValueStyle",
 			inNode: nodeWithStyle("color: #0000FF"),
 			inName: "color",
 			out:    "#0000ff",
+		},
+		{
+			name:   "CapitalizationKeyInput",
+			inNode: nodeWithStyle("position: relative"),
+			inName: "Position",
+			out:    "relative",
 		},
 		{
 			name:   "Multiple",
