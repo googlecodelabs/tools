@@ -76,7 +76,55 @@ func TestClassList(t *testing.T) {
 	}
 }
 
-// TODO: test hasClass
+func TestHasClass(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		inName string
+		out    bool
+	}{
+		{
+			name:   "Simple",
+			inNode: nodeWithAttrs(map[string]string{"class": "foo"}),
+			inName: "foo",
+			out:    true,
+		},
+		{
+			name:   "Multiple",
+			inNode: nodeWithAttrs(map[string]string{"class": "foo bar baz"}),
+			inName: "bar",
+			out:    true,
+		},
+		{
+			name:   "NotFound",
+			inNode: nodeWithAttrs(map[string]string{"class": "foo bar baz"}),
+			inName: "qux",
+		},
+		{
+			name:   "NoClasses",
+			inNode: makePNode(),
+			inName: "foo",
+		},
+		{
+			name:   "CapitalizationInput",
+			inNode: nodeWithAttrs(map[string]string{"class": "foo bar baz"}),
+			inName: "Foo",
+		},
+		{
+			name:   "CapitalizationClass",
+			inNode: nodeWithAttrs(map[string]string{"class": "foo bar baZ"}),
+			inName: "baz",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := hasClass(tc.inNode, tc.inName); out != tc.out {
+				t.Errorf("hasClass(%+v, %q) = %t, want %t", tc.inNode, tc.inName, out, tc.out)
+
+			}
+		})
+	}
+}
 
 // TODO: test hasClassStyle
 
