@@ -182,7 +182,6 @@ func testIsMeta(t *testing.T) {
 	metaStyleText := `.meta {
 	color: #b7b7b7;
 }`
-
 	metaStyle, err := parseStyle(makeStyleNode(metaStyleText))
 	if err != nil {
 		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", metaStyleText, err)
@@ -228,7 +227,6 @@ func testIsBold(t *testing.T) {
 	font-weight: 700;
 }
 `
-
 	boldStyle, err := parseStyle(makeStyleNode(boldStyleText))
 	if err != nil {
 		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", boldStyleText, err)
@@ -305,7 +303,6 @@ func testIsItalic(t *testing.T) {
 	font-style: italic;
 }
 `
-
 	italicStyle, err := parseStyle(makeStyleNode(italicStyleText))
 	if err != nil {
 		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", italicStyleText, err)
@@ -378,7 +375,6 @@ func testIsConsole(t *testing.T) {
 	font-family: courier new;
 }
 `
-
 	consoleStyle, err := parseStyle(makeStyleNode(consoleStyleText))
 	if err != nil {
 		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", consoleStyleText, err)
@@ -447,7 +443,6 @@ func testIsCode(t *testing.T) {
 	font-family: courier new;
 }
 `
-
 	codeStyle, err := parseStyle(makeStyleNode(codeStyleText))
 	if err != nil {
 		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", codeStyleText, err)
