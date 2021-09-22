@@ -261,7 +261,74 @@ func testIsBold(t *testing.T) {
 	}
 }
 
-// TODO: test isItalic
+func testIsItalic(t *testing.T) {
+	italicStyleText := `.literalitalic {
+	font-style: italic;
+}
+`
+
+	italicStyle, err := parseStyle(makeStyleNode(italicStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", italicStyleText, err)
+		return
+	}
+
+	a1 := makeEmNode()
+	a2 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+
+	b := makeINode()
+	b.AppendChild(makeTextNode("foobar"))
+
+	c := nodeWithAttrs(map[string]string{"class": "literalitalic"})
+	c.AppendChild(makeTextNode("foobar"))
+
+	d1 := makeStrongNode()
+	d2 := makeTextNode("foobar")
+	d1.AppendChild(d2)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "Em",
+			inNode: a1,
+			out:    true,
+		},
+		{
+			name:   "I",
+			inNode: b,
+			out:    true,
+		},
+		{
+			name:   "FontStyleItalic",
+			inNode: c,
+			out:    true,
+		},
+		{
+			name:   "TextNodeItalic",
+			inNode: a2,
+			out:    true,
+		},
+		{
+			name:   "TextNodeNonItalic",
+			inNode: d2,
+		},
+		{
+			name:   "Strong",
+			inNode: d1,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isItalic(italicStyle, tc.inNode); out != tc.out {
+				t.Errorf("isItalic(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
 
 // TODO: test isConsole
 
