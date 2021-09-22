@@ -270,7 +270,157 @@ func TestHasClass(t *testing.T) {
 	}
 }
 
-// TODO: test hasClassStyle
+func TestHasClassStyle(t *testing.T) {
+	testStyleNode := makeStyleNode(`.foo {
+	margin-top: 1em;
+	margin-left: 2em;
+}
+
+.bar {
+	padding-top: 3em;
+	padding-left: 4em;
+}
+
+#baz {
+	color: green;
+}
+`)
+	testStyle, err := parseStyle(testStyleNode)
+	if err != nil {
+		t.Fatalf("parseStyle(%+v) = %+v", testStyleNode, err)
+		return
+	}
+
+	caseTestStyleNode := makeStyleNode(`.foo {
+	MARGIN-top: 1eM;
+}`)
+	caseTestStyle, err := parseStyle(caseTestStyleNode)
+	if err != nil {
+		t.Fatalf("parseStyle(%+v) = %+v", caseTestStyleNode, err)
+		return
+	}
+
+	tests := []struct {
+		name   string
+		inCSS  cssStyle
+		inNode *html.Node
+		inKey  string
+		inVal  string
+		out    bool
+	}{
+		{
+			name:   "ClassHitNoInlineKVHit",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo"}),
+			inKey:  "margin-top",
+			inVal:  "1em",
+			out:    true,
+		},
+		{
+			name:   "ClassHitNoInlineVMiss",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo"}),
+			inKey:  "margin-top",
+			inVal:  "10px",
+		},
+		{
+			name:   "ClassHitNoInlineKMiss",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo"}),
+			inKey:  "font-weight",
+			inVal:  "10em",
+		},
+		{
+			name:   "ClassHitInlineMissKVHit",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo", "style": "bottom: 1px"}),
+			inKey:  "margin-top",
+			inVal:  "1em",
+			out:    true,
+		},
+		{
+			name:   "ClassHitInlineMissVMiss",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo", "style": "bottom: 1px"}),
+			inKey:  "margin-top",
+			inVal:  "10px",
+		},
+		{
+			name:   "ClassHitInlineMissKMiss",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo", "style": "bottom: 1px"}),
+			inKey:  "font-weight",
+			inVal:  "10em",
+		},
+		{
+			name:   "ClassMissInlineHitKVHit",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "qux", "style": "bottom: 1px"}),
+			inKey:  "bottom",
+			inVal:  "1px",
+			out:    true,
+		},
+		{
+			name:   "ClassMissInlineHitVMiss",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "qux", "style": "bottom: 1px"}),
+			inKey:  "bottom",
+			inVal:  "10in",
+		},
+		{
+			name:   "ClassMissInlineMiss",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "qux", "style": "bottom: 1px"}),
+			inKey:  "right",
+			inVal:  "10in",
+		},
+		{
+			name:   "ClassMissInlineMissIDHit",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "qux", "id": "baz", "style": "bottom: 1px"}),
+			inKey:  "color",
+			inVal:  "green",
+		},
+		{
+			name:   "ClassHitInlineHit",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "bar", "style": "padding-top: 6cm"}),
+			inKey:  "padding-top",
+			inVal:  "3em",
+			out:    true,
+		},
+		{
+			name:   "CSSCapitalization",
+			inCSS:  caseTestStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo"}),
+			inKey:  "margin-top",
+			inVal:  "1em",
+			out:    true,
+		},
+		{
+			name:   "KCapitalization",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo"}),
+			inKey:  "margin-TOP",
+			inVal:  "1em",
+		},
+		{
+			name:   "VCapitalization",
+			inCSS:  testStyle,
+			inNode: nodeWithAttrs(map[string]string{"class": "foo"}),
+			inKey:  "margin-top",
+			inVal:  "1Em",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := hasClassStyle(tc.inCSS, tc.inNode, tc.inKey, tc.inVal); out != tc.out {
+				t.Errorf("hasClassStyle(%+v, %+v, %q, %q) = %t, want %t", tc.inCSS, tc.inNode, tc.inKey, tc.inVal, out, tc.out)
+				return
+			}
+		})
+	}
+}
 
 func TestStyleValue(t *testing.T) {
 	tests := []struct {
