@@ -399,7 +399,74 @@ func testIsConsole(t *testing.T) {
 	}
 }
 
-// TODO: test isCode
+func testIsCode(t *testing.T) {
+	codeStyleText := `.console {
+	font-family: consolas;
+}
+
+.code {
+	font-family: courier new;
+}
+`
+
+	codeStyle, err := parseStyle(makeStyleNode(codeStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", codeStyleText, err)
+		return
+	}
+
+	a1 := nodeWithAttrs(map[string]string{"class": "console"})
+	a2 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+
+	b1 := makePNode()
+	b2 := makeTextNode("foobar")
+	b1.AppendChild(b1)
+
+	c1 := nodeWithAttrs(map[string]string{"class": "courier new"})
+	c2 := makeTextNode("foobar")
+	c1.AppendChild(c2)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "ConsoleNonText",
+			inNode: a1,
+		},
+		{
+			name:   "ConsoleText",
+			inNode: a2,
+		},
+		{
+			name:   "NonCodeNonText",
+			inNode: b1,
+		},
+		{
+			name:   "NonCodeText",
+			inNode: b2,
+		},
+		{
+			name:   "CodeNonText",
+			inNode: c1,
+			out:    true,
+		},
+		{
+			name:   "CodeText",
+			inNode: c2,
+			out:    true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isCode(codeStyle, tc.inNode); out != tc.out {
+				t.Errorf("isCode(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
 
 // TODO: test isButton
 
