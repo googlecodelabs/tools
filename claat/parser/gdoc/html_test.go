@@ -502,7 +502,45 @@ func testIsCode(t *testing.T) {
 	}
 }
 
-// TODO: test isButton
+func testIsButton(t *testing.T) {
+	buttonStyleText := `.button {
+	background-color: #b6aa84f;
+}`
+	buttonStyle, err := parseStyle(makeStyleNode(buttonStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", buttonStyleText, err)
+		return
+	}
+
+	a := nodeWithAttrs(map[string]string{"class": "button"})
+	a.AppendChild(makeTextNode("foobar"))
+
+	b := makePNode()
+	b.AppendChild(makeTextNode("foobar"))
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "Button",
+			inNode: a,
+			out:    true,
+		},
+		{
+			name:   "NonButton",
+			inNode: b,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isButton(buttonStyle, tc.inNode); out != tc.out {
+				t.Errorf("isButton(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
 
 // TODO: test isInfobox
 
