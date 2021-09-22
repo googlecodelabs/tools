@@ -105,6 +105,14 @@ func makeANode() *html.Node {
 	}
 }
 
+func makeTdNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Td,
+		Data:     "td",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -544,7 +552,53 @@ func testIsButton(t *testing.T) {
 
 // TODO: test isInfobox
 
-// TODO: test isInfoboxNegative
+func testIsInfoboxNegative(t *testing.T) {
+	infoboxNegativeStyleText := `.infoboxNegative {
+	background-color: #fce5cd;
+}`
+	infoboxNegativeStyle, err := parseStyle(makeStyleNode(infoboxNegativeStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", infoboxNegativeStyleText, err)
+		return
+	}
+
+	a := makeTdNode()
+	a.Attr = append(a.Attr, html.Attribute{Key: "class", Val: "infoboxNegative"})
+	a.AppendChild(makeTextNode("foobar"))
+
+	b := makeTdNode()
+	b.AppendChild(makeTextNode("foobar"))
+
+	c := nodeWithAttrs(map[string]string{"class": "infoboxNegative"})
+	c.AppendChild(makeTextNode("foobar"))
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "TdInfoboxNegative",
+			inNode: a,
+			out:    true,
+		},
+		{
+			name:   "TdNonInfoboxNegative",
+			inNode: b,
+		},
+		{
+			name:   "NonTd",
+			inNode: c,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isInfoboxNegative(infoboxNegativeStyle, tc.inNode); out != tc.out {
+				t.Errorf("isInfoboxNegative(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
 
 // TODO: test isSurvey
 
