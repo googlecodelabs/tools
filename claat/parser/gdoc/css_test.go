@@ -12,6 +12,7 @@ func nodeWithStyle(s string) *html.Node {
 	return nodeWithAttrs(map[string]string{"style": s})
 }
 
+// TODO rename
 func nodeWithAttrs(attrs map[string]string) *html.Node {
 	n := makePNode()
 	for k, v := range attrs {

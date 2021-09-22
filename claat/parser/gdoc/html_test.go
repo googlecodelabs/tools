@@ -180,7 +180,86 @@ func TestIsHeader(t *testing.T) {
 
 // TODO: test isMeta
 
-// TODO: test isBold
+func testIsBold(t *testing.T) {
+	boldStyleText := `.literalbold {
+	font-weight: bold;
+}
+
+.weightbold {
+	font-weight: 700;
+}
+`
+
+	boldStyle, err := parseStyle(makeStyleNode(boldStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", boldStyleText, err)
+		return
+	}
+
+	a1 := makeStrongNode()
+	a2 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+
+	b := makeBNode()
+	b.AppendChild(makeTextNode("foobar"))
+
+	c := nodeWithAttrs(map[string]string{"class": "literalbold"})
+	c.AppendChild(makeTextNode("foobar"))
+
+	d := nodeWithAttrs(map[string]string{"class": "weightbold"})
+	d.AppendChild(makeTextNode("foobar"))
+
+	e1 := makeEmNode()
+	e2 := makeTextNode("foobar")
+	e1.AppendChild(e2)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "Strong",
+			inNode: a1,
+			out:    true,
+		},
+		{
+			name:   "B",
+			inNode: b,
+			out:    true,
+		},
+		{
+			name:   "FontWeightBold",
+			inNode: c,
+			out:    true,
+		},
+		{
+			name:   "FontWeight700",
+			inNode: d,
+			out:    true,
+		},
+		{
+			name:   "TextNodeBold",
+			inNode: a2,
+			out:    true,
+		},
+		{
+			name:   "TextNodeNonBold",
+			inNode: e2,
+		},
+		{
+			name:   "Em",
+			inNode: e1,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isBold(boldStyle, tc.inNode); out != tc.out {
+				t.Errorf("isBold(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
 
 // TODO: test isItalic
 
