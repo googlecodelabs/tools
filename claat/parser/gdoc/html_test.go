@@ -81,6 +81,30 @@ func makeTextNode(data string) *html.Node {
 	}
 }
 
+func makeBrNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Br,
+		Data:     "br",
+	}
+}
+
+func makeSpanNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Span,
+		Data:     "span",
+	}
+}
+
+func makeANode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.A,
+		Data:     "a",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -603,3 +627,142 @@ func TestNodeAttr(t *testing.T) {
 }
 
 // TODO: test stringifyNode
+/*
+func stringifyNode(root *html.Node, trim bool, lineBreak bool) string {
+*/
+
+func TestStringifyNode(t *testing.T) {
+	a1 := makePNode()
+	a2 := makeTextNode("1")
+	a3 := makeBNode()
+	a4 := makeTextNode("2 ")
+	a5 := makeTextNode("3")
+	a6 := makeINode()
+	a7 := makeTextNode("  4\n")
+	a1.AppendChild(a2)
+	a1.AppendChild(a3)
+	a1.AppendChild(a5)
+	a1.AppendChild(a6)
+	a3.AppendChild(a4)
+	a6.AppendChild(a7)
+
+	b1 := makePNode()
+	b2 := makeTextNode("foo")
+	b3 := makeBrNode()
+	b4 := makeTextNode("bar")
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b4)
+
+	c1 := makePNode()
+	c2 := makeTextNode("foo")
+	c3 := makeSpanNode()
+	c4 := makeTextNode("bar")
+	c1.AppendChild(c2)
+	c1.AppendChild(c3)
+	c1.AppendChild(c4)
+
+	d1 := makePNode()
+	d2 := makeANode()
+	d2.Attr = append(d2.Attr, html.Attribute{Key: "href", Val: "google.com"})
+	d3 := makeTextNode("foobar")
+	d1.AppendChild(d2)
+	d2.AppendChild(d3)
+
+	e1 := makePNode()
+	e2 := makeANode()
+	e2.Attr = append(e2.Attr, html.Attribute{Key: "href", Val: "#cmnt"})
+	e3 := makeTextNode("foobar")
+	e1.AppendChild(e2)
+	e2.AppendChild(e3)
+
+	tests := []struct {
+		name        string
+		inRoot      *html.Node
+		inTrim      bool
+		inLineBreak bool
+		out         string
+	}{
+		{
+			name:   "TextRoot",
+			inRoot: makeTextNode(" foo bar"),
+			out:    " foo bar",
+		},
+		{
+			name:   "TextRootTrim",
+			inRoot: makeTextNode(" foo bar"),
+			inTrim: true,
+			out:    "foo bar",
+		},
+		{
+			name:   "StyledText",
+			inRoot: a1,
+			out:    "12 3  4\n",
+		},
+		{
+			name:   "StyledTextTrim",
+			inRoot: a1,
+			inTrim: true,
+			out:    "12 3  4",
+		},
+		{
+			name:   "BrNonRoot",
+			inRoot: b1,
+			out:    "foobar",
+		},
+		{
+			name:        "BrNonRootLineBreak",
+			inRoot:      b1,
+			inLineBreak: true,
+			out:         "foo\nbar",
+		},
+		{
+			name:   "SpanNonRoot",
+			inRoot: c1,
+			out:    "foobar",
+		},
+		{
+			name:        "SpanNonRootLineBreak",
+			inRoot:      c1,
+			inLineBreak: true,
+			out:         "foobar",
+		},
+		{
+			name:   "AComment",
+			inRoot: d1,
+			out:    "foobar",
+		},
+		{
+			name:   "ANonComment",
+			inRoot: e1,
+		},
+		{
+			name:   "BrRoot",
+			inRoot: makeBrNode(),
+		},
+		{
+			name:   "BrRootTrim",
+			inRoot: makeBrNode(),
+			inTrim: true,
+		},
+		{
+			name:        "BrRootLineBreak",
+			inRoot:      makeBrNode(),
+			inLineBreak: true,
+			out:         "\n",
+		},
+		{
+			name:        "BrRootTrimLineBreak",
+			inRoot:      makeBrNode(),
+			inTrim:      true,
+			inLineBreak: true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if diff := cmp.Diff(tc.out, stringifyNode(tc.inRoot, tc.inTrim, tc.inLineBreak)); diff != "" {
+				t.Errorf("stringifyNode(%+v, %t, %t) got diff (-want +got):\n%s", tc.inRoot, tc.inTrim, tc.inLineBreak, diff)
+			}
+		})
+	}
+}
