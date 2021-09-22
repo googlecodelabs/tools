@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 func nodeWithStyle(s string) *html.Node {
@@ -19,7 +20,150 @@ func nodeWithAttrs(attrs map[string]string) *html.Node {
 	return n
 }
 
-// TODO: test parseStyle
+// Input string is used as the text content, i.e. <style>s</style>
+func makeStyleNode(s string) *html.Node {
+	n := html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Style,
+		Data:     "style",
+	}
+	n.AppendChild(makeTextNode(s))
+	return &n
+}
+
+func TestParseStyle(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    cssStyle
+		ok     bool
+	}{
+		{
+			name: "Simple",
+			inNode: makeStyleNode(`.foo {
+	margin-top: 1em;
+}`),
+			out: cssStyle(map[string]map[string]string{
+				".foo": map[string]string{
+					"margin-top": "1em",
+				},
+			}),
+			ok: true,
+		},
+		{
+			name: "MultipleClasses",
+			inNode: makeStyleNode(`.foo {
+	margin-top: 1em;
+	margin-left: 2em;
+}
+
+.bar {
+	padding-top: 3em;
+	padding-left: 4em;
+}
+`),
+			out: cssStyle(map[string]map[string]string{
+				".foo": map[string]string{
+					"margin-top":  "1em",
+					"margin-left": "2em",
+				},
+				".bar": map[string]string{
+					"padding-top":  "3em",
+					"padding-left": "4em",
+				},
+			}),
+			ok: true,
+		},
+		{
+			name: "MultipleTypes",
+			inNode: makeStyleNode(`.foo {
+	margin-top: 1em;
+	margin-left: 2em;
+}
+
+#bar {
+	padding-top: 3em;
+	padding-left: 4em;
+}
+
+.baz {
+	color: #ff0000;
+}
+`),
+			out: cssStyle(map[string]map[string]string{
+				".foo": map[string]string{
+					"margin-top":  "1em",
+					"margin-left": "2em",
+				},
+				".baz": map[string]string{
+					"color": "#ff0000",
+				},
+			}),
+			ok: true,
+		},
+		{
+			name:   "PushedRandomKeys",
+			inNode: makeStyleNode("0<F3>jffffffff[9,uc"),
+			out:    make(cssStyle),
+			ok:     true,
+		},
+		{
+			name:   "AtRuleSimple",
+			inNode: makeStyleNode("@charset \"ascii\";"),
+			out:    make(cssStyle),
+			ok:     true,
+		},
+		{
+			name:   "InvalidCSS",
+			inNode: makeStyleNode("@media something(max-width: 1)"),
+		},
+		{
+			name: "AtRuleBlock",
+			inNode: makeStyleNode(`@media something(max-width: 1) {
+	foo
+	bar
+	baz
+}`),
+			out: make(cssStyle),
+			ok:  true,
+		},
+		{
+			name: "Capitalization",
+			inNode: makeStyleNode(`.foo {
+	color: #00FF00;
+	MARGIN-TOP: 3px;
+	margin-left: 3PX;
+}`),
+			out: cssStyle(map[string]map[string]string{
+				".foo": map[string]string{
+					"color":       "#00ff00",
+					"margin-top":  "3px",
+					"margin-left": "3px",
+				},
+			}),
+			ok: true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out, err := parseStyle(tc.inNode)
+			if err != nil && tc.ok {
+				t.Errorf("parseStyle(%+v) = %+v, want %+v", tc.inNode, err, tc.out)
+				return
+			}
+			if err == nil && !tc.ok {
+				t.Errorf("parseStyle(%+v) = %+v, want err", tc.inNode, out)
+				return
+			}
+			if tc.ok {
+				if diff := cmp.Diff(tc.out, out); diff != "" {
+					t.Errorf("parseStyle(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+					return
+				}
+			}
+		})
+	}
+}
 
 func TestClassList(t *testing.T) {
 	tests := []struct {
