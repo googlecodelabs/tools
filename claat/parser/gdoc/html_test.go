@@ -330,7 +330,74 @@ func testIsItalic(t *testing.T) {
 	}
 }
 
-// TODO: test isConsole
+func testIsConsole(t *testing.T) {
+	consoleStyleText := `.console {
+	font-family: consolas;
+}
+
+.code {
+	font-family: courier new;
+}
+`
+
+	consoleStyle, err := parseStyle(makeStyleNode(consoleStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", consoleStyleText, err)
+		return
+	}
+
+	a1 := nodeWithAttrs(map[string]string{"class": "console"})
+	a2 := makeTextNode("foobar")
+	a1.AppendChild(a2)
+
+	b1 := makePNode()
+	b2 := makeTextNode("foobar")
+	b1.AppendChild(b1)
+
+	c1 := nodeWithAttrs(map[string]string{"class": "courier new"})
+	c2 := makeTextNode("foobar")
+	c1.AppendChild(c2)
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "ConsoleNonText",
+			inNode: a1,
+			out:    true,
+		},
+		{
+			name:   "ConsoleText",
+			inNode: a2,
+			out:    true,
+		},
+		{
+			name:   "NonConsoleNonText",
+			inNode: b1,
+		},
+		{
+			name:   "NonConsoleText",
+			inNode: b2,
+		},
+		{
+			name:   "CodeNonText",
+			inNode: c1,
+		},
+		{
+			name:   "CodeText",
+			inNode: c2,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isConsole(consoleStyle, tc.inNode); out != tc.out {
+				t.Errorf("isConsole(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
 
 // TODO: test isCode
 
