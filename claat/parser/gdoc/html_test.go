@@ -178,7 +178,46 @@ func TestIsHeader(t *testing.T) {
 	}
 }
 
-// TODO: test isMeta
+func testIsMeta(t *testing.T) {
+	metaStyleText := `.meta {
+	color: #b7b7b7;
+}`
+
+	metaStyle, err := parseStyle(makeStyleNode(metaStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", metaStyleText, err)
+		return
+	}
+
+	a := nodeWithAttrs(map[string]string{"class": "meta"})
+	a.AppendChild(makeTextNode("foobar"))
+
+	b := makePNode()
+	b.AppendChild(makeTextNode("foobar"))
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "Meta",
+			inNode: a,
+			out:    true,
+		},
+		{
+			name:   "NonMeta",
+			inNode: b,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isMeta(metaStyle, tc.inNode); out != tc.out {
+				t.Errorf("isMeta(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
 
 func testIsBold(t *testing.T) {
 	boldStyleText := `.literalbold {
