@@ -1199,11 +1199,6 @@ func TestNodeAttr(t *testing.T) {
 	}
 }
 
-// TODO: test stringifyNode
-/*
-func stringifyNode(root *html.Node, trim bool, lineBreak bool) string {
-*/
-
 func TestStringifyNode(t *testing.T) {
 	a1 := makePNode()
 	a2 := makeTextNode("1")
