@@ -667,6 +667,54 @@ func testIsInfoboxNegative(t *testing.T) {
 	}
 }
 
+func testIsSurvey(t *testing.T) {
+	surveyStyleText := `.survey {
+	background-color: #cfe2f3;
+}`
+	surveyStyle, err := parseStyle(makeStyleNode(surveyStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", surveyStyleText, err)
+		return
+	}
+
+	a := makeTdNode()
+	a.Attr = append(a.Attr, html.Attribute{Key: "class", Val: "survey"})
+	a.AppendChild(makeTextNode("foobar"))
+
+	b := makeTdNode()
+	b.AppendChild(makeTextNode("foobar"))
+
+	c := nodeWithAttrs(map[string]string{"class": "survey"})
+	c.AppendChild(makeTextNode("foobar"))
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "TdSurvey",
+			inNode: a,
+			out:    true,
+		},
+		{
+			name:   "TdNonSurvey",
+			inNode: b,
+		},
+		{
+			name:   "NonTd",
+			inNode: c,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isSurvey(surveyStyle, tc.inNode); out != tc.out {
+				t.Errorf("isSurvey(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
+
 // TODO: test isSurvey
 
 // TODO: test isComment
