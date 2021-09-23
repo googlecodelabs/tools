@@ -395,7 +395,7 @@ func testIsConsole(t *testing.T) {
 
 	b1 := makePNode()
 	b2 := makeTextNode("foobar")
-	b1.AppendChild(b1)
+	b1.AppendChild(b2)
 
 	c1 := nodeWithAttrs(map[string]string{"class": "courier new"})
 	c2 := makeTextNode("foobar")
@@ -463,7 +463,7 @@ func testIsCode(t *testing.T) {
 
 	b1 := makePNode()
 	b2 := makeTextNode("foobar")
-	b1.AppendChild(b1)
+	b1.AppendChild(b2)
 
 	c1 := nodeWithAttrs(map[string]string{"class": "courier new"})
 	c2 := makeTextNode("foobar")
