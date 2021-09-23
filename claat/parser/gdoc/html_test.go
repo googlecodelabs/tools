@@ -121,6 +121,22 @@ func makeDivNode() *html.Node {
 	}
 }
 
+func makeOlNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Ol,
+		Data:     "ol",
+	}
+}
+
+func makeUlNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Ul,
+		Data:     "ul",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -773,7 +789,64 @@ func TestIsComment(t *testing.T) {
 
 // TODO: test isTable
 
-// TODO: test isList
+func TestIsList(t *testing.T) {
+	a1 := makeOlNode()
+	a2 := makeTextNode("aaa")
+	a3 := makeTextNode("bbb")
+	a4 := makeTextNode("ccc")
+	// The name and input nodes should be siblings.
+	a1.AppendChild(a2)
+	a1.AppendChild(a3)
+	a1.AppendChild(a4)
+
+	b1 := makeUlNode()
+	b2 := makeTextNode("aaa")
+	b3 := makeTextNode("bbb")
+	b4 := makeTextNode("ccc")
+	// The name and input nodes should be siblings.
+	b1.AppendChild(b2)
+	b1.AppendChild(b3)
+	b1.AppendChild(b4)
+
+	tests := []struct {
+		name string
+		in   *html.Node
+		out  bool
+	}{
+		{
+			name: "OrderedListWithElements",
+			in:   a1,
+			out:  true,
+		},
+		{
+			name: "UnorderedListWithElements",
+			in:   b1,
+			out:  true,
+		},
+		// TODO: Should a list of no elements be considered an error?
+		{
+			name: "OrderedListWithoutElements",
+			in:   makeOlNode(),
+			out:  true,
+		},
+		{
+			name: "UnorderedListWithoutElements",
+			in:   makeUlNode(),
+			out:  true,
+		},
+		{
+			name: "NotAList",
+			in:   makeBlinkNode(),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isList(tc.in); out != tc.out {
+				t.Errorf("isList(%v) = %t, want %t", tc.in, out, tc.out)
+			}
+		})
+	}
+}
 
 func TestCountTwo(t *testing.T) {
 	a1 := makePNode()
