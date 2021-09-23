@@ -186,7 +186,7 @@ func TestIsHeader(t *testing.T) {
 	}
 }
 
-func testIsMeta(t *testing.T) {
+func TestIsMeta(t *testing.T) {
 	metaStyleText := `.meta {
 	color: #b7b7b7;
 }`
@@ -226,7 +226,7 @@ func testIsMeta(t *testing.T) {
 	}
 }
 
-func testIsBold(t *testing.T) {
+func TestIsBold(t *testing.T) {
 	boldStyleText := `.literalbold {
 	font-weight: bold;
 }
@@ -306,7 +306,7 @@ func testIsBold(t *testing.T) {
 	}
 }
 
-func testIsItalic(t *testing.T) {
+func TestIsItalic(t *testing.T) {
 	italicStyleText := `.literalitalic {
 	font-style: italic;
 }
@@ -374,7 +374,7 @@ func testIsItalic(t *testing.T) {
 	}
 }
 
-func testIsConsole(t *testing.T) {
+func TestIsConsole(t *testing.T) {
 	consoleStyleText := `.console {
 	font-family: consolas;
 }
@@ -550,7 +550,7 @@ func testIsButton(t *testing.T) {
 	}
 }
 
-func testIsInfobox(t *testing.T) {
+func TestIsInfobox(t *testing.T) {
 	infoboxStyleText := `.infoboxNegative {
 	background-color: #fce5cd;
 }
@@ -619,7 +619,7 @@ func testIsInfobox(t *testing.T) {
 	}
 }
 
-func testIsInfoboxNegative(t *testing.T) {
+func TestIsInfoboxNegative(t *testing.T) {
 	infoboxNegativeStyleText := `.infoboxNegative {
 	background-color: #fce5cd;
 }`
@@ -667,7 +667,7 @@ func testIsInfoboxNegative(t *testing.T) {
 	}
 }
 
-func testIsSurvey(t *testing.T) {
+func TestIsSurvey(t *testing.T) {
 	surveyStyleText := `.survey {
 	background-color: #cfe2f3;
 }`
