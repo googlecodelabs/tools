@@ -510,9 +510,9 @@ func TestIsCode(t *testing.T) {
 	}
 }
 
-func testIsButton(t *testing.T) {
+func TestIsButton(t *testing.T) {
 	buttonStyleText := `.button {
-	background-color: #b6aa84f;
+	background-color: #6aa84f;
 }`
 	buttonStyle, err := parseStyle(makeStyleNode(buttonStyleText))
 	if err != nil {
