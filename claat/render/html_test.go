@@ -51,3 +51,27 @@ func TestHTMLEnv(t *testing.T) {
 		}
 	}
 }
+
+// TODO: test HTML
+// TODO: test writeHTML
+// TODO: test ReplaceDoubleCurlyBracketsWithEntity
+// TODO: test matchEnv
+// TODO: test write
+// TODO: test writeString
+// TODO: test writeFmt
+// TODO: test escape
+// TODO: test writeEscape
+// TODO: test text
+// TODO: test image
+// TODO: test url
+// TODO: test button
+// TODO: test code
+// TODO: test list
+// TODO: test onlyImages
+// TODO: test itemsList
+// TODO: test grid
+// TODO: test infobox
+// TODO: test survey
+// TODO: test header
+// TODO: test youtube
+// TODO: test iframe
