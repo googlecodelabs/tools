@@ -442,7 +442,7 @@ func TestIsConsole(t *testing.T) {
 	}
 }
 
-func testIsCode(t *testing.T) {
+func TestIsCode(t *testing.T) {
 	codeStyleText := `.console {
 	font-family: consolas;
 }
@@ -465,7 +465,7 @@ func testIsCode(t *testing.T) {
 	b2 := makeTextNode("foobar")
 	b1.AppendChild(b2)
 
-	c1 := nodeWithAttrs(map[string]string{"class": "courier new"})
+	c1 := nodeWithAttrs(map[string]string{"class": "code"})
 	c2 := makeTextNode("foobar")
 	c1.AppendChild(c2)
 
