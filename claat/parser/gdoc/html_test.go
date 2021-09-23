@@ -113,6 +113,14 @@ func makeTdNode() *html.Node {
 	}
 }
 
+func makeDivNode() *html.Node {
+	return &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Div,
+		Data:     "td",
+	}
+}
+
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name string
@@ -715,7 +723,53 @@ func TestIsSurvey(t *testing.T) {
 	}
 }
 
-// TODO: test isComment
+func TestIsComment(t *testing.T) {
+	commentStyleText := `.comment {
+	border: 1px solid black;
+}`
+	commentStyle, err := parseStyle(makeStyleNode(commentStyleText))
+	if err != nil {
+		t.Fatalf("parseStyle(makeStyleNode(%q)) = %+v", commentStyleText, err)
+		return
+	}
+
+	a := makeDivNode()
+	a.Attr = append(a.Attr, html.Attribute{Key: "class", Val: "comment"})
+	a.AppendChild(makeTextNode("foobar"))
+
+	b := makeDivNode()
+	b.AppendChild(makeTextNode("foobar"))
+
+	c := nodeWithAttrs(map[string]string{"class": "comment"})
+	c.AppendChild(makeTextNode("foobar"))
+
+	tests := []struct {
+		name   string
+		inNode *html.Node
+		out    bool
+	}{
+		{
+			name:   "DivComment",
+			inNode: a,
+			out:    true,
+		},
+		{
+			name:   "DivNonComment",
+			inNode: b,
+		},
+		{
+			name:   "NonDiv",
+			inNode: c,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := isComment(commentStyle, tc.inNode); out != tc.out {
+				t.Errorf("isComment(css, %+v) = %t, want %t", tc.inNode, out, tc.out)
+			}
+		})
+	}
+}
 
 // TODO: test isTable
 
