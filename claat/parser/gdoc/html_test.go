@@ -715,8 +715,6 @@ func testIsSurvey(t *testing.T) {
 	}
 }
 
-// TODO: test isSurvey
-
 // TODO: test isComment
 
 // TODO: test isTable
