@@ -74,7 +74,52 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test grid
 // TODO: test infobox
 // TODO: test survey
-// TODO: test header
+
+func TestHeader(t *testing.T) {
+	a1 := nodes.NewTextNode("foo")
+	a1.Italic = true
+	a2 := nodes.NewTextNode("bar")
+	a3 := nodes.NewTextNode("baz")
+	a3.Code = true
+
+	tests := []struct {
+		name   string
+		inNode *nodes.HeaderNode
+		out    string
+	}{
+		{
+			name:   "SimpleH1",
+			inNode: nodes.NewHeaderNode(1, nodes.NewTextNode("foobar")),
+			out:    "<h1 is-upgraded>foobar</h1>",
+		},
+		{
+			name:   "LevelOutOfRange",
+			inNode: nodes.NewHeaderNode(100, nodes.NewTextNode("foobar")),
+			out:    "<h100 is-upgraded>foobar</h100>",
+		},
+		{
+			name:   "EmptyContent",
+			inNode: nodes.NewHeaderNode(2),
+			out:    "<h2 is-upgraded></h2>",
+		},
+		{
+			name:   "StyledText",
+			inNode: nodes.NewHeaderNode(3, a1, a2, a3),
+			out:    "<h3 is-upgraded><em>foo</em>bar<code>baz</code></h3>",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.header(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.header(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestYouTube(t *testing.T) {
 	tests := []struct {
