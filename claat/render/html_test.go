@@ -75,9 +75,38 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test infobox
 // TODO: test survey
 // TODO: test header
-// TODO: test youtube
 
-func TestIFrame(t *testing.T) {
+func TestYouTube(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.YouTubeNode
+		out    string
+	}{
+		{
+			name:   "NonEmpty",
+			inNode: nodes.NewYouTubeNode("Mlk888FiI8A"),
+			out:    `<iframe class="youtube-video" src="https://www.youtube.com/embed/Mlk888FiI8A?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+		},
+		{
+			name:   "Empty",
+			inNode: nodes.NewYouTubeNode(""),
+			out:    `<iframe class="youtube-video" src="https://www.youtube.com/embed/?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.youtube(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.youtube(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
+
+func TestIframe(t *testing.T) {
 	tests := []struct {
 		name   string
 		inNode *nodes.IframeNode
