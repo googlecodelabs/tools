@@ -15,8 +15,10 @@
 package render
 
 import (
+	"bytes"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/googlecodelabs/tools/claat/nodes"
 )
 
@@ -74,4 +76,38 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test survey
 // TODO: test header
 // TODO: test youtube
-// TODO: test iframe
+
+func TestIFrame(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.IframeNode
+		out    string
+	}{
+		{
+			name:   "SomeText",
+			inNode: nodes.NewIframeNode("maps.google.com"),
+			out:    `<iframe class="embedded-iframe" src="maps.google.com"></iframe>`,
+		},
+		{
+			name:   "Escape",
+			inNode: nodes.NewIframeNode("ma ps.google.com"),
+			out:    `<iframe class="embedded-iframe" src="ma ps.google.com"></iframe>`,
+		},
+		{
+			name:   "Empty",
+			inNode: nodes.NewIframeNode(""),
+			out:    `<iframe class="embedded-iframe" src=""></iframe>`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.iframe(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.iframe(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
