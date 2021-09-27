@@ -72,7 +72,48 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test onlyImages
 // TODO: test itemsList
 // TODO: test grid
-// TODO: test infobox
+
+func TestInfobox(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.InfoboxNode
+		out    string
+	}{
+		{
+			name:   "PositiveEmpty",
+			inNode: nodes.NewInfoboxNode(nodes.InfoboxPositive),
+			out:    `<aside class="special"></aside>`,
+		},
+		{
+			name:   "NegativeEmpty",
+			inNode: nodes.NewInfoboxNode(nodes.InfoboxNegative),
+			out:    `<aside class="warning"></aside>`,
+		},
+		{
+			name:   "PositiveNonEmpty",
+			inNode: nodes.NewInfoboxNode(nodes.InfoboxPositive, nodes.NewTextNode("foo"), nodes.NewHeaderNode(3, nodes.NewTextNode("bar"))),
+			out: `<aside class="special">foo<h3 is-upgraded>bar</h3>
+</aside>`,
+		},
+		{
+			name:   "NegativeNonEmpty",
+			inNode: nodes.NewInfoboxNode(nodes.InfoboxNegative, nodes.NewTextNode("foo"), nodes.NewHeaderNode(3, nodes.NewTextNode("bar"))),
+			out: `<aside class="warning">foo<h3 is-upgraded>bar</h3>
+</aside>`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.infobox(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.infobox(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestSurvey(t *testing.T) {
 	tests := []struct {
