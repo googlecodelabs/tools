@@ -67,7 +67,49 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test image
 // TODO: test url
 // TODO: test button
-// TODO: test code
+
+func TestCode(t *testing.T) {
+	tests := []struct {
+		name     string
+		inNode   *nodes.CodeNode
+		inFormat string
+		out      string
+	}{
+		{
+			name:   "NoLang",
+			inNode: nodes.NewCodeNode("foobar", false, ""),
+			out:    `<pre><code>foobar</code></pre>`,
+		},
+		{
+			name:   "Lang",
+			inNode: nodes.NewCodeNode("foobar", false, "c"),
+			out:    `<pre><code language="c" class="c">foobar</code></pre>`,
+		},
+		{
+			name:     "NoLangDevsite",
+			inNode:   nodes.NewCodeNode("foobar", false, ""),
+			inFormat: "devsite",
+			out:      `<pre><code>{% verbatim %}foobar{% endverbatim %}</code></pre>`,
+		},
+		{
+			name:     "LangDevsite",
+			inNode:   nodes.NewCodeNode("foobar", false, "c"),
+			inFormat: "devsite",
+			out:      `<pre><code language="c" class="c">{% verbatim %}foobar{% endverbatim %}</code></pre>`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer, format: tc.inFormat}
+			hw.code(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.code(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestList(t *testing.T) {
 	tests := []struct {
