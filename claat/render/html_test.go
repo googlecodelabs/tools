@@ -68,7 +68,60 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test url
 // TODO: test button
 // TODO: test code
-// TODO: test list
+
+func TestList(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.ListNode
+		out    string
+	}{
+		{
+			name:   "Zero",
+			inNode: nodes.NewListNode(),
+		},
+		{
+			name: "One",
+			inNode: nodes.NewListNode(
+				nodes.NewTextNode("foobar"),
+			),
+			out: "foobar",
+		},
+		{
+			name: "Multi",
+			inNode: nodes.NewListNode(
+				nodes.NewTextNode("foo"),
+				nodes.NewTextNode("bar"),
+				nodes.NewTextNode("baz"),
+			),
+			out: "foobarbaz",
+		},
+		{
+			name: "ListOfLists",
+			inNode: nodes.NewListNode(
+				nodes.NewListNode(
+					nodes.NewTextNode("foo"),
+					nodes.NewTextNode("bar"),
+				),
+				nodes.NewListNode(
+					nodes.NewTextNode("baz"),
+					nodes.NewTextNode("qux"),
+				),
+			),
+			out: "foobar\nbazqux\n",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.list(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.list(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestOnlyImages(t *testing.T) {
 	tests := []struct {
