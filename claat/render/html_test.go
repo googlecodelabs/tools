@@ -69,7 +69,108 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test button
 // TODO: test code
 // TODO: test list
-// TODO: test onlyImages
+
+func TestOnlyImages(t *testing.T) {
+	tests := []struct {
+		name    string
+		inNodes []nodes.Node
+		out     bool
+	}{
+		{
+			name:    "None",
+			inNodes: []nodes.Node{},
+			out:     true,
+		},
+		{
+			name: "OneImage",
+			inNodes: []nodes.Node{
+				nodes.NewImageNode("foobar"),
+			},
+			out: true,
+		},
+		{
+			name: "MultiImages",
+			inNodes: []nodes.Node{
+				nodes.NewImageNode("foo"),
+				nodes.NewImageNode("bar"),
+				nodes.NewImageNode("baz"),
+			},
+			out: true,
+		},
+		{
+			name: "OneWhitespace",
+			inNodes: []nodes.Node{
+				nodes.NewTextNode(" "),
+			},
+			out: true,
+		},
+		{
+			name: "MultiWhitespace",
+			inNodes: []nodes.Node{
+				nodes.NewTextNode(" "),
+				nodes.NewTextNode("\n"),
+				nodes.NewTextNode("\t"),
+			},
+			out: true,
+		},
+		{
+			name: "ImagesAndWhitespace",
+			inNodes: []nodes.Node{
+				nodes.NewImageNode("foo"),
+				nodes.NewTextNode(" "),
+				nodes.NewImageNode("bar"),
+				nodes.NewImageNode("baz"),
+				nodes.NewTextNode("\n"),
+				nodes.NewTextNode("\t"),
+			},
+			out: true,
+		},
+		{
+			name: "Text",
+			inNodes: []nodes.Node{
+				nodes.NewTextNode("qux"),
+			},
+		},
+		{
+			name: "TextAndImages",
+			inNodes: []nodes.Node{
+				nodes.NewImageNode("foo"),
+				nodes.NewImageNode("bar"),
+				nodes.NewTextNode("qux"),
+				nodes.NewImageNode("baz"),
+			},
+		},
+		{
+			name: "TextAndWhitespace",
+			inNodes: []nodes.Node{
+				nodes.NewTextNode(" "),
+				nodes.NewTextNode("\n"),
+				nodes.NewTextNode("foo"),
+				nodes.NewTextNode("\t"),
+			},
+		},
+		{
+			name: "TextImagesAndWhitespace",
+			inNodes: []nodes.Node{
+				nodes.NewImageNode("foo"),
+				nodes.NewTextNode(" "),
+				nodes.NewImageNode("bar"),
+				nodes.NewTextNode("qux"),
+				nodes.NewImageNode("baz"),
+				nodes.NewTextNode("\n"),
+				nodes.NewTextNode("\t"),
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if out := onlyImages(tc.inNodes...); out != tc.out {
+				t.Errorf("onlyImages(%v) = %t, want %t", tc.inNodes, out, tc.out)
+			}
+		})
+	}
+}
+
 // TODO: test itemsList
 // TODO: test grid
 
