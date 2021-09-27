@@ -325,16 +325,16 @@ func TestOnlyImages(t *testing.T) {
 		{
 			name: "OneImage",
 			inNodes: []nodes.Node{
-				nodes.NewImageNode("foobar"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foobar"}),
 			},
 			out: true,
 		},
 		{
 			name: "MultiImages",
 			inNodes: []nodes.Node{
-				nodes.NewImageNode("foo"),
-				nodes.NewImageNode("bar"),
-				nodes.NewImageNode("baz"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
 			},
 			out: true,
 		},
@@ -357,10 +357,10 @@ func TestOnlyImages(t *testing.T) {
 		{
 			name: "ImagesAndWhitespace",
 			inNodes: []nodes.Node{
-				nodes.NewImageNode("foo"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
 				nodes.NewTextNode(" "),
-				nodes.NewImageNode("bar"),
-				nodes.NewImageNode("baz"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
 				nodes.NewTextNode("\n"),
 				nodes.NewTextNode("\t"),
 			},
@@ -375,10 +375,10 @@ func TestOnlyImages(t *testing.T) {
 		{
 			name: "TextAndImages",
 			inNodes: []nodes.Node{
-				nodes.NewImageNode("foo"),
-				nodes.NewImageNode("bar"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
 				nodes.NewTextNode("qux"),
-				nodes.NewImageNode("baz"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
 			},
 		},
 		{
@@ -393,11 +393,11 @@ func TestOnlyImages(t *testing.T) {
 		{
 			name: "TextImagesAndWhitespace",
 			inNodes: []nodes.Node{
-				nodes.NewImageNode("foo"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
 				nodes.NewTextNode(" "),
-				nodes.NewImageNode("bar"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
 				nodes.NewTextNode("qux"),
-				nodes.NewImageNode("baz"),
+				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
 				nodes.NewTextNode("\n"),
 				nodes.NewTextNode("\t"),
 			},

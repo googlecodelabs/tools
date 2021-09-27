@@ -2,12 +2,22 @@ package nodes
 
 import "strings"
 
-// NewImageNode creates a new ImageNode with the given src.
+type NewImageNodeOptions struct {
+	Src   string
+	Width float32
+	Alt   string
+	Title string
+}
+
+// NewImageNode creates a new ImageNode with the given options.
 // TODO this API is inconsistent with button
-func NewImageNode(src string) *ImageNode {
+func NewImageNode(opts NewImageNodeOptions) *ImageNode {
 	return &ImageNode{
-		node: node{typ: NodeImage},
-		Src:  src,
+		node:  node{typ: NodeImage},
+		Src:   opts.Src,
+		Width: opts.Width,
+		Alt:   opts.Alt,
+		Title: opts.Title,
 	}
 }
 

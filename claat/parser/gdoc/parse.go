@@ -699,8 +699,10 @@ func image(ds *docState) nodes.Node {
 	if s == "" {
 		return nil
 	}
-	n := nodes.NewImageNode(s)
-	n.Width = styleFloatValue(ds.cur, "width")
+	n := nodes.NewImageNode(nodes.NewImageNodeOptions{
+		Src:   s,
+		Width: styleFloatValue(ds.cur, "width"),
+	})
 	n.MutateBlock(findBlockParent(ds.cur))
 	if errorAlt != "" {
 		n.Alt = errorAlt
