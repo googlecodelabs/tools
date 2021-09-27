@@ -65,7 +65,83 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test writeEscape
 // TODO: test text
 // TODO: test image
-// TODO: test url
+
+func TestURL(t *testing.T) {
+	a := nodes.NewURLNode("google.com")
+	a.Name = "foobar"
+
+	b := nodes.NewURLNode("google.com")
+	b.Name = "foo{{bar"
+
+	c := nodes.NewURLNode("google.com")
+	c.Target = "_self"
+
+	d := nodes.NewURLNode("google.com")
+	d.Target = "_self{{"
+
+	e := nodes.NewURLNode("google.com")
+	e.Name = "foobar"
+	e.Target = "_self"
+
+	tests := []struct {
+		name   string
+		inNode *nodes.URLNode
+		out    string
+	}{
+		{
+			name:   "Empty",
+			inNode: nodes.NewURLNode("google.com"),
+			out:    `<a href="google.com" target="_blank"></a>`,
+		},
+		{
+			name:   "Name",
+			inNode: a,
+			out:    `<a href="google.com" name="foobar" target="_blank"></a>`,
+		},
+		{
+			name:   "NameEscape",
+			inNode: b,
+			out:    `<a href="google.com" name="foo&#123;&#123;bar" target="_blank"></a>`,
+		},
+		{
+			name:   "Target",
+			inNode: c,
+			out:    `<a href="google.com" target="_self"></a>`,
+		},
+		{
+			name:   "TargetEscape",
+			inNode: d,
+			out:    `<a href="google.com" target="_self&#123;&#123;"></a>`,
+		},
+		{
+			name:   "NameTarget",
+			inNode: e,
+			out:    `<a href="google.com" name="foobar" target="_self"></a>`,
+		},
+		{
+			name:   "Simple",
+			inNode: nodes.NewURLNode("google.com", nodes.NewTextNode("foobar")),
+			out:    `<a href="google.com" target="_blank">foobar</a>`,
+		},
+		{
+			name:   "MultipleContent",
+			inNode: nodes.NewURLNode("google.com", nodes.NewHeaderNode(1, nodes.NewTextNode("foo")), nodes.NewTextNode("bar")),
+			out: `<a href="google.com" target="_blank"><h1 is-upgraded>foo</h1>
+bar</a>`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.url(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.url(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestButton(t *testing.T) {
 	tests := []struct {
