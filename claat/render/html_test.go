@@ -66,7 +66,77 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test text
 // TODO: test image
 // TODO: test url
-// TODO: test button
+
+func TestButton(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.ButtonNode
+		out    string
+	}{
+		{
+			name:   "Empty",
+			inNode: nodes.NewButtonNode(false, false, false),
+			out:    `<paper-button></paper-button>`,
+		},
+		{
+			name:   "NoProperties",
+			inNode: nodes.NewButtonNode(false, false, false, nodes.NewTextNode("foobar")),
+			out:    `<paper-button>foobar</paper-button>`,
+		},
+		{
+			name:   "Raise",
+			inNode: nodes.NewButtonNode(true, false, false, nodes.NewTextNode("foobar")),
+			out:    `<paper-button raised>foobar</paper-button>`,
+		},
+		{
+			name:   "Color",
+			inNode: nodes.NewButtonNode(false, true, false, nodes.NewTextNode("foobar")),
+			out:    `<paper-button class="colored">foobar</paper-button>`,
+		},
+		{
+			name:   "Download",
+			inNode: nodes.NewButtonNode(false, false, true, nodes.NewTextNode("foobar")),
+			out:    `<paper-button><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
+		},
+		{
+			name:   "RaiseColor",
+			inNode: nodes.NewButtonNode(true, true, false, nodes.NewTextNode("foobar")),
+			out:    `<paper-button class="colored" raised>foobar</paper-button>`,
+		},
+		{
+			name:   "ColorDownload",
+			inNode: nodes.NewButtonNode(false, true, true, nodes.NewTextNode("foobar")),
+			out:    `<paper-button class="colored"><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
+		},
+		{
+			name:   "RaiseDownload",
+			inNode: nodes.NewButtonNode(true, false, true, nodes.NewTextNode("foobar")),
+			out:    `<paper-button raised><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
+		},
+		{
+			name:   "RaiseColorDownload",
+			inNode: nodes.NewButtonNode(true, true, true, nodes.NewTextNode("foobar")),
+			out:    `<paper-button class="colored" raised><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
+		},
+		{
+			name:   "MultipleContent",
+			inNode: nodes.NewButtonNode(false, false, false, nodes.NewHeaderNode(2, nodes.NewTextNode("foo")), nodes.NewTextNode("bar")),
+			out: `<paper-button><h2 is-upgraded>foo</h2>
+bar</paper-button>`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.button(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.button(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestCode(t *testing.T) {
 	tests := []struct {
