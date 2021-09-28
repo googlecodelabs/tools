@@ -257,7 +257,8 @@ func (hw *htmlWriter) list(n *nodes.ListNode) {
 	}
 }
 
-// Returns true if the list of Nodes contains only images or white spaces.
+// Returns true if the given slice of Nodes is empty or contains only images or whitespace.
+// TODO rename to clarify behavior for 0 input nodes
 func onlyImages(nodesToCheck ...nodes.Node) bool {
 	for _, n := range nodesToCheck {
 		switch n := n.(type) {
