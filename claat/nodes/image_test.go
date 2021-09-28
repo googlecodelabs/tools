@@ -8,9 +8,9 @@ import (
 
 func TestNewImageNode(t *testing.T) {
 	tests := []struct {
-		name  string
-		inSrc string
-		out   *ImageNode
+		name   string
+		inOpts NewImageNodeOptions
+		out    *ImageNode
 	}{
 		{
 			name: "Empty",
@@ -19,19 +19,27 @@ func TestNewImageNode(t *testing.T) {
 			},
 		},
 		{
-			name:  "NonEmpty",
-			inSrc: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+			name: "NonEmpty",
+			inOpts: NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: 1.0,
+				Title: "foo",
+				Alt:   "bar",
+			},
 			out: &ImageNode{
-				node: node{typ: NodeImage},
-				Src:  "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				node:  node{typ: NodeImage},
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: 1.0,
+				Title: "foo",
+				Alt:   "bar",
 			},
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out := NewImageNode(tc.inSrc)
+			out := NewImageNode(tc.inOpts)
 			if diff := cmp.Diff(tc.out, out, cmp.AllowUnexported(ImageNode{}, node{})); diff != "" {
-				t.Errorf("NewImageNode(%q) got diff (-want +got): %s", tc.inSrc, diff)
+				t.Errorf("NewImageNode(%+v) got diff (-want +got): %s", tc.inOpts, diff)
 				return
 			}
 		})
@@ -40,27 +48,31 @@ func TestNewImageNode(t *testing.T) {
 
 func TestImageNodeEmpty(t *testing.T) {
 	tests := []struct {
-		name  string
-		inSrc string
-		out   bool
+		name   string
+		inOpts NewImageNodeOptions
+		out    bool
 	}{
 		{
 			name: "Empty",
 			out:  true,
 		},
 		{
-			name:  "NonEmpty",
-			inSrc: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+			name: "NonEmpty",
+			inOpts: NewImageNodeOptions{
+				Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+			},
 		},
 		{
-			name:  "EmptyWithSpaces",
-			inSrc: "\n \t",
-			out:   true,
+			name: "EmptyWithSpaces",
+			inOpts: NewImageNodeOptions{
+				Src: "\n \t",
+			},
+			out: true,
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			n := NewImageNode(tc.inSrc)
+			n := NewImageNode(tc.inOpts)
 			out := n.Empty()
 			if out != tc.out {
 				t.Errorf("ImageNode.Empty() = %t, want %t", out, tc.out)
@@ -71,9 +83,9 @@ func TestImageNodeEmpty(t *testing.T) {
 }
 
 func TestImageNodes(t *testing.T) {
-	a1 := NewImageNode("https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png")
-	a2 := NewImageNode("https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png")
-	a3 := NewImageNode("https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png")
+	a1 := NewImageNode(NewImageNodeOptions{Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"})
+	a2 := NewImageNode(NewImageNodeOptions{Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"})
+	a3 := NewImageNode(NewImageNodeOptions{Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"})
 
 	b1 := NewItemsListNode("", 1)
 	b1.Items = append(b1.Items, NewListNode(a1, a2, NewTextNode("foobar"), a3))

@@ -396,15 +396,19 @@ func TestParseDoc(t *testing.T) {
 
 	content := nodes.NewListNode()
 
-	img := nodes.NewImageNode("https://host/image.png")
-	img.Alt = "alt text"
-	img.Title = "title text"
+	img := nodes.NewImageNode(nodes.NewImageNodeOptions{
+		Src:   "https://host/image.png",
+		Alt:   "alt text",
+		Title: "title text",
+	})
 	para := nodes.NewListNode(img)
 	para.MutateBlock(true)
 	content.Append(para)
 
-	img = nodes.NewImageNode("https://host/small.png")
-	img.Width = 25.5
+	img = nodes.NewImageNode(nodes.NewImageNodeOptions{
+		Src:   "https://host/small.png",
+		Width: 25.5,
+	})
 	para = nodes.NewListNode(img, nodes.NewTextNode(" icon."))
 	para.MutateBlock(true)
 	content.Append(para)
@@ -417,8 +421,10 @@ func TestParseDoc(t *testing.T) {
 	iframe.MutateBlock(true)
 	content.Append(iframe)
 
-	img = nodes.NewImageNode("https://host/image.png")
-	img.Alt = "The domain of the requested iframe (example.com) has not been whitelisted."
+	img = nodes.NewImageNode(nodes.NewImageNodeOptions{
+		Src: "https://host/image.png",
+		Alt: "The domain of the requested iframe (example.com) has not been whitelisted.",
+	})
 	para = nodes.NewListNode(img)
 	para.MutateBlock(true)
 	content.Append(para)
@@ -557,7 +563,7 @@ func TestParseFragment(t *testing.T) {
 	para.Append(nodes.NewTextNode("this should not be ignored"))
 	want = append(want, para)
 
-	img := nodes.NewImageNode("https://host/image.png")
+	img := nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "https://host/image.png"})
 	para = nodes.NewListNode(img)
 	para.MutateBlock(true)
 	want = append(want, para)

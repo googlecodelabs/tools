@@ -793,7 +793,7 @@ func image(ds *docState) nodes.Node {
 		return nil
 	}
 
-	n := nodes.NewImageNode(s)
+	n := nodes.NewImageNode(nodes.NewImageNodeOptions{Src: s})
 
 	if alt != "" {
 		n.Alt = alt
