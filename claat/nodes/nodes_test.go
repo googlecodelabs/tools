@@ -19,39 +19,39 @@ func TestEmptyNodes(t *testing.T) {
 		{
 			name: "OneEmpty",
 			inNodes: []Node{
-				NewTextNode(""),
+				NewTextNode(NewTextNodeOptions{Value: ""}),
 			},
 			out: true,
 		},
 		{
 			name: "OneNonEmpty",
 			inNodes: []Node{
-				NewTextNode("foo"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
 			},
 		},
 		{
 			name: "MultipleEmpty",
 			inNodes: []Node{
-				NewTextNode(""),
-				NewTextNode(""),
-				NewTextNode(""),
+				NewTextNode(NewTextNodeOptions{Value: ""}),
+				NewTextNode(NewTextNodeOptions{Value: ""}),
+				NewTextNode(NewTextNodeOptions{Value: ""}),
 			},
 			out: true,
 		},
 		{
 			name: "MultipleSomeNonEmpty",
 			inNodes: []Node{
-				NewTextNode("foo"),
-				NewTextNode(""),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: ""}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 		},
 		{
 			name: "MultipleAllNonEmpty",
 			inNodes: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
-				NewTextNode("baz"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
+				NewTextNode(NewTextNodeOptions{Value: "baz"}),
 			},
 		},
 	}
@@ -85,7 +85,7 @@ func TestMutateEnv(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			n := NewTextNode("foobar")
+			n := NewTextNode(NewTextNodeOptions{Value: "foobar"})
 			n.MutateEnv(tc.inEnv)
 			if diff := cmp.Diff(tc.out, n.env); diff != "" {
 				t.Errorf("MutateEnv(%q) got diff (-want +got): %s", tc.inEnv, diff)

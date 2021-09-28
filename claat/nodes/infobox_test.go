@@ -29,21 +29,21 @@ func TestNewInfoboxNode(t *testing.T) {
 		{
 			name:      "PositiveOneContent",
 			inKind:    InfoboxPositive,
-			inContent: []Node{NewTextNode("hello")},
+			inContent: []Node{NewTextNode(NewTextNodeOptions{Value: "hello"})},
 			out: &InfoboxNode{
 				node:    node{typ: NodeInfobox},
 				Kind:    InfoboxPositive,
-				Content: NewListNode(NewTextNode("hello")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "hello"})),
 			},
 		},
 		{
 			name:      "PositiveMultiContent",
 			inKind:    InfoboxPositive,
-			inContent: []Node{NewTextNode("orange"), NewTextNode("strawberry"), NewTextNode("pineapple")},
+			inContent: []Node{NewTextNode(NewTextNodeOptions{Value: "orange"}), NewTextNode(NewTextNodeOptions{Value: "strawberry"}), NewTextNode(NewTextNodeOptions{Value: "pineapple"})},
 			out: &InfoboxNode{
 				node:    node{typ: NodeInfobox},
 				Kind:    InfoboxPositive,
-				Content: NewListNode(NewTextNode("orange"), NewTextNode("strawberry"), NewTextNode("pineapple")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "orange"}), NewTextNode(NewTextNodeOptions{Value: "strawberry"}), NewTextNode(NewTextNodeOptions{Value: "pineapple"})),
 			},
 		},
 		{
@@ -59,51 +59,51 @@ func TestNewInfoboxNode(t *testing.T) {
 		{
 			name:      "NegativeOneContent",
 			inKind:    InfoboxNegative,
-			inContent: []Node{NewTextNode("hello")},
+			inContent: []Node{NewTextNode(NewTextNodeOptions{Value: "hello"})},
 			out: &InfoboxNode{
 				node:    node{typ: NodeInfobox},
 				Kind:    InfoboxNegative,
-				Content: NewListNode(NewTextNode("hello")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "hello"})),
 			},
 		},
 		{
 			name:      "NegativeMultiContent",
 			inKind:    InfoboxNegative,
-			inContent: []Node{NewTextNode("orange"), NewTextNode("strawberry"), NewTextNode("pineapple")},
+			inContent: []Node{NewTextNode(NewTextNodeOptions{Value: "orange"}), NewTextNode(NewTextNodeOptions{Value: "strawberry"}), NewTextNode(NewTextNodeOptions{Value: "pineapple"})},
 			out: &InfoboxNode{
 				node:    node{typ: NodeInfobox},
 				Kind:    InfoboxNegative,
-				Content: NewListNode(NewTextNode("orange"), NewTextNode("strawberry"), NewTextNode("pineapple")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "orange"}), NewTextNode(NewTextNodeOptions{Value: "strawberry"}), NewTextNode(NewTextNodeOptions{Value: "pineapple"})),
 			},
 		},
 		{
 			// TODO: Should we set a default value?
 			name:      "NoKind",
-			inContent: []Node{NewTextNode("orange")},
+			inContent: []Node{NewTextNode(NewTextNodeOptions{Value: "orange"})},
 			out: &InfoboxNode{
 				node:    node{typ: NodeInfobox},
-				Content: NewListNode(NewTextNode("orange")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "orange"})),
 			},
 		},
 		{
 			// TODO: Should this return an error instead?
 			name:      "UnsupportedKind",
 			inKind:    "this is not a valid kind of infobox",
-			inContent: []Node{NewTextNode("orange")},
+			inContent: []Node{NewTextNode(NewTextNodeOptions{Value: "orange"})},
 			out: &InfoboxNode{
 				node:    node{typ: NodeInfobox},
 				Kind:    "this is not a valid kind of infobox",
-				Content: NewListNode(NewTextNode("orange")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "orange"})),
 			},
 		},
 		{
 			name:      "ListOfOneList",
 			inKind:    InfoboxPositive,
-			inContent: []Node{NewListNode(NewTextNode("a"), NewTextNode("b"))},
+			inContent: []Node{NewListNode(NewTextNode(NewTextNodeOptions{Value: "a"}), NewTextNode(NewTextNodeOptions{Value: "b"}))},
 			out: &InfoboxNode{
 				node:    node{typ: NodeInfobox},
 				Kind:    InfoboxPositive,
-				Content: NewListNode(NewListNode(NewTextNode("a"), NewTextNode("b"))),
+				Content: NewListNode(NewListNode(NewTextNode(NewTextNodeOptions{Value: "a"}), NewTextNode(NewTextNodeOptions{Value: "b"}))),
 			},
 		},
 		{
@@ -140,7 +140,7 @@ func TestInfoboxNodeEmpty(t *testing.T) {
 		{
 			name:      "NonEmpty",
 			inKind:    InfoboxPositive,
-			inContent: []Node{NewTextNode("a")},
+			inContent: []Node{NewTextNode(NewTextNodeOptions{Value: "a"})},
 		},
 	}
 	for _, tc := range tests {

@@ -56,12 +56,12 @@ func TestNewButtonNode(t *testing.T) {
 		{
 			name: "ContentNoSettings",
 			inContent: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 			out: &ButtonNode{
 				node:    node{typ: NodeButton},
-				Content: NewListNode(NewTextNode("foo"), NewTextNode("bar")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "foo"}), NewTextNode(NewTextNodeOptions{Value: "bar"})),
 			},
 		},
 		{
@@ -70,15 +70,15 @@ func TestNewButtonNode(t *testing.T) {
 			inColor:    true,
 			inDownload: true,
 			inContent: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 			out: &ButtonNode{
 				node:     node{typ: NodeButton},
 				Raise:    true,
 				Color:    true,
 				Download: true,
-				Content:  NewListNode(NewTextNode("foo"), NewTextNode("bar")),
+				Content:  NewListNode(NewTextNode(NewTextNodeOptions{Value: "foo"}), NewTextNode(NewTextNodeOptions{Value: "bar"})),
 			},
 		},
 	}
@@ -112,8 +112,8 @@ func TestButtonNodeEmpty(t *testing.T) {
 		{
 			name: "NonEmpty",
 			inContent: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 		},
 	}

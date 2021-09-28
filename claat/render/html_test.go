@@ -23,11 +23,11 @@ import (
 )
 
 func TestHTMLEnv(t *testing.T) {
-	one := nodes.NewTextNode("one ")
+	one := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "one "})
 	one.MutateEnv([]string{"one"})
-	two := nodes.NewTextNode("two ")
+	two := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "two "})
 	two.MutateEnv([]string{"two"})
-	three := nodes.NewTextNode("three ")
+	three := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "three "})
 	three.MutateEnv([]string{"one", "three"})
 
 	tests := []struct {
@@ -201,12 +201,12 @@ func TestURL(t *testing.T) {
 		},
 		{
 			name:   "Simple",
-			inNode: nodes.NewURLNode("google.com", nodes.NewTextNode("foobar")),
+			inNode: nodes.NewURLNode("google.com", nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<a href="google.com" target="_blank">foobar</a>`,
 		},
 		{
 			name:   "MultipleContent",
-			inNode: nodes.NewURLNode("google.com", nodes.NewHeaderNode(1, nodes.NewTextNode("foo")), nodes.NewTextNode("bar")),
+			inNode: nodes.NewURLNode("google.com", nodes.NewHeaderNode(1, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"})), nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"})),
 			out: `<a href="google.com" target="_blank"><h1 is-upgraded>foo</h1>
 bar</a>`,
 		},
@@ -237,47 +237,47 @@ func TestButton(t *testing.T) {
 		},
 		{
 			name:   "NoProperties",
-			inNode: nodes.NewButtonNode(false, false, false, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(false, false, false, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button>foobar</paper-button>`,
 		},
 		{
 			name:   "Raise",
-			inNode: nodes.NewButtonNode(true, false, false, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(true, false, false, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button raised>foobar</paper-button>`,
 		},
 		{
 			name:   "Color",
-			inNode: nodes.NewButtonNode(false, true, false, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(false, true, false, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button class="colored">foobar</paper-button>`,
 		},
 		{
 			name:   "Download",
-			inNode: nodes.NewButtonNode(false, false, true, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(false, false, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
 		},
 		{
 			name:   "RaiseColor",
-			inNode: nodes.NewButtonNode(true, true, false, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(true, true, false, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button class="colored" raised>foobar</paper-button>`,
 		},
 		{
 			name:   "ColorDownload",
-			inNode: nodes.NewButtonNode(false, true, true, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(false, true, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button class="colored"><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
 		},
 		{
 			name:   "RaiseDownload",
-			inNode: nodes.NewButtonNode(true, false, true, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(true, false, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button raised><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
 		},
 		{
 			name:   "RaiseColorDownload",
-			inNode: nodes.NewButtonNode(true, true, true, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(true, true, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button class="colored" raised><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
 		},
 		{
 			name:   "MultipleContent",
-			inNode: nodes.NewButtonNode(false, false, false, nodes.NewHeaderNode(2, nodes.NewTextNode("foo")), nodes.NewTextNode("bar")),
+			inNode: nodes.NewButtonNode(false, false, false, nodes.NewHeaderNode(2, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"})), nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"})),
 			out: `<paper-button><h2 is-upgraded>foo</h2>
 bar</paper-button>`,
 		},
@@ -351,16 +351,16 @@ func TestList(t *testing.T) {
 		{
 			name: "One",
 			inNode: nodes.NewListNode(
-				nodes.NewTextNode("foobar"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"}),
 			),
 			out: "foobar",
 		},
 		{
 			name: "Multi",
 			inNode: nodes.NewListNode(
-				nodes.NewTextNode("foo"),
-				nodes.NewTextNode("bar"),
-				nodes.NewTextNode("baz"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "baz"}),
 			),
 			out: "foobarbaz",
 		},
@@ -368,12 +368,12 @@ func TestList(t *testing.T) {
 			name: "ListOfLists",
 			inNode: nodes.NewListNode(
 				nodes.NewListNode(
-					nodes.NewTextNode("foo"),
-					nodes.NewTextNode("bar"),
+					nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}),
+					nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}),
 				),
 				nodes.NewListNode(
-					nodes.NewTextNode("baz"),
-					nodes.NewTextNode("qux"),
+					nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "baz"}),
+					nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "qux"}),
 				),
 			),
 			out: "foobar\nbazqux\n",
@@ -422,16 +422,16 @@ func TestOnlyImages(t *testing.T) {
 		{
 			name: "OneWhitespace",
 			inNodes: []nodes.Node{
-				nodes.NewTextNode(" "),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
 			},
 			out: true,
 		},
 		{
 			name: "MultiWhitespace",
 			inNodes: []nodes.Node{
-				nodes.NewTextNode(" "),
-				nodes.NewTextNode("\n"),
-				nodes.NewTextNode("\t"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\n"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\t"}),
 			},
 			out: true,
 		},
@@ -439,18 +439,18 @@ func TestOnlyImages(t *testing.T) {
 			name: "ImagesAndWhitespace",
 			inNodes: []nodes.Node{
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
-				nodes.NewTextNode(" "),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
-				nodes.NewTextNode("\n"),
-				nodes.NewTextNode("\t"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\n"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\t"}),
 			},
 			out: true,
 		},
 		{
 			name: "Text",
 			inNodes: []nodes.Node{
-				nodes.NewTextNode("qux"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "qux"}),
 			},
 		},
 		{
@@ -458,29 +458,29 @@ func TestOnlyImages(t *testing.T) {
 			inNodes: []nodes.Node{
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
-				nodes.NewTextNode("qux"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "qux"}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
 			},
 		},
 		{
 			name: "TextAndWhitespace",
 			inNodes: []nodes.Node{
-				nodes.NewTextNode(" "),
-				nodes.NewTextNode("\n"),
-				nodes.NewTextNode("foo"),
-				nodes.NewTextNode("\t"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\n"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\t"}),
 			},
 		},
 		{
 			name: "TextImagesAndWhitespace",
 			inNodes: []nodes.Node{
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
-				nodes.NewTextNode(" "),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
-				nodes.NewTextNode("qux"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "qux"}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
-				nodes.NewTextNode("\n"),
-				nodes.NewTextNode("\t"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\n"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\t"}),
 			},
 		},
 	}
@@ -514,13 +514,13 @@ func TestInfobox(t *testing.T) {
 		},
 		{
 			name:   "PositiveNonEmpty",
-			inNode: nodes.NewInfoboxNode(nodes.InfoboxPositive, nodes.NewTextNode("foo"), nodes.NewHeaderNode(3, nodes.NewTextNode("bar"))),
+			inNode: nodes.NewInfoboxNode(nodes.InfoboxPositive, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}), nodes.NewHeaderNode(3, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}))),
 			out: `<aside class="special">foo<h3 is-upgraded>bar</h3>
 </aside>`,
 		},
 		{
 			name:   "NegativeNonEmpty",
-			inNode: nodes.NewInfoboxNode(nodes.InfoboxNegative, nodes.NewTextNode("foo"), nodes.NewHeaderNode(3, nodes.NewTextNode("bar"))),
+			inNode: nodes.NewInfoboxNode(nodes.InfoboxNegative, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}), nodes.NewHeaderNode(3, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}))),
 			out: `<aside class="warning">foo<h3 is-upgraded>bar</h3>
 </aside>`,
 		},
@@ -644,10 +644,10 @@ func TestSurvey(t *testing.T) {
 }
 
 func TestHeader(t *testing.T) {
-	a1 := nodes.NewTextNode("foo")
+	a1 := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"})
 	a1.Italic = true
-	a2 := nodes.NewTextNode("bar")
-	a3 := nodes.NewTextNode("baz")
+	a2 := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"})
+	a3 := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "baz"})
 	a3.Code = true
 
 	tests := []struct {
@@ -657,12 +657,12 @@ func TestHeader(t *testing.T) {
 	}{
 		{
 			name:   "SimpleH1",
-			inNode: nodes.NewHeaderNode(1, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewHeaderNode(1, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    "<h1 is-upgraded>foobar</h1>",
 		},
 		{
 			name:   "LevelOutOfRange",
-			inNode: nodes.NewHeaderNode(100, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewHeaderNode(100, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    "<h100 is-upgraded>foobar</h100>",
 		},
 		{

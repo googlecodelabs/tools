@@ -25,7 +25,7 @@ import (
 func TestExecuteBuiltin(t *testing.T) {
 	step := &types.Step{
 		Title:   "Test step",
-		Content: nodes.NewListNode(nodes.NewTextNode("text")),
+		Content: nodes.NewListNode(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "text"})),
 	}
 	data := &struct {
 		Context

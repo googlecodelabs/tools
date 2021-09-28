@@ -8,9 +8,9 @@ import (
 
 func TestNewTextNode(t *testing.T) {
 	tests := []struct {
-		name    string
-		inValue string
-		out     *TextNode
+		name   string
+		inOpts NewTextNodeOptions
+		out    *TextNode
 	}{
 		{
 			name: "Empty",
@@ -19,8 +19,10 @@ func TestNewTextNode(t *testing.T) {
 			},
 		},
 		{
-			name:    "NonEmpty",
-			inValue: "foobar",
+			name: "NonEmpty",
+			inOpts: NewTextNodeOptions{
+				Value: "foobar",
+			},
 			out: &TextNode{
 				node:  node{typ: NodeText},
 				Value: "foobar",
@@ -29,9 +31,9 @@ func TestNewTextNode(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out := NewTextNode(tc.inValue)
+			out := NewTextNode(tc.inOpts)
 			if diff := cmp.Diff(tc.out, out, cmp.AllowUnexported(TextNode{}, node{})); diff != "" {
-				t.Errorf("NewTextNode(%q) got diff (-want +got): %s", tc.inValue, diff)
+				t.Errorf("NewTextNode(%+v) got diff (-want +got): %s", tc.inOpts, diff)
 				return
 			}
 		})
@@ -40,27 +42,31 @@ func TestNewTextNode(t *testing.T) {
 
 func TestTextNodeEmpty(t *testing.T) {
 	tests := []struct {
-		name    string
-		inValue string
-		out     bool
+		name   string
+		inOpts NewTextNodeOptions
+		out    bool
 	}{
 		{
 			name: "Empty",
 			out:  true,
 		},
 		{
-			name:    "NonEmpty",
-			inValue: "foobar",
+			name: "NonEmpty",
+			inOpts: NewTextNodeOptions{
+				Value: "foobar",
+			},
 		},
 		{
-			name:    "EmptyWithSpaces",
-			inValue: "\n \t",
-			out:     true,
+			name: "EmptyWithSpaces",
+			inOpts: NewTextNodeOptions{
+				Value: "\n \t",
+			},
+			out: true,
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			n := NewTextNode(tc.inValue)
+			n := NewTextNode(tc.inOpts)
 			out := n.Empty()
 			if out != tc.out {
 				t.Errorf("TextNode.Empty() = %t, want %t", out, tc.out)

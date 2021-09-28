@@ -786,7 +786,9 @@ func link(ds *docState) nodes.Node {
 		return nil
 	}
 
-	t := nodes.NewTextNode(text)
+	t := nodes.NewTextNode(nodes.NewTextNodeOptions{
+		Value: text,
+	})
 	if ds.flags&fMakeBold != 0 || isBold(ds.css, ds.cur.Parent) {
 		t.Bold = true
 	}
@@ -839,7 +841,7 @@ func text(ds *docState) nodes.Node {
 	}
 
 	v := stringifyNode(ds.cur, false, true)
-	n := nodes.NewTextNode(v)
+	n := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: v})
 	// Only apply styling if the node contains non-whitespace.
 	if len(strings.TrimSpace(v)) > 0 {
 		n.Bold = bold

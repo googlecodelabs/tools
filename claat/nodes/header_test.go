@@ -29,13 +29,13 @@ func TestNewHeaderNode(t *testing.T) {
 			name:    "NonEmpty",
 			inLevel: 1,
 			inContent: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 			out: &HeaderNode{
 				node:    node{typ: NodeHeader},
 				Level:   1,
-				Content: NewListNode(NewTextNode("foo"), NewTextNode("bar")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "foo"}), NewTextNode(NewTextNodeOptions{Value: "bar"})),
 			},
 		},
 		{
@@ -101,8 +101,8 @@ func TestHeaderNodeEmpty(t *testing.T) {
 			name:    "NonEmpty",
 			inLevel: 1,
 			inContent: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 		},
 	}

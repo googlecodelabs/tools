@@ -2,11 +2,21 @@ package nodes
 
 import "strings"
 
+type NewTextNodeOptions struct {
+	Bold   bool
+	Italic bool
+	Code   bool
+	Value  string
+}
+
 // NewTextNode creates a new Node of type NodeText.
-func NewTextNode(v string) *TextNode {
+func NewTextNode(opts NewTextNodeOptions) *TextNode {
 	return &TextNode{
-		node:  node{typ: NodeText},
-		Value: v,
+		node:   node{typ: NodeText},
+		Bold:   opts.Bold,
+		Italic: opts.Italic,
+		Code:   opts.Code,
+		Value:  opts.Value,
 	}
 }
 

@@ -88,36 +88,36 @@ func TestImageNodes(t *testing.T) {
 	a3 := NewImageNode(NewImageNodeOptions{Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"})
 
 	b1 := NewItemsListNode("", 1)
-	b1.Items = append(b1.Items, NewListNode(a1, a2, NewTextNode("foobar"), a3))
+	b1.Items = append(b1.Items, NewListNode(a1, a2, NewTextNode(NewTextNodeOptions{Value: "foobar"}), a3))
 
 	c1 := NewGridNode(
 		[]*GridCell{
 			&GridCell{
 				Rowspan: 1,
 				Colspan: 1,
-				Content: NewListNode(NewTextNode("aaa"), NewTextNode("bbb")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "aaa"}), NewTextNode(NewTextNodeOptions{Value: "bbb"})),
 			},
 			&GridCell{
 				Rowspan: 1,
 				Colspan: 1,
-				Content: NewListNode(a1, NewTextNode("ccc")),
+				Content: NewListNode(a1, NewTextNode(NewTextNodeOptions{Value: "ccc"})),
 			},
 		},
 		[]*GridCell{
 			&GridCell{
 				Rowspan: 1,
 				Colspan: 1,
-				Content: NewListNode(NewTextNode("ddd"), a3),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "ddd"}), a3),
 			},
 			&GridCell{
 				Rowspan: 1,
 				Colspan: 1,
-				Content: NewListNode(a2, NewTextNode("eee")),
+				Content: NewListNode(a2, NewTextNode(NewTextNodeOptions{Value: "eee"})),
 			},
 		},
 	)
 
-	d1 := NewURLNode("google.com", NewTextNode("aaa"), a1, NewTextNode("bbb"))
+	d1 := NewURLNode("google.com", NewTextNode(NewTextNodeOptions{Value: "aaa"}), a1, NewTextNode(NewTextNodeOptions{Value: "bbb"}))
 	d2 := NewButtonNode(true, true, true, d1)
 	d3 := NewURLNode("google.com", a2)
 	d4 := NewHeaderNode(2, d3)
@@ -142,7 +142,7 @@ func TestImageNodes(t *testing.T) {
 		{
 			name: "List",
 			inNodes: []Node{
-				NewListNode(a1, NewTextNode("foobar"), a2, a3),
+				NewListNode(a1, NewTextNode(NewTextNodeOptions{Value: "foobar"}), a2, a3),
 			},
 			out: []*ImageNode{a1, a2, a3},
 		},
@@ -154,28 +154,28 @@ func TestImageNodes(t *testing.T) {
 		{
 			name: "Header",
 			inNodes: []Node{
-				NewHeaderNode(1, a1, NewTextNode("foobar")),
+				NewHeaderNode(1, a1, NewTextNode(NewTextNodeOptions{Value: "foobar"})),
 			},
 			out: []*ImageNode{a1},
 		},
 		{
 			name: "URL",
 			inNodes: []Node{
-				NewURLNode("google.com", a2, NewTextNode("foobar"), a3),
+				NewURLNode("google.com", a2, NewTextNode(NewTextNodeOptions{Value: "foobar"}), a3),
 			},
 			out: []*ImageNode{a2, a3},
 		},
 		{
 			name: "Button",
 			inNodes: []Node{
-				NewButtonNode(true, true, true, NewTextNode("foobar"), a3, a1),
+				NewButtonNode(true, true, true, NewTextNode(NewTextNodeOptions{Value: "foobar"}), a3, a1),
 			},
 			out: []*ImageNode{a3, a1},
 		},
 		{
 			name: "Infobox",
 			inNodes: []Node{
-				NewInfoboxNode(InfoboxPositive, a2, a1, NewTextNode("foobar")),
+				NewInfoboxNode(InfoboxPositive, a2, a1, NewTextNode(NewTextNodeOptions{Value: "foobar"})),
 			},
 			out: []*ImageNode{a2, a1},
 		},
@@ -187,8 +187,8 @@ func TestImageNodes(t *testing.T) {
 		{
 			name: "Text",
 			inNodes: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 		},
 		{

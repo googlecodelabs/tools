@@ -23,28 +23,28 @@ func TestNewListNode(t *testing.T) {
 		{
 			name: "One",
 			inNodes: []Node{
-				NewTextNode("foo"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
 			},
 			out: &ListNode{
 				node: node{typ: NodeList},
 				Nodes: []Node{
-					NewTextNode("foo"),
+					NewTextNode(NewTextNodeOptions{Value: "foo"}),
 				},
 			},
 		},
 		{
 			name: "Multiple",
 			inNodes: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
-				NewTextNode("baz"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
+				NewTextNode(NewTextNodeOptions{Value: "baz"}),
 			},
 			out: &ListNode{
 				node: node{typ: NodeList},
 				Nodes: []Node{
-					NewTextNode("foo"),
-					NewTextNode("bar"),
-					NewTextNode("baz"),
+					NewTextNode(NewTextNodeOptions{Value: "foo"}),
+					NewTextNode(NewTextNodeOptions{Value: "bar"}),
+					NewTextNode(NewTextNodeOptions{Value: "baz"}),
 				},
 			},
 		},
@@ -73,17 +73,17 @@ func TestListNodeEmpty(t *testing.T) {
 		{
 			name: "NonEmpty",
 			inNodes: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
-				NewTextNode("baz"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
+				NewTextNode(NewTextNodeOptions{Value: "baz"}),
 			},
 		},
 		{
 			name: "EmptyWithNodes",
 			inNodes: []Node{
-				NewTextNode(""),
-				NewTextNode(""),
-				NewTextNode(""),
+				NewTextNode(NewTextNodeOptions{Value: ""}),
+				NewTextNode(NewTextNodeOptions{Value: ""}),
+				NewTextNode(NewTextNodeOptions{Value: ""}),
 			},
 			out: true,
 		},
