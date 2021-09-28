@@ -64,7 +64,88 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test escape
 // TODO: test writeEscape
 // TODO: test text
-// TODO: test image
+
+func TestImage(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.ImageNode
+		out    string
+	}{
+		{
+			name: "Simple",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+			}),
+			out: `<img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "Alt",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Alt: "foo",
+			}),
+			out: `<img alt="foo" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "Title",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Title: "bar",
+			}),
+			out: `<img title="bar" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "Width",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: 5.0,
+			}),
+			out: `<img style="width: 5.00px" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "All",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Alt:   "foo",
+				Title: "bar",
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: 5.0,
+			}),
+			out: `<img alt="foo" title="bar" style="width: 5.00px" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "WidthPrecision",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: 9.87654321,
+			}),
+			out: `<img style="width: 9.88px" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "WidthNegative",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: -1.2345,
+			}),
+			out: `<img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name:   "Empty",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{}),
+			out:    `<img src="">`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.image(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.image(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestURL(t *testing.T) {
 	a := nodes.NewURLNode("google.com")
