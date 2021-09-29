@@ -16,6 +16,7 @@ package render
 
 import (
 	"bytes"
+	"errors"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -23,11 +24,11 @@ import (
 )
 
 func TestHTMLEnv(t *testing.T) {
-	one := nodes.NewTextNode("one ")
+	one := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "one "})
 	one.MutateEnv([]string{"one"})
-	two := nodes.NewTextNode("two ")
+	two := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "two "})
 	two.MutateEnv([]string{"two"})
-	three := nodes.NewTextNode("three ")
+	three := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "three "})
 	three.MutateEnv([]string{"one", "three"})
 
 	tests := []struct {
@@ -56,15 +57,474 @@ func TestHTMLEnv(t *testing.T) {
 
 // TODO: test HTML
 // TODO: test writeHTML
-// TODO: test ReplaceDoubleCurlyBracketsWithEntity
-// TODO: test matchEnv
-// TODO: test write
-// TODO: test writeString
-// TODO: test writeFmt
-// TODO: test escape
-// TODO: test writeEscape
-// TODO: test text
-// TODO: test image
+
+func TestReplaceDoubleCurlyBracketsWithEntity(t *testing.T) {
+	tests := []struct {
+		name  string
+		inStr string
+		out   string
+	}{
+		{
+			name: "Simple",
+		},
+		{
+			name:  "Zero",
+			inStr: "foobar",
+			out:   "foobar",
+		},
+		{
+			name:  "Single",
+			inStr: "foo{{bar",
+			out:   "foo&#123;&#123;bar",
+		},
+		{
+			name:  "Multi",
+			inStr: "foo{{bar{{baz",
+			out:   "foo&#123;&#123;bar&#123;&#123;baz",
+		},
+		{
+			name:  "OverlapEven",
+			inStr: "{{{{{{",
+			out:   "&#123;&#123;&#123;&#123;&#123;&#123;",
+		},
+		{
+			name:  "OverlapOdd",
+			inStr: "{{{{{{{",
+			out:   "&#123;&#123;&#123;&#123;&#123;&#123;{",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out := ReplaceDoubleCurlyBracketsWithEntity(tc.inStr)
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("ReplaceDoubleCurlyBracketsWithEntity(%q) got diff (-want +got):\n%s", tc.inStr, diff)
+			}
+		})
+	}
+}
+
+func TestMatchEnv(t *testing.T) {
+	tests := []struct {
+		name  string
+		inEnv string
+		inV   []string
+		out   bool
+	}{
+		{
+			name: "Empty",
+			out:  true,
+		},
+		{
+			name:  "NoChecks",
+			inEnv: "foo",
+			out:   true,
+		},
+		{
+			name: "NoEnv",
+			inV:  []string{"foo", "bar", "baz"},
+			out:  true,
+		},
+		{
+			name:  "SimpleMatch",
+			inEnv: "foo",
+			inV:   []string{"foo"},
+			out:   true,
+		},
+		{
+			// TODO: should this be false?
+			name:  "MultiMatch",
+			inEnv: "foo",
+			inV:   []string{"foo", "bar", "baz"},
+		},
+		{
+			name:  "NoMatch",
+			inEnv: "foo",
+			inV:   []string{"bar", "baz", "qux"},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer, env: tc.inEnv}
+			if out := hw.matchEnv(tc.inV); out != tc.out {
+				t.Errorf("hw.matchEnv(%+v) = %t, want %t", tc.inV, out, tc.out)
+			}
+		})
+	}
+}
+
+func TestWrite(t *testing.T) {
+	tests := []struct {
+		name    string
+		inNodes []nodes.Node
+		out     string
+	}{
+		{
+			name: "Empty",
+		},
+		{
+			name: "Text",
+			inNodes: []nodes.Node{
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"}),
+			},
+			out: "foobar",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.write(tc.inNodes...)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.write(%+v) got diff (-want +got):\n%s", tc.inNodes, diff)
+			}
+		})
+	}
+}
+
+func TestWriteString(t *testing.T) {
+	b := &bytes.Buffer{}
+	hw := htmlWriter{
+		w: b,
+	}
+	hw.writeString("foobar")
+	out := b.String()
+	want := "foobar"
+	if out != want {
+		t.Errorf("hw.String() = %q, want %q", out, want)
+	}
+}
+
+func TestWriteStringError(t *testing.T) {
+	b := &bytes.Buffer{}
+	hw := htmlWriter{
+		w:   b,
+		err: errors.New("foobar"),
+	}
+	hw.writeString("foobar")
+	out := b.String()
+	want := ""
+	if out != want {
+		t.Errorf("hw.String() = %q, want %q", out, want)
+	}
+}
+
+func TestWriteFmt(t *testing.T) {
+	tests := []struct {
+		name   string
+		inStr  string
+		inArgs []interface{}
+		out    string
+	}{
+		{
+			name: "Empty",
+		},
+		{
+			name:  "Simple",
+			inStr: "foobar",
+			out:   "foobar",
+		},
+		{
+			name:   "Format",
+			inStr:  "foo%s",
+			inArgs: []interface{}{"bar"},
+			out:    "foobar",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.writeFmt(tc.inStr, tc.inArgs...)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.writeFmt(%q) got diff (-want +got):\n%s", tc.inStr, diff)
+			}
+		})
+	}
+}
+
+func TestEscape(t *testing.T) {
+	tests := []struct {
+		name  string
+		inStr string
+		out   string
+	}{
+		{
+			name: "Empty",
+		},
+		{
+			name:  "NothingToEscape",
+			inStr: "foobar",
+			out:   "foobar",
+		},
+		{
+			name:  "<",
+			inStr: "foo<bar",
+			out:   "foo&lt;bar",
+		},
+		{
+			name:  "{{",
+			inStr: "foo{{bar",
+			out:   "foo&#123;&#123;bar",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out := escape(tc.inStr)
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("escape(%q) got diff (-want +got):\n%s", tc.inStr, diff)
+			}
+		})
+	}
+}
+
+func TestWriteEscape(t *testing.T) {
+	tests := []struct {
+		name  string
+		inStr string
+		out   string
+	}{
+		{
+			name: "Empty",
+		},
+		{
+			name:  "NothingToEscape",
+			inStr: "foobar",
+			out:   "foobar",
+		},
+		{
+			name:  "<",
+			inStr: "foo<bar",
+			out:   "foo&lt;bar",
+		},
+		{
+			name:  "{{",
+			inStr: "foo{{bar",
+			out:   "foo&#123;&#123;bar",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.writeEscape(tc.inStr)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.writeEscape(%q) got diff (-want +got):\n%s", tc.inStr, diff)
+			}
+		})
+	}
+}
+
+func TestText(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.TextNode
+		out    string
+	}{
+		{
+			name:   "Empty",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: ""}),
+		},
+		{
+			name:   "Simple",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"}),
+			out:    "foobar",
+		},
+		{
+			name: "Bold",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foobar",
+				Bold:  true,
+			}),
+			out: "<strong>foobar</strong>",
+		},
+		{
+			name: "Italic",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value:  "foobar",
+				Italic: true,
+			}),
+			out: "<em>foobar</em>",
+		},
+		{
+			name: "Code",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foobar",
+				Code:  true,
+			}),
+			out: "<code>foobar</code>",
+		},
+		{
+			name: "BoldItalic",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value:  "foobar",
+				Bold:   true,
+				Italic: true,
+			}),
+			out: "<strong><em>foobar</em></strong>",
+		},
+		{
+			name: "ItalicCode",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value:  "foobar",
+				Italic: true,
+				Code:   true,
+			}),
+			out: "<em><code>foobar</code></em>",
+		},
+		{
+			name: "BoldCode",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foobar",
+				Bold:  true,
+				Code:  true,
+			}),
+			out: "<strong><code>foobar</code></strong>",
+		},
+		{
+			name: "BoldItalicCode",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value:  "foobar",
+				Bold:   true,
+				Italic: true,
+				Code:   true,
+			}),
+			out: "<strong><em><code>foobar</code></em></strong>",
+		},
+		{
+			name:   "HTMLEscape",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo<bar"}),
+			out:    "foo&lt;bar",
+		},
+		{
+			name:   "{{Escape",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo{{bar"}),
+			out:    "foo&#123;&#123;bar",
+		},
+		{
+			name:   "Newline",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo\nbar"}),
+			out:    "foo<br>bar",
+		},
+		{
+			name:   "NonBreakingSpaceTrim",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\uFEFFfoobar\uFEFF"}),
+			out:    "foobar",
+		},
+		{
+			name: "CodeEscape",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foo<bar",
+				Code:  true,
+			}),
+			out: "<code>foo<bar</code>",
+		},
+		{
+			name: "Code{{",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foo{{bar",
+				Code:  true,
+			}),
+			out: "<code>foo&#123;&#123;bar</code>",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.text(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.text(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
+
+func TestImage(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.ImageNode
+		out    string
+	}{
+		{
+			name: "Simple",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+			}),
+			out: `<img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "Alt",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Alt: "foo",
+			}),
+			out: `<img alt="foo" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "Title",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Title: "bar",
+			}),
+			out: `<img title="bar" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "Width",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: 5.0,
+			}),
+			out: `<img style="width: 5.00px" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "All",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Alt:   "foo",
+				Title: "bar",
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: 5.0,
+			}),
+			out: `<img alt="foo" title="bar" style="width: 5.00px" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "WidthPrecision",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: 9.87654321,
+			}),
+			out: `<img style="width: 9.88px" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name: "WidthNegative",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{
+				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+				Width: -1.2345,
+			}),
+			out: `<img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png">`,
+		},
+		{
+			name:   "Empty",
+			inNode: nodes.NewImageNode(nodes.NewImageNodeOptions{}),
+			out:    `<img src="">`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.image(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.image(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestURL(t *testing.T) {
 	a := nodes.NewURLNode("google.com")
@@ -120,12 +580,12 @@ func TestURL(t *testing.T) {
 		},
 		{
 			name:   "Simple",
-			inNode: nodes.NewURLNode("google.com", nodes.NewTextNode("foobar")),
+			inNode: nodes.NewURLNode("google.com", nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<a href="google.com" target="_blank">foobar</a>`,
 		},
 		{
 			name:   "MultipleContent",
-			inNode: nodes.NewURLNode("google.com", nodes.NewHeaderNode(1, nodes.NewTextNode("foo")), nodes.NewTextNode("bar")),
+			inNode: nodes.NewURLNode("google.com", nodes.NewHeaderNode(1, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"})), nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"})),
 			out: `<a href="google.com" target="_blank"><h1 is-upgraded>foo</h1>
 bar</a>`,
 		},
@@ -156,47 +616,47 @@ func TestButton(t *testing.T) {
 		},
 		{
 			name:   "NoProperties",
-			inNode: nodes.NewButtonNode(false, false, false, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(false, false, false, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button>foobar</paper-button>`,
 		},
 		{
 			name:   "Raise",
-			inNode: nodes.NewButtonNode(true, false, false, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(true, false, false, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button raised>foobar</paper-button>`,
 		},
 		{
 			name:   "Color",
-			inNode: nodes.NewButtonNode(false, true, false, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(false, true, false, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button class="colored">foobar</paper-button>`,
 		},
 		{
 			name:   "Download",
-			inNode: nodes.NewButtonNode(false, false, true, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(false, false, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
 		},
 		{
 			name:   "RaiseColor",
-			inNode: nodes.NewButtonNode(true, true, false, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(true, true, false, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button class="colored" raised>foobar</paper-button>`,
 		},
 		{
 			name:   "ColorDownload",
-			inNode: nodes.NewButtonNode(false, true, true, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(false, true, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button class="colored"><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
 		},
 		{
 			name:   "RaiseDownload",
-			inNode: nodes.NewButtonNode(true, false, true, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(true, false, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button raised><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
 		},
 		{
 			name:   "RaiseColorDownload",
-			inNode: nodes.NewButtonNode(true, true, true, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewButtonNode(true, true, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    `<paper-button class="colored" raised><iron-icon icon="file-download"></iron-icon>foobar</paper-button>`,
 		},
 		{
 			name:   "MultipleContent",
-			inNode: nodes.NewButtonNode(false, false, false, nodes.NewHeaderNode(2, nodes.NewTextNode("foo")), nodes.NewTextNode("bar")),
+			inNode: nodes.NewButtonNode(false, false, false, nodes.NewHeaderNode(2, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"})), nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"})),
 			out: `<paper-button><h2 is-upgraded>foo</h2>
 bar</paper-button>`,
 		},
@@ -270,16 +730,16 @@ func TestList(t *testing.T) {
 		{
 			name: "One",
 			inNode: nodes.NewListNode(
-				nodes.NewTextNode("foobar"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"}),
 			),
 			out: "foobar",
 		},
 		{
 			name: "Multi",
 			inNode: nodes.NewListNode(
-				nodes.NewTextNode("foo"),
-				nodes.NewTextNode("bar"),
-				nodes.NewTextNode("baz"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "baz"}),
 			),
 			out: "foobarbaz",
 		},
@@ -287,12 +747,12 @@ func TestList(t *testing.T) {
 			name: "ListOfLists",
 			inNode: nodes.NewListNode(
 				nodes.NewListNode(
-					nodes.NewTextNode("foo"),
-					nodes.NewTextNode("bar"),
+					nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}),
+					nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}),
 				),
 				nodes.NewListNode(
-					nodes.NewTextNode("baz"),
-					nodes.NewTextNode("qux"),
+					nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "baz"}),
+					nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "qux"}),
 				),
 			),
 			out: "foobar\nbazqux\n",
@@ -341,16 +801,16 @@ func TestOnlyImages(t *testing.T) {
 		{
 			name: "OneWhitespace",
 			inNodes: []nodes.Node{
-				nodes.NewTextNode(" "),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
 			},
 			out: true,
 		},
 		{
 			name: "MultiWhitespace",
 			inNodes: []nodes.Node{
-				nodes.NewTextNode(" "),
-				nodes.NewTextNode("\n"),
-				nodes.NewTextNode("\t"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\n"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\t"}),
 			},
 			out: true,
 		},
@@ -358,18 +818,18 @@ func TestOnlyImages(t *testing.T) {
 			name: "ImagesAndWhitespace",
 			inNodes: []nodes.Node{
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
-				nodes.NewTextNode(" "),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
-				nodes.NewTextNode("\n"),
-				nodes.NewTextNode("\t"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\n"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\t"}),
 			},
 			out: true,
 		},
 		{
 			name: "Text",
 			inNodes: []nodes.Node{
-				nodes.NewTextNode("qux"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "qux"}),
 			},
 		},
 		{
@@ -377,29 +837,29 @@ func TestOnlyImages(t *testing.T) {
 			inNodes: []nodes.Node{
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
-				nodes.NewTextNode("qux"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "qux"}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
 			},
 		},
 		{
 			name: "TextAndWhitespace",
 			inNodes: []nodes.Node{
-				nodes.NewTextNode(" "),
-				nodes.NewTextNode("\n"),
-				nodes.NewTextNode("foo"),
-				nodes.NewTextNode("\t"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\n"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\t"}),
 			},
 		},
 		{
 			name: "TextImagesAndWhitespace",
 			inNodes: []nodes.Node{
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "foo"}),
-				nodes.NewTextNode(" "),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " "}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "bar"}),
-				nodes.NewTextNode("qux"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "qux"}),
 				nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "baz"}),
-				nodes.NewTextNode("\n"),
-				nodes.NewTextNode("\t"),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\n"}),
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\t"}),
 			},
 		},
 	}
@@ -433,13 +893,13 @@ func TestInfobox(t *testing.T) {
 		},
 		{
 			name:   "PositiveNonEmpty",
-			inNode: nodes.NewInfoboxNode(nodes.InfoboxPositive, nodes.NewTextNode("foo"), nodes.NewHeaderNode(3, nodes.NewTextNode("bar"))),
+			inNode: nodes.NewInfoboxNode(nodes.InfoboxPositive, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}), nodes.NewHeaderNode(3, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}))),
 			out: `<aside class="special">foo<h3 is-upgraded>bar</h3>
 </aside>`,
 		},
 		{
 			name:   "NegativeNonEmpty",
-			inNode: nodes.NewInfoboxNode(nodes.InfoboxNegative, nodes.NewTextNode("foo"), nodes.NewHeaderNode(3, nodes.NewTextNode("bar"))),
+			inNode: nodes.NewInfoboxNode(nodes.InfoboxNegative, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}), nodes.NewHeaderNode(3, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}))),
 			out: `<aside class="warning">foo<h3 is-upgraded>bar</h3>
 </aside>`,
 		},
@@ -563,10 +1023,10 @@ func TestSurvey(t *testing.T) {
 }
 
 func TestHeader(t *testing.T) {
-	a1 := nodes.NewTextNode("foo")
+	a1 := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"})
 	a1.Italic = true
-	a2 := nodes.NewTextNode("bar")
-	a3 := nodes.NewTextNode("baz")
+	a2 := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"})
+	a3 := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "baz"})
 	a3.Code = true
 
 	tests := []struct {
@@ -576,12 +1036,12 @@ func TestHeader(t *testing.T) {
 	}{
 		{
 			name:   "SimpleH1",
-			inNode: nodes.NewHeaderNode(1, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewHeaderNode(1, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    "<h1 is-upgraded>foobar</h1>",
 		},
 		{
 			name:   "LevelOutOfRange",
-			inNode: nodes.NewHeaderNode(100, nodes.NewTextNode("foobar")),
+			inNode: nodes.NewHeaderNode(100, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"})),
 			out:    "<h100 is-upgraded>foobar</h100>",
 		},
 		{

@@ -935,11 +935,12 @@ func text(ds *docState) nodes.Node {
 		}
 	}
 
-	v := stringifyNode(ds.cur, false)
-	n := nodes.NewTextNode(v)
-	n.Bold = bold
-	n.Italic = italic
-	n.Code = code
+	n := nodes.NewTextNode(nodes.NewTextNodeOptions{
+		Value:  stringifyNode(ds.cur, false),
+		Bold:   bold,
+		Italic: italic,
+		Code:   code,
+	})
 	n.MutateBlock(findNearestBlockAncestor(ds.cur))
 	return n
 }

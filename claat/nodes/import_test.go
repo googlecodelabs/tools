@@ -44,11 +44,11 @@ func TestNewImportNode(t *testing.T) {
 
 func TestImportNodeEmpty(t *testing.T) {
 	a := NewImportNode("")
-	a.Content.Nodes = append(a.Content.Nodes, NewTextNode("a"))
+	a.Content.Nodes = append(a.Content.Nodes, NewTextNode(NewTextNodeOptions{Value: "a"}))
 	b := NewImportNode("foobar")
-	b.Content.Nodes = append(b.Content.Nodes, NewTextNode("b"))
+	b.Content.Nodes = append(b.Content.Nodes, NewTextNode(NewTextNodeOptions{Value: "b"}))
 	c := NewImportNode("foobar")
-	c.Content.Nodes = append(c.Content.Nodes, NewTextNode(""))
+	c.Content.Nodes = append(c.Content.Nodes, NewTextNode(NewTextNodeOptions{Value: ""}))
 
 	tests := []struct {
 		name   string
@@ -114,30 +114,30 @@ func TestImportNodes(t *testing.T) {
 			&GridCell{
 				Rowspan: 1,
 				Colspan: 1,
-				Content: NewListNode(NewTextNode("aaa"), NewTextNode("bbb")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "aaa"}), NewTextNode(NewTextNodeOptions{Value: "bbb"})),
 			},
 			&GridCell{
 				Rowspan: 1,
 				Colspan: 1,
-				Content: NewListNode(a1, NewTextNode("ccc")),
+				Content: NewListNode(a1, NewTextNode(NewTextNodeOptions{Value: "ccc"})),
 			},
 		},
 		[]*GridCell{
 			&GridCell{
 				Rowspan: 1,
 				Colspan: 1,
-				Content: NewListNode(NewTextNode("ddd"), a3),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "ddd"}), a3),
 			},
 			&GridCell{
 				Rowspan: 1,
 				Colspan: 1,
-				Content: NewListNode(a2, NewTextNode("eee")),
+				Content: NewListNode(a2, NewTextNode(NewTextNodeOptions{Value: "eee"})),
 			},
 		},
 	)
 
-	c1 := NewInfoboxNode(InfoboxNegative, a1, NewTextNode("foobar"))
-	c2 := NewListNode(a2, NewButtonNode(false, false, false, NewTextNode("foobar")))
+	c1 := NewInfoboxNode(InfoboxNegative, a1, NewTextNode(NewTextNodeOptions{Value: "foobar"}))
+	c2 := NewListNode(a2, NewButtonNode(false, false, false, NewTextNode(NewTextNodeOptions{Value: "foobar"})))
 	c3 := NewListNode(c1, c2, a3)
 
 	tests := []struct {
@@ -152,7 +152,7 @@ func TestImportNodes(t *testing.T) {
 		},
 		{
 			name:    "Multiple",
-			inNodes: []Node{a1, NewTextNode("foo"), a2, NewTextNode("bar"), a3},
+			inNodes: []Node{a1, NewTextNode(NewTextNodeOptions{Value: "foo"}), a2, NewTextNode(NewTextNodeOptions{Value: "bar"}), a3},
 			out:     []*ImportNode{a1, a2, a3},
 		},
 		{
@@ -162,7 +162,7 @@ func TestImportNodes(t *testing.T) {
 		},
 		{
 			name:    "Infobox",
-			inNodes: []Node{NewInfoboxNode(InfoboxPositive, a1, a2, NewTextNode("foobar"), a3)},
+			inNodes: []Node{NewInfoboxNode(InfoboxPositive, a1, a2, NewTextNode(NewTextNodeOptions{Value: "foobar"}), a3)},
 			out:     []*ImportNode{a1, a2, a3},
 		},
 		{
@@ -176,7 +176,7 @@ func TestImportNodes(t *testing.T) {
 		},
 		{
 			name:    "Text",
-			inNodes: []Node{NewTextNode("foobar")},
+			inNodes: []Node{NewTextNode(NewTextNodeOptions{Value: "foobar"})},
 		},
 		{
 			name:    "NontrivialStructure",

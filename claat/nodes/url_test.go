@@ -28,14 +28,14 @@ func TestNewURLNode(t *testing.T) {
 			name:  "NonEmpty",
 			inURL: "google.com",
 			inContent: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 			out: &URLNode{
 				node:    node{typ: NodeURL},
 				URL:     "google.com",
 				Target:  "_blank",
-				Content: NewListNode(NewTextNode("foo"), NewTextNode("bar")),
+				Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "foo"}), NewTextNode(NewTextNodeOptions{Value: "bar"})),
 			},
 		},
 	}
@@ -65,8 +65,8 @@ func TestURLNodeEmpty(t *testing.T) {
 			name:  "NonEmpty",
 			inURL: "google.com",
 			inContent: []Node{
-				NewTextNode("foo"),
-				NewTextNode("bar"),
+				NewTextNode(NewTextNodeOptions{Value: "foo"}),
+				NewTextNode(NewTextNodeOptions{Value: "bar"}),
 			},
 		},
 	}

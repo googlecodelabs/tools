@@ -219,7 +219,7 @@ func CompactNodes(nodesToCompact []nodes.Node) []nodes.Node {
 		if last == nil || !concatNodes(last, n) {
 			if requiresSpacer(last, n) {
 				// Append non-breaking zero-width space.
-				res = append(res, nodes.NewTextNode(string('\uFEFF')))
+				res = append(res, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: string('\uFEFF')}))
 			}
 			res = append(res, n)
 

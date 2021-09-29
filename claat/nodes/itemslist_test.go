@@ -29,19 +29,19 @@ func TestNewItemsListNode(t *testing.T) {
 
 func TestItemsListNodeEmpty(t *testing.T) {
 	a := NewItemsListNode("foobar", 0)
-	a.Items = append(a.Items, NewListNode(NewTextNode("")))
+	a.Items = append(a.Items, NewListNode(NewTextNode(NewTextNodeOptions{Value: ""})))
 
 	b := NewItemsListNode("foobar", 0)
-	b.Items = append(b.Items, NewListNode(NewTextNode("a")))
+	b.Items = append(b.Items, NewListNode(NewTextNode(NewTextNodeOptions{Value: "a"})))
 
 	c := NewItemsListNode("foobar", 0)
-	c.Items = append(c.Items, NewListNode(NewTextNode("")), NewListNode(NewTextNode("")), NewListNode(NewTextNode("")))
+	c.Items = append(c.Items, NewListNode(NewTextNode(NewTextNodeOptions{Value: ""})), NewListNode(NewTextNode(NewTextNodeOptions{Value: ""})), NewListNode(NewTextNode(NewTextNodeOptions{Value: ""})))
 
 	d := NewItemsListNode("foobar", 0)
-	d.Items = append(d.Items, NewListNode(NewTextNode("a")), NewListNode(NewTextNode("")), NewListNode(NewTextNode("b")))
+	d.Items = append(d.Items, NewListNode(NewTextNode(NewTextNodeOptions{Value: "a"})), NewListNode(NewTextNode(NewTextNodeOptions{Value: ""})), NewListNode(NewTextNode(NewTextNodeOptions{Value: "b"})))
 
 	e := NewItemsListNode("foobar", 0)
-	e.Items = append(e.Items, NewListNode(NewTextNode("a")), NewListNode(NewTextNode("b")), NewListNode(NewTextNode("c")))
+	e.Items = append(e.Items, NewListNode(NewTextNode(NewTextNodeOptions{Value: "a"})), NewListNode(NewTextNode(NewTextNodeOptions{Value: "b"})), NewListNode(NewTextNode(NewTextNodeOptions{Value: "c"})))
 
 	tests := []struct {
 		name   string
@@ -89,9 +89,9 @@ func TestItemsListNodeEmpty(t *testing.T) {
 
 func TestItemsListNewItem(t *testing.T) {
 	// Only one code path, so this is not a tabular test.
-	a := NewTextNode("a")
-	b := NewTextNode("b")
-	c := NewTextNode("c")
+	a := NewTextNode(NewTextNodeOptions{Value: "a"})
+	b := NewTextNode(NewTextNodeOptions{Value: "b"})
+	c := NewTextNode(NewTextNodeOptions{Value: "c"})
 
 	iln := NewItemsListNode("foobar", 0)
 

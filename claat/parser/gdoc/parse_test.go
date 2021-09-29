@@ -409,7 +409,7 @@ func TestParseDoc(t *testing.T) {
 		Src:   "https://host/small.png",
 		Width: 25.5,
 	})
-	para = nodes.NewListNode(img, nodes.NewTextNode(" icon."))
+	para = nodes.NewListNode(img, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " icon."}))
 	para.MutateBlock(true)
 	content.Append(para)
 
@@ -429,56 +429,56 @@ func TestParseDoc(t *testing.T) {
 	para.MutateBlock(true)
 	content.Append(para)
 
-	h := nodes.NewHeaderNode(3, nodes.NewTextNode("What you'll learn"))
+	h := nodes.NewHeaderNode(3, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "What you'll learn"}))
 	h.MutateType(nodes.NodeHeaderCheck)
 	content.Append(h)
 	list := nodes.NewItemsListNode("", 0)
 	list.MutateType(nodes.NodeItemsCheck)
-	list.NewItem().Append(nodes.NewTextNode("First One"))
+	list.NewItem().Append(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "First One"}))
 	item := list.NewItem()
-	item.Append(nodes.NewTextNode("Two "))
-	item.Append(nodes.NewURLNode("http://example.com", nodes.NewTextNode("Link")))
-	list.NewItem().Append(nodes.NewTextNode("Three"))
+	item.Append(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "Two "}))
+	item.Append(nodes.NewURLNode("http://example.com", nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "Link"})))
+	list.NewItem().Append(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "Three"}))
 	content.Append(list)
 
 	para = nodes.NewListNode()
 	para.MutateBlock(true)
-	para.Append(nodes.NewTextNode("This is "))
-	txt := nodes.NewTextNode("code")
+	para.Append(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "This is "}))
+	txt := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "code"})
 	txt.Code = true
 	para.Append(txt)
-	para.Append(nodes.NewTextNode("."))
+	para.Append(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "."}))
 	content.Append(para)
 
 	para = nodes.NewListNode()
 	para.MutateBlock(true)
-	para.Append(nodes.NewTextNode("Just a paragraph."))
+	para.Append(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "Just a paragraph."}))
 	content.Append(para)
 
-	u := nodes.NewURLNode("url", nodes.NewTextNode("one url"))
+	u := nodes.NewURLNode("url", nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "one url"}))
 	para = nodes.NewListNode(u)
 	para.MutateBlock(true)
 	content.Append(para)
 
-	btn := nodes.NewButtonNode(true, true, true, nodes.NewTextNode("Download Zip"))
+	btn := nodes.NewButtonNode(true, true, true, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "Download Zip"}))
 	dl := nodes.NewURLNode("http://example.com", btn)
 	para = nodes.NewListNode(dl)
 	para.MutateBlock(true)
 	content.Append(para)
 
-	b := nodes.NewTextNode("Bo ld")
+	b := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "Bo ld"})
 	b.Bold = true
-	i := nodes.NewTextNode(" italic")
+	i := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " italic"})
 	i.Italic = true
-	bi := nodes.NewTextNode("or both.")
+	bi := nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "or both."})
 	bi.Bold = true
 	bi.Italic = true
-	para = nodes.NewListNode(b, i, nodes.NewTextNode(" text "), bi)
+	para = nodes.NewListNode(b, i, nodes.NewTextNode(nodes.NewTextNodeOptions{Value: " text "}), bi)
 	para.MutateBlock(true)
 	content.Append(para)
 
 	h = nodes.NewHeaderNode(3, nodes.NewURLNode(
-		"http://host/file.java", nodes.NewTextNode("a file")))
+		"http://host/file.java", nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "a file"})))
 	content.Append(h)
 
 	var lang string
@@ -492,11 +492,11 @@ func TestParseDoc(t *testing.T) {
 	tn.MutateBlock(2)
 	content.Append(tn)
 
-	b = nodes.NewTextNode("warning")
+	b = nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "warning"})
 	b.Bold = true
 	n1 := nodes.NewListNode(b)
 	n1.MutateBlock(true)
-	n2 := nodes.NewListNode(nodes.NewTextNode("negative box."))
+	n2 := nodes.NewListNode(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "negative box."}))
 	n2.MutateBlock(true)
 	box := nodes.NewInfoboxNode(nodes.InfoboxNegative, n1, n2)
 	content.Append(box)
@@ -555,12 +555,12 @@ func TestParseFragment(t *testing.T) {
 
 	para := nodes.NewListNode()
 	para.MutateBlock(true)
-	para.Append(nodes.NewTextNode("Test Codelab"))
+	para.Append(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "Test Codelab"}))
 	want = append(want, para)
 
 	para = nodes.NewListNode()
 	para.MutateBlock(true)
-	para.Append(nodes.NewTextNode("this should not be ignored"))
+	para.Append(nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "this should not be ignored"}))
 	want = append(want, para)
 
 	img := nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "https://host/image.png"})

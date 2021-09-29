@@ -25,10 +25,10 @@ func TestNewGridNode(t *testing.T) {
 			inRows: [][]*GridCell{
 				[]*GridCell{
 					&GridCell{
-						Content: NewListNode(NewTextNode("aaa")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "aaa"})),
 					},
 					&GridCell{
-						Content: NewListNode(NewTextNode("bbb")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "bbb"})),
 					},
 				},
 			},
@@ -37,10 +37,10 @@ func TestNewGridNode(t *testing.T) {
 				Rows: [][]*GridCell{
 					[]*GridCell{
 						&GridCell{
-							Content: NewListNode(NewTextNode("aaa")),
+							Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "aaa"})),
 						},
 						&GridCell{
-							Content: NewListNode(NewTextNode("bbb")),
+							Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "bbb"})),
 						},
 					},
 				},
@@ -51,26 +51,26 @@ func TestNewGridNode(t *testing.T) {
 			inRows: [][]*GridCell{
 				[]*GridCell{
 					&GridCell{
-						Content: NewListNode(NewTextNode("aaa")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "aaa"})),
 					},
 					&GridCell{
-						Content: NewListNode(NewTextNode("bbb")),
-					},
-				},
-				[]*GridCell{
-					&GridCell{
-						Content: NewListNode(NewTextNode("ccc")),
-					},
-					&GridCell{
-						Content: NewListNode(NewTextNode("ddd")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "bbb"})),
 					},
 				},
 				[]*GridCell{
 					&GridCell{
-						Content: NewListNode(NewTextNode("eee")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "ccc"})),
 					},
 					&GridCell{
-						Content: NewListNode(NewTextNode("fff")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "ddd"})),
+					},
+				},
+				[]*GridCell{
+					&GridCell{
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "eee"})),
+					},
+					&GridCell{
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "fff"})),
 					},
 				},
 			},
@@ -79,26 +79,26 @@ func TestNewGridNode(t *testing.T) {
 				Rows: [][]*GridCell{
 					[]*GridCell{
 						&GridCell{
-							Content: NewListNode(NewTextNode("aaa")),
+							Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "aaa"})),
 						},
 						&GridCell{
-							Content: NewListNode(NewTextNode("bbb")),
-						},
-					},
-					[]*GridCell{
-						&GridCell{
-							Content: NewListNode(NewTextNode("ccc")),
-						},
-						&GridCell{
-							Content: NewListNode(NewTextNode("ddd")),
+							Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "bbb"})),
 						},
 					},
 					[]*GridCell{
 						&GridCell{
-							Content: NewListNode(NewTextNode("eee")),
+							Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "ccc"})),
 						},
 						&GridCell{
-							Content: NewListNode(NewTextNode("fff")),
+							Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "ddd"})),
+						},
+					},
+					[]*GridCell{
+						&GridCell{
+							Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "eee"})),
+						},
+						&GridCell{
+							Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "fff"})),
 						},
 					},
 				},
@@ -131,26 +131,26 @@ func TestGridNodeEmpty(t *testing.T) {
 			inRows: [][]*GridCell{
 				[]*GridCell{
 					&GridCell{
-						Content: NewListNode(NewTextNode("aaa")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "aaa"})),
 					},
 					&GridCell{
-						Content: NewListNode(NewTextNode("bbb")),
-					},
-				},
-				[]*GridCell{
-					&GridCell{
-						Content: NewListNode(NewTextNode("ccc")),
-					},
-					&GridCell{
-						Content: NewListNode(NewTextNode("ddd")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "bbb"})),
 					},
 				},
 				[]*GridCell{
 					&GridCell{
-						Content: NewListNode(NewTextNode("eee")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "ccc"})),
 					},
 					&GridCell{
-						Content: NewListNode(NewTextNode("fff")),
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "ddd"})),
+					},
+				},
+				[]*GridCell{
+					&GridCell{
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "eee"})),
+					},
+					&GridCell{
+						Content: NewListNode(NewTextNode(NewTextNodeOptions{Value: "fff"})),
 					},
 				},
 			},
