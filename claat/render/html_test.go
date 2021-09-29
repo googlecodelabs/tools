@@ -63,7 +63,132 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test writeFmt
 // TODO: test escape
 // TODO: test writeEscape
-// TODO: test text
+
+func TestText(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.TextNode
+		out    string
+	}{
+		{
+			name:   "Empty",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: ""}),
+		},
+		{
+			name:   "Simple",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"}),
+			out:    "foobar",
+		},
+		{
+			name: "Bold",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foobar",
+				Bold:  true,
+			}),
+			out: "<strong>foobar</strong>",
+		},
+		{
+			name: "Italic",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value:  "foobar",
+				Italic: true,
+			}),
+			out: "<em>foobar</em>",
+		},
+		{
+			name: "Code",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foobar",
+				Code:  true,
+			}),
+			out: "<code>foobar</code>",
+		},
+		{
+			name: "BoldItalic",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value:  "foobar",
+				Bold:   true,
+				Italic: true,
+			}),
+			out: "<strong><em>foobar</em></strong>",
+		},
+		{
+			name: "ItalicCode",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value:  "foobar",
+				Italic: true,
+				Code:   true,
+			}),
+			out: "<em><code>foobar</code></em>",
+		},
+		{
+			name: "BoldCode",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foobar",
+				Bold:  true,
+				Code:  true,
+			}),
+			out: "<strong><code>foobar</code></strong>",
+		},
+		{
+			name: "BoldItalicCode",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value:  "foobar",
+				Bold:   true,
+				Italic: true,
+				Code:   true,
+			}),
+			out: "<strong><em><code>foobar</code></em></strong>",
+		},
+		{
+			name:   "HTMLEscape",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo<bar"}),
+			out:    "foo&lt;bar",
+		},
+		{
+			name:   "{{Escape",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo{{bar"}),
+			out:    "foo&#123;&#123;bar",
+		},
+		{
+			name:   "Newline",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo\nbar"}),
+			out:    "foo<br>bar",
+		},
+		{
+			name:   "NonBreakingSpaceTrim",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "\uFEFFfoobar\uFEFF"}),
+			out:    "foobar",
+		},
+		{
+			name: "CodeEscape",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foo<bar",
+				Code:  true,
+			}),
+			out: "<code>foo<bar</code>",
+		},
+		{
+			name: "Code{{",
+			inNode: nodes.NewTextNode(nodes.NewTextNodeOptions{
+				Value: "foo{{bar",
+				Code:  true,
+			}),
+			out: "<code>foo&#123;&#123;bar</code>",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.text(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.text(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestImage(t *testing.T) {
 	tests := []struct {
