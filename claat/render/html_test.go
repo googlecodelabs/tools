@@ -57,7 +57,57 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test HTML
 // TODO: test writeHTML
 // TODO: test ReplaceDoubleCurlyBracketsWithEntity
-// TODO: test matchEnv
+
+func TestMatchEnv(t *testing.T) {
+	tests := []struct {
+		name  string
+		inEnv string
+		inV   []string
+		out   bool
+	}{
+		{
+			name: "Empty",
+			out:  true,
+		},
+		{
+			name:  "NoChecks",
+			inEnv: "foo",
+			out:   true,
+		},
+		{
+			name: "NoEnv",
+			inV:  []string{"foo", "bar", "baz"},
+			out:  true,
+		},
+		{
+			name:  "SimpleMatch",
+			inEnv: "foo",
+			inV:   []string{"foo"},
+			out:   true,
+		},
+		{
+			// TODO: should this be false?
+			name:  "MultiMatch",
+			inEnv: "foo",
+			inV:   []string{"foo", "bar", "baz"},
+		},
+		{
+			name:  "NoMatch",
+			inEnv: "foo",
+			inV:   []string{"bar", "baz", "qux"},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer, env: tc.inEnv}
+			if out := hw.matchEnv(tc.inV); out != tc.out {
+				t.Errorf("hw.matchEnv(%+v) = %t, want %t", tc.inV, out, tc.out)
+			}
+		})
+	}
+}
+
 // TODO: test write
 // TODO: test writeString
 
