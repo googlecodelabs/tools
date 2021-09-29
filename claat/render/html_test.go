@@ -60,7 +60,41 @@ func TestHTMLEnv(t *testing.T) {
 // TODO: test matchEnv
 // TODO: test write
 // TODO: test writeString
-// TODO: test writeFmt
+
+func TestWriteFmt(t *testing.T) {
+	tests := []struct {
+		name   string
+		inStr  string
+		inArgs []interface{}
+		out    string
+	}{
+		{
+			name: "Empty",
+		},
+		{
+			name:  "Simple",
+			inStr: "foobar",
+			out:   "foobar",
+		},
+		{
+			name:   "Format",
+			inStr:  "foo%s",
+			inArgs: []interface{}{"bar"},
+			out:    "foobar",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.writeFmt(tc.inStr, tc.inArgs...)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.writeFmt(%q) got diff (-want +got):\n%s", tc.inStr, diff)
+			}
+		})
+	}
+}
 
 func TestEscape(t *testing.T) {
 	tests := []struct {
