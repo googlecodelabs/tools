@@ -16,6 +16,7 @@ package render
 
 import (
 	"bytes"
+	"errors"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -153,7 +154,33 @@ func TestMatchEnv(t *testing.T) {
 }
 
 // TODO: test write
-// TODO: test writeString
+
+func TestWriteString(t *testing.T) {
+	b := &bytes.Buffer{}
+	hw := htmlWriter{
+		w: b,
+	}
+	hw.writeString("foobar")
+	out := b.String()
+	want := "foobar"
+	if out != want {
+		t.Errorf("hw.String() = %q, want %q", out, want)
+	}
+}
+
+func TestWriteStringError(t *testing.T) {
+	b := &bytes.Buffer{}
+	hw := htmlWriter{
+		w:   b,
+		err: errors.New("foobar"),
+	}
+	hw.writeString("foobar")
+	out := b.String()
+	want := ""
+	if out != want {
+		t.Errorf("hw.String() = %q, want %q", out, want)
+	}
+}
 
 func TestWriteFmt(t *testing.T) {
 	tests := []struct {
