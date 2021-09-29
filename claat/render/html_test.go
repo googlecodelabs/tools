@@ -153,7 +153,35 @@ func TestMatchEnv(t *testing.T) {
 	}
 }
 
-// TODO: test write
+func TestWrite(t *testing.T) {
+	tests := []struct {
+		name    string
+		inNodes []nodes.Node
+		out     string
+	}{
+		{
+			name: "Empty",
+		},
+		{
+			name: "Text",
+			inNodes: []nodes.Node{
+				nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foobar"}),
+			},
+			out: "foobar",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.write(tc.inNodes...)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.write(%+v) got diff (-want +got):\n%s", tc.inNodes, diff)
+			}
+		})
+	}
+}
 
 func TestWriteString(t *testing.T) {
 	b := &bytes.Buffer{}
