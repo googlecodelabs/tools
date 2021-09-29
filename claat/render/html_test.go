@@ -56,7 +56,51 @@ func TestHTMLEnv(t *testing.T) {
 
 // TODO: test HTML
 // TODO: test writeHTML
-// TODO: test ReplaceDoubleCurlyBracketsWithEntity
+
+func TestReplaceDoubleCurlyBracketsWithEntity(t *testing.T) {
+	tests := []struct {
+		name  string
+		inStr string
+		out   string
+	}{
+		{
+			name: "Simple",
+		},
+		{
+			name:  "Zero",
+			inStr: "foobar",
+			out:   "foobar",
+		},
+		{
+			name:  "Single",
+			inStr: "foo{{bar",
+			out:   "foo&#123;&#123;bar",
+		},
+		{
+			name:  "Multi",
+			inStr: "foo{{bar{{baz",
+			out:   "foo&#123;&#123;bar&#123;&#123;baz",
+		},
+		{
+			name:  "OverlapEven",
+			inStr: "{{{{{{",
+			out:   "&#123;&#123;&#123;&#123;&#123;&#123;",
+		},
+		{
+			name:  "OverlapOdd",
+			inStr: "{{{{{{{",
+			out:   "&#123;&#123;&#123;&#123;&#123;&#123;{",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out := ReplaceDoubleCurlyBracketsWithEntity(tc.inStr)
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("ReplaceDoubleCurlyBracketsWithEntity(%q) got diff (-want +got):\n%s", tc.inStr, diff)
+			}
+		})
+	}
+}
 
 func TestMatchEnv(t *testing.T) {
 	tests := []struct {
