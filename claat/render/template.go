@@ -30,7 +30,7 @@ import (
 	mdParse "github.com/googlecodelabs/tools/claat/parser/md"
 	"github.com/googlecodelabs/tools/claat/types"
 
-	_ "embed"
+	_ "embed" // embeding template files
 )
 
 // Context is a template context during execution.
