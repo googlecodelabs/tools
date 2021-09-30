@@ -16,8 +16,12 @@ the License.
 <html devsite>
   <head>
     <title>{{.Meta.Title}}</title>
-    <meta name="project_path" value="/_project.yaml" />
-    <meta name="book_path" value="/_book.yaml" />
+    {{if .Meta.Extra.project}}
+      <meta name="project_path" value="{{.Meta.Extra.project}}">
+    {{end}}
+    {{if .Meta.Extra.book}}
+      <meta name="book_path" value="{{.Meta.Extra.book}}">
+    {{end}}
     <meta name="keywords" value="{{range $index, $tag := .Meta.Tags}}{{if $index}},{{end}}tag_{{$tag}}{{end}}{{range $index, $cat := .Meta.Categories}},category_{{$cat}}{{end}}" />
     {{if .Meta.Summary}}
       <meta name="description" content="{{.Meta.Summary}}" />
