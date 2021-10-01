@@ -169,11 +169,15 @@ class CodelabStep extends HTMLElement {
     dom.appendChild(this.instructions_, this.inner_);
     dom.removeChildren(this);
 
-    // Generate the title using a soy template.
-    const title = soy.renderAsElement(Templates.title, {
-      step: this.step_,
-      label: this.label_,
-    });
+    // Get the rendered title.
+    let title = this.inner_.querySelector('.step-title');
+    if (!title) {
+      // Generate the title using a soy template.
+      title = soy.renderAsElement(Templates.title, {
+        step: this.step_,
+        label: this.label_,
+      });
+    }
     this.title_ = title;
 
     // Inject the title in the containers.
