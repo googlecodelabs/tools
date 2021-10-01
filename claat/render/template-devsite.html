@@ -61,13 +61,16 @@ the License.
                     feedback-link="{{.Meta.Feedback}}"
                     {{if $.Meta.BadgePath}}badge-path="{{$.Meta.BadgePath}}"{{end}}>
       {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
-        <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
+        <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}" step="{{$i}}">
           {{if eq $i 0}}
             <google-codelab-about codelab-title="{{$.Meta.Title}}"
                                   {{if $.Meta.Authors}}authors="{{$.Meta.Authors}}"{{end}}
                                   {{if $.Meta.BadgePath}}badge-path="{{$.Meta.BadgePath}}"{{end}}>
             </google-codelab-about>
           {{end}}
+          <h2 class="step-title" id="{{$i}}" data-text="{{.Title}}">
+              {{inc $i}}. {{.Title}}
+          </h2>
           {{.Content | renderHTML $.Context}}
         </google-codelab-step>
       {{end}}{{end}}
