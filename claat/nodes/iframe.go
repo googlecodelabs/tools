@@ -6,6 +6,7 @@ var IframeAllowlist = []string{
 	"carto.com",
 	"codepen.io",
 	"dartlang.org",
+	"dartpad.dev",
 	"github.com",
 	"glitch.com",
 	"google.com",
