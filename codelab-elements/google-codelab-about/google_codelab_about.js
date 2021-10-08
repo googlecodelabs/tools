@@ -75,7 +75,9 @@ class CodelabAbout extends HTMLElement {
    * @export
    */
   static get observedAttributes() {
-    return [AUTHORS_ATTR, LAST_UPDATED_ATTR, CODELAB_TITLE_ATTR];
+    return [
+      AUTHORS_ATTR, LAST_UPDATED_ATTR, CODELAB_TITLE_ATTR, BADGE_PATH_ATTR
+    ];
   }
 
   /**
