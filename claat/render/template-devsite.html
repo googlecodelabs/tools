@@ -26,7 +26,9 @@ the License.
     {{if .Meta.Summary}}
       <meta name="description" content="{{.Meta.Summary}}" />
     {{end}}
-    <meta name="original_source" content="https://docs.google.com/document/d/{{.Meta.Source}}/edit" />
+    {{if .Meta.Source}}
+       <meta name="original_source" content="https://docs.google.com/document/d/{{.Meta.Source}}/edit" />
+    {{end}}
     <meta name="hide_last_updated" value="true" />
     <meta name="hide_ratings_widget" value="true" />
     <meta name="page_type" value="codelab" />
