@@ -16,29 +16,29 @@ the License.
 <html devsite>
   <head>
     <title>{{.Meta.Title}}</title>
-    {{if .Meta.Extra.project}}
+    {{if .Meta.Extra.project -}}
       <meta name="project_path" value="{{.Meta.Extra.project}}">
-    {{end}}
-    {{if .Meta.Extra.book}}
+    {{end -}}
+    {{if .Meta.Extra.book -}}
       <meta name="book_path" value="{{.Meta.Extra.book}}">
-    {{end}}
+    {{end -}}
     <meta name="keywords" value="{{range $index, $tag := .Meta.Tags}}{{if $index}},{{end}}tag_{{$tag}}{{end}}{{range $index, $cat := .Meta.Categories}},category_{{$cat}}{{end}}" />
-    {{if .Meta.Summary}}
+    {{if .Meta.Summary -}}
       <meta name="description" content="{{.Meta.Summary}}" />
-    {{end}}
-    {{if .Meta.Source}}
-       <meta name="original_source" content="https://docs.google.com/document/d/{{.Meta.Source}}/edit" />
-    {{end}}
+    {{- end}}
+    {{if .Meta.Source -}}
+      <meta name="original_source" content="https://docs.google.com/document/d/{{.Meta.Source}}/edit" />
+    {{end -}}
     <meta name="hide_last_updated" value="true" />
     <meta name="hide_ratings_widget" value="true" />
     <meta name="page_type" value="codelab" />
     <meta name="duration_minutes" value="{{.Meta.Duration}}" />
-    {{if .Meta.Authors}}
+    {{if .Meta.Authors -}}
       <meta name="author_name" value="{{.Meta.Authors}}" />
-    {{end}}
-    {{if .Meta.Extra.robots}}
+    {{end -}}
+    {{if .Meta.Extra.robots -}}
       <meta name="robots" value="{{.Meta.Extra.robots}}">
-    {{end}}
+    {{end -}}
     <style>
       body {
         transition: opacity ease-in 0.2s;
