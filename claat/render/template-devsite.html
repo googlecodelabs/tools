@@ -67,6 +67,8 @@ the License.
           {{if eq $i 0}}
             <google-codelab-about codelab-title="{{$.Meta.Title}}"
                                   {{if $.Meta.Authors}}authors="{{$.Meta.Authors}}"{{end}}
+                                  {{if $.Updated}}last-updated="{{$.Updated}}"{{end}}
+                                  {{if $.Meta.Duration}}duration="{{$.Meta.Duration}}"{{end}}
                                   {{if $.Meta.BadgePath}}badge-path="{{$.Meta.BadgePath}}"{{end}}>
             </google-codelab-about>
           {{end}}
