@@ -792,6 +792,10 @@ func link(ds *docState) nodes.Node {
 	// re-write google.com redirector URLs
 	if strings.HasPrefix(href, redirectorPrefix) {
 		href = strings.TrimPrefix(href, redirectorPrefix)
+		h, err := url.QueryUnescape(href)
+		if err == nil {
+			href = h
+		}
 	}
 
 	t := nodes.NewTextNode(nodes.NewTextNodeOptions{
