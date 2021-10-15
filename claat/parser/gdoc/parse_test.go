@@ -536,7 +536,8 @@ func TestParseFragment(t *testing.T) {
 	<body>
 		<p class="title"><a name="a1"></a><span>Test Codelab</span></p>
 		<p>this should not be ignored</p>
-		<img src="https://host/image.png">
+		<p><img src="https://host/image.png"></p>
+		<span class="c17 c7"><a class="c11" href="https://www.google.com/url?q=https://www.example.com">Test redirector.</a></span>
 		<div class="comment">
 		<p><a href="#cmnt_ref1" name="cmnt1">[a]</a><span class="c16 c8">Test comment.</span></p>
 		</div>
@@ -565,6 +566,14 @@ func TestParseFragment(t *testing.T) {
 
 	img := nodes.NewImageNode(nodes.NewImageNodeOptions{Src: "https://host/image.png"})
 	para = nodes.NewListNode(img)
+	para.MutateBlock(true)
+	want = append(want, para)
+
+	tn := nodes.NewTextNode(nodes.NewTextNodeOptions{
+		Value: "Test redirector.",
+	})
+	rlink := nodes.NewURLNode("https://www.example.com", tn)
+	para = nodes.NewListNode(rlink)
 	para.MutateBlock(true)
 	want = append(want, para)
 

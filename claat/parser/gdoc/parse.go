@@ -77,6 +77,9 @@ const (
 
 	// google docs comments are links with commentPrefix.
 	commentPrefix = "#cmnt"
+
+	// the google.com redirector service
+	redirectorPrefix = "https://www.google.com/url?q="
 )
 
 var (
@@ -784,6 +787,11 @@ func link(ds *docState) nodes.Node {
 	text := stringifyNode(ds.cur, false, true)
 	if strings.TrimSpace(text) == "" {
 		return nil
+	}
+
+	// re-write google.com redirector URLs
+	if strings.HasPrefix(href, redirectorPrefix) {
+		href = strings.TrimPrefix(href, redirectorPrefix)
 	}
 
 	t := nodes.NewTextNode(nodes.NewTextNodeOptions{
