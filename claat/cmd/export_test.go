@@ -116,6 +116,7 @@ func filterIgnoredLinePrefix(content string) string {
 	ignoredLinePrefix := []string{
 		"<meta name=\"original_source\" content=\"",
 		"doc-id=\"",
+		"last-updated=\"", // https://github.com/googlecodelabs/tools/issues/395
 	}
 
 	lines := strings.Split(content, "\n")
