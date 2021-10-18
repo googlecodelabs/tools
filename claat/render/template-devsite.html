@@ -61,7 +61,7 @@ the License.
                     environment="{{index .Env}}"
                     category="{{range  $index, $cat := .Meta.Categories}}{{if $index}},{{end}}{{$cat}}{{end}}"
                     feedback-link="{{.Meta.Feedback}}"
-                    {{if $.Meta.BadgePath}}badge-path="{{$.Meta.BadgePath}}"{{end}}>
+                    {{if .Meta.Extra.badge}}badge-path="{{.Meta.Extra.badge}}"{{end}}>
       {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
         <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}" step="{{$i}}">
           {{if eq $i 0}}
