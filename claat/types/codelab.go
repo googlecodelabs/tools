@@ -27,7 +27,6 @@ type Meta struct {
 	Duration   int               `json:"duration"`             // Codelab duration in minutes
 	Title      string            `json:"title"`                // Codelab title
 	Authors    string            `json:"authors,omitempty"`    // Arbitrary authorship text
-	BadgePath  string            `json:"badge_path,omitempty"` // Path of the Badge to grant on codelab completion on devsite
 	Summary    string            `json:"summary"`              // Short summary
 	Source     string            `json:"source"`               // Codelab source doc
 	Theme      string            `json:"theme"`                // Usually first item of Categories
