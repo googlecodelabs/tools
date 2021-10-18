@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Package md implements a parser for CLaaT. It expects, as input, the output of running a Markdown file through
-// the Devsite Markdown processor.
+// the Markdown processor.
 package md
 
 import (
@@ -240,7 +240,7 @@ func renderToHTML(b []byte) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-// parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
+// parseMarkup accepts html nodes to markup created by the Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
 func parseMarkup(markup *html.Node, opts parser.Options) (*types.Codelab, error) {
 	body := findAtom(markup, atom.Body)
 	if body == nil {
