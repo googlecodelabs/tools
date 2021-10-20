@@ -198,20 +198,16 @@ google-codelab .metadata a:focus {
 
 @media (max-width: 768px) {
   google-codelab {
+    grid-template: 64px 1fr 56px/1fr;
+    grid-template-areas:
+      'title'
+      'main'
+      'metadata';
     padding-top: 0;
   }
 
   google-codelab #codelab-title .codelab-time-container {
     display: none;
-  }
-
-  google-codelab #drawer .codelab-time-container {
-    display: block;
-    padding: 20px 10px 10px 23px;
-  }
-
-  google-codelab #drawer .time-remaining i {
-    margin-right: 9px;
   }
 }
 
