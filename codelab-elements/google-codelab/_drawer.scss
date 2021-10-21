@@ -147,15 +147,6 @@ google-codelab #drawer ol {
 }
 
 @media (max-width: 768px) {
-  google-codelab {
-    display: block;
-    position: relative;
-  }
-
-  google-codelab #main {
-    height: calc(100% - 64px);
-  }
-
   google-codelab #codelab-nav-buttons #arrow-back {
     display: none;
   }
@@ -165,6 +156,7 @@ google-codelab #drawer ol {
   }
 
   google-codelab #drawer {
+    grid-area: auto;
     width: 256px;
     position: absolute;
     left: 0;
@@ -201,5 +193,14 @@ google-codelab #drawer ol {
   google-codelab[drawer--open] #main::before {
     opacity: 1;
     pointer-events: all;
+  }
+
+  google-codelab #drawer .codelab-time-container {
+    display: block;
+    padding: 20px 10px 10px 23px;
+  }
+
+  google-codelab #drawer .time-remaining i {
+    margin-right: 9px;
   }
 }
