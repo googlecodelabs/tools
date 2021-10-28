@@ -63,7 +63,7 @@ func TestExportCodelabMemory(t *testing.T) {
 			opts := cmd.CmdExportOptions{
 				Expenv:   "web",
 				Output:   tmp,
-				Tmplout:  "devsite",
+				Tmplout:  "html",
 				GlobalGA: "UA-99999999-99",
 			}
 
