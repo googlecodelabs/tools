@@ -676,10 +676,9 @@ bar</paper-button>`,
 
 func TestCode(t *testing.T) {
 	tests := []struct {
-		name     string
-		inNode   *nodes.CodeNode
-		inFormat string
-		out      string
+		name   string
+		inNode *nodes.CodeNode
+		out    string
 	}{
 		{
 			name:   "NoLang",
@@ -691,23 +690,11 @@ func TestCode(t *testing.T) {
 			inNode: nodes.NewCodeNode("foobar", false, "c"),
 			out:    `<pre><code language="c" class="c">foobar</code></pre>`,
 		},
-		{
-			name:     "NoLangDevsite",
-			inNode:   nodes.NewCodeNode("foobar", false, ""),
-			inFormat: "devsite",
-			out:      `<pre><code>{% verbatim %}foobar{% endverbatim %}</code></pre>`,
-		},
-		{
-			name:     "LangDevsite",
-			inNode:   nodes.NewCodeNode("foobar", false, "c"),
-			inFormat: "devsite",
-			out:      `<pre><code language="c" class="c">{% verbatim %}foobar{% endverbatim %}</code></pre>`,
-		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			outBuffer := &bytes.Buffer{}
-			hw := &htmlWriter{w: outBuffer, format: tc.inFormat}
+			hw := &htmlWriter{w: outBuffer}
 			hw.code(tc.inNode)
 			out := outBuffer.String()
 			if diff := cmp.Diff(tc.out, out); diff != "" {
@@ -873,7 +860,69 @@ func TestOnlyImages(t *testing.T) {
 }
 
 // TODO: test itemsList
-// TODO: test grid
+
+func TestGrid(t *testing.T) {
+	tests := []struct {
+		name   string
+		inNode *nodes.GridNode
+		out    string
+	}{
+		{
+			name:   "No rows or cells ",
+			inNode: nodes.NewGridNode(),
+			out:    "<table>\n</table>",
+		},
+		{
+			name: "One row and no cells",
+			inNode: nodes.NewGridNode([][]*nodes.GridCell{
+				[]*nodes.GridCell{},
+			}...),
+			out: "<table>\n<tr></tr>\n</table>",
+		},
+		{
+			name: "One row and one cell",
+			inNode: nodes.NewGridNode([][]*nodes.GridCell{
+				[]*nodes.GridCell{
+					&nodes.GridCell{
+						Content: nodes.NewListNode([]nodes.Node{
+							nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}),
+						}...),
+					},
+				},
+			}...),
+			out: "<table>\n<tr><td colspan=\"0\" rowspan=\"0\">foo</td></tr>\n</table>",
+		},
+		{
+			name: "One row and multiple cells",
+			inNode: nodes.NewGridNode([][]*nodes.GridCell{
+				[]*nodes.GridCell{
+					&nodes.GridCell{
+						Content: nodes.NewListNode([]nodes.Node{
+							nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "foo"}),
+						}...),
+					},
+					&nodes.GridCell{
+						Content: nodes.NewListNode([]nodes.Node{
+							nodes.NewTextNode(nodes.NewTextNodeOptions{Value: "bar"}),
+						}...),
+					},
+				},
+			}...),
+			out: "<table>\n<tr><td colspan=\"0\" rowspan=\"0\">foo</td><td colspan=\"0\" rowspan=\"0\">bar</td></tr>\n</table>",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			outBuffer := &bytes.Buffer{}
+			hw := &htmlWriter{w: outBuffer}
+			hw.grid(tc.inNode)
+			out := outBuffer.String()
+			if diff := cmp.Diff(tc.out, out); diff != "" {
+				t.Errorf("hw.grid(%+v) got diff (-want +got):\n%s", tc.inNode, diff)
+			}
+		})
+	}
+}
 
 func TestInfobox(t *testing.T) {
 	tests := []struct {
