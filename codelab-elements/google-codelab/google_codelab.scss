@@ -113,23 +113,14 @@ google-codelab #controls {
   bottom: 32px;
   left: 0;
   right: 0;
-  display: flex;
-  justify-content: center;
   padding: 0 32px;
-  flex-direction: column;
   z-index: 1001;
 }
 
 google-codelab #fabs {
   display: flex;
-  flex-grow: 1;
+  justify-content: space-between;
   max-width: 1025px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-google-codelab #fabs .spacer {
-  flex-grow: 1;
 }
 
 google-codelab #previous-step,
