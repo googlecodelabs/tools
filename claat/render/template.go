@@ -152,9 +152,6 @@ type template struct {
 //go:embed template.html
 var newHTMLTemplate []byte
 
-//go:embed template-devsite.html
-var newHTMLDevsiteTemplate []byte
-
 //go:embed template.md
 var newMDTemplate []byte
 
@@ -172,11 +169,6 @@ func parseTemplate(name string, fmap map[string]interface{}) (executer, error) {
 	case "html":
 		tmpl = &template{
 			bytes: newHTMLTemplate,
-			html:  true,
-		}
-	case "devsite":
-		tmpl = &template{
-			bytes: newHTMLDevsiteTemplate,
 			html:  true,
 		}
 	case "md":

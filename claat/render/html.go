@@ -229,13 +229,7 @@ func (hw *htmlWriter) code(n *nodes.CodeNode) {
 		}
 		hw.writeString(">")
 	}
-	if hw.format == "devsite" {
-		hw.writeString("{% verbatim %}")
-	}
 	hw.writeEscape(n.Value)
-	if hw.format == "devsite" {
-		hw.writeString("{% endverbatim %}")
-	}
 	if !n.Term {
 		hw.writeString("</code>")
 	}
@@ -308,11 +302,7 @@ func (hw *htmlWriter) itemsList(n *nodes.ItemsListNode) {
 }
 
 func (hw *htmlWriter) grid(n *nodes.GridNode) {
-	if hw.format == "devsite" {
-		hw.writeString("<table class=\"vertical-rules\">\n")
-	} else {
-		hw.writeString("<table>\n")
-	}
+	hw.writeString("<table>\n")
 	for _, r := range n.Rows {
 		hw.writeString("<tr>")
 		for _, c := range r {

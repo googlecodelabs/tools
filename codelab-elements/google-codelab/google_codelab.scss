@@ -113,23 +113,14 @@ google-codelab #controls {
   bottom: 32px;
   left: 0;
   right: 0;
-  display: flex;
-  justify-content: center;
   padding: 0 32px;
-  flex-direction: column;
   z-index: 1001;
 }
 
 google-codelab #fabs {
   display: flex;
-  flex-grow: 1;
+  justify-content: space-between;
   max-width: 1025px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-google-codelab #fabs .spacer {
-  flex-grow: 1;
 }
 
 google-codelab #previous-step,
@@ -198,20 +189,16 @@ google-codelab .metadata a:focus {
 
 @media (max-width: 768px) {
   google-codelab {
+    grid-template: 64px 1fr 56px/1fr;
+    grid-template-areas:
+      'title'
+      'main'
+      'metadata';
     padding-top: 0;
   }
 
   google-codelab #codelab-title .codelab-time-container {
     display: none;
-  }
-
-  google-codelab #drawer .codelab-time-container {
-    display: block;
-    padding: 20px 10px 10px 23px;
-  }
-
-  google-codelab #drawer .time-remaining i {
-    margin-right: 9px;
   }
 }
 

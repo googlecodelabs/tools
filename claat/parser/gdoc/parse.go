@@ -77,6 +77,9 @@ const (
 
 	// google docs comments are links with commentPrefix.
 	commentPrefix = "#cmnt"
+
+	// the google.com redirector service
+	redirectorPrefix = "https://www.google.com/url?q="
 )
 
 var (
@@ -393,8 +396,6 @@ func metaTable(ds *docState) {
 			ds.clab.ID = s
 		case "author", "authors":
 			ds.clab.Authors = s
-		case "badge path":
-			ds.clab.BadgePath = s
 		case "summary":
 			ds.clab.Summary = stringifyNode(tr.FirstChild.NextSibling, true, true)
 		case "category", "categories":
@@ -784,6 +785,15 @@ func link(ds *docState) nodes.Node {
 	text := stringifyNode(ds.cur, false, true)
 	if strings.TrimSpace(text) == "" {
 		return nil
+	}
+
+	// re-write google.com redirector URLs
+	if strings.HasPrefix(href, redirectorPrefix) {
+		href = strings.TrimPrefix(href, redirectorPrefix)
+		h, err := url.QueryUnescape(href)
+		if err == nil {
+			href = h
+		}
 	}
 
 	t := nodes.NewTextNode(nodes.NewTextNodeOptions{

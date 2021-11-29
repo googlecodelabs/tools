@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Package md implements a parser for CLaaT. It expects, as input, the output of running a Markdown file through
-// the Devsite Markdown processor.
+// the Markdown processor.
 package md
 
 import (
@@ -45,7 +45,6 @@ import (
 // Metadata constants for the YAML header
 const (
 	MetaAuthors          = "authors"
-	MetaBadgePath        = "badge path"
 	MetaSummary          = "summary"
 	MetaID               = "id"
 	MetaCategories       = "categories"
@@ -240,7 +239,7 @@ func renderToHTML(b []byte) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-// parseMarkup accepts html nodes to markup created by the Devsite Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
+// parseMarkup accepts html nodes to markup created by the Markdown parser. It returns a pointer to a codelab object, or an error if one occurs.
 func parseMarkup(markup *html.Node, opts parser.Options) (*types.Codelab, error) {
 	body := findAtom(markup, atom.Body)
 	if body == nil {
@@ -416,9 +415,6 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 		case MetaAuthors:
 			// Directly assign the summary to the codelab field.
 			c.Authors = v
-		case MetaBadgePath:
-			// Directly assign the badge Path to the codelab field.
-			c.BadgePath = v
 		case MetaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v
