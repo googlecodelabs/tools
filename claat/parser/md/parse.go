@@ -32,7 +32,7 @@ import (
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
-	"google3/third_party/golang/strcase/strcase"
+	"github.com/stoewer/go-strcase"
 
 	"github.com/googlecodelabs/tools/claat/nodes"
 	"github.com/googlecodelabs/tools/claat/parser"
