@@ -226,7 +226,7 @@ extra_field_two: bbbbb
 
 	opts := *parser.NewOptions()
 	opts.PassMetadata = map[string]bool{
-		"extrafieldtwo": true,
+		"extra_field_two": true,
 	}
 
 	c := mustParseCodelab(content, opts)
