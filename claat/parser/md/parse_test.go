@@ -180,8 +180,8 @@ authors: john smith
 summary: abcdefghij
 categories: not, really
 environments: kiosk, web
-analytics account: 12345
-feedback link: https://www.google.com
+analytics_account: 12345
+feedback_link: https://www.google.com
 
 ---
 `
@@ -215,8 +215,8 @@ authors: john smith
 summary: abcdefghij
 categories: not, really
 environments: kiosk, web
-analytics account: 12345
-feedback link: https://www.google.com
+analytics_account: 12345
+feedback_link: https://www.google.com
 extra_field_one: aaaaa
 extra_field_two: bbbbb
 
@@ -277,8 +277,8 @@ authors: john smith
 summary: abcdefghij
 categories: not, really
 environments: kiosk, web
-analytics account: 12345
-feedback link: https://www.google.com
+analytics_account: 12345
+feedback_link: https://www.google.com
 extrafieldone: aaaaa
 extrafieldtwo: bbbbb
 
