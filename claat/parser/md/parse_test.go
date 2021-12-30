@@ -205,7 +205,7 @@ func TestParseMetadataPassMetadata(t *testing.T) {
 		Feedback:   "https://www.google.com",
 		GA:         "12345",
 		Extra: map[string]string{
-			"extrafieldtwo": "bbbbb",
+			"extra_field_two": "bbbbb",
 		},
 	}
 
@@ -217,8 +217,8 @@ categories: not, really
 environments: kiosk, web
 analytics account: 12345
 feedback link: https://www.google.com
-extrafieldone: aaaaa
-extrafieldtwo: bbbbb
+extra_field_one: aaaaa
+extra_field_two: bbbbb
 
 ---
 `
