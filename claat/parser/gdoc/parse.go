@@ -32,6 +32,7 @@ import (
 	"github.com/googlecodelabs/tools/claat/parser"
 	"github.com/googlecodelabs/tools/claat/types"
 	"github.com/googlecodelabs/tools/claat/util"
+        "github.com/stoewer/go-strcase"
 )
 
 func init() {
@@ -390,7 +391,7 @@ func metaTable(ds *docState) {
 			continue
 		}
 		s := stringifyNode(tr.FirstChild.NextSibling, true, false)
-		fieldName := strings.ToLower(stringifyNode(tr.FirstChild, true, false))
+		fieldName := strcase.SnakeCase(stringifyNode(tr.FirstChild, true, false))
 		switch fieldName {
 		case "id", "url":
 			ds.clab.ID = s
@@ -407,9 +408,9 @@ func metaTable(ds *docState) {
 			v := util.NormalizedSplit(s)
 			sv := types.LegacyStatus(v)
 			ds.clab.Status = &sv
-		case "feedback", "feedback link":
+		case "feedback", "feedback_link":
 			ds.clab.Feedback = s
-		case "analytics", "analytics account", "google analytics":
+		case "analytics", "analytics_account", "google_analytics":
 			ds.clab.GA = s
 		default:
 			// If not explicitly parsed, it might be a pass_metadata value.

@@ -32,6 +32,7 @@ import (
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
+	"github.com/stoewer/go-strcase"
 
 	"github.com/googlecodelabs/tools/claat/nodes"
 	"github.com/googlecodelabs/tools/claat/parser"
@@ -50,8 +51,8 @@ const (
 	MetaCategories       = "categories"
 	MetaEnvironments     = "environments"
 	MetaStatus           = "status"
-	MetaFeedbackLink     = "feedback link"
-	MetaAnalyticsAccount = "analytics account"
+	MetaFeedbackLink     = "feedback_link"
+	MetaAnalyticsAccount = "analytics_account"
 	MetaTags             = "tags"
 	MetaSource           = "source"
 	MetaDuration         = "duration"
@@ -411,7 +412,7 @@ func parseMetadata(ds *docState, opts parser.Options) error {
 // and assigns the values to any keys that match a codelab metadata field as defined by the meta* constants.
 func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Options) error {
 	for k, v := range m {
-		switch k {
+		switch strcase.SnakeCase(k) {
 		case MetaAuthors:
 			// Directly assign the summary to the codelab field.
 			c.Authors = v

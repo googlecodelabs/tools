@@ -214,7 +214,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 				<td>Final</td>
 			</tr>
 			<tr>
-				<td>Feedback</td>
+				<td>Feedback Link</td>
 				<td>https://example.com/issues</td>
 			</tr>
 			<tr>
@@ -237,7 +237,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 	p := &Parser{}
 	opts := *parser.NewOptions()
 	opts.PassMetadata = map[string]bool{
-		"extrafieldone": true,
+		"extra_field_one": true,
 	}
 
 	clab, err := p.Parse(markupReader(markup), opts)
@@ -256,7 +256,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 		// TODO: move sorting to Parse of the parser package
 		Tags: []string{"kiosk", "web"},
 		Extra: map[string]string{
-			"extrafieldone": "11111",
+			"extra_field_one": "11111",
 		},
 	}
 	if !reflect.DeepEqual(clab.Meta, meta) {
