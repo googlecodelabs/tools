@@ -31,8 +31,12 @@ const (
 	scopeDriveReadOnly = "https://www.googleapis.com/auth/drive.readonly"
 
 	// program credentials for installed apps
-	googClient = "183908478743-e8rth9fbo7juk9eeivgp23asnt791g63.apps.googleusercontent.com"
-	googSecret = "ljELuf5jUrzcOxZGL7OQfkIC"
+	// googClient = "183908478743-e8rth9fbo7juk9eeivgp23asnt791g63.apps.googleusercontent.com"
+	// googSecret = "ljELuf5jUrzcOxZGL7OQfkIC"
+
+	// from qwiklabs-services-prod
+	googClient = "1071113493470-li4eb8uit4qvhnp53dqrmla0kv0ihbjv.apps.googleusercontent.com"
+	googSecret = "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"
 
 	// token providers
 	ProviderGoogle = "goog"
@@ -43,7 +47,9 @@ var (
 		ClientID:     googClient,
 		ClientSecret: googSecret,
 		Scopes:       []string{scopeDriveReadOnly},
-		RedirectURL:  "urn:ietf:wg:oauth:2.0:oob",
+		// RedirectURL:  "urn:ietf:wg:oauth:2.0:oob",
+		// RedirectURL:  "https://qwiklab-production.appspot.com/oauth2callback",
+		RedirectURL:  "http://localhost:8080",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://accounts.google.com/o/oauth2/auth",
 			TokenURL: "https://accounts.google.com/o/oauth2/token",
@@ -126,7 +132,7 @@ func (h *Helper) tokenSource() (oauth2.TokenSource, error) {
 		t, err = h.opts.authHandler(&googleAuthConfig)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("unable to obtain access token for %q", h.provider)
+		return nil, fmt.Errorf("unable to obtain access token for %q: %w", h.provider, err)
 	}
 	cache := &cachedTokenSource{
 		src:      googleAuthConfig.TokenSource(context.Background(), t),
