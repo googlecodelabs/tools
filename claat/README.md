@@ -14,7 +14,7 @@ The binaries, as well as their checksums are available at the
 
 Alternatively, if you have [Go installed](https://golang.org/doc/install):
 
-    go get github.com/googlecodelabs/tools/claat
+    go install github.com/googlecodelabs/tools/claat@latest
 
 If none of the above works, compile the tool from source following Dev workflow
 instructions below.
