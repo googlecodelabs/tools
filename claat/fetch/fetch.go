@@ -46,6 +46,9 @@ const (
 
 	// driveAPI is a base URL for Drive API
 	driveAPI = "https://www.googleapis.com/drive/v3"
+
+	// Minimum image size in bytes for extension detection.
+	minImageSize = 11
 )
 
 // TODO: create an enum for use with "nometa" for readability's sake
@@ -270,6 +273,9 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 		}
 		b, err = ioutil.ReadFile(imgURL)
 		ext = filepath.Ext(imgURL)
+	} else if len(b) < minImageSize {
+		em := fmt.Sprintf("Error fetching image - response is too small (< %d bytes).", minImageSize)
+		return "", errors.New(em)
 	} else {
 		b, err = f.slurpRemoteBytes(u.String(), 5)
 		if string(b[6:10]) == "JFIF" {
