@@ -232,7 +232,7 @@ func (ds *docState) appendNodes(nn ...nodes.Node) {
 // It takes a raw markdown bytes and outputs parsed xhtml in bytes.
 func renderToHTML(b []byte) ([]byte, error) {
 	b = convertImports(b)
-	gmParser := goldmark.New(goldmark.WithRendererOptions(gmhtml.WithUnsafe()), goldmark.WithExtensions(extension.Typographer, extension.Table))
+	gmParser := goldmark.New(goldmark.WithRendererOptions(gmhtml.WithUnsafe()), goldmark.WithExtensions(extension.Typographer, extension.Table, extension.DefinitionList, extension.Strikethrough))
 	var out bytes.Buffer
 	if err := gmParser.Convert(b, &out); err != nil {
 		panic(err)
