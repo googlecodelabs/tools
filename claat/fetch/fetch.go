@@ -274,7 +274,7 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 		b, err = ioutil.ReadFile(imgURL)
 		ext = filepath.Ext(imgURL)
 	} else if len(b) < minImageSize {
-		em := fmt.Sprintf("Error fetching image - response is too small (< %d bytes).", minImageSize)
+		em := fmt.Sprintf("Error fetching image - response is too small (< %d bytes): %s", minImageSize, b)
 		return "", errors.New(em)
 	} else {
 		b, err = f.slurpRemoteBytes(u.String(), 5)
