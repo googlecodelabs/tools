@@ -252,6 +252,7 @@ func tokenLocation(provider string) (string, error) {
 	    if err != nil {
 	      log.Fatal(err)
 	    }
+	    log.Printf("tokenLocation: config file copied!")
 	  }
 	}
 
