@@ -271,7 +271,7 @@ class Codelab extends HTMLElement {
           if (this.ready_) {
             this.firePageLoadEvents_();
           } else {
-            this.addEventListener(
+            this.eventHandler_.listen(this,
                 CODELAB_READY_EVENT, () => this.firePageLoadEvents_());
           }
         }
