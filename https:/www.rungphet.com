@@ -30,3 +30,4 @@ jobs:
     - name: Test
       working-directory: claat
       run: go test -v ./...
+
