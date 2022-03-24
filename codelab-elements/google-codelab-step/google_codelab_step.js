@@ -97,6 +97,14 @@ class CodelabStep extends HTMLElement {
   }
 
   /**
+   * @export
+   * @override
+   */
+  disconnectedCallback() {
+    return;
+  }
+
+  /**
    * @return {!Array<string>}
    * @export
    */
