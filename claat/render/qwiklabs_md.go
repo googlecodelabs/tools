@@ -271,20 +271,26 @@ func (mw *qwiklabsMdWriter) infobox(n *nodes.InfoboxNode) {
 	// Writing the ListNode directly results in extra newlines in the md output
 	// which breaks the formatting. So instead, write the ListNode's children
 	// directly and don't write the ListNode itself.
+	//
+	// Qwiklabs case uses <ql-infobox> instead of right chevron notation `>`
 	mw.newBlock()
-	k := "aside positive"
+	mw.writeString("<div>") // for CommonMark compliance
 	if n.Kind == nodes.InfoboxNegative {
-		k = "aside negative"
+	  mw.writeString("<ql-warningbox>")
+	} else {
+	  mw.writeString("<ql-infobox>")
 	}
-	mw.Prefix = []byte("> ")
-	mw.writeString(k)
-	mw.writeString("\n")
 
 	for _, cn := range n.Content.Nodes {
 		mw.write(cn)
 	}
 
-	mw.Prefix = []byte("")
+	if n.Kind == nodes.InfoboxNegative {
+	  mw.writeString("</ql-warningbox>")
+	} else {
+	  mw.writeString("</ql-infobox>")
+	}
+	mw.writeString("</div>")
 }
 
 func (mw *qwiklabsMdWriter) survey(n *nodes.SurveyNode) {
