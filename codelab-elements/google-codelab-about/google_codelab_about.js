@@ -68,9 +68,7 @@ class CodelabAbout extends HTMLElement {
    * @export
    * @override
    */
-  disconnectedCallback() {
-    return;
-  }
+  disconnectedCallback() {}
 
   /**
    * @return {!Array<string>}
