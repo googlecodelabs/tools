@@ -273,17 +273,14 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 		}
 		b, err = ioutil.ReadFile(imgURL)
 		ext = filepath.Ext(imgURL)
-	} else if len(b) < minImageSize {
-		em := fmt.Sprintf("Error fetching image - response is too small (< %d bytes).", minImageSize)
-		return "", errors.New(em)
 	} else {
 		b, err = f.slurpRemoteBytes(u.String(), 5)
-		if string(b[6:10]) == "JFIF" {
-			ext = ".jpeg"
-		} else if string(b[0:3]) == "GIF" {
-			ext = ".gif"
-		} else {
-			ext = ".png"
+		if err != nil {
+			var e error
+			ext, e = imgExtFromBytes(b)
+			if e != nil {
+				return "", fmt.Errorf("Error parsing image at %s: %v", u.String(), e)
+			}
 		}
 	}
 	if err != nil {
@@ -514,4 +511,19 @@ func isStdout(filename string) bool {
 // The base argument is codelab parent directory.
 func codelabDir(base string, m *types.Meta) string {
 	return filepath.Join(base, m.ID)
+}
+
+func imgExtFromBytes(b []byte) (string, error) {
+	if len(b) < minImageSize {
+        	em := fmt.Sprintf("Error parsing image - response \"%s\" is too small (< %d bytes).", b, minImageSize)
+                return "", errors.New(em)
+        }
+	ext := ".png"
+	switch {
+		case string(b[6:10]) == "JFIF":
+			ext = ".jpeg"
+		case string(b[0:3]) == "GIF":
+			ext = ".gif"
+        }
+	return ext, nil
 }
