@@ -49,6 +49,7 @@ google-codelab #codelab-title {
   padding: 0 36px 0 16px;
   -webkit-font-smoothing: antialiased;
   z-index: 1000;
+  max-width: 100vw;
 }
 
 google-codelab #codelab-title h1 {
@@ -120,6 +121,7 @@ google-codelab #controls {
 google-codelab #fabs {
   display: flex;
   justify-content: space-between;
+  margin: 0 auto;
   max-width: 1025px;
 }
 
@@ -195,6 +197,10 @@ google-codelab .metadata a:focus {
       'main'
       'metadata';
     padding-top: 0;
+  }
+
+  google-codelab #codelab-title {
+    padding: 0 16px;
   }
 
   google-codelab #codelab-title .codelab-time-container {
