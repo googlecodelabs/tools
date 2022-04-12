@@ -87,24 +87,6 @@ class CodelabAbout extends HTMLElement {
    * @override
    */
   attributeChangedCallback(attr, oldValue, newValue, namespace) {
-    switch(attr) {
-      case LAST_UPDATED_ATTR:
-        if (this.hasAttribute(LAST_UPDATED_ATTR)) {
-          this.lastUpdated_ = this.getAttribute(LAST_UPDATED_ATTR);
-        }
-        break;
-      case AUTHORS_ATTR:
-        if (this.hasAttribute(AUTHORS_ATTR)) {
-          this.authors_ = this.getAttribute(AUTHORS_ATTR);
-        }
-        break;
-      case CODELAB_TITLE_ATTR:
-        if (this.hasAttribute(CODELAB_TITLE_ATTR)) {
-          this.codelabTitle_ = this.getAttribute(CODELAB_TITLE_ATTR);
-        }
-        break;
-    }
-
     this.setupDom_();
   }
 
@@ -127,6 +109,15 @@ class CodelabAbout extends HTMLElement {
    * @private
    */
   setupDom_() {
+    if (this.hasAttribute(LAST_UPDATED_ATTR)) {
+      this.lastUpdated_ = this.getAttribute(LAST_UPDATED_ATTR);
+    }
+    if (this.hasAttribute(AUTHORS_ATTR)) {
+      this.authors_ = this.getAttribute(AUTHORS_ATTR);
+    }
+    if (this.hasAttribute(CODELAB_TITLE_ATTR)) {
+      this.codelabTitle_ = this.getAttribute(CODELAB_TITLE_ATTR);
+    }
     // Generate the content using a soy template.
     soy.renderElement(this, Templates.about, {
       lastUpdated: CodelabAbout.formatDate_(this.lastUpdated_),
