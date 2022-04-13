@@ -271,20 +271,17 @@ func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
 		if imgURL, err = restrictPathToParent(imgURL, filepath.Dir(codelabSrc)); err != nil {
 			return "", err
 		}
-		b, err = ioutil.ReadFile(imgURL)
+		if b, err = ioutil.ReadFile(imgURL); err != nil {
+			return "", err
+		}
 		ext = filepath.Ext(imgURL)
 	} else {
-		b, err = f.slurpRemoteBytes(u.String(), 5)
-		if err != nil {
-			var e error
-			ext, e = imgExtFromBytes(b)
-			if e != nil {
-				return "", fmt.Errorf("Error parsing image at %s: %v", u.String(), e)
-			}
+		if b, err = f.slurpRemoteBytes(u.String(), 5); err != nil {
+			return "", fmt.Errorf("Error downloading image at %s: %v", u.String(), err)
 		}
-	}
-	if err != nil {
-		return "", err
+		if ext, err = imgExtFromBytes(b); err != nil {
+			return "", fmt.Errorf("Error reading image type at %s: %v", u.String(), err)
+		}
 	}
 
 	crc := crc64.Checksum(b, f.crcTable)
@@ -515,15 +512,14 @@ func codelabDir(base string, m *types.Meta) string {
 
 func imgExtFromBytes(b []byte) (string, error) {
 	if len(b) < minImageSize {
-        	em := fmt.Sprintf("Error parsing image - response \"%s\" is too small (< %d bytes).", b, minImageSize)
-                return "", errors.New(em)
-        }
+		return "", fmt.Errorf("error parsing image - response \"%s\" is too small (< %d bytes)", b, minImageSize)
+	}
 	ext := ".png"
 	switch {
-		case string(b[6:10]) == "JFIF":
-			ext = ".jpeg"
-		case string(b[0:3]) == "GIF":
-			ext = ".gif"
-        }
+	case string(b[6:10]) == "JFIF":
+		ext = ".jpeg"
+	case string(b[0:3]) == "GIF":
+		ext = ".gif"
+	}
 	return ext, nil
 }
