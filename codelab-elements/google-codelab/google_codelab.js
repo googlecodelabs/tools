@@ -343,7 +343,7 @@ class Codelab extends HTMLElement {
    */
   set hash(newHash) {
     if (newHash !== '' && window.location.hash !== newHash) {
-      window.location.hash = newHash;
+      window.history.replaceState({newHash}, document.title, newHash);
     }
   }
 
