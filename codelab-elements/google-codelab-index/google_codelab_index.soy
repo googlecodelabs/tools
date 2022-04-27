@@ -98,7 +98,7 @@
           Category
         {/msg}
       </option>
-      {for $i in range(length($categories))}
+      {for $i in range($categories.length())}
         <option value="{$categories[$i]}">
           {$categories[$i]}
         </option>
