@@ -124,7 +124,7 @@ for disaster.
 
 ## What are the supported input formats?
 
-* Google Docs (following FORMAT-GUIDE.md formatting conventions)
+* Google Docs (following [Codelab Formatting Guide](FORMAT-GUIDE.md) conventions)
 * Markdown
 
 ## What are the supported output formats?
