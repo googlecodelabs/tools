@@ -114,6 +114,7 @@ type Fetcher struct {
 	roundTripper http.RoundTripper
 }
 
+// NewFetcher creates an instance of Fetcher.
 func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper) (*Fetcher, error) {
 	return &Fetcher{
 		authHelper:   nil,
@@ -479,7 +480,10 @@ func gdocID(url string) string {
 }
 
 func gdocExportURL(id string) string {
-	return fmt.Sprintf("%s/files/%s/export?mimeType=text/html", driveAPI, id)
+	q := url.Values{
+		"mimeType": {"text/html"},
+	}
+	return fmt.Sprintf("%s/files/%s/export?%s", driveAPI, id, q.Encode())
 }
 
 // restrictPathToParent will ensure that assetPath is in parent.
