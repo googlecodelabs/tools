@@ -65,7 +65,7 @@ func startWebServer() (code string, err error) {
 		codeCh <- code // send code to OAuth flow
 		listener.Close()
 		w.Header().Set("Content-Type", "text/plain")
-		fmt.Fprintf(w, "Received oauth code\r\nYou can now safely close this browser window.", code)
+		fmt.Fprintf(w, "Received oauth code\r\nYou can now safely close this browser window.")
 	}))
         code = <- codeCh
 	return code, nil
@@ -235,7 +235,7 @@ func (c *cachedTokenSource) Token() (*oauth2.Token, error) {
 // authorize performs user authorization flow, asking for permissions grant.
 func authorize(conf *oauth2.Config) (*oauth2.Token, error) {
 	aurl := conf.AuthCodeURL("unused", oauth2.AccessTypeOffline)
-	fmt.Printf("Authorize me at following URL, please:\n\n%s\n\nCode: ", aurl)
+	fmt.Printf("Authorize me at following URL, please:\n\n%s\n", aurl)
 	code, err := startWebServer()
 	if err != nil {
 		return nil, err
