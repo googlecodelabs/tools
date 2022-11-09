@@ -234,8 +234,8 @@ func (c *cachedTokenSource) Token() (*oauth2.Token, error) {
 
 // authorize performs user authorization flow, asking for permissions grant.
 func authorize(conf *oauth2.Config) (*oauth2.Token, error) {
-	aurl := conf.AuthCodeURL("unused", oauth2.AccessTypeOffline)
-	fmt.Printf("Authorize me at following URL, please:\n\n%s\n", aurl)
+	aURL := conf.AuthCodeURL("unused", oauth2.AccessTypeOffline)
+	fmt.Printf("Authorize me at following URL, please:\n\n%s\n", aURL)
 	code, err := startWebServer()
 	if err != nil {
 		return nil, err
