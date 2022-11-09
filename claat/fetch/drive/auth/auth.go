@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"path"
@@ -43,13 +44,32 @@ var (
 		ClientID:     googClient,
 		ClientSecret: googSecret,
 		Scopes:       []string{scopeDriveReadOnly},
-		RedirectURL:  "urn:ietf:wg:oauth:2.0:oob",
+		RedirectURL:  "http://localhost:8091",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://accounts.google.com/o/oauth2/auth",
 			TokenURL: "https://accounts.google.com/o/oauth2/token",
 		},
 	}
 )
+
+// The webserver waits for an oauth code in the three-legged auth flow.
+func startWebServer() (code string, err error) {
+	listener, err := net.Listen("tcp", "localhost:8091")
+	if err != nil {
+		return "", err
+	}
+	codeCh := make(chan string)
+
+	go http.Serve(listener, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		code := r.FormValue("code")
+		codeCh <- code // send code to OAuth flow
+		listener.Close()
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprintf(w, "Received oauth code\r\nYou can now safely close this browser window.")
+	}))
+        code = <- codeCh
+	return code, nil
+}
 
 type authorizationHandler func(conf *oauth2.Config) (*oauth2.Token, error)
 
@@ -214,10 +234,10 @@ func (c *cachedTokenSource) Token() (*oauth2.Token, error) {
 
 // authorize performs user authorization flow, asking for permissions grant.
 func authorize(conf *oauth2.Config) (*oauth2.Token, error) {
-	aurl := conf.AuthCodeURL("unused", oauth2.AccessTypeOffline)
-	fmt.Printf("Authorize me at following URL, please:\n\n%s\n\nCode: ", aurl)
-	var code string
-	if _, err := fmt.Scan(&code); err != nil {
+	aURL := conf.AuthCodeURL("unused", oauth2.AccessTypeOffline)
+	fmt.Printf("Authorize me at following URL, please:\n\n%s\n", aURL)
+	code, err := startWebServer()
+	if err != nil {
 		return nil, err
 	}
 	return conf.Exchange(context.Background(), code)
