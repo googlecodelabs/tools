@@ -45,7 +45,7 @@ $card-col-height: 200px; // column mode
   }
 
   img {
-    margin-right: $keyline / 2;
+    margin-right: calc($keyline / 2);
   }
 
   .card-header {
