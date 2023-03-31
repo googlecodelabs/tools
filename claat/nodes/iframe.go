@@ -13,6 +13,7 @@ var IframeAllowlist = []string{
 	"google.dev",
 	"observablehq.com",
 	"repl.it",
+	"vimeo.com",
 	"web.dev",
 }
 
