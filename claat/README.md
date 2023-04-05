@@ -14,14 +14,18 @@ The binaries, as well as their checksums are available at the
 
 Alternatively, if you have [Go installed](https://golang.org/doc/install) complete the following two steps:
 
-1. Ensure that `go` is included in your PATH env variable by adding the following line either to your .bashrc, .profile, or .zshrc file depending on what your shell is:
+1. Ensure that go is included in your PATH env variable by adding the following line either to your .bashrc, .profile, or .zshrc file depending on what your shell is:
+
 
     export PATH=$PATH:$HOME/go/bin/
 
+
 2. Run the following command
 
+
     go install github.com/googlecodelabs/tools/claat@latest
-    
+  
+  
 If none of the above works, compile the tool from source following Dev workflow
 instructions below.
 
