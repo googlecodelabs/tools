@@ -7,6 +7,7 @@ var IframeAllowlist = []string{
 	"codepen.io",
 	"dartlang.org",
 	"dartpad.dev",
+	"demo.arcade.software",
 	"github.com",
 	"glitch.com",
 	"google.com",
