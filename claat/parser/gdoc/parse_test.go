@@ -16,6 +16,7 @@ package gdoc
 
 import (
 	"bytes"
+	"encoding/base64"
 	"io"
 	"reflect"
 	"strings"
@@ -295,6 +296,9 @@ func TestParseDoc(t *testing.T) {
 		<p><span>[[</span><span class="bold">import</span><span>&nbsp;</span><span><a href="https://example.com/import">shared</a></span><span>]]</span></p>
 
 		<img src="https://host/image.png" alt="alt text" title="title text">
+		<p><img alt="JPEG" src="data:image/jpeg;base64,/9j/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAAA//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AN//Z"></p>
+		<p><img alt="GIF" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+		<p><img alt="PNG" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII="></p>
 		<p><img src="https://host/small.png" style="height: 10px; width: 25.5px"> icon.</p>
 
 		<p><img alt="https://www.youtube.com/watch?v=vid" src="https://yt.com/vid.jpg"></p>
@@ -402,6 +406,33 @@ func TestParseDoc(t *testing.T) {
 		Title: "title text",
 	})
 	para := nodes.NewListNode(img)
+	para.MutateBlock(true)
+	content.Append(para)
+
+	bytes, _ := base64.StdEncoding.DecodeString("/9j/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAAA//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AN//Z")
+	img = nodes.NewImageNode(nodes.NewImageNodeOptions{
+		Bytes: bytes,
+		Alt:   "JPEG",
+	})
+	para = nodes.NewListNode(img)
+	para.MutateBlock(true)
+	content.Append(para)
+
+	bytes, _ = base64.StdEncoding.DecodeString("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
+	img = nodes.NewImageNode(nodes.NewImageNodeOptions{
+		Bytes: bytes,
+		Alt:   "GIF",
+	})
+	para = nodes.NewListNode(img)
+	para.MutateBlock(true)
+	content.Append(para)
+
+	bytes, _ = base64.StdEncoding.DecodeString("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=")
+	img = nodes.NewImageNode(nodes.NewImageNodeOptions{
+		Bytes: bytes,
+		Alt:   "PNG",
+	})
+	para = nodes.NewListNode(img)
 	para.MutateBlock(true)
 	content.Append(para)
 
