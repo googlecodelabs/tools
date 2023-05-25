@@ -1,10 +1,13 @@
 package nodes
 
 import (
+	"encoding/base64"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
+
+var testBytes, _ = base64.StdEncoding.DecodeString("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
 
 func TestNewImageNode(t *testing.T) {
 	tests := []struct {
@@ -19,7 +22,7 @@ func TestNewImageNode(t *testing.T) {
 			},
 		},
 		{
-			name: "NonEmpty",
+			name: "StandardURL",
 			inOpts: NewImageNodeOptions{
 				Src:   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
 				Width: 1.0,
@@ -32,6 +35,22 @@ func TestNewImageNode(t *testing.T) {
 				Width: 1.0,
 				Title: "foo",
 				Alt:   "bar",
+			},
+		},
+		{
+			name: "DataURL",
+			inOpts: NewImageNodeOptions{
+				Width: 1.0,
+				Title: "foo",
+				Alt:   "bar",
+				Bytes: testBytes,
+			},
+			out: &ImageNode{
+				node:  node{typ: NodeImage},
+				Width: 1.0,
+				Title: "foo",
+				Alt:   "bar",
+				Bytes: testBytes,
 			},
 		},
 	}
