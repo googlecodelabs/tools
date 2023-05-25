@@ -16,6 +16,7 @@ package gdoc
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/url"
