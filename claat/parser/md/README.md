@@ -92,11 +92,13 @@ and API usage restriction. To create an infobox, put the type of infobox on a
 line by itself, then begin the next line with a colon.
 
 ```
-Positive
-: This will appear in a positive info box.
+> aside positive
+>
+> This will appear in a positive info box.
 
-Negative
-: This will appear in a negative info box.
+> aside negative
+>
+> This will appear in a negative info box.
 ```
 
 `<aside>` elements work as well:
