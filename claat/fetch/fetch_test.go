@@ -104,6 +104,34 @@ func TestFuzzRestrictPathToParent(t *testing.T) {
 	}
 }
 
+func TestImgExtFromBytes(t *testing.T) {
+	tests := []struct {
+		bytes []byte
+
+		wantExt string
+		wantErr bool
+	}{
+		{[]byte("012345JFIF0"), ".jpeg", false},
+		{[]byte("GIF34567890"), ".gif", false},
+		{[]byte("SOMETHINGELSE"), ".png", false},
+		{[]byte("GIF345JFIF0"), ".jpeg", false},
+		{[]byte("toosmall"), "", true},
+	}
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("bytes: %s", tc.bytes), func(t *testing.T) {
+			ext, err := imgExtFromBytes(tc.bytes)
+
+			if err != nil != tc.wantErr {
+				t.Errorf("imgExtFromBytes() error = %v, wantErr %v", err, tc.wantErr)
+				return
+			}
+			if ext != tc.wantExt {
+				t.Errorf("imgExtFromBytes() return: got %s, wanted %s", ext, tc.wantExt)
+			}
+		})
+	}
+}
+
 // safeAbs compute Abs of p and fail the test if not valid.
 // Empty string return empty path.
 func safeAbs(t *testing.T, p string) string {

@@ -47,6 +47,9 @@ const CATEGORY_ATTR = 'category';
 const GAID_ATTR = 'codelab-gaid';
 
 /** @const {string} */
+const GA4ID_ATTR = 'codelab-ga4id';
+
+/** @const {string} */
 const CODELAB_ID_ATTR = 'codelab-id';
 
 /** @const {string} */
@@ -271,8 +274,8 @@ class Codelab extends HTMLElement {
           if (this.ready_) {
             this.firePageLoadEvents_();
           } else {
-            this.addEventListener(
-                CODELAB_READY_EVENT, () => this.firePageLoadEvents_());
+            this.eventHandler_.listen(
+                this, CODELAB_READY_EVENT, () => this.firePageLoadEvents_());
           }
         }
         break;
@@ -296,6 +299,10 @@ class Codelab extends HTMLElement {
       const gaid = this.getAttribute(GAID_ATTR);
       if (gaid) {
         analytics.setAttribute(GAID_ATTR, gaid);
+      }
+      const ga4id = this.getAttribute(GA4ID_ATTR);
+      if (ga4id) {
+        analytics.setAttribute(GA4ID_ATTR, ga4id);
       }
       if (this.id_) {
         analytics.setAttribute(CODELAB_ID_ATTR, this.id_);
@@ -327,6 +334,24 @@ class Codelab extends HTMLElement {
    */
   select(index) {
     this.setAttribute(SELECTED_ATTR, index);
+  }
+
+  /**
+   * @export
+   * @return{string}
+   */
+  get hash() {
+    return window.location.hash;
+  }
+
+  /**
+   * @export
+   * @param {string} newHash
+   */
+  set hash(newHash) {
+    if (newHash !== '' && window.location.hash !== newHash) {
+      window.history.replaceState({newHash}, document.title, newHash);
+    }
   }
 
   /**
@@ -481,32 +506,6 @@ class Codelab extends HTMLElement {
         document.activeElement.blur();
       }
       this.selectNext();
-    }
-  }
-
-  /**
-   * History popState callback
-   * @param {!Event} e
-   * @private
-   */
-  handlePopStateChanged_(e) {
-    const step = this.getStepFromHash_(document.location.hash);
-    this.setAttribute(DONT_SET_HISTORY_ATTR, '');
-    this.setAttribute(SELECTED_ATTR, `${step}`);
-    this.removeAttribute(DONT_SET_HISTORY_ATTR);
-  }
-
-  /**
-   * Updates the browser history state
-   * @param {string} path The new browser state
-   * @param {boolean=} replaceState optionally replace state instead of pushing
-   * @export
-   */
-  updateHistoryState(path, replaceState = false) {
-    if (replaceState) {
-      window.history.replaceState({path}, document.title, path);
-    } else {
-      window.history.pushState({path}, document.title, path);
     }
   }
 
@@ -694,7 +693,7 @@ class Codelab extends HTMLElement {
     this.currentSelectedStep = selected;
     this.firePageViewEvent();
 
-    // Set the focus on the new step after the animation is finished becasue it
+    // Set the focus on the new step after the animation is finished because it
     // messes up the animation.
     clearTimeout(this.setFocusTimeoutId_);
     this.setFocusTimeoutId_ = setTimeout(() => {
@@ -864,22 +863,15 @@ class Codelab extends HTMLElement {
    */
   init_() {
     this.id_ = this.getAttribute(ID_ATTR);
-    let step = this.getStepFromHash_(document.location.hash) ||
-        this.getStepFromStorage_();
+    let step = this.getStepFromHash_(this.hash) || this.getStepFromStorage_();
     this.setAttribute(SELECTED_ATTR, `${step}`);
-    this.eventHandler_.listen(
-        dom.getWindow(), events.EventType.POPSTATE, (e) => {
-          this.handlePopStateChanged_(e);
-        });
   }
 
   /**
    * @protected
    */
   saveStep() {
-    if (!this.hasAttribute(DONT_SET_HISTORY_ATTR)) {
-      this.updateHistoryState(`#${this.currentSelectedStep}`, true);
-    }
+    this.hash = `#${this.currentSelectedStep}`;
     if (this.id_) {
       this.storage_.set(
           `progress_${this.id_}`, String(this.currentSelectedStep));

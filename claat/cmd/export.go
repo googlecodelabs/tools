@@ -111,20 +111,19 @@ func ExportCodelab(src string, rt http.RoundTripper, opts CmdExportOptions) (*ty
 	lastmod := types.ContextTime(clab.Mod)
 	clab.Meta.Source = src
 	meta := &clab.Meta
-	ctx := &types.Context{
-		Env:     opts.Expenv,
-		Format:  opts.Tmplout,
-		Prefix:  opts.Prefix,
-		MainGA:  opts.GlobalGA,
-		Updated: &lastmod,
-	}
 
 	dir := opts.Output // output dir or stdout
 	if !isStdout(dir) {
 		dir = codelabDir(dir, meta)
 	}
 	// write codelab and its metadata to disk
-	return meta, writeCodelab(dir, clab.Codelab, opts.ExtraVars, ctx)
+	return meta, writeCodelab(dir, clab.Codelab, opts.ExtraVars, &types.Context{
+		Env:     opts.Expenv,
+		Format:  opts.Tmplout,
+		Prefix:  opts.Prefix,
+		MainGA:  opts.GlobalGA,
+		Updated: &lastmod,
+	})
 }
 
 func ExportCodelabMemory(src io.ReadCloser, w io.Writer, opts CmdExportOptions) (*types.Meta, error) {

@@ -776,7 +776,7 @@ func image(ds *docState) nodes.Node {
 		// For iframe, make sure URL ends in allowlisted domain.
 		ok := false
 		for _, domain := range nodes.IframeAllowlist {
-			if strings.HasSuffix(u.Hostname(), domain) {
+			if u.Hostname() == domain {
 				ok = true
 				break
 			}

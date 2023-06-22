@@ -46,6 +46,9 @@ const (
 
 	// driveAPI is a base URL for Drive API
 	driveAPI = "https://www.googleapis.com/drive/v3"
+
+	// Minimum image size in bytes for extension detection.
+	minImageSize = 11
 )
 
 // TODO: create an enum for use with "nometa" for readability's sake
@@ -111,6 +114,7 @@ type Fetcher struct {
 	roundTripper http.RoundTripper
 }
 
+// NewFetcher creates an instance of Fetcher.
 func NewFetcher(at string, pm map[string]bool, rt http.RoundTripper) (*Fetcher, error) {
 	return &Fetcher{
 		authHelper:   nil,
@@ -225,7 +229,7 @@ func (f *Fetcher) SlurpImages(src, dir string, n []nodes.Node, images map[string
 	for _, imageNode := range imageNodes {
 		go func(imageNode *nodes.ImageNode) {
 			url := imageNode.Src
-			file, err := f.slurpBytes(src, dir, url)
+			file, err := f.slurpBytes(src, dir, url, imageNode.Bytes)
 			if err == nil {
 				imageNode.Src = filepath.Join(util.ImgDirname, file)
 			}
@@ -247,43 +251,52 @@ func (f *Fetcher) SlurpImages(src, dir string, n []nodes.Node, images map[string
 	return nil
 }
 
-func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
-	// images can be local in Markdown cases or remote.
+func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string, imgBytes []byte) (string, error) {
+	// images can be data URLs, local in Markdown cases or remote.
 	// Only proceed a simple copy on local reference.
 	var b []byte
 	var ext string
-	u, err := url.Parse(imgURL)
-	if err != nil {
-		return "", err
-	}
+	var err error
 
-	// If the codelab source is being downloaded from the network, then we should interpret
-	// the image URL in the same way.
-	srcUrl, err := url.Parse(codelabSrc)
-	if err == nil && srcUrl.Host != "" {
-		u = srcUrl.ResolveReference(u)
-	}
-
-	if u.Host == "" {
-		if imgURL, err = restrictPathToParent(imgURL, filepath.Dir(codelabSrc)); err != nil {
+	if len(imgBytes) > 0 {
+		// Slurp bytes from image URL data.
+		b = imgBytes
+		if ext, err = imgExtFromBytes(b); err != nil {
+			return "", fmt.Errorf("Error reading image type: %v", err)
+		}
+	} else {
+		// Slurp bytes from local or remote URL.
+		u, err := url.Parse(imgURL)
+		if err != nil {
 			return "", err
 		}
-		b, err = ioutil.ReadFile(imgURL)
-		ext = filepath.Ext(imgURL)
-	} else {
-		b, err = f.slurpRemoteBytes(u.String(), 5)
-		if string(b[6:10]) == "JFIF" {
-			ext = ".jpeg"
-		} else if string(b[0:3]) == "GIF" {
-			ext = ".gif"
+
+		// If the codelab source is being downloaded from the network, then we should interpret
+		// the image URL in the same way.
+		srcURL, err := url.Parse(codelabSrc)
+		if err == nil && srcURL.Host != "" {
+			u = srcURL.ResolveReference(u)
+		}
+
+		if u.Host == "" {
+			if imgURL, err = restrictPathToParent(imgURL, filepath.Dir(codelabSrc)); err != nil {
+				return "", err
+			}
+			if b, err = ioutil.ReadFile(imgURL); err != nil {
+				return "", err
+			}
+			ext = filepath.Ext(imgURL)
 		} else {
-			ext = ".png"
+			if b, err = f.slurpRemoteBytes(u.String(), 5); err != nil {
+				return "", fmt.Errorf("Error downloading image at %s: %v", u.String(), err)
+			}
+			if ext, err = imgExtFromBytes(b); err != nil {
+				return "", fmt.Errorf("Error reading image type at %s: %v", u.String(), err)
+			}
 		}
 	}
-	if err != nil {
-		return "", err
-	}
 
+	// Generate image file from slurped bytes.
 	crc := crc64.Checksum(b, f.crcTable)
 	file := fmt.Sprintf("%x%s", crc, ext)
 	dst := filepath.Join(dir, file)
@@ -479,7 +492,10 @@ func gdocID(url string) string {
 }
 
 func gdocExportURL(id string) string {
-	return fmt.Sprintf("%s/files/%s/export?mimeType=text/html", driveAPI, id)
+	q := url.Values{
+		"mimeType": {"text/html"},
+	}
+	return fmt.Sprintf("%s/files/%s/export?%s", driveAPI, id, q.Encode())
 }
 
 // restrictPathToParent will ensure that assetPath is in parent.
@@ -508,4 +524,18 @@ func isStdout(filename string) bool {
 // The base argument is codelab parent directory.
 func codelabDir(base string, m *types.Meta) string {
 	return filepath.Join(base, m.ID)
+}
+
+func imgExtFromBytes(b []byte) (string, error) {
+	if len(b) < minImageSize {
+		return "", fmt.Errorf("error parsing image - response \"%s\" is too small (< %d bytes)", b, minImageSize)
+	}
+	ext := ".png"
+	switch {
+	case string(b[6:10]) == "JFIF":
+		ext = ".jpeg"
+	case string(b[0:3]) == "GIF":
+		ext = ".gif"
+	}
+	return ext, nil
 }

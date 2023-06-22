@@ -7,6 +7,7 @@ type NewImageNodeOptions struct {
 	Width float32
 	Alt   string
 	Title string
+	Bytes []byte
 }
 
 // NewImageNode creates a new ImageNode with the given options.
@@ -18,6 +19,7 @@ func NewImageNode(opts NewImageNodeOptions) *ImageNode {
 		Width: opts.Width,
 		Alt:   opts.Alt,
 		Title: opts.Title,
+		Bytes: opts.Bytes,
 	}
 }
 
@@ -28,11 +30,12 @@ type ImageNode struct {
 	Width float32
 	Alt   string
 	Title string
+	Bytes []byte
 }
 
 // Empty returns true if its Src is zero, excluding space runes.
 func (in *ImageNode) Empty() bool {
-	return strings.TrimSpace(in.Src) == ""
+	return strings.TrimSpace(in.Src) == "" && len(in.Bytes) == 0
 }
 
 // ImageNodes extracts everything except NodeImage nodes, recursively.
