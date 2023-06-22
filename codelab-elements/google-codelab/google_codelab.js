@@ -47,6 +47,9 @@ const CATEGORY_ATTR = 'category';
 const GAID_ATTR = 'codelab-gaid';
 
 /** @const {string} */
+const GA4ID_ATTR = 'codelab-ga4id';
+
+/** @const {string} */
 const CODELAB_ID_ATTR = 'codelab-id';
 
 /** @const {string} */
@@ -296,6 +299,10 @@ class Codelab extends HTMLElement {
       const gaid = this.getAttribute(GAID_ATTR);
       if (gaid) {
         analytics.setAttribute(GAID_ATTR, gaid);
+      }
+      const ga4id = this.getAttribute(GA4ID_ATTR);
+      if (ga4id) {
+        analytics.setAttribute(GA4ID_ATTR, ga4id);
       }
       if (this.id_) {
         analytics.setAttribute(CODELAB_ID_ATTR, this.id_);
@@ -686,7 +693,7 @@ class Codelab extends HTMLElement {
     this.currentSelectedStep = selected;
     this.firePageViewEvent();
 
-    // Set the focus on the new step after the animation is finished becasue it
+    // Set the focus on the new step after the animation is finished because it
     // messes up the animation.
     clearTimeout(this.setFocusTimeoutId_);
     this.setFocusTimeoutId_ = setTimeout(() => {
