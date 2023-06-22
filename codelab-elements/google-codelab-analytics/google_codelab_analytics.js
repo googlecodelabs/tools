@@ -17,10 +17,7 @@
 
 goog.module('googlecodelabs.CodelabAnalytics');
 
-const Const = goog.require('goog.string.Const');
 const EventHandler = goog.require('goog.events.EventHandler');
-const TrustedResourceUrl = goog.require('goog.html.TrustedResourceUrl');
-const {safeScriptEl} = goog.require('safevalues.dom');
 
 /**
  * The general codelab action event fired for trackable interactions.
@@ -41,24 +38,6 @@ const PAGEVIEW_EVENT = 'google-codelab-pageview';
  */
 const GAID_ATTR = 'gaid';
 
-/**
- * The Google Analytics GA4 ID.
- * @const {string}
- */
-const GA4ID_ATTR = 'ga4id';
-
-/** @const {string} */
-const GTAG = 'gtag';
-
-/**
- * Namespaced data layer for use with GA4 properties. Allows for independent
- * data layers so that other data layers, like that for GTM, don't receive data
- * they don't need.
- *
- * @const {string}
- */
-const CODELAB_DATA_LAYER = 'codelabDataLayer';
-
 /** @const {string} */
 const CODELAB_ID_ATTR = 'codelab-id';
 
@@ -67,12 +46,6 @@ const CODELAB_ID_ATTR = 'codelab-id';
  * @const {string}
  */
 const CODELAB_GAID_ATTR = 'codelab-gaid';
-
-/**
- * The GA4ID defined by the current codelab.
- * @const {string}
- */
-const CODELAB_GA4ID_ATTR = 'codelab-ga4id';
 
 /** @const {string} */
 const CODELAB_ENV_ATTR = 'environment';
@@ -131,9 +104,6 @@ class CodelabAnalytics extends HTMLElement {
     this.gaid_;
 
     /** @private {?string} */
-    this.ga4Id_;
-
-    /** @private {?string} */
     this.codelabId_;
 
     /**
@@ -155,9 +125,8 @@ class CodelabAnalytics extends HTMLElement {
    */
   connectedCallback() {
     this.gaid_ = this.getAttribute(GAID_ATTR) || '';
-    this.ga4Id_ = this.getAttribute(GA4ID_ATTR) || '';
 
-    if (this.hasSetup_ || (!this.gaid_ && !this.ga4Id_)) {
+    if (this.hasSetup_ || !this.gaid_) {
       return;
     }
 
@@ -169,14 +138,6 @@ class CodelabAnalytics extends HTMLElement {
       });
     } else {
       this.init_();
-    }
-
-    if (this.ga4Id_) {
-      this.initializeGa4_();
-    }
-
-    if (this.ga4Id_ && !this.gaid_) {
-      this.addEventListeners_();
     }
   }
 
@@ -192,7 +153,7 @@ class CodelabAnalytics extends HTMLElement {
   addEventListeners_() {
     this.eventHandler_.listen(document.body, ACTION_EVENT,
       (e) => {
-        const detail = /** @type {!AnalyticsTrackingEvent} */ (
+        const detail = /** @type {AnalyticsTrackingEvent} */ (
           e.getBrowserEvent().detail);
         // Add tracking...
         this.trackEvent_(
@@ -201,7 +162,7 @@ class CodelabAnalytics extends HTMLElement {
 
     this.eventHandler_.listen(document.body, PAGEVIEW_EVENT,
       (e) => {
-        const detail = /** @type {!AnalyticsPageview} */ (
+        const detail = /** @type {AnalyticsPageview} */ (
           e.getBrowserEvent().detail);
         this.trackPageview_(detail['page'], detail['title']);
       });
@@ -255,7 +216,6 @@ class CodelabAnalytics extends HTMLElement {
    * @private
    */
   trackEvent_(category, opt_action, opt_label) {
-    // UA related section.
     const params = {
       // Always event for trackEvent_ method
       'hitType': 'event',
@@ -267,30 +227,6 @@ class CodelabAnalytics extends HTMLElement {
       'eventLabel': opt_label || '',
     };
     this.gaSend_(params);
-
-    // GA4 related section.
-    if (!this.getGa4Ids_().length) {
-      return;
-    }
-
-    window[CODELAB_DATA_LAYER] = window[CODELAB_DATA_LAYER] || [];
-    window[GTAG] = window[GTAG] || function() {
-      window[CODELAB_DATA_LAYER].push(arguments);
-    };
-
-    for (const ga4Id of this.getGa4Ids_()) {
-      window[GTAG]('event', category, {
-        // Snakecase naming convention is followed for all built-in GA4 event
-        // properties.
-        'send_to': ga4Id,
-        // Camelcase naming convention is followed for all custom dimensions
-        // constructed in the custom element.
-        'eventAction': opt_action || '',
-        'eventLabel': opt_label || '',
-        'codelabEnv': this.codelabEnv_ || '',
-        'codelabId': this.codelabId_ || '',
-      });
-    }
   }
 
   /**
@@ -299,7 +235,6 @@ class CodelabAnalytics extends HTMLElement {
    * @private
    */
   trackPageview_(opt_page, opt_title) {
-    // UA related section.
     const params = {
       'hitType': 'pageview',
       'dimension1': this.codelabEnv_,
@@ -309,33 +244,6 @@ class CodelabAnalytics extends HTMLElement {
       'title': opt_title || ''
     };
     this.gaSend_(params);
-
-    // GA4 related section.
-    if (!this.getGa4Ids_().length) {
-      return;
-    }
-
-    window[CODELAB_DATA_LAYER] = window[CODELAB_DATA_LAYER] || [];
-    window[GTAG] = window[GTAG] || function() {
-      window[CODELAB_DATA_LAYER].push(arguments);
-    };
-
-    for (const ga4Id of this.getGa4Ids_()) {
-      window[GTAG]('event', 'page_view', {
-        // Snakecase naming convention is followed for all built-in GA4 event
-        // properties.
-        'send_to': ga4Id,
-        'page_location':
-            `${document.location.origin}${document.location.pathname}`,
-        'page_path': opt_page || '',
-        'page_title': opt_title || '',
-        // Camelcase naming convention is followed for all custom dimensions
-        // constructed in the custom element.
-        'codelabCategory': this.codelabCategory_ || '',
-        'codelabEnv': this.codelabEnv_ || '',
-        'codelabId': this.codelabId_ || '',
-      });
-    }
   }
 
   /**
@@ -476,68 +384,6 @@ class CodelabAnalytics extends HTMLElement {
       });
     }
     return isCreated;
-  }
-
-  /**
-   * Gets all GA4 IDs for the current page.
-   * @return {!Array<string>}
-   * @private
-   */
-  getGa4Ids_() {
-    if (!this.ga4Id_) {
-      return [];
-    }
-    const ga4Ids = [];
-    ga4Ids.push(this.ga4Id_);
-    const codelabGa4Id = this.getAttribute(CODELAB_GA4ID_ATTR);
-    if (codelabGa4Id) {
-      ga4Ids.push(codelabGa4Id);
-    }
-    if (ga4Ids.length) {
-      return ga4Ids;
-    }
-    return [];
-  }
-
-  /**
-   * Initialize the gtag script element and namespaced data layer based on the
-   * codelabs primary GA4 ID.
-   * @private
-   */
-  initializeGa4_() {
-    if (!this.ga4Id_) {
-      return;
-    }
-
-    // First, set the GTAG data layer before pushing anything to it.
-    window[CODELAB_DATA_LAYER] = window[CODELAB_DATA_LAYER] || [];
-
-    const firstScriptElement = document.getElementsByTagName('script')[0];
-    const gtagScriptElement = /** @type {!HTMLScriptElement} */ (
-        document.createElement('script'));
-        gtagScriptElement.async = true;
-    // Key for the formatted params below:
-    //   'id': the stream id for the GA4 analytics property. The gtag script
-    //       element must only be created once, and only the ID of the primary
-    //       stream is appended when creating the src for that element.
-    //       Additional streams are initialized via the function call
-    //       `window[GTAG]('config', ga4Id...`
-    //   'l': the namespaced dataLayer used to separate codelabs related GA4
-    //       data from other data layers that may exist on a site or page.
-    safeScriptEl.setSrc(
-      gtagScriptElement, TrustedResourceUrl.formatWithParams(
-            Const.from('//www.googletagmanager.com/gtag/js'),
-            {}, {'id': this.ga4Id_, 'l': CODELAB_DATA_LAYER}));
-    firstScriptElement.parentNode.insertBefore(
-      gtagScriptElement, firstScriptElement);
-
-    window[GTAG] = function() {
-      window[CODELAB_DATA_LAYER].push(arguments);
-    };
-    window[GTAG]('js', new Date(Date.now()));
-
-    // Set send_page_view to false. We send pageviews manually.
-    window[GTAG]('config', this.ga4Id_, {send_page_view: false});
   }
 }
 
