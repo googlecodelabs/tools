@@ -512,7 +512,7 @@ class CodelabAnalytics extends HTMLElement {
     // First, set the GTAG data layer before pushing anything to it.
     window[CODELAB_DATA_LAYER] = window[CODELAB_DATA_LAYER] || [];
 
-    const firstScriptElement = document.getElementsByTagName('script')[0];
+    const firstScriptElement = document.querySelector('script');
     const gtagScriptElement = /** @type {!HTMLScriptElement} */ (
         document.createElement('script'));
         gtagScriptElement.async = true;
