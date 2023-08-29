@@ -14,6 +14,7 @@ var IframeAllowlist = []string{
 	"google.dev",
 	"observablehq.com",
 	"repl.it",
+	"stackblitz.com",
 	"web.dev",
 }
 
