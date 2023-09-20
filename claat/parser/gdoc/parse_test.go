@@ -154,6 +154,10 @@ func TestMetaTable(t *testing.T) {
 				<td>Analytics</td>
 				<td>GA-12345</td>
 			</tr>
+			<tr>
+				<td>Analytic GA4 Account</td>
+				<td>54321</td>
+			</tr>
 		</table>
 	</body>
 	</html>
@@ -172,6 +176,7 @@ func TestMetaTable(t *testing.T) {
 		Status:     clab.Meta.Status, // verified separately
 		Feedback:   "https://example.com/issues",
 		GA:         "GA-12345",
+		GA4:         "54321",
 		// Tags are always sorted.
 		// TODO: move sorting to Parse of the parser package
 		Tags:  []string{"kiosk", "web"},
@@ -223,6 +228,10 @@ func TestMetaTablePassMetadata(t *testing.T) {
 				<td>GA-12345</td>
 			</tr>
 			<tr>
+				<td>Analytic GA4 Account</td>
+				<td>54321</td>
+			</tr>
+			<tr>
 				<td>ExtraFieldOne</td>
 				<td>11111</td>
 			</tr>
@@ -253,6 +262,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 		Status:     clab.Meta.Status, // verified separately
 		Feedback:   "https://example.com/issues",
 		GA:         "GA-12345",
+		GA4:         "54321",
 		// Tags are always sorted.
 		// TODO: move sorting to Parse of the parser package
 		Tags: []string{"kiosk", "web"},
