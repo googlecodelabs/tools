@@ -155,7 +155,7 @@ func TestMetaTable(t *testing.T) {
 				<td>GA-12345</td>
 			</tr>
 			<tr>
-				<td>Analytic GA4 Account</td>
+				<td>Analytics GA4 Account</td>
 				<td>54321</td>
 			</tr>
 		</table>
@@ -228,7 +228,7 @@ func TestMetaTablePassMetadata(t *testing.T) {
 				<td>GA-12345</td>
 			</tr>
 			<tr>
-				<td>Analytic GA4 Account</td>
+				<td>Analytics GA4 Account</td>
 				<td>54321</td>
 			</tr>
 			<tr>
