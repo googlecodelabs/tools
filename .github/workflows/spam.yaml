@@ -1,0 +1,12 @@
+name: Spam
+
+on: issue_comment
+jobs:
+  mark-as-spam:
+    name: Check for Spam
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close & Lock any issues with a /spam comment
+        uses: balevine/mark-as-spam@production
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
