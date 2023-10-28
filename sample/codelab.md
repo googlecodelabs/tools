@@ -24,7 +24,7 @@ Here is an example image of another CodeLab that I created:
 
 **Resources:** 
 * This codelab's original home is located here: [Link to Codelab](https://www.marcd.dev/codelab-4-codelab)
-* The markdown for the original codelab is located here: [codelab.md](https://github.com/Mrc0113/codelab-4-codelab/blob/master/codelab.md)
+* The markdown for the original codelab is located here: [codelab.md](https://github.com/Mrc0113/codelab-4-codelab/blob/main/codelab.md)
 * [Google CodeLabs Tools Github](https://github.com/googlecodelabs/tools) - The repo that contains the claat tool we'll be using today
 * [Google Group for CodeLab Authors](https://groups.google.com/forum/#!forum/codelab-authors) - great forum for asking questions about codelabs and discussing future functionality
 * [A blog that I used when getting started with Google Codelabs](https://medium.com/@mariopce/tutorial-how-to-make-tutorials-using-google-code-labs-gangdam-style-d62b35476816)
@@ -34,7 +34,7 @@ Duration: 0:04:00
 
 In order to create a CodeLab you need *Go* and *claat* (the codelabs command line tool) installed.
 
-The instructions below are what worked for me on Mac, but you can also find instructions [here](https://github.com/googlecodelabs/tools/tree/master/claat) 
+The instructions below are what worked for me on Mac, but you can also find instructions [here](https://github.com/googlecodelabs/tools/tree/main/claat) 
 
 #### Install Go 
 
@@ -185,7 +185,7 @@ Adding an image!
 ![https://codepen.io/tzoght/embed/yRNZaP](https://en.wikipedia.org/wiki/File:Example.jpg "Try Me Publisher")
 ```
 
-More Markdown Parser examples can be found [here](https://github.com/googlecodelabs/tools/tree/master/claat/parser/md).
+More Markdown Parser examples can be found [here](https://github.com/googlecodelabs/tools/tree/main/claat/parser/md).
 
 ## Export and Serve
 Duration: 0:02:00
@@ -216,4 +216,4 @@ Now that you have the static content you can host it however you want.
 One option is pushing it to github and serving it up from Netlify.  
 
 If you'd like to create your own landing page for codelabs, [like this one](https://codelabs.developers.google.com), there is a tool to do that as well! 
-Check it out here: [CodeLabs Site](https://github.com/googlecodelabs/tools/blob/master/site/README.md)
+Check it out here: [CodeLabs Site](https://github.com/googlecodelabs/tools/blob/main/site/README.md)

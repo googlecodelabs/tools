@@ -10,7 +10,7 @@ The project requires the following major dependencies:
 - [Go](https://golang.org/dl/) language
 - [Node.js](https://nodejs.org/en/download/) v10+ and [npm](https://www.npmjs.com/get-npm)
 - [gsutil](https://cloud.google.com/storage/docs/gsutil_install)
-- [claat](https://github.com/googlecodelabs/tools/tree/master/claat#install)
+- [claat](https://github.com/googlecodelabs/tools/tree/main/claat#install)
 
 With Node installed, run `npm install` in the root of the `site` (this folder):
 

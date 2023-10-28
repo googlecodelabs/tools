@@ -5,11 +5,11 @@ using some simple formatting conventions. You can also author codelabs using mar
 This repo contains all the tools and documentation you’ll need for building and publishing
 your own codelabs.
 
-If you're interested in authoring codelabs, create a doc following the [Codelab Formatting Guide](FORMAT-GUIDE.md). 
+If you're interested in authoring codelabs, create a doc following the [Codelab Formatting Guide](FORMAT-GUIDE.md).
 and see the [claat](claat) directory for a detailed description of the `claat` command line tool.
 
 Also, consider joining the [codelab-authors Google Group](https://groups.google.com/forum/#!forum/codelab-authors),
-which connects you with other authors and provides updates on new releases. 
+which connects you with other authors and provides updates on new releases.
 
 ## What is this?
 
@@ -53,21 +53,21 @@ Check out this [excellent tutorial](https://medium.com/@zarinlo/publish-technica
 
 1. Make one or more changes and preview your codelab, using the preview app provided by Google. To preview a codelab, install the [Preview Codelab Chrome extension](https://chrome.google.com/webstore/detail/preview-codelab/lhojjnijnkiglhkggagbapfonpdlinji) in your browser. Now you can preview a codelab directly from the Google Doc view by clicking the Chrome extension’s button, which will open a new tab to display the preview. Alternatively, navigate manually to https://codelabs-preview.appspot.com/?file_id=<google-doc-id>
 
-1. Install the claat command -- see the [README in the claat directory](https://github.com/googlecodelabs/tools/blob/master/claat/README.md) of this repo for instructions..
+1. Install the claat command -- see the [README in the claat directory](https://github.com/googlecodelabs/tools/blob/main/claat/README.md) of this repo for instructions..
 
 1. Run the claat command to transform the doc contents into one of the supported output formats. The default supported formats are html and markdown but the claat tool supports adding additional formats by specifying a path to a Go template. For example, using the example document above:
 
-        $ claat export 1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY  
+        $ claat export 1rpHleSSeY-MJZ8JvncvYA8CFqlnlcrW8-a4uEaqizPY
         ok      your-first-pwapp
 
-    You can also specify a markdown document (.md file) as input. It has to adhere to the syntax conventions described [here](https://github.com/googlecodelabs/tools/tree/master/claat/parser/md)
+    You can also specify a markdown document (.md file) as input. It has to adhere to the syntax conventions described [here](https://github.com/googlecodelabs/tools/tree/main/claat/parser/md)
 
         $ claat export document.md
         ok      your-md-based-codelab
 
 1. Run the claat serve command.
 
-        $ claat serve
+        claat serve
 
 This will start a local web server and open a browser tab to the local server. Click on the
 hyperlink represent your codelab of interest to experience a fully rendered version.
