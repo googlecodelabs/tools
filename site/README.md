@@ -2,7 +2,6 @@
 
 A site for hosting codelabs content.
 
-
 ## Prerequisites
 
 The project requires the following major dependencies:
@@ -10,23 +9,22 @@ The project requires the following major dependencies:
 - [Go](https://golang.org/dl/) language
 - [Node.js](https://nodejs.org/en/download/) v10+ and [npm](https://www.npmjs.com/get-npm)
 - [gsutil](https://cloud.google.com/storage/docs/gsutil_install)
-- [claat](https://github.com/googlecodelabs/tools/tree/master/claat#install)
+- [claat](https://github.com/googlecodelabs/tools/tree/main/claat#install)
 
 With Node installed, run `npm install` in the root of the `site` (this folder):
 
-```text
-$ npm install
+```bash
+npm install
 ```
 
 (Optional) npm installs binstubs at `./node_modules/.bin/`. When running tasks
 like `gulp`, you may want to add `./node_modules/.bin/` to your `$PATH` for convenience:
 
-```text
-$ export PATH="./node_modules/.bin/:$PATH"
+```bash
+export PATH="./node_modules/.bin/:$PATH"
 ```
 
 This does pose a mild security risk, so please do so at your own risk.
-
 
 ## Development
 
@@ -37,8 +35,8 @@ with the codelabs content as an argument. This will compile all the views and
 codelabs into the `build/` directory and start a web server to serve that
 content.
 
-```text
-$ gulp serve
+```bash
+gulp serve
 ```
 
 The output will include the address where the server is running
@@ -48,8 +46,8 @@ You can also serve the completely compiled and minified (prod) version with the
 `serve:dist` command. Always run this before publishing, as it will show you an
 replica of what will appear on staging/production.
 
-```text
-$ gulp serve:dist
+```bash
+gulp serve:dist
 ```
 
 ### Views
@@ -161,12 +159,11 @@ Instead, build all views and then visit the appropriate URL. If you still wish
 to build a single set of views, you can do so with the `--views-filter`
 parameter:
 
-```text
-$ gulp serve --views-filter='^event-*'
+```bash
+gulp serve --views-filter='^event-*'
 ```
 
 Note this filter takes a regular expression. By default, all views are built.
-
 
 ## Deployment
 
@@ -174,14 +171,14 @@ Once you build, serve, and verify your labs, you're on your own for publishing t
 
 ### Setup for GCS Support
 
-#### Set  environment variables like this (use your own names):
+#### Set  environment variables like this (use your own names)
 
 ```
 export STAGING_BUCKET=gs://mco-codelabs-staging
 export PROD_BUCKET=gs://mco-codelabs-prod
 ```
 
-#### Create staging and production buckets like this (use your own names):
+#### Create staging and production buckets like this (use your own names)
 
 ```
 18:42:32 site$ gsutil mb is $STAGING_BUCKET
@@ -195,9 +192,9 @@ Creating gs://mco-codelabs-prod/...
 1. Make newly uploaded files world-readable and ensure user@ has owner
 permissions:
 
-    ```text
-    $ gsutil defacl ch -g all:R -u you@your-domain.com:O $STAGING_BUCKET $PROD_BUCKET
-    $ gsutil iam ch allUsers:objectViewer $STAGING_BUCKET $PROD_BUCKET
+    ```bash
+    gsutil defacl ch -g all:R -u you@your-domain.com:O $STAGING_BUCKET $PROD_BUCKET
+    gsutil iam ch allUsers:objectViewer $STAGING_BUCKET $PROD_BUCKET
     ```
 
     Add as many `-u user@` as you require. This ensures the users will remain
@@ -213,20 +210,20 @@ local copy), specify `--delete-missing` on the publish command.
 
 1. Compile and minify the build:
 
-    ```text
-    $ gulp dist
+    ```bash
+    gulp dist
     ```
 
 1. Deploy views to the staging bucket:
 
-    ```text
-    $ gulp publish:staging:views --staging-bucket=$STAGING_BUCKET
+    ```bash
+    gulp publish:staging:views --staging-bucket=$STAGING_BUCKET
     ```
 
 1. Deploy codelabs to the staging bucket:
 
-    ```text
-    $ gulp publish:staging:codelabs --staging-bucket=$STAGING_BUCKET
+    ```bash
+    gulp publish:staging:codelabs --staging-bucket=$STAGING_BUCKET
     ```
 
 1. Visit the [staging site](https://mco-codelabs-staging.storage.googleapis.com/index.html) (modify link to match your staging bucket name).
@@ -246,14 +243,14 @@ specify `--delete-missing` on the publish command.
 
 1. Deploy views from the staging bucket to the production bucket:
 
-    ```text
-    $ gulp publish:prod:views --staging-bucket=$STAGING_BUCKET --prod-bucket=$PROD_BUCKET
+    ```bash
+    gulp publish:prod:views --staging-bucket=$STAGING_BUCKET --prod-bucket=$PROD_BUCKET
     ```
 
 1. Deploy codelabs from the staging bucket to the production bucket:
 
-    ```text
-    $ gulp publish:prod:codelabs --staging-bucket=$STAGING_BUCKET --prod-bucket=$PROD_BUCKET
+    ```bash
+    gulp publish:prod:codelabs --staging-bucket=$STAGING_BUCKET --prod-bucket=$PROD_BUCKET
     ```
 
 1. Visit the [production site](https://mco-codelabs-prod.storage.googleapis.com/index.html)  (modify link to match your production bucket name).
@@ -269,16 +266,16 @@ to use GCS directly for serving, the bucket name **must** be a valid domain.
 
 1. Create a new bucket:
 
-    ```text
-    $ gsutil mb gs://codelabs.mycompany.com
+    ```bash
+    gsutil mb gs://codelabs.mycompany.com
     ```
 
 1. Make newly uploaded files world-readable and ensure user@ has owner
 permissions:
 
-    ```text
-    $ gsutil defacl ch -g all:R -u you@your-domain.com:O gs://codelabs.mycompany.com
-    $ gsutil iam ch allUsers:objectViewer gs://codelabs.mycompany.com
+    ```bash
+    gsutil defacl ch -g all:R -u you@your-domain.com:O gs://codelabs.mycompany.com
+    gsutil iam ch allUsers:objectViewer gs://codelabs.mycompany.com
     ```
 
     Add as many `-u user@` as you require. This ensures the users will remain
@@ -286,16 +283,14 @@ permissions:
 
 1. Set the default main page suffix and not found page:
 
-    ```text
-    $ gsutil web set -m index.html -e 404.html gs://codelabs.mycompany.com
+    ```bash
+    gsutil web set -m index.html -e 404.html gs://codelabs.mycompany.com
     ```
 
     This option is only available on bucket names that are valid domains.
 
-
 Follow the steps in [deploy to staging](#deploy-to-staging) with a custom
 `--staging-bucket` parameter. See [#options](#options) for information.
-
 
 ### Deploy single view or codelab
 
@@ -304,16 +299,16 @@ assets are up-to-date.
 
 To build and publish a set of views to staging:
 
-```text
-$ gulp dist --views-filter=^my-event
-$ gulp publish:staging:views
+```bash
+gulp dist --views-filter=^my-event
+gulp publish:staging:views
 ```
 
 To build and publish a set of codelabs to staging:
 
-```text
-$ gulp dist --codelabs-filter=^my-codelab
-$ gulp publish:staging:codelabs
+```bash
+gulp dist --codelabs-filter=^my-codelab
+gulp publish:staging:codelabs
 ```
 
 ## Options
@@ -359,27 +354,25 @@ is "html"
 `--codelab-source` - Google Doc ID from which to build codelab. This can be
 specified multiple times to build from multiple sources.
 
-
 ## Testing
 
 To run the tests manually in a browser, execute the following:
 
-```text
-$ gulp serve
-$ open http://localhost:8000/app/js/all_tests.html
+```bash
+gulp serve
+open http://localhost:8000/app/js/all_tests.html
 ```
-
 
 ## Help
 
 For help documentation/usage of the Gulp tasks, run:
 
-```text
-$ gulp -T
+```bash
+gulp -T
 ```
 
 If gulp startup times are really slow, try removing `node_modules/` or running
 
-```text
-$ npm dedupe
+```bash
+npm dedupe
 ```
