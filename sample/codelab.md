@@ -4,7 +4,7 @@ id: codelab-4-codelab-markdown
 categories: codelab,markdown
 environments: Web
 status: Published
-feedback link: https://github.com/Mrc0113/codelab-4-codelab
+feedback link: https://github.com/googlecodelabs/tools/edit/main/sample/codelab.md
 
 # CodeLab to Create a CodeLab
 
@@ -89,7 +89,7 @@ id: unique-codelab-identifier
 categories: codelab,markdown
 environments: Web
 status: Published
-feedback link: A link where users can go to provide feedback (Maybe the git repo)
+feedback link: A link where users can go to provide feedback
 analytics account: Google Analytics ID
 ```
 
@@ -114,7 +114,9 @@ will be understood by the renderer:
   - Deprecated: Codelab is considered stale and should not be widely advertised.
   - Hidden: Codelab is not shown in index.
 * Feedback Link: A link to send users to if they wish to leave feedback on the
-  codelab.
+  codelab. Could be a Google Doc, an issue tracker, GitHub repo, or perhaps a
+  direct link to edit the markdown source on GitHub, such as in this Codelab;
+  try it out by clicking _Report a mistake_ in the lower left hand corner now!
 * Analytics Account: A Google Analytics ID to include with all codelab pages.
 
 #### Add the Title
