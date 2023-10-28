@@ -21,14 +21,6 @@ In this codelab we are going to use the second option and author our codelab usi
 Here is an example image of another CodeLab that I created:
 ![image_caption](img/codelabexample.png)
 
-
-**Resources:** 
-* This codelab's original home is located here: [Link to Codelab](https://www.marcd.dev/codelab-4-codelab)
-* The markdown for the original codelab is located here: [codelab.md](https://github.com/Mrc0113/codelab-4-codelab/blob/master/codelab.md)
-* [Google CodeLabs Tools Github](https://github.com/googlecodelabs/tools) - The repo that contains the claat tool we'll be using today
-* [Google Group for CodeLab Authors](https://groups.google.com/forum/#!forum/codelab-authors) - great forum for asking questions about codelabs and discussing future functionality
-* [A blog that I used when getting started with Google Codelabs](https://medium.com/@mariopce/tutorial-how-to-make-tutorials-using-google-code-labs-gangdam-style-d62b35476816)
-
 ## Environment Setup
 Duration: 0:04:00
 
@@ -200,7 +192,7 @@ $ claat serve
 
 * Your browser should have opened (if it doesn't then try going to localhost:9090 in your browser). 
 * Choose the directory that matches your "id" that you put in the headers. 
-* Viola! You should have your first codelab!
+* Voilà! You should have your first codelab!
 
 ## Host Your CodeLab
 Duration: 0:01:00
@@ -217,3 +209,10 @@ One option is pushing it to github and serving it up from Netlify.
 
 If you'd like to create your own landing page for codelabs, [like this one](https://codelabs.developers.google.com), there is a tool to do that as well! 
 Check it out here: [CodeLabs Site](https://github.com/googlecodelabs/tools/blob/master/site/README.md)
+
+## Additional Resources
+
+* [Google CodeLabs Tools Github](https://github.com/googlecodelabs/tools) - The repo that contains the claat tool we'll be using today
+* [Google Group for CodeLab Authors](https://groups.google.com/forum/#!forum/codelab-authors) - great forum for asking questions about codelabs and discussing future functionality
+* [A helpful blog for getting started with Google Codelabs](https://medium.com/@mariopce/tutorial-how-to-make-tutorials-using-google-code-labs-gangdam-style-d62b35476816)
+* [Another such blog](https://medium.com/@zarinlo/publish-technical-tutorials-in-google-codelab-format-b07ef76972cd)
