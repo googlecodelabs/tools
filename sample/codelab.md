@@ -202,6 +202,11 @@ $ claat serve
 * Choose the directory that matches your "id" that you put in the headers. 
 * Viola! You should have your first codelab!
 
+For a "tight inner loop" while writing Codelabs, you can use a tool like e.g. [`entr`](https://github.com/eradman/entr)
+with a [watch script such as this one](https://github.com/googlecodelabs/tools/blob/main/sample/watch.sh); this allows
+to change your Markdown source file, Ctrl-S to Save it, F5 to reload in the brower - without having to constantly retype
+the commands above every time.
+
 ## Host Your CodeLab
 Duration: 0:01:00
 
