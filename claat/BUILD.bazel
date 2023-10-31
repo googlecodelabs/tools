@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@gazelle//:def.bzl", "gazelle")
+
+gazelle(name = "gazelle")
+
+go_library(
+    name = "claat_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/googlecodelabs/tools/claat",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//claat/cmd",
+        "//claat/parser/gdoc",
+        "//claat/parser/md",
+    ],
+)
+
+go_binary(
+    name = "claat",
+    embed = [":claat_lib"],
+    visibility = ["//visibility:public"],
+)

@@ -4,11 +4,14 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
-load("//codelab-elements/tools:defs.bzl",
-     "closure_js_library", "closure_js_binary", "closure_js_test")
+load(
+    "//codelab-elements/tools:defs.bzl",
+    "closure_js_binary",
+    "closure_js_library",
+    "closure_js_test",
+)
 load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_template_library")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary", "sass_library")
-
 
 filegroup(
     name = "google_codelab_about_files",
@@ -16,8 +19,8 @@ filegroup(
         "*.html",
         "*.png",
     ]) + [
-        ":google_codelab_about_scss_bin",
         ":google_codelab_about_bin",
+        ":google_codelab_about_scss_bin",
     ],
 )
 
@@ -26,11 +29,11 @@ closure_js_library(
     name = "google_codelab_about",
     srcs = [
         "google_codelab_about.js",
-        "google_codelab_about_def.js"
+        "google_codelab_about_def.js",
     ],
     deps = [
-        "@io_bazel_rules_closure//closure/library",
         ":google_codelab_about_soy",
+        "@io_bazel_rules_closure//closure/library",
     ],
 )
 
@@ -48,5 +51,5 @@ sass_binary(
 
 closure_js_template_library(
     name = "google_codelab_about_soy",
-    srcs = ["google_codelab_about.soy"]
+    srcs = ["google_codelab_about.soy"],
 )

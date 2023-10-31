@@ -4,8 +4,12 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
-load("//codelab-elements/tools:defs.bzl",
-    "closure_js_library", "closure_js_binary", "closure_js_test")
+load(
+    "//codelab-elements/tools:defs.bzl",
+    "closure_js_binary",
+    "closure_js_library",
+    "closure_js_test",
+)
 load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_template_library")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary", "sass_library")
 
@@ -15,8 +19,8 @@ filegroup(
         "*.html",
         "*.png",
     ]) + [
-        ":google_codelab_survey_scss_bin",
         ":google_codelab_survey_bin",
+        ":google_codelab_survey_scss_bin",
     ],
 )
 
@@ -25,11 +29,11 @@ closure_js_library(
     name = "google_codelab_survey",
     srcs = [
         "google_codelab_survey.js",
-        "google_codelab_survey_def.js"
+        "google_codelab_survey_def.js",
     ],
     deps = [
-        "@io_bazel_rules_closure//closure/library",
         ":google_codelab_survey_soy",
+        "@io_bazel_rules_closure//closure/library",
     ],
 )
 
@@ -45,14 +49,14 @@ closure_js_test(
     srcs = ["google_codelab_survey_test.js"],
     entry_points = ["googlecodelabs.CodelabSurveyTest"],
     deps = [
-      "@io_bazel_rules_closure//closure/library",
-      ":google_codelab_survey"
+        ":google_codelab_survey",
+        "@io_bazel_rules_closure//closure/library",
     ],
 )
 
 closure_js_template_library(
     name = "google_codelab_survey_soy",
-    srcs = ["google_codelab_survey.soy"]
+    srcs = ["google_codelab_survey.soy"],
 )
 
 sass_binary(

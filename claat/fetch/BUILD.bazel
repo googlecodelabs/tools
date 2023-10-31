@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "fetch",
+    srcs = ["fetch.go"],
+    importpath = "github.com/googlecodelabs/tools/claat/fetch",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//claat/fetch/drive/auth",
+        "//claat/nodes",
+        "//claat/parser",
+        "//claat/types",
+        "//claat/util",
+    ],
+)
+
+go_test(
+    name = "fetch_test",
+    srcs = ["fetch_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":fetch"],
+    deps = ["//claat/parser/gdoc"],
+)

@@ -4,14 +4,17 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
-load("//codelab-elements/tools:defs.bzl",
-     "closure_js_library", "closure_js_binary", "closure_js_test")
-
+load(
+    "//codelab-elements/tools:defs.bzl",
+    "closure_js_binary",
+    "closure_js_library",
+    "closure_js_test",
+)
 
 filegroup(
     name = "google_codelab_analytics_files",
     srcs = [
-      ":google_codelab_analytics_bin",
+        ":google_codelab_analytics_bin",
     ],
 )
 
@@ -20,7 +23,7 @@ closure_js_library(
     name = "google_codelab_analytics",
     srcs = [
         "google_codelab_analytics.js",
-        "google_codelab_analytics_def.js"
+        "google_codelab_analytics_def.js",
     ],
     deps = [
         "@io_bazel_rules_closure//closure/library",
@@ -33,8 +36,8 @@ closure_js_test(
     srcs = ["google_codelab_analytics_test.js"],
     entry_points = ["googlecodelabs.CodelabAnalyticsTest"],
     deps = [
-      "@io_bazel_rules_closure//closure/library",
-      ":google_codelab_analytics"
+        ":google_codelab_analytics",
+        "@io_bazel_rules_closure//closure/library",
     ],
 )
 

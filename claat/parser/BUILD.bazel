@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "parser",
+    srcs = [
+        "parse.go",
+        "trim.go",
+    ],
+    importpath = "github.com/googlecodelabs/tools/claat/parser",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//claat/nodes",
+        "//claat/types",
+    ],
+)
+
+go_test(
+    name = "parser_test",
+    srcs = ["trim_test.go"],
+    embed = [":parser"],
+)

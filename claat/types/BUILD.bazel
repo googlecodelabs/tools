@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "types",
+    srcs = [
+        "codelab.go",
+        "context.go",
+        "legacystatus.go",
+    ],
+    importpath = "github.com/googlecodelabs/tools/claat/types",
+    visibility = ["//visibility:public"],
+    deps = ["//claat/nodes"],
+)
+
+go_test(
+    name = "types_test",
+    srcs = [
+        "codelab_test.go",
+        "context_test.go",
+        "legacystatus_test.go",
+    ],
+    embed = [":types"],
+    deps = ["@com_github_google_go_cmp//cmp:go_default_library"],
+)
