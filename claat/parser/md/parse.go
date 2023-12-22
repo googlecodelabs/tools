@@ -45,17 +45,18 @@ import (
 
 // Metadata constants for the YAML header
 const (
-	MetaAuthors          = "authors"
-	MetaSummary          = "summary"
-	MetaID               = "id"
-	MetaCategories       = "categories"
-	MetaEnvironments     = "environments"
-	MetaStatus           = "status"
-	MetaFeedbackLink     = "feedback_link"
-	MetaAnalyticsAccount = "analytics_account"
-	MetaTags             = "tags"
-	MetaSource           = "source"
-	MetaDuration         = "duration"
+	MetaAuthors             = "authors"
+	MetaSummary             = "summary"
+	MetaID                  = "id"
+	MetaCategories          = "categories"
+	MetaEnvironments        = "environments"
+	MetaStatus              = "status"
+	MetaFeedbackLink        = "feedback_link"
+	MetaAnalyticsAccount    = "analytics_account"
+	MetaAnalyticsGa4Account = "analytics_ga4_account"
+	MetaTags                = "tags"
+	MetaSource              = "source"
+	MetaDuration            = "duration"
 )
 
 const (
@@ -182,7 +183,7 @@ type docState struct {
 	survey   int            // last used survey ID
 	step     *types.Step    // current codelab step
 	lastNode nodes.Node     // last appended node
-	env      []string       // current enviornment
+	env      []string       // current environment
 	cur      *html.Node     // current HTML node
 	stack    []*stackItem   // cur and flags stack
 }
@@ -439,6 +440,9 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 		case MetaAnalyticsAccount:
 			// Directly assign the GA id to the codelab field.
 			c.GA = v
+		case MetaAnalyticsGa4Account:
+			// Directly assign the GA id to the codelab field.
+			c.GA4 = v
 		case MetaTags:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, util.NormalizedSplit(v)...)

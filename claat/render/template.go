@@ -35,14 +35,15 @@ import (
 
 // Context is a template context during execution.
 type Context struct {
-	Env      string
-	Prefix   string
-	GlobalGA string
-	Format   string
-	Meta     *types.Meta
-	Steps    []*types.Step
-	Updated  string
-	Extra    map[string]string // Extra variables passed from the command line.
+	Env       string
+	Prefix    string
+	GlobalGA  string
+	GlobalGA4 string
+	Format    string
+	Meta      *types.Meta
+	Steps     []*types.Step
+	Updated   string
+	Extra     map[string]string // Extra variables passed from the command line.
 }
 
 // Execute renders a template of the fmt format into w.
@@ -104,6 +105,7 @@ var funcMap = map[string]interface{}{
 		res += kvLine(mdParse.MetaTags, strings.Join(meta.Tags, ","))
 		res += kvLine(mdParse.MetaFeedbackLink, meta.Feedback)
 		res += kvLine(mdParse.MetaAnalyticsAccount, meta.GA)
+		res += kvLine(mdParse.MetaAnalyticsGa4Account, meta.GA4)
 		res += kvLine(mdParse.MetaSource, meta.Source)
 		res += kvLine(mdParse.MetaDuration, strconv.Itoa(meta.Duration))
 

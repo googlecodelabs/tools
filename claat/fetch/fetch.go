@@ -229,7 +229,7 @@ func (f *Fetcher) SlurpImages(src, dir string, n []nodes.Node, images map[string
 	for _, imageNode := range imageNodes {
 		go func(imageNode *nodes.ImageNode) {
 			url := imageNode.Src
-			file, err := f.slurpBytes(src, dir, url)
+			file, err := f.slurpBytes(src, dir, url, imageNode.Bytes)
 			if err == nil {
 				imageNode.Src = filepath.Join(util.ImgDirname, file)
 			}
@@ -251,40 +251,52 @@ func (f *Fetcher) SlurpImages(src, dir string, n []nodes.Node, images map[string
 	return nil
 }
 
-func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string) (string, error) {
-	// images can be local in Markdown cases or remote.
+func (f *Fetcher) slurpBytes(codelabSrc, dir, imgURL string, imgBytes []byte) (string, error) {
+	// images can be data URLs, local in Markdown cases or remote.
 	// Only proceed a simple copy on local reference.
 	var b []byte
 	var ext string
-	u, err := url.Parse(imgURL)
-	if err != nil {
-		return "", err
-	}
+	var err error
 
-	// If the codelab source is being downloaded from the network, then we should interpret
-	// the image URL in the same way.
-	srcUrl, err := url.Parse(codelabSrc)
-	if err == nil && srcUrl.Host != "" {
-		u = srcUrl.ResolveReference(u)
-	}
-
-	if u.Host == "" {
-		if imgURL, err = restrictPathToParent(imgURL, filepath.Dir(codelabSrc)); err != nil {
-			return "", err
-		}
-		if b, err = ioutil.ReadFile(imgURL); err != nil {
-			return "", err
-		}
-		ext = filepath.Ext(imgURL)
-	} else {
-		if b, err = f.slurpRemoteBytes(u.String(), 5); err != nil {
-			return "", fmt.Errorf("Error downloading image at %s: %v", u.String(), err)
-		}
+	if len(imgBytes) > 0 {
+		// Slurp bytes from image URL data.
+		b = imgBytes
 		if ext, err = imgExtFromBytes(b); err != nil {
-			return "", fmt.Errorf("Error reading image type at %s: %v", u.String(), err)
+			return "", fmt.Errorf("Error reading image type: %v", err)
+		}
+	} else {
+		// Slurp bytes from local or remote URL.
+		u, err := url.Parse(imgURL)
+		if err != nil {
+			return "", err
+		}
+
+		// If the codelab source is being downloaded from the network, then we should interpret
+		// the image URL in the same way.
+		srcURL, err := url.Parse(codelabSrc)
+		if err == nil && srcURL.Host != "" {
+			u = srcURL.ResolveReference(u)
+		}
+
+		if u.Host == "" {
+			if imgURL, err = restrictPathToParent(imgURL, filepath.Dir(codelabSrc)); err != nil {
+				return "", err
+			}
+			if b, err = ioutil.ReadFile(imgURL); err != nil {
+				return "", err
+			}
+			ext = filepath.Ext(imgURL)
+		} else {
+			if b, err = f.slurpRemoteBytes(u.String(), 5); err != nil {
+				return "", fmt.Errorf("Error downloading image at %s: %v", u.String(), err)
+			}
+			if ext, err = imgExtFromBytes(b); err != nil {
+				return "", fmt.Errorf("Error reading image type at %s: %v", u.String(), err)
+			}
 		}
 	}
 
+	// Generate image file from slurped bytes.
 	crc := crc64.Checksum(b, f.crcTable)
 	file := fmt.Sprintf("%x%s", crc, ext)
 	dst := filepath.Join(dir, file)
