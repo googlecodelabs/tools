@@ -17,6 +17,8 @@ var IframeAllowlist = []string{
 	"stackblitz.com",
 	"vimeo.com",
 	"web.dev",
+	"docs.google.com",
+	"scratch.mit.edu",
 }
 
 // NewIframeNode creates a new embedded iframe.
