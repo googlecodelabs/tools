@@ -5,9 +5,11 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  schedule:
+    # Run once a week (even if no new code or PRs) to detect random regressions
+    - cron: '12 13 * * 2'
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 5
