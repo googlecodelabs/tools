@@ -5,6 +5,7 @@ package nodes
 var IframeAllowlist = []string{
 	"carto.com",
 	"codepen.io",
+	"codesandbox.io",
 	"dartlang.org",
 	"dartpad.dev",
 	"demo.arcade.software",
