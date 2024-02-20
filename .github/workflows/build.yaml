@@ -1,4 +1,4 @@
-name: Go
+name: Build
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build:
+  claat:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -30,3 +30,14 @@ jobs:
     - name: Test
       working-directory: claat
       run: go test -v ./...
+
+
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: NPM Install
+        working-directory: site
+        run: npm install
