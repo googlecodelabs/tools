@@ -1,0 +1,47 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "nodes",
+    srcs = [
+        "button.go",
+        "code.go",
+        "grid.go",
+        "header.go",
+        "iframe.go",
+        "image.go",
+        "import.go",
+        "infobox.go",
+        "itemslist.go",
+        "list.go",
+        "nodes.go",
+        "survey.go",
+        "text.go",
+        "url.go",
+        "youtube.go",
+    ],
+    importpath = "github.com/googlecodelabs/tools/claat/nodes",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "nodes_test",
+    srcs = [
+        "button_test.go",
+        "code_test.go",
+        "grid_test.go",
+        "header_test.go",
+        "iframe_test.go",
+        "image_test.go",
+        "import_test.go",
+        "infobox_test.go",
+        "itemslist_test.go",
+        "list_test.go",
+        "nodes_test.go",
+        "survey_test.go",
+        "text_test.go",
+        "url_test.go",
+        "youtube_test.go",
+    ],
+    embed = [":nodes"],
+    deps = ["@com_github_google_go_cmp//cmp:go_default_library"],
+)

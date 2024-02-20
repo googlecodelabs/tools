@@ -1,0 +1,41 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "gdoc",
+    srcs = [
+        "css.go",
+        "html.go",
+        "parse.go",
+    ],
+    importpath = "github.com/googlecodelabs/tools/claat/parser/gdoc",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//claat/nodes",
+        "//claat/parser",
+        "//claat/types",
+        "//claat/util",
+        "@com_github_stoewer_go_strcase//:go_default_library",
+        "@com_github_x1ddos_csslex//:go_default_library",
+        "@org_golang_x_net//html:go_default_library",
+        "@org_golang_x_net//html/atom:go_default_library",
+    ],
+)
+
+go_test(
+    name = "gdoc_test",
+    srcs = [
+        "css_test.go",
+        "html_test.go",
+        "parse_test.go",
+    ],
+    embed = [":gdoc"],
+    deps = [
+        "//claat/nodes",
+        "//claat/parser",
+        "//claat/render",
+        "//claat/types",
+        "@com_github_google_go_cmp//cmp:go_default_library",
+        "@org_golang_x_net//html:go_default_library",
+        "@org_golang_x_net//html/atom:go_default_library",
+    ],
+)

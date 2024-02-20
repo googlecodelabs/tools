@@ -1,10 +1,13 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 licenses(["notice"])
 
 # The gen_test_html.template is used by js_test rule.
 # See defs.bzl for details.
-exports_files(["LICENSE", "gen_test_html.template"])
+exports_files([
+    "LICENSE",
+    "gen_test_html.template",
+])
 
 # The JS tests runner.
 # See defs.bzl for details.
@@ -38,6 +41,20 @@ go_binary(
         "//codelab-elements/google-codelab-survey:google_codelab_survey_files",
         "@polyfill//:custom_elements",
         "@polyfill//:native_shim",
-        "@prettify//:prettify",
+        "@prettify",
+    ],
+)
+
+go_library(
+    name = "lib",
+    srcs = [
+        "server.go",
+        "webtest.go",
+    ],
+    importpath = "",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_bazelbuild_rules_webtesting//go/webtest:go_default_library",
+        "@com_github_tebeka_selenium//:go_default_library",
     ],
 )

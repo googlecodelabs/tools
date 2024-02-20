@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "auth",
+    srcs = ["auth.go"],
+    importpath = "github.com/googlecodelabs/tools/claat/fetch/drive/auth",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@org_golang_x_net//context:go_default_library",
+        "@org_golang_x_oauth2//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "auth_test",
+    srcs = ["auth_test.go"],
+    embed = [":auth"],
+    deps = ["@org_golang_x_oauth2//:go_default_library"],
+)

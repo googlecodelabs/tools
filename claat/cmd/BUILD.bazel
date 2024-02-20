@@ -1,0 +1,31 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "export.go",
+        "serve.go",
+        "update.go",
+        "util.go",
+    ],
+    importpath = "github.com/googlecodelabs/tools/claat/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//claat/fetch",
+        "//claat/parser/gdoc",
+        "//claat/parser/md",
+        "//claat/render",
+        "//claat/types",
+        "//claat/util",
+    ],
+)
+
+go_test(
+    name = "cmd_test",
+    srcs = ["export_test.go"],
+    data = glob(["testdata/**"]),
+    deps = [
+        ":cmd",
+        "@com_github_google_go_cmp//cmp:go_default_library",
+    ],
+)

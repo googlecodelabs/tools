@@ -1,0 +1,40 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "md",
+    srcs = [
+        "html.go",
+        "parse.go",
+    ],
+    importpath = "github.com/googlecodelabs/tools/claat/parser/md",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//claat/nodes",
+        "//claat/parser",
+        "//claat/types",
+        "//claat/util",
+        "@com_github_stoewer_go_strcase//:go_default_library",
+        "@com_github_yuin_goldmark//:go_default_library",
+        "@com_github_yuin_goldmark//extension:go_default_library",
+        "@com_github_yuin_goldmark//renderer/html:go_default_library",
+        "@org_golang_x_net//html:go_default_library",
+        "@org_golang_x_net//html/atom:go_default_library",
+    ],
+)
+
+go_test(
+    name = "md_test",
+    srcs = [
+        "html_test.go",
+        "parse_test.go",
+    ],
+    embed = [":md"],
+    deps = [
+        "//claat/nodes",
+        "//claat/parser",
+        "//claat/types",
+        "@com_github_google_go_cmp//cmp:go_default_library",
+        "@org_golang_x_net//html:go_default_library",
+        "@org_golang_x_net//html/atom:go_default_library",
+    ],
+)

@@ -1,0 +1,39 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "render",
+    srcs = [
+        "html.go",
+        "lite.go",
+        "md.go",
+        "template.go",
+    ],
+    embedsrcs = [
+        "template-offline.html",
+        "template.html",
+        "template.md",
+    ],
+    importpath = "github.com/googlecodelabs/tools/claat/render",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//claat/nodes",
+        "//claat/parser/md",
+        "//claat/types",
+        "@org_golang_x_net//html:go_default_library",
+        "@org_golang_x_net//html/atom:go_default_library",
+    ],
+)
+
+go_test(
+    name = "render_test",
+    srcs = [
+        "html_test.go",
+        "template_test.go",
+    ],
+    embed = [":render"],
+    deps = [
+        "//claat/nodes",
+        "//claat/types",
+        "@com_github_google_go_cmp//cmp:go_default_library",
+    ],
+)
