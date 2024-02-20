@@ -26,12 +26,12 @@ RELEASES=$(OUTDIR)/claat-darwin-amd64 \
 	 $(OUTDIR)/claat-windows-386.exe
 
 ifeq ($(OS), Windows_NT)
-		SRCS = $(shell dir *.go /b/s) 
+		SRCS = $(shell dir *.go /b/s)
 	else
-		SRCS = $(shell find . -name '*.go') 
+		SRCS = $(shell find . -name '*.go')
 endif
 
-all: $(OUTDIR)/claat
+all: $(OUTDIR)/claat sample
 
 $(OUTDIR)/claat: $(SRCS) VERSION
 	go build -o $@ -ldflags "-X main.version=$(VERSION)"
@@ -49,7 +49,7 @@ release: $(RELEASES)
 	cd $(OUTDIR) && sha1sum claat* > sha1sum.txt
 
 clean:
-	rm -rf $(OUTDIR) render/tmpldata.go 
+	rm -rf $(OUTDIR) render/tmpldata.go
 
 $(OUTDIR)/claat-%: GOOS=$(firstword $(subst -, ,$*))
 $(OUTDIR)/claat-%: GOARCH=$(subst .exe,,$(word 2,$(subst -, ,$*)))
@@ -61,3 +61,6 @@ $(OUTDIR)/claat-%: $(SRCS) VERSION
 
 %/tmpldata.go: %/gen-tmpldata.go %/template.html %/template.md %/template-offline.html
 	cd $* && go generate
+
+sample: $(OUTDIR)/claat
+	$(OUTDIR)/claat export -o ../sample/ ../sample/codelab.md
