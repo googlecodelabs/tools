@@ -1,0 +1,22 @@
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+version: 2
+
+updates:
+  - package-ecosystem: gomod
+    directory: claat/
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
+
+  - package-ecosystem: npm
+    directory: site/
+    schedule:
+      timezone: "05:00 UTC"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
