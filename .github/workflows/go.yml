@@ -30,3 +30,7 @@ jobs:
     - name: Test
       working-directory: claat
       run: go test -v ./...
+
+    - name: Make
+      working-directory: claat
+      run: make all release
