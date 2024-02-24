@@ -1,4 +1,4 @@
-module github.com/googlecodelabs/tools/claat
+module github.com/Foundation-CCC/google-codelabs-tools
 
 go 1.16
 
