@@ -102,6 +102,25 @@ and you should be ready to go.
 The [site directory](site) contains tools for building your own custom landing page(s) and publishing both landing
 pages and codelabs to Google Cloud Storage.
 
+### Publishing on Github pages
+1. Upload the compiled folder `your-first-pwapp` in the above example into your repository.
+2. The file structure should be something like this:
+        ```
+repo_name    
+│
+└───your-first-pwapp
+│   │   codelab.json
+│   │   index.html
+│   │
+│   └───img
+│       │   3136dac18701946b.png
+│       │   55cc9231dc5c72f7.png
+│       │   ...
+```
+3. repo_name is the name of your repository.
+4. Go to settings > GitHub Pages under the options tab.
+5. Activate your github pages.
+
 ## Why bother with this approach when I can write tutorials directly in Markdown?
 
 Some people like the Google Docs authoring flow, others prefer to specify their codelabs
