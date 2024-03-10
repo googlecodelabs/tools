@@ -27,7 +27,7 @@
   {for $surveyQuestion in $surveyQuestions}
     <div class="survey-question-wrapper">
       <h4>{$surveyQuestion.question}</h4>
-      {if length($surveyQuestion.options)}
+      {if $surveyQuestion.options.length()}
       <div class="survey-question-options">
         {for $option in $surveyQuestion.options}
         <label class="survey-option-wrapper"
