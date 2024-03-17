@@ -81,7 +81,7 @@ const (
 	commentPrefix = "#cmnt"
 
 	// the google.com redirector service
-	redirectorPrefix = "https://www.google.com/url?q="
+	redirectorPrefix = "https://www.google.com/url"
 )
 
 var (
@@ -811,11 +811,7 @@ func link(ds *docState) nodes.Node {
 
 	// re-write google.com redirector URLs
 	if strings.HasPrefix(href, redirectorPrefix) {
-		href = strings.TrimPrefix(href, redirectorPrefix)
-		h, err := url.QueryUnescape(href)
-		if err == nil {
-			href = h
-		}
+		href = parseRedirectURL(href)
 	}
 
 	t := nodes.NewTextNode(nodes.NewTextNodeOptions{
@@ -931,4 +927,23 @@ func roundDuration(d time.Duration) time.Duration {
 		rd += time.Minute
 	}
 	return rd
+}
+
+func parseRedirectURL(href string) string {
+	redirectURL, err := url.Parse(href)
+	if err != nil {
+		return href
+	}
+	// Manually encode semicolons
+	encodedRawQuery := strings.Replace(redirectURL.RawQuery, ";", "%3B", -1)
+	// Parse and decode query
+	queries, err := url.ParseQuery(encodedRawQuery)
+	if err != nil {
+		return href
+	}
+	targetURL := queries["q"][0]
+	if err == nil {
+		return targetURL
+	}
+	return href
 }
