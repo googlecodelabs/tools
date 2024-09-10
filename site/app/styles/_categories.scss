@@ -47,33 +47,34 @@ $color-weave-green: #0f9d58;
 /* Mixins */
 
 @mixin codelab-card($categories, $color, $icon) {
-  %bg-#{$color} {
+  $color-name: unique-id();
+
+  .bg-#{$color-name} {
     background-color: $color;
   }
 
-  %border-#{$color} {
+  .border-#{$color-name} {
     border-bottom-color: $color;
   }
 
-  %icon-#{$icon} {
+  .icon-#{$icon} {
     background-image: url('/images/icons/#{$icon}');
   }
 
   @each $category in $categories {
     .codelab-card.category-#{$category} {
-      @extend %border-#{$color};
+      border-bottom-color: $color;
     }
 
     .#{$category}-bg {
-      @extend %bg-#{$color};
+      background-color: $color;
     }
 
     .#{$category}-icon {
-      @extend %icon-#{$icon};
+      background-image: url('/images/icons/#{$icon}');
     }
   }
 }
-
 /* Actual CSS classes */
 
 @include codelab-card(['about'],

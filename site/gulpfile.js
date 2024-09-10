@@ -5,31 +5,37 @@ const gulp = require('gulp');
 
 // Gulp plugins
 const babel = require('gulp-babel');
-const closureCompilerPackage = require('google-closure-compiler');
-const closureCompiler = closureCompilerPackage.gulp();
+// const closureCompilerPackage = require('google-closure-compiler');
+// const closureCompiler = closureCompilerPackage.gulp();
+const closureCompiler = require('google-closure-compiler').gulp();
 const crisper = require('gulp-crisper');
 const gulpif = require('gulp-if');
 const htmlmin = require('gulp-htmlmin');
 const merge = require('merge-stream');
 const postcss = require('gulp-html-postcss');
 const rename = require('gulp-rename');
-const sass = require('gulp-sass');
+// const sass = require('gulp-sass');
 const through = require('through2');
 const useref = require('gulp-useref');
 const vulcanize = require('gulp-vulcanize');
 const watch = require('gulp-watch');
 const webserver = require('gulp-webserver');
+const sass = require('gulp-sass')(require('sass'));
 
 // Uglify ES6
-const uglifyes = require('uglify-es');
-const composer = require('gulp-uglify/composer');
-const uglify = composer(uglifyes, console);
+// const uglifyes = require('uglify-es');
+// const composer = require('gulp-uglify/composer');
+// const uglify = composer(uglifyes, console);
+const uglify = require('gulp-uglify');
 
 // Other helpers
 const args = require('yargs').argv;
 const childprocess = require('child_process');
 const claat = require('./tasks/helpers/claat');
-const del = require('del');
+let deleteAsync;
+import('del').then(del => {
+  deleteAsync = del.deleteAsync;
+});
 const fs = require('fs-extra');
 const gcs = require('./tasks/helpers/gcs');
 const glob = require('glob');
@@ -39,6 +45,7 @@ const serveStatic = require('serve-static');
 const spawn = childprocess.spawn;
 const swig = require('swig-templates');
 const url = require('url');
+const yargs = require('yargs');
 
 // DEFAULT_GA is the default Google Analytics tracker ID
 const DEFAULT_GA = 'UA-49880327-14';
@@ -60,7 +67,7 @@ const BASE_URL = args.baseUrl || 'https://example.com';
 // CODELABS_DIR is the directory where the actual codelabs exist on disk.
 // Despite being a constant, this can be overridden with the --codelabs-dir
 // flag.
-const CODELABS_DIR = args.codelabsDir || '.';
+const CODELABS_DIR = args.codelabsDir || path.join(__dirname, 'codelabs');
 
 // CODELABS_ENVIRONMENT is the environment for which to build codelabs.
 const CODELABS_ENVIRONMENT = args.codelabsEnv || 'web';
@@ -90,50 +97,70 @@ const STAGING_BUCKET = gcs.bucketName(args.stagingBucket || 'DEFAULT_STAGING_BUC
 // VIEWS_FILTER is the filter to use for view inclusion.
 const VIEWS_FILTER = args.viewsFilter || '*';
 
+const handleError = function(err) {
+  console.log(err.toString());
+  this.emit('end');
+};
+
 // clean:build removes the build directory
-gulp.task('clean:build', (callback) => {
-  return del('build')
+gulp.task('clean:build', async () => {
+  if (!deleteAsync) {
+    const del = await import('del');
+    deleteAsync = del.deleteAsync;
+  }
+  await deleteAsync('build');
+  return fs.promises.mkdir('build', { recursive: true });
 });
 
+
 // clean:dist removes the dist directory
-gulp.task('clean:dist', (callback) => {
-  return del('dist')
+gulp.task('clean:dist', async () => {
+  if (!deleteAsync) {
+    const del = await import('del');
+    deleteAsync = del.deleteAsync;
+  }
+  return deleteAsync('dist');
 });
 
 // clean:js removes the built javascript
 // NOTE: this is not included in the default 'clean' task
-gulp.task('clean:js', (callback) => {
-  return del('app/js/bundle')
+gulp.task('clean:js', async () => {
+  if (!deleteAsync) {
+    const del = await import('del');
+    deleteAsync = del.deleteAsync;
+  }
+  return deleteAsync('app/js/bundle');
 });
 
+
 // clean removes all built files
-gulp.task('clean', gulp.parallel(
-  'clean:build',
-  'clean:dist',
-));
+gulp.task('clean', gulp.parallel('clean:build', 'clean:dist'));
 
 // build:codelabs copies the codelabs from the directory into build.
 gulp.task('build:codelabs', (done) => {
-  copyFilteredCodelabs('build');
-  done();
+  try {
+    copyFilteredCodelabs('build');
+    done();
+  } catch (error) {
+    console.error('Error in build:codelabs task:', error);
+    done(error);
+  }
 });
 
 // build:scss builds all the scss files into the dist dir
-gulp.task('build:scss', () => {
-  return gulp.src('app/**/*.scss')
-    .pipe(sass(opts.sass()))
-    .pipe(gulp.dest('build'));
-});
+gulp.task('build:scss', () => 
+  gulp.src('app/**/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('build'))
+    .on('error', handleError)
+);
 
 // build:css builds all the css files into the dist dir
-gulp.task('build:css', () => {
-  const srcs = [
-    'app/elements/codelab-elements/*.css',
-  ];
-
-  return gulp.src(srcs, { base: 'app/' })
-    .pipe(gulp.dest('build'));
-});
+gulp.task('build:css', () => 
+  gulp.src('app/elements/codelab-elements/*.css', { base: 'app/' })
+    .pipe(gulp.dest('build'))
+    .on('error', handleError)
+);
 
 // build:html builds all the HTML files
 gulp.task('build:html', () => {
@@ -142,102 +169,111 @@ gulp.task('build:html', () => {
   streams.push(gulp.src(`app/views/${VIEWS_FILTER}/view.json`, { base: 'app/' })
     .pipe(generateView())
     .pipe(useref({ searchPath: ['app'] }))
-    .pipe(gulpif('*.js', babel(opts.babel())))
+    .pipe(gulpif('*.js', babel({ presets: ['@babel/preset-env'] })))
     .pipe(gulp.dest('build'))
     .pipe(gulpif(['*.html', '!index.html'], generateDirectoryIndex()))
+    .on('error', handleError)
   );
 
   streams.push(gulp.src(`app/views/${VIEWS_FILTER}/*.{css,gif,jpeg,jpg,png,svg,tff}`, { base: 'app/views' })
-    .pipe(gulp.dest('build')));
+    .pipe(gulp.dest('build')).on('error', handleError));
 
   const otherSrcs = [
     'app/404.html',
     'app/browserconfig.xml',
     'app/robots.txt',
     'app/site.webmanifest',
-  ]
+  ];
   streams.push(gulp.src(otherSrcs, { base: 'app/' })
-    .pipe(gulp.dest('build'))
+    .pipe(gulp.dest('build')).on('error', handleError)
   );
 
   return merge(...streams);
 });
 
 // build:images builds all the images into the build directory.
-gulp.task('build:images', () => {
-  const srcs = [
-    'app/images/**/*',
-    'app/favicon.ico',
-  ];
-
-  return gulp.src(srcs, { base: 'app/' })
-    .pipe(gulp.dest('build'));
-});
+gulp.task('build:images', () =>
+  gulp.src(['app/images/**/*', 'app/favicon.ico'], { base: 'app/' })
+    .pipe(gulp.dest('build'))
+    .on('error', handleError)
+);
 
 // build:js builds all the javascript into the dest dir
-gulp.task('build:js', (callback) => {
-  let streams = [];
+gulp.task('build:js', () => {
+  const streams = [];
 
-  if (!fs.existsSync('app/js/bundle/cardsorter.js')) {
-    // cardSorter is compiled into app/js, not build/scripts, because it is
-    // vulcanized directly into the HTML.
-    const cardSorterSrcs = [
-      'app/js/claat/ui/cards/cardsorter.js',
-      'app/js/claat/ui/cards/cardsorter_export.js',
-    ];
-    streams.push(gulp.src(cardSorterSrcs, { base: 'app/' })
-      .pipe(closureCompiler(opts.closureCompiler(), { platform: 'javascript' }))
-      .pipe(babel(opts.babel()))
-      .pipe(gulp.dest('app/js/bundle'))
-    );
+  const cardSorterSrc = 'app/js/bundle/cardsorter.js';
+  const cardSorterDir = path.dirname(cardSorterSrc);
+
+   // Ensure the directory exists
+   fs.mkdirSync(cardSorterDir, { recursive: true });
+
+  if (!fs.existsSync(cardSorterSrc)) {
+    const cardSorterContent = '// Placeholder for cardsorter.js\n';
+    fs.writeFileSync(cardSorterSrc, cardSorterContent);
   }
+
+  const cardSorterSrcs = [
+    'app/js/claat/ui/cards/cardsorter.js',
+    'app/js/claat/ui/cards/cardsorter_export.js',
+  ];
+  streams.push(gulp.src(cardSorterSrcs, { base: 'app/' })
+    .pipe(closureCompiler({
+      compilation_level: 'SIMPLE',
+      warning_level: 'QUIET',
+      language_in: 'ECMASCRIPT6',
+      language_out: 'ECMASCRIPT5',
+      js_output_file: 'cardsorter.js'
+    }))
+    .pipe(babel({ presets: ['@babel/preset-env'] }))
+    .pipe(gulp.dest('app/js/bundle'))
+    .on('error', handleError)
+  );
 
   const bowerSrcs = [
     'app/bower_components/webcomponentsjs/webcomponents-lite.min.js',
-    // Needed for async loading - remove after polymer/polymer#2380
     'app/bower_components/google-codelab-elements/shared-style.html',
     'app/bower_components/google-prettify/src/prettify.js',
   ];
   streams.push(gulp.src(bowerSrcs, { base: 'app/' })
-    .pipe(gulpif('*.js', babel(opts.babel())))
+    .pipe(gulpif('*.js', babel({ presets: ['@babel/preset-env'] })))
     .pipe(gulp.dest('build'))
+    .on('error', handleError)
   );
 
   return merge(...streams);
 });
 
-gulp.task('build:elements_js', () => {
-  const srcs = [
-    'app/elements/codelab-elements/*.js'
-  ];
+gulp.task('build:elements_js', () =>
+  gulp.src('app/elements/codelab-elements/*.js', { base: 'app/' })
+    .pipe(gulp.dest('build'))
+    .on('error', handleError)
+);
 
-  return gulp.src(srcs, { base: 'app/' })
-    .pipe(gulp.dest('build'));
-})
 
 // build:vulcanize vulcanizes html, js, and css
-gulp.task('build:vulcanize', () => {
-  const srcs = [
-    'app/elements/codelab.html',
-    'app/elements/elements.html',
-  ];
-  return gulp.src(srcs, { base: 'app/' })
-    .pipe(vulcanize(opts.vulcanize()))
-    .pipe(crisper(opts.crisper()))
-    .pipe(gulp.dest('build'));
-});
+gulp.task('build:vulcanize', () =>
+  gulp.src(['app/elements/codelab.html', 'app/elements/elements.html'], { base: 'app/' })
+    .pipe(vulcanize({ inlineScripts: true, inlineStyles: true }))
+    .pipe(crisper())
+    .pipe(gulp.dest('build'))
+    .on('error', handleError)
+);
 
 // build builds all the assets
+
 gulp.task('build', gulp.series(
   'clean',
-  'build:codelabs',
-  'build:css',
-  'build:scss',
-  'build:html',
-  'build:images',
-  'build:js',
-  'build:elements_js',
-  'build:vulcanize',
+  gulp.parallel(
+    'build:codelabs',
+    'build:css',
+    'build:scss',
+    'build:html',
+    'build:images',
+    'build:js',
+    'build:elements_js',
+    'build:vulcanize'
+  )
 ));
 
 // copy copies the built artifacts in build into dist/
@@ -339,13 +375,23 @@ gulp.task('watch', gulp.parallel(
 // serve builds the website, starts the webserver, and watches for changes.
 gulp.task('serve', gulp.series(
   'build',
-  gulp.parallel(
-    'watch',
-    () => {
-      return gulp.src('build')
-        .pipe(webserver(opts.webserver()));
-    }
-  )
+  () => {
+    gulp.watch('app/**/*.scss', { ignoreInitial: false }, gulp.series('build:scss'));
+    gulp.watch(['app/views/**/*', 'app/*.html', 'app/*.txt', 'app/*.xml'], { ignoreInitial: false }, gulp.series('build:html'));
+    gulp.watch('app/images/**/*', { ignoreInitial: false }, gulp.series('build:images'));
+    gulp.watch(['app/js/**/*', '!app/js/bundle/**/*', 'app/scripts/**/*'], { ignoreInitial: false }, gulp.series('build:js', 'build:html'));
+    
+    return gulp.src('build')
+      .pipe(webserver({
+        livereload: true,
+        open: false,
+        port: 8000,
+        middleware: function(req, res, next) {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          next();
+        }
+      }));
+  }
 ));
 
 // serve:dist serves the built and minified website from dist. It does not
@@ -842,29 +888,54 @@ const sortCodelabs = (codelabs, view) => {
 // expression or view regular expression into the build/ folder. If no filters
 // are specified (i.e. if codelabRe and viewRe are both undefined), then this
 // function returns all codelabs in the codelabs directory.
-const copyFilteredCodelabs = (dest) =>  {
-  // No filters were specified, symlink the codelabs folder directly and save
-  // processing.
+const copyFilteredCodelabs = (dest) => {
+  const source = path.resolve(CODELABS_DIR);
+  const target = path.resolve(dest, CODELABS_NAMESPACE);
+
+  if (!fs.existsSync(source)) {
+    console.warn(`Warning: Codelabs directory does not exist at ${source}`);
+    console.warn('Skipping codelab copy operation.');
+    return;
+  }
+
+  if (source === path.resolve('.')) {
+    console.warn('Warning: CODELABS_DIR is set to the current directory. Skipping copy operation.');
+    return;
+  }
+
   if (CODELABS_FILTER === '*' && VIEWS_FILTER === '*') {
-    const source = path.join(CODELABS_DIR);
-    const target = path.join(dest, CODELABS_NAMESPACE);
-    fs.ensureSymlinkSync(source, target, 'dir');
-    return
+    console.log(`Copying codelabs from ${source} to ${target}`);
+    fs.ensureDirSync(target);
+    fs.copySync(source, target, { dereference: true });
+    return;
   }
 
   const codelabs = collectCodelabs();
 
+  if (codelabs.length === 0) {
+    console.warn('No codelabs found matching the current filters.');
+    return;
+  }
+
   for(let i = 0; i < codelabs.length; i++) {
     const codelab = codelabs[i];
-    const source = path.join(CODELABS_DIR, codelab.id);
-    const target = path.join(dest, CODELABS_NAMESPACE, codelab.id);
-    fs.ensureSymlinkSync(source, target, 'dir');
+    const codelabSource = path.join(source, codelab.id);
+    const codelabTarget = path.join(target, codelab.id);
+    console.log(`Copying codelab ${codelab.id} to ${codelabTarget}`);
+    fs.ensureDirSync(path.dirname(codelabTarget));
+    fs.copySync(codelabSource, codelabTarget, { dereference: true });
   }
 };
+
 
 // collectCodelabs collects the list of codelabs that match the given view or
 // codelab filter.
 const collectCodelabs = () => {
+  if (!fs.existsSync(CODELABS_DIR)) {
+    console.warn(`Warning: Codelabs directory does not exist at ${CODELABS_DIR}`);
+    return [];
+  }
+
   const meta = collectMetadata();
   let codelabs = meta.codelabs;
 

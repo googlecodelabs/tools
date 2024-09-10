@@ -1,27 +1,15 @@
 'use strict';
 
 const autoprefixer = require('autoprefixer');
-const closureCompilerPackage = require('google-closure-compiler');
 const cssdeclarationsorter = require('css-declaration-sorter');
 const cssnano = require('cssnano');
 
 exports.babel = () => {
   return {
-    presets: ['es2015'],
+    presets: ['@babel/preset-env']
   };
 };
 
-exports.closureCompiler = () => {
-  return {
-    compilation_level: 'ADVANCED',
-    warning_level: 'VERBOSE',
-    language_out: 'ECMASCRIPT5_STRICT',
-    generate_exports: true,
-    export_local_property_definitions: true,
-    output_wrapper: '(function(window, document){\n%output%\n})(window, document);',
-    js_output_file: 'cardsorter.js',
-  };
-};
 
 exports.crisper = () => {
   return {
@@ -41,19 +29,7 @@ exports.htmlmin = () => {
 
 exports.postcss = () => {
   return [
-    autoprefixer({
-      browsers: [
-        'ie >= 10',
-        'ie_mob >= 10',
-        'ff >= 30',
-        'chrome >= 34',
-        'safari >= 7',
-        'opera >= 23',
-        'ios >= 7.1',
-        'android >= 4.4',
-        'bb >= 10',
-      ],
-    }),
+    autoprefixer(), // Modern version doesn't need browser list, it's taken from .browserslistrc or package.json
     cssdeclarationsorter({ order: 'alphabetically' }),
     cssnano(),
   ];
@@ -92,6 +68,8 @@ exports.vulcanize = () => {
 
 exports.webserver = () => {
   return {
-    livereload: false,
+    livereload: true,
+    open: false,
+    port: 8000,
   };
 };

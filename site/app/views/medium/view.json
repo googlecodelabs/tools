@@ -1,0 +1,10 @@
+{
+  "title": "Medium Articles",
+  "description": "Hosting codelabs that have been used to write Medium articles",
+  "logoUrl": "/medium/medium.png",
+  "tags": ["medium"],
+  "exclude": [
+    ".*-about$",
+    "^lang-.*"
+  ]
+}
