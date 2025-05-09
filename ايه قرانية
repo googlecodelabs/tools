@@ -1,0 +1,138 @@
+name: golden_ayah
+description: تطبيق آيات ذهبية عشوائية مع التفسير والصوت.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.18.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  audioplayers: ^5.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: Amiri
+      fonts:
+        - asset: fonts/Amiri-Regular.ttf
+import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
+
+void main() {
+  runApp(MyQuranApp());
+}
+
+class MyQuranApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'آية ذهبية',
+      theme: ThemeData(
+        fontFamily: 'Amiri',
+        primaryColor: Colors.amber[700],
+        scaffoldBackgroundColor: Colors.amber[50],
+      ),
+      home: QuranHomePage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class QuranHomePage extends StatefulWidget {
+  @override
+  _QuranHomePageState createState() => _QuranHomePageState();
+}
+
+class _QuranHomePageState extends State<QuranHomePage> {
+  String verse = 'اضغط على الزر لجلب آية';
+  String tafsir = '';
+  String audioUrl = '';
+  final AudioPlayer audioPlayer = AudioPlayer();
+
+  final List<String> fakeVerses = [
+    'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',
+    'وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ',
+    'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا',
+  ];
+
+  final List<String> fakeTafsirs = [
+    'أي أن الله يعين من يصبر ويثبته.',
+    'النجاح لا يكون إلا بتوفيق الله.',
+    'كل ضيق يتبعه فرج وسهولة.',
+  ];
+
+  final List<String> fakeAudios = [
+    'https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/001.mp3',
+    'https://download.quranicaudio.com/quran/maher_almuaiqly/001.mp3',
+    'https://download.quranicaudio.com/quran/minshawi/001.mp3',
+  ];
+
+  void getRandomVerse() async {
+    int index = Random().nextInt(fakeVerses.length);
+    setState(() {
+      verse = fakeVerses[index];
+      tafsir = fakeTafsirs[index];
+      audioUrl = fakeAudios[index];
+    });
+
+    await audioPlayer.stop();
+    await audioPlayer.play(UrlSource(audioUrl));
+  }
+
+  @override
+  void dispose() {
+    audioPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('آية ذهبية'),
+        backgroundColor: Colors.amber[700],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Spacer(),
+            Text(
+              verse,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.brown[800],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            Text(
+              tafsir,
+              style: TextStyle(fontSize: 18, color: Colors.black87),
+              textAlign: TextAlign.center,
+            ),
+            Spacer(),
+            ElevatedButton.icon(
+              onPressed: getRandomVerse,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber[800],
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              ),
+              icon: Icon(Icons.refresh),
+              label: Text('جلب آية', style: TextStyle(fontSize: 18)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
