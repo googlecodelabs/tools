@@ -1,0 +1,27 @@
+import random
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, CallbackContext
+
+# 替换为你的 Bot Token
+TOKEN = '7908507350:AAFC_KT_KiA8W0ZglycSbj_ZnHOuRZnjLqE'
+
+def start(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text('发送 /1 获取“大”或“小”')
+
+def send_random_word(update: Update, context: CallbackContext) -> None:
+    response = random.choice(["大", "小"])
+    update.message.reply_text(response)
+
+def main() -> None:
+    updater = Updater(7908507350:AAFC_KT_KiA8W0ZglycSbj_ZnHOuRZnjLqE)
+
+    dispatcher = updater.dispatcher
+
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("1", send_random_word))
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
