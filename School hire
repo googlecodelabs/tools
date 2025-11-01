@@ -1,0 +1,494 @@
+// lib/main.dart
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+
+void main() {
+  runApp(const SchoolRegisterApp());
+}
+
+class SchoolRegisterApp extends StatelessWidget {
+  const SchoolRegisterApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'පාසල් පැමිණීම් රෙජිස්ටරය',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        fontFamily: 'Poppins',
+      ),
+      home: const HomePage(),
+    );
+  }
+}
+
+class Child {
+  String name;
+  Child({required this.name});
+  Map<String, dynamic> toMap() => {'name': name};
+  factory Child.fromMap(Map<String, dynamic> m) => Child(name: m['name']);
+}
+
+class AttendanceRecord {
+  String name;
+  String dateIso;
+  bool came;
+  int amount;
+  AttendanceRecord({
+    required this.name,
+    required this.dateIso,
+    required this.came,
+    required this.amount,
+  });
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        'date': dateIso,
+        'came': came,
+        'amount': amount,
+      };
+  factory AttendanceRecord.fromMap(Map<String, dynamic> m) => AttendanceRecord(
+        name: m['name'],
+        dateIso: m['date'],
+        came: m['came'],
+        amount: (m['amount'] ?? 0),
+      );
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final String childrenKey = 'children_list_v1';
+  final String recordsKey = 'attendance_records_v1';
+  List<Child> children = [];
+  List<AttendanceRecord> records = [];
+  DateTime selectedDate = _nowSriLanka();
+  int dailyFee = 150;
+  Map<String, bool> todaySelection = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAll();
+  }
+
+  static DateTime _nowSriLanka() {
+    final utcNow = DateTime.now().toUtc();
+    return utcNow.add(const Duration(hours: 5, minutes: 30));
+  }
+
+  String formatDate(DateTime dt) {
+    return DateFormat('yyyy-MM-dd (EEEE)').format(dt);
+  }
+
+  Future<void> _loadAll() async {
+    final sp = await SharedPreferences.getInstance();
+    final childrenJson = sp.getString(childrenKey);
+    final recordsJson = sp.getString(recordsKey);
+
+    setState(() {
+      if (childrenJson != null) {
+        final List parsed = jsonDecode(childrenJson);
+        children = parsed.map((e) => Child.fromMap(e)).toList();
+      } else {
+        children = [
+          Child(name: 'කසුන්'),
+          Child(name: 'නිමල්'),
+          Child(name: 'කවිඳු'),
+        ];
+      }
+
+      if (recordsJson != null) {
+        final List parsed = jsonDecode(recordsJson);
+        records = parsed.map((e) => AttendanceRecord.fromMap(e)).toList();
+      } else {
+        records = [];
+      }
+      _prepareTodaySelection();
+    });
+  }
+
+  Future<void> _saveChildren() async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.setString(childrenKey, jsonEncode(children.map((c) => c.toMap()).toList()));
+  }
+
+  Future<void> _saveRecords() async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.setString(recordsKey, jsonEncode(records.map((r) => r.toMap()).toList()));
+  }
+
+  void _prepareTodaySelection() {
+    final iso = DateFormat('yyyy-MM-dd').format(selectedDate);
+    todaySelection = {};
+    for (var c in children) {
+      final existing = records.lastWhere(
+          (r) => r.name == c.name && r.dateIso == iso,
+          orElse: () => AttendanceRecord(name: '', dateIso: '', came: false, amount: 0));
+      todaySelection[c.name] = existing.name == '' ? false : existing.came;
+    }
+  }
+
+  void _toggleSelection(String name, bool val) {
+    setState(() {
+      todaySelection[name] = val;
+    });
+  }
+
+  Future<void> _saveAttendanceForSelectedDate() async {
+    final iso = DateFormat('yyyy-MM-dd').format(selectedDate);
+    for (var entry in todaySelection.entries) {
+      records.removeWhere((r) => r.name == entry.key && r.dateIso == iso);
+      final came = entry.value;
+      final amount = came ? dailyFee : 0;
+      records.add(AttendanceRecord(name: entry.key, dateIso: iso, came: came, amount: amount));
+    }
+    await _saveRecords();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('පැමිණීම් සුරකින ලදී')),
+    );
+  }
+
+  int _monthlyTotalFor(DateTime monthDate) {
+    final year = monthDate.year;
+    final month = monthDate.month;
+    var sum = 0;
+    for (var r in records) {
+      try {
+        final d = DateTime.parse(r.dateIso);
+        if (d.year == year && d.month == month) sum += r.amount;
+      } catch (_) {}
+    }
+    return sum;
+  }
+
+  Future<void> _addChildDialog() async {
+    final controller = TextEditingController();
+    final res = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('ළමයෙ නම එක් කරන්න'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(hintText: 'නම'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('අවලංගු කරන්න')),
+          TextButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('එකතු කරන්න')),
+        ],
+      ),
+    );
+    if (res != null && res.isNotEmpty) {
+      setState(() {
+        children.add(Child(name: res));
+        _prepareTodaySelection();
+      });
+      await _saveChildren();
+    }
+  }
+
+  Future<void> _editChildNameDialog(int index) async {
+    final controller = TextEditingController(text: children[index].name);
+    final res = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('නම සම්පාදනය කරන්න'),
+        content: TextField(controller: controller, decoration: const InputDecoration(hintText: 'නම')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('අවලංගු කරන්න')),
+          TextButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('සුරකින්න')),
+        ],
+      ),
+    );
+    if (res != null && res.isNotEmpty) {
+      setState(() {
+        children[index].name = res;
+        _prepareTodaySelection();
+      });
+      await _saveChildren();
+    }
+  }
+
+  Future<void> _removeChild(int index) async {
+    final name = children[index].name;
+    final ok = await showDialog<bool?>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('මකා දමන්නද?'),
+        content: Text('"$name" සහ එහි පැමිණීම් දත්ත මකා දමන්නද?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('නැහැ')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('ඔව්')),
+        ],
+      ),
+    );
+    if (ok == true) {
+      setState(() {
+        children.removeAt(index);
+        records.removeWhere((r) => r.name == name);
+        _prepareTodaySelection();
+      });
+      await _saveChildren();
+      await _saveRecords();
+    }
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      final pickedSri = DateTime.utc(picked.year, picked.month, picked.day)
+          .add(const Duration(hours: 5, minutes: 30));
+      setState(() {
+        selectedDate = pickedSri;
+        _prepareTodaySelection();
+      });
+    }
+  }
+
+  Future<void> _changeFeeDialog() async {
+    final controller = TextEditingController(text: dailyFee.toString());
+    final res = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('දිනකට ගාස්තුව (රු.)'),
+        content: TextField(controller: controller, keyboardType: TextInputType.number),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('අවලංගු කරන්න')),
+          TextButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('සුරකින්න')),
+        ],
+      ),
+    );
+    if (res != null && int.tryParse(res) != null) {
+      setState(() {
+        dailyFee = int.parse(res);
+      });
+    }
+  }
+
+  void _goRegisterScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (ctx) => RegisterScreen(records: records, monthDate: selectedDate, onDeleteRecord: (r) async {
+        setState(() {
+          records.removeWhere((x) => x.name == r.name && x.dateIso == r.dateIso);
+        });
+        await _saveRecords();
+      }, getMonthlyTotal: _monthlyTotalFor)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final displayDate = formatDate(selectedDate);
+    final monthlyTotal = _monthlyTotalFor(selectedDate);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('පාසල් පැමිණීම් රෙජිස්ටරය'),
+        actions: [
+          IconButton(onPressed: _goRegisterScreen, icon: const Icon(Icons.list)),
+          IconButton(onPressed: _addChildDialog, icon: const Icon(Icons.person_add)),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(children: [
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: Text(displayDate),
+              subtitle: const Text('ශ්‍රී ලංකා දින (UTC+5:30)'),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit_calendar),
+                onPressed: _pickDate,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.monetization_on),
+              title: Text('දිනකට ගාස්තුව: රු.$dailyFee'),
+              trailing: TextButton(onPressed: _changeFeeDialog, child: const Text('වෙනස් කරන්න')),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: children.isEmpty
+                ? const Center(child: Text('ළමයින් නැත. එකතු කිරීමට + බොත්තම ඔබන්න.'))
+                : ListView.builder(
+                    itemCount: children.length,
+                    itemBuilder: (context, index) {
+                      final c = children[index];
+                      final came = todaySelection[c.name] ?? false;
+                      return Slidable(
+                        key: ValueKey(c.name),
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (_) => _editChildNameDialog(index),
+                              backgroundColor: Colors.indigo,
+                              icon: Icons.edit,
+                              label: 'සම්පාදනය',
+                            ),
+                            SlidableAction(
+                              onPressed: (_) => _removeChild(index),
+                              backgroundColor: Colors.red,
+                              icon: Icons.delete,
+                              label: 'මකා දමන්න',
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          leading: const Icon(Icons.person),
+                          title: Text(c.name),
+                          subtitle: Text(came ? 'ආව — රු.$dailyFee' : 'නැහැ — රු.0'),
+                          trailing: ToggleButtons(
+                            isSelected: [came, !came],
+                            onPressed: (i) {
+                              final val = (i == 0);
+                              _toggleSelection(c.name, val);
+                            },
+                            children: const [
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('ආව')),
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('නැහැ'))
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                  child: ElevatedButton.icon(
+                onPressed: _saveAttendanceForSelectedDate,
+                icon: const Icon(Icons.save),
+                label: const Text('පැමිණීම් සුරකින්න'),
+              )),
+              const SizedBox(width: 8),
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    for (var k in todaySelection.keys) todaySelection[k] = true;
+                  });
+                },
+                icon: const Icon(Icons.done_all),
+                label: const Text('සියල්ල ආව'),
+              )
+            ],
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.calculate),
+              title: Text('මාසික එකතුව (${DateFormat('yyyy-MM').format(selectedDate)}): රු.$monthlyTotal'),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+class RegisterScreen extends StatelessWidget {
+  final List<AttendanceRecord> records;
+  final DateTime monthDate;
+  final Future<void> Function(AttendanceRecord) onDeleteRecord;
+  final int Function(DateTime) getMonthlyTotal;
+
+  const RegisterScreen({
+    super.key,
+    required this.records,
+    required this.monthDate,
+    required this.onDeleteRecord,
+    required this.getMonthlyTotal,
+  });
+
+  List<AttendanceRecord> _recordsForMonth(DateTime md) {
+    final year = md.year;
+    final month = md.month;
+    return records.where((r) {
+      try {
+        final d = DateTime.parse(r.dateIso);
+        return d.year == year && d.month == month;
+      } catch (_) {
+        return false;
+      }
+    }).toList()
+      ..sort((a, b) {
+        if (a.dateIso == b.dateIso) return a.name.compareTo(b.name);
+        return a.dateIso.compareTo(b.dateIso);
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final list = _recordsForMonth(monthDate);
+    final total = getMonthlyTotal(monthDate);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('මාසික රෙජිස්ටරය')),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(children: [
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.calendar_month),
+              title: Text('මාසය: ${DateFormat('yyyy-MM').format(monthDate)}'),
+              subtitle: Text('එකතුව: රු.$total'),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: list.isEmpty
+                ? const Center(child: Text('මෙම මාසය සඳහා පැමිණීම් දත්ත නැත'))
+                : ListView.separated(
+                    itemCount: list.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (ctx, i) {
+                      final r = list[i];
+                      return ListTile(
+                        title: Text('${r.name} — ${r.dateIso}'),
+                        subtitle: Text(r.came ? 'ආව — රු.${r.amount}' : 'නැහැ — රු.0'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            final ok = await showDialog<bool?>(
+                              context: context,
+                              builder: (dctx) => AlertDialog(
+                                title: const Text('මකා දමන්නද?'),
+                                content: Text('${r.name} — ${r.dateIso} මකා දමන්නද?'),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(dctx, false), child: const Text('නැහැ')),
+                                  TextButton(onPressed: () => Navigator.pop(dctx, true), child: const Text('ඔව්')),
+                                ],
+                              ),
+                            );
+                            if (ok == true) {
+                              await onDeleteRecord(r);
+                              (context as Element).markNeedsBuild();
+                            }
+                          },
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ]),
+      ),
+    );
+  }
+}
